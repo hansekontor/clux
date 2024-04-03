@@ -113,17 +113,21 @@ const AnimationScript = ({animationKey}) => {
 
             // add script for entrance animation
             const entranceScript = document.createElement('script');
-            entranceScript.src = `http://localhost:8000/${animationFolder}/entrance.js`;
+            entranceScript.src = `https://dev.cert.cash:3001/${animationFolder}/entrance.js`;
             entranceScript.type = "text/javascript";
             document.body.appendChild(entranceScript);
 
             // add script for fight animation
             const fightScript = document.createElement('script');
-            fightScript.src = `http://localhost:8000/${animationFolder}/fight_${winner}.js`;
+            fightScript.src = `https://dev.cert.cash:3001/${animationFolder}/fight_${winner}.js`;
             fightScript.type = "text/javascript";
             document.body.appendChild(fightScript);
 
             // add script for celebration animation
+            const celebrationScript = document.createElement('script');
+            celebrationScript.src = `https://dev.cert.cash:3001/${animationFolder}/celebration_${winner}.js`;
+            celebrationScript.type = "text/javascript";
+            document.body.appendChild(celebrationScript);
 
 
         }
@@ -131,6 +135,7 @@ const AnimationScript = ({animationKey}) => {
         return () => {
             document.body.removeChild(entranceScript);
             document.body.removeChild(fightScript);
+            document.body.removeChild(celebrationScript);
         }
     }, []);        
 
