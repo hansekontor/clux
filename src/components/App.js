@@ -102,19 +102,35 @@ export const WalletCtn = styled.div`
     }
 `;
 
-const AnimationScript = ({animationName}) => {
-    console.log("AnimationScript called")
+const AnimationScript = ({animationKey}) => {
+    console.log("AnimationScript called with animationKey:", animationKey)
     useEffect(() => {
         console.log("AnimationScript hook called")
-        const script = document.createElement('script');
-        script.src = `./${animationName}.js`;
-        // script.async = true;
-        script.type = "text/javascript";
+        if (typeof animationKey === 'string') {
+            const animationFolder = animationKey.slice(0, -2);
+            const winner = animationKey.slice(-1);
+            console.log("Winner", winner);
 
-        document.body.appendChild(script);
+            // add script for entrance animation
+            const entranceScript = document.createElement('script');
+            entranceScript.src = `http://localhost:8000/${animationFolder}/entrance.js`;
+            entranceScript.type = "text/javascript";
+            document.body.appendChild(entranceScript);
+
+            // add script for fight animation
+            const fightScript = document.createElement('script');
+            fightScript.src = `http://localhost:8000/${animationFolder}/fight_${winner}.js`;
+            fightScript.type = "text/javascript";
+            document.body.appendChild(fightScript);
+
+            // add script for celebration animation
+
+
+        }
 
         return () => {
-            document.body.removeChild(script);
+            document.body.removeChild(entranceScript);
+            document.body.removeChild(fightScript);
         }
     }, []);        
 
@@ -131,7 +147,7 @@ const App = () => {
     const validWallet = isValidStoredWallet(wallet);
     // console.log("App wallet", wallet);
 
-    const [gameSettings, setGameSetting] = useState(false);
+    const [animationKey, setAnimationKey] = useState(false);
     const [walkinAnimation, setWalkinAnimation] = useState("CLUX_SC01_HTML5");
     const [fightAnimation, setFightAnimation] = useState("CLUX_SC02_HTML5");
     const [celebrationAnimation, setCelebrationAnimation] = useState("CLUX_SC03_HTML5");
@@ -171,13 +187,9 @@ const App = () => {
     
     return (
         <>
-            {/* {typeof gameSettings === 'object' && */}
-                <>
-                    <AnimationScript animationName={walkinAnimation}/>
-                    <AnimationScript animationName={fightAnimation}/>
-                    <AnimationScript animationName={celebrationAnimation}/>
-                </>
-            {/* } */}
+            {animationKey &&
+                <AnimationScript animationKey={animationKey}/>
+            }
             <ThemeProvider theme={theme}>
                 <GlobalStyle />
                     <CustomApp>
@@ -219,7 +231,7 @@ const App = () => {
                                         <Route path="/game">
                                             <Game 
                                                 passLoadingStatus={setLoadingStatus}
-                                                // passAnimationSettings={setAnimationScripts}
+                                                passAnimationKey={setAnimationKey}
                                             />
                                         </Route>
                                         <Route path="/waitingroom">
