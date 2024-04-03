@@ -90,7 +90,8 @@ const Game = ({
 
     const [paused, setPaused] = useState(false);
     const [animationObject, getAnimationObject] = useState(null);
-    const [animationStage, setAnimationStage] = useState("walkin");
+    const [animationStage, setAnimationStage] = useState("entrance");
+    const [entrancePaused, setEntrancePaused] = useState(true);
     const [fightPaused, setFightPaused] = useState(true);
     const [celebrationPaused, setCelebrationPaused] = useState(true);
     const [scriptLoaded, setScriptLoaded] = useState(false);
@@ -105,9 +106,10 @@ const Game = ({
     useEffect(async () => {
         // manually disable loader after ticket redemption
         passAnimationKey("clux_norris_A")
+        await sleep(5000);
         passLoadingStatus(false)
-        await sleep(1000);
         setScriptLoaded(true);
+        setEntrancePaused(false);
     }, []);
 
     useEffect(async () => {
@@ -142,39 +144,38 @@ const Game = ({
             <Header />
             {scriptLoaded &&
                 <>
-                    {!result ? (
-                        <>
-                            {/* <GameCtn> */}
-                                <WalkInCtn active={animationStage === "walkin"}>
-                                    <AnimateCC 
-                                        animationName={"ENTRANCE"}
-                                        composition={"9CD376263DCA47A78074CFD07FB36864"}
-                                        getAnimationObject={getAnimationObject}
-                                        paused={paused}
-                                    />                                           
-                                </WalkInCtn>
-                                <FightCtn active={animationStage === "fight"}>
-                                    <AnimateCC 
-                                        animationName={"FIGHT_A"}
-                                        composition={"B5519D86C55F4C62952ECF014A22F68C"}
-                                        getAnimationObject={getAnimationObject}
-                                        paused={animationStage !== "fight"}
-                                    />                                           
-                                </FightCtn>
-                                {/*<CelebrationCtn active={animationStage === "celebration"}>
-                                    <AnimateCC 
-                                        animationName={"CLUX_SC03_HTML5"}
-                                        composition={"830FD01C9AAF40688B384230187B5C33"}
-                                        getAnimationObject={getAnimationObject}
-                                        paused={animationStage === "celebration"}
-                                    />                                        
-                                </CelebrationCtn> */}
-                            {/* </GameCtn>                */}
-                            <PlayButton onClick={() => handlePlay()}>Play</PlayButton>     
-                        </>
+                    {/* <GameCtn> */}
+                        <WalkInCtn active={animationStage === "entrance"}>
+                            <AnimateCC 
+                                animationName={"entrance"}
+                                composition={"9CD376263DCA47A78074CFD07FB36864"}
+                                getAnimationObject={getAnimationObject}
+                                paused={paused}
+                            />                                           
+                        </WalkInCtn>
+                        <FightCtn active={animationStage === "fight"}>
+                            <AnimateCC 
+                                animationName={"fight_A"}
+                                composition={"B5519D86C55F4C62952ECF014A22F68C"}
+                                getAnimationObject={getAnimationObject}
+                                paused={animationStage !== "fight"}
+                            />                                           
+                        </FightCtn>
+                        <CelebrationCtn active={animationStage === "celebration"}>
+                            <AnimateCC 
+                                animationName={"celebration_A"}
+                                composition={"830FD01C9AAF40688B384230187B5C33"}
+                                getAnimationObject={getAnimationObject}
+                                paused={animationStage === "celebration"}
+                            />                                        
+                        </CelebrationCtn>
+                    {/* </GameCtn>                */}
+                    {animationStage === 'entrance' ? (
+                        <PlayButton onClick={() => handlePlay()}>Play</PlayButton>
                     ) : (
-                        <p>RESULT</p>
+                        <PlayButton onClick={() => setAnimationStage("celebration")}>See Result</PlayButton>
                     )}
+
                 </>
             }
             {/* {!result ? (
