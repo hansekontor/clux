@@ -31,33 +31,24 @@ const GameDemo = styled.div`
     top: 50%;
     width: 100%;
 `;
-const WalkInCtn = styled.div`
+const EntranceCtn = styled.div`
+    top: 20%;
     position: absolute;
-    top: 15%;
-    position: absolute;
-    margin-left: 60px;
-    width: 200%
-    height: 150%;
+    margin-left: 55px;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'}
 `;
 const FightCtn = styled.div`
+    top: 20%;
     position: absolute;
-    top: 15%;
-    position: absolute;
-    margin-left: 10px;
-    width: 200%
-    height: 150%;
+    margin: auto;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'}
 `;
 const CelebrationCtn = styled.div`
+    top: 20%;
     position: absolute;
-    top: 15%;
-    position: absolute;
-    margin-left: 60px;
-    width: 200%
-    height: 150%;
+    margin-left: -15px;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'}
 `;
@@ -91,12 +82,10 @@ const Game = ({
     const [paused, setPaused] = useState(false);
     const [animationObject, getAnimationObject] = useState(null);
     const [animationStage, setAnimationStage] = useState("entrance");
-    const [entrancePaused, setEntrancePaused] = useState(true);
+    const [entrancePaused, setEntrancePaused] = useState(false);
     const [fightPaused, setFightPaused] = useState(true);
     const [celebrationPaused, setCelebrationPaused] = useState(true);
     const [scriptLoaded, setScriptLoaded] = useState(false);
-    const onClick = () => setPaused(!paused);
-    // console.log("animationObject", animationObject);
 
     // helpers
     const sleep = (ms) => {
@@ -109,7 +98,6 @@ const Game = ({
         await sleep(5000);
         passLoadingStatus(false)
         setScriptLoaded(true);
-        setEntrancePaused(false);
     }, []);
 
     useEffect(async () => {
@@ -118,20 +106,17 @@ const Game = ({
             // setAnimationStage("celebration")
         }
     }, [animationStage])
+
     // handlers
     const handlePlay = async () => {
-        console.log("GAME handlePlay()")
-        // const mockResult = {
-        //     bracket: 5,
-        //     win: 20
-        // };
-        // setGameRunning(true);
-        // await sleep(3000);
-        // setGameRunning(false);
-        // setResult(mockResult);
         setAnimationStage("fight");
+        setFightPaused(false);
     }
 
+    const handleResult = async () => {
+        setAnimationStage("celebration");
+        setCelebrationPaused(false);
+    }
 
     const handlePlayAgain = () => {
         history.push('/select');
@@ -144,15 +129,17 @@ const Game = ({
             <Header />
             {scriptLoaded &&
                 <>
-                    {/* <GameCtn> */}
-                        <WalkInCtn active={animationStage === "entrance"}>
-                            <AnimateCC 
-                                animationName={"entrance"}
-                                composition={"9CD376263DCA47A78074CFD07FB36864"}
-                                getAnimationObject={getAnimationObject}
-                                paused={paused}
-                            />                                           
-                        </WalkInCtn>
+                        {animationStage !== 'celebration' &&
+                            <WalkInCtn active={animationStage === "entrance"}>
+                                <AnimateCC 
+                                    animationName={"entrance"}
+                                    composition={"9CD376263DCA47A78074CFD07FB36864"}
+                                    getAnimationObject={getAnimationObject}
+                                    paused={paused}
+                                />                                           
+                            </WalkInCtn>
+                        }
+
                         <FightCtn active={animationStage === "fight"}>
                             <AnimateCC 
                                 animationName={"fight_A"}
@@ -161,15 +148,18 @@ const Game = ({
                                 paused={animationStage !== "fight"}
                             />                                           
                         </FightCtn>
-                        <CelebrationCtn active={animationStage === "celebration"}>
-                            <AnimateCC 
-                                animationName={"celebration_A"}
-                                composition={"830FD01C9AAF40688B384230187B5C33"}
-                                getAnimationObject={getAnimationObject}
-                                paused={animationStage === "celebration"}
-                            />                                        
-                        </CelebrationCtn>
-                    {/* </GameCtn>                */}
+
+                        {animationStage !== 'entrance' &&
+                            <CelebrationCtn active={animationStage === "celebration"}>
+                                <AnimateCC 
+                                    animationName={"celebration_A"}
+                                    composition={"830FD01C9AAF40688B384230187B5C33"}
+                                    getAnimationObject={getAnimationObject}
+                                    paused={animationStage === "celebration"}
+                                />                                        
+                            </CelebrationCtn>                        
+                        }
+
                     {animationStage === 'entrance' ? (
                         <PlayButton onClick={() => handlePlay()}>Play</PlayButton>
                     ) : (

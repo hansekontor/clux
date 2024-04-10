@@ -7,7 +7,7 @@
     "dependencies": {
         "@ant-design/icons": "^4.3.0",
         "@fortawesome/fontawesome-free": "^5.15.1",
-        "@hansekontor/checkout-components": "../checkout-components",
+        "@hansekontor/checkout-components": "^1.0.0",
         "antd": "^4.9.3",
         "b70-checkout": "0.8.1",
         "bignumber.js": "9.1.2",
