@@ -132,7 +132,7 @@ const Game = ({
                         {animationStage !== 'celebration' &&
                             <EntranceCtn active={animationStage === "entrance"}>
                                 <AnimateCC 
-                                    animationName={"entrance"}
+                                    animationName={"ENTRANCE"}
                                     composition={"9CD376263DCA47A78074CFD07FB36864"}
                                     getAnimationObject={getAnimationObject}
                                     paused={paused}
@@ -142,7 +142,7 @@ const Game = ({
 
                         <FightCtn active={animationStage === "fight"}>
                             <AnimateCC 
-                                animationName={"fight_A"}
+                                animationName={"FIGHT_A"}
                                 composition={"B5519D86C55F4C62952ECF014A22F68C"}
                                 getAnimationObject={getAnimationObject}
                                 paused={animationStage !== "fight"}
@@ -152,7 +152,7 @@ const Game = ({
                         {animationStage !== 'entrance' &&
                             <CelebrationCtn active={animationStage === "celebration"}>
                                 <AnimateCC 
-                                    animationName={"celebration_A"}
+                                    animationName={"CELEBRATION_A"}
                                     composition={"830FD01C9AAF40688B384230187B5C33"}
                                     getAnimationObject={getAnimationObject}
                                     paused={animationStage === "celebration"}
