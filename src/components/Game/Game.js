@@ -130,14 +130,14 @@ const Game = ({
             {scriptLoaded &&
                 <>
                         {animationStage !== 'celebration' &&
-                            <WalkInCtn active={animationStage === "entrance"}>
+                            <EntranceCtn active={animationStage === "entrance"}>
                                 <AnimateCC 
                                     animationName={"entrance"}
                                     composition={"9CD376263DCA47A78074CFD07FB36864"}
                                     getAnimationObject={getAnimationObject}
                                     paused={paused}
                                 />                                           
-                            </WalkInCtn>
+                            </EntranceCtn>
                         }
 
                         <FightCtn active={animationStage === "fight"}>
