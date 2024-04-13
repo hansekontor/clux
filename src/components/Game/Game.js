@@ -15,6 +15,7 @@ const Background = styled.img`
     height: 100vh;
     z-index: -4;
     object-fit: cover;
+    filter: grayscale: 0.6;
 `;
 const PlayButton = styled(PrimaryButton)`
     position: absolute;
@@ -36,7 +37,8 @@ const EntranceCtn = styled.div`
     position: absolute;
     margin-left: 55px;
     background-color: transparent;
-    visibility: ${props => props.active ? 'show' : 'hidden'}
+    visibility: ${props => props.active ? 'show' : 'hidden'};
+    overflow: visible;
 `;
 const FightCtn = styled.div`
     top: 20%;
@@ -44,13 +46,15 @@ const FightCtn = styled.div`
     margin: auto;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'}
+    overflow: visible;
 `;
 const CelebrationCtn = styled.div`
     top: 20%;
     position: absolute;
     margin-left: -15px;
     background-color: transparent;
-    visibility: ${props => props.active ? 'show' : 'hidden'}
+    visibility: ${props => props.active ? 'show' : 'hidden'};
+    overflow: visible;
 `;
 const ChickenDemoLeft = styled.div` 
     position: absolute;
@@ -95,17 +99,11 @@ const Game = ({
     useEffect(async () => {
         // manually disable loader after ticket redemption
         passAnimationKey("clux_norris_A")
-        await sleep(5000);
+        await sleep(2000);
         passLoadingStatus(false)
         setScriptLoaded(true);
     }, []);
 
-    useEffect(async () => {
-        if (animationStage === "fight") {
-            // await sleep(8000);
-            // setAnimationStage("celebration")
-        }
-    }, [animationStage])
 
     // handlers
     const handlePlay = async () => {

@@ -153,9 +153,6 @@ const App = () => {
     // console.log("App wallet", wallet);
 
     const [animationKey, setAnimationKey] = useState(false);
-    const [walkinAnimation, setWalkinAnimation] = useState("CLUX_SC01_HTML5");
-    const [fightAnimation, setFightAnimation] = useState("CLUX_SC02_HTML5");
-    const [celebrationAnimation, setCelebrationAnimation] = useState("CLUX_SC03_HTML5");
 
     // helpers 
     const sleep = (ms) => {
