@@ -144,7 +144,7 @@ const Game = ({
                                 animationName={"FIGHT_A"}
                                 composition={"B5519D86C55F4C62952ECF014A22F68C"}
                                 getAnimationObject={getAnimationObject}
-                                paused={animationStage !== "fight"}
+                                paused={fightPaused}
                                 canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
                             />                                           
                         </FightCtn>
@@ -155,7 +155,7 @@ const Game = ({
                                     animationName={"CELEBRATION_A"}
                                     composition={"830FD01C9AAF40688B384230187B5C33"}
                                     getAnimationObject={getAnimationObject}
-                                    paused={animationStage === "celebration"}
+                                    paused={celebrationPaused}
                                     canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
                                 />                                        
                             </CelebrationCtn>                        
