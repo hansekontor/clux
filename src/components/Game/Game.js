@@ -134,6 +134,7 @@ const Game = ({
                                     composition={"9CD376263DCA47A78074CFD07FB36864"}
                                     getAnimationObject={getAnimationObject}
                                     paused={paused}
+                                    canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
                                 />                                           
                             </EntranceCtn>
                         }
@@ -144,6 +145,7 @@ const Game = ({
                                 composition={"B5519D86C55F4C62952ECF014A22F68C"}
                                 getAnimationObject={getAnimationObject}
                                 paused={animationStage !== "fight"}
+                                canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
                             />                                           
                         </FightCtn>
 
@@ -154,6 +156,7 @@ const Game = ({
                                     composition={"830FD01C9AAF40688B384230187B5C33"}
                                     getAnimationObject={getAnimationObject}
                                     paused={animationStage === "celebration"}
+                                    canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
                                 />                                        
                             </CelebrationCtn>                        
                         }
