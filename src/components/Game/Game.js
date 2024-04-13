@@ -15,7 +15,7 @@ const Background = styled.img`
     height: 100vh;
     z-index: -4;
     object-fit: cover;
-    filter: grayscale: 0.6;
+    filter: grayscale(0.6);
 `;
 const PlayButton = styled(PrimaryButton)`
     position: absolute;
