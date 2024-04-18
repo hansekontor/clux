@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 // react components
 import Header from '@components/Common/Header';
 import ChickenSelector from "./ChickenSelector";
+import RandomNumbers from './RandomNumbers';
 import PrimaryButton, { SettingsButton } from '@components/Common/PrimaryButton';
 
 // styled css components
