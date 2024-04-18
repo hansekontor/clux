@@ -164,7 +164,7 @@ const Game = ({
                     {animationStage === 'entrance' ? (
                         <PlayButton onClick={() => handlePlay()}>Play</PlayButton>
                     ) : (
-                        <PlayButton onClick={() => setAnimationStage("celebration")}>See Result</PlayButton>
+                        <PlayButton onClick={() => handleResult()}>See Result</PlayButton>
                     )}
 
                 </>
