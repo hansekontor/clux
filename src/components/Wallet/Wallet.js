@@ -5,6 +5,7 @@ import React, { useEffect, useState, useContext }  from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import { CopyOutlined } from '@ant-design/icons';
 
 // react components tbc
 import { WalletContext } from '@utils/context';
@@ -13,7 +14,7 @@ import { getUrlFromQueryString } from '@utils/bip70';
 import { getPaymentRequest } from '../../utils/bip70';
 import { LoadingCtn } from '@components/Common/Atoms';
 import { isValidStoredWallet } from '@utils/cashMethods';
-import { errorNotification } from '@components/Common/Notifications';
+import { infoNotification, errorNotification } from '@components/Common/Notifications';
 import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
 import PrimaryButton from '@components/Common/PrimaryButton';
 import Balance from '@components/Common/Balance';
@@ -43,18 +44,20 @@ const Tickets = styled.div`
 `;
 const AddressCtn = styled.div`
     width: 90%;
-    margin: auto;    
+    margin: auto auto 0px;
 `;
 const AddressLabel = styled.div`
     margin: 0 auto;
     font-size: 14px;
     padding: 0;
+    cursor: pointer;
 `;
 const Address = styled.div`
     background-color: #ededed;
     padding: 5px 10px;
     border-radius: 40px;
     color: #333333;
+    cursor: pointer;
 `;
 
 const Wallet = ({    
@@ -63,7 +66,7 @@ const Wallet = ({
     const history = useHistory();
     const location = useLocation();
     const ContextValue = useContext(WalletContext);
-    const { wallet } = ContextValue;
+    const { wallet, loading } = ContextValue;
 console.log("wallet", wallet)
     // states
     const [activeTickets, setActiveTickets] = useState(true);
@@ -77,34 +80,42 @@ console.log("wallet", wallet)
         // redirect to ticket explorer
     }
 
+    const handleCopyAddress = (address) => {
+        navigator.clipboard.writeText(address);
+        infoNotification("Copied!")
+    }
+    
     return (
         <>  
             <Header />
-            <Content>
-                <Tickets>
-                    {activeTickets ? (
-                        <>
-                            <TicketHistory 
-                                passLoadingStatus={passLoadingStatus}
-                            />            
-                            <Link>See previous Tickets</Link>
-                        </>
-                    ) : (
-                        <>
-                            <Text>There are no unused tickets</Text>
-                            <Link href="https://explorer.cert.cash">See previous Tickets</Link>
-                        </>
-                    )}                                  
-                </Tickets>
-                <AddressCtn>
-                    <AddressLabel>Your Address</AddressLabel>
-                    <Address>{wallet.Path1899.cashAddress ? wallet.Path1899?.cashAddress : ""}</Address>                    
-                </AddressCtn>
+            {!loading && (
+                <Content>
+                    <Tickets>
+                        {activeTickets ? (
+                            <>
+                                <TicketHistory 
+                                    passLoadingStatus={passLoadingStatus}
+                                />            
+                                <Link>See previous Tickets</Link>
+                            </>
+                        ) : (
+                            <>
+                                <Text>There are no unused tickets</Text>
+                                <Link href="https://explorer.cert.cash">See previous Tickets</Link>
+                            </>
+                        )}                                  
+                    </Tickets>
+                    <AddressCtn>
+                        <AddressLabel onClick={() => handleCopyAddress(wallet.Path1899.cashAddress)}>Your Address <CopyOutlined /></AddressLabel>
+                        <Address onClick={() => handleCopyAddress(wallet.Path1899.cashAddress)}>{wallet.Path1899.cashAddress ? wallet.Path1899?.cashAddress : ""}</Address>                    
+                    </AddressCtn>
 
-                <SeedPhrase 
-                    phrase={wallet.mnemonic ? wallet.mnemonic : ""}
-                />                
-            </Content>
+                    <SeedPhrase 
+                        phrase={wallet.mnemonic ? wallet.mnemonic : ""}
+                    />                
+                </Content>                
+            )}
+
 
             <Support>
                 <ReturnButton 

@@ -21,7 +21,7 @@ const Title = styled.div`
     -webkit-font-smoothing: antialiased;
     stroke-linejoin: round;
     background-color: transparent;
-    top: 20px;
+    top: 5px;
     position: absolute;
     
     text-shadow: 0 0 2px #FFF, 0 0 4px #FFF, 0 0 6px #FFF, 0 0 8px , 0 0 12px #00000040, 0 0 16px #00000040, 0 0 22px #00000040, 0 0 26px #00000040;

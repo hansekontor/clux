@@ -68,11 +68,11 @@ export const theme = {
             disabledOverlay: 'rgba(255, 255, 255, 0.5)',
         },
     },
-    collapses: {
-        background: '#fbfcfd',
-        border: '#eaedf3',
-        color: '#3e3f42',
-    },
+    // collapses: {
+    //     background: '#fbfcfd',
+    //     border: '#eaedf3',
+    //     color: '#3e3f42',
+    // },
     generalSettings: {
         item: {
             icon: '#949494',
