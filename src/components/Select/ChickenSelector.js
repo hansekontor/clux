@@ -1,8 +1,10 @@
 // node modules
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 // react components
+import RandomNumbers from './RandomNumbers';
+
 
 // assets
 import BackgroundSvg from '@assets/select_background.svg';
@@ -69,28 +71,21 @@ const Connector = styled.div`
     display: flex;
     justify-content: space-between;
 `;
-const HatSelector = styled(SelectorCtn)`
+const Selector = styled(SelectorCtn)`
     position: absolute;
-    top: 6%;
-`;
-const HeadSelector = styled(SelectorCtn)`
-    top: 22%;
-    position: absolute;
-`;
-const TorsoSelector = styled(SelectorCtn)`
     top: 50%;
-    position: absolute;
-`;
-const LegSelector = styled(SelectorCtn)`
-    top: 70%;
-    position: absolute;
 `;
 
-const ChickenSelector = ({...props}) => {
+const ChickenSelector = ({
+    passRandomNumbers,
+    ...props
+}) => {
 
+    const [selectionChanged, setSelectionChanged] = useState(0);
+    const handleSelect = (direction) => {
+        setSelectionChanged(selectionChanged + 1)
+        console.log("handleSelecet(), selectionChanged", direction);
 
-    const handleSelect = (type, direction) => {
-        console.log(type, direction)
     }
     return (
         <>
@@ -100,30 +95,18 @@ const ChickenSelector = ({...props}) => {
                     <Chicken src={ChickenPng}/>
                 </Background>
 
-                <HatSelector>
-                    <Connector>
-                        <SelectLeft onClick={() => handleSelect('hat', 'left')}/>
-                        <SelectRight onClick={() => handleSelect('hat', 'right')}/>
-                    </Connector>                    
-                </HatSelector>
-                <HeadSelector>
-                    <Connector>
-                        <SelectLeft onClick={() => handleSelect('head', 'left')}/>
-                        <SelectRight onClick={() => handleSelect('head', 'right')}/>
-                    </Connector>                      
-                </HeadSelector>
-                <TorsoSelector>
-                    <Connector>
-                        <SelectLeft onClick={() => handleSelect('body', 'left')}/>
-                        <SelectRight onClick={() => handleSelect('body', 'right')}/>
-                    </Connector>                      
-                </TorsoSelector>
-                <LegSelector>
-                    <Connector>
-                        <SelectLeft onClick={() => handleSelect('legs', 'left')}/>
-                        <SelectRight onClick={() => handleSelect('legs', 'right')}/>
-                    </Connector>  
-                </LegSelector>
+                <RandomNumbers 
+                    chickenSelection={selectionChanged}
+                    passRandomNumbers={passRandomNumbers}
+                />
+                    <Selector>
+                        <Connector>
+                            <SelectLeft onClick={() => handleSelect('left')}/>
+                            <SelectRight onClick={() => handleSelect('right')}/>
+                        </Connector>  
+                    </Selector>
+                    
+
 
             </ChickenSelect>
         </>

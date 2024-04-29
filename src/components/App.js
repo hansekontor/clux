@@ -5,7 +5,7 @@ import {
     Switch,
     Redirect
 } from 'react-router-dom';
-import 'antd/dist/antd.less';
+// import 'antd/dist/antd.less';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { AnimateCC } from 'react-adobe-animate';
 
@@ -56,9 +56,6 @@ const GlobalStyle = createGlobalStyle`
         color: #000000 !important;
         font-size: 48px !important;
     }
-    .ant-collapse-content {
-        border: none;
-    }
 `;
 const CustomApp = styled.div`
     text-align: center;
@@ -107,9 +104,10 @@ const AnimationScript = ({animationKey}) => {
     useEffect(() => {
         console.log("AnimationScript hook called")
         if (typeof animationKey === 'string') {
-            const animationFolder = animationKey.slice(0, -2);
-            const winner = animationKey.slice(-1);
-            console.log("Winner", winner);
+            const animationFolder = animationKey.split("_")[0];
+            const winner = animationKey.split("_")[1];
+            const tier = animationKey.split("_")[2];
+            console.log("LOADED SCRIPTS FOR winner", winner, "tier", tier);
 
             // add script for entrance animation
             const entranceScript = document.createElement('script');
@@ -119,13 +117,13 @@ const AnimationScript = ({animationKey}) => {
 
             // add script for fight animation
             const fightScript = document.createElement('script');
-            fightScript.src = `https://dev.cert.cash:3001/${animationFolder}/fight_${winner}.js`;
+            fightScript.src = `https://dev.cert.cash:3001/${animationFolder}/${winner}/fight.js`;
             fightScript.type = "text/javascript";
             document.body.appendChild(fightScript);
 
             // add script for celebration animation
             const celebrationScript = document.createElement('script');
-            celebrationScript.src = `https://dev.cert.cash:3001/${animationFolder}/celebration_${winner}.js`;
+            celebrationScript.src = `https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration_${tier}.js`;
             celebrationScript.type = "text/javascript";
             document.body.appendChild(celebrationScript);
 
@@ -148,6 +146,7 @@ const App = () => {
     const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [loader, setLoader] = useState(false);
+    const [playerChoice, setPlayerChoice] = useState(false);
 
     const validWallet = isValidStoredWallet(wallet);
     // console.log("App wallet", wallet);
@@ -220,11 +219,14 @@ const App = () => {
                                     } 
                                     <Switch>
                                         <Route path="/select">
-                                            <Select />
+                                            <Select
+                                                passRandomNumbers={setPlayerChoice}
+                                            />
                                         </Route>
                                         <Route path="/checkout">
                                             <Checkout 
                                                 passLoadingStatus={setLoadingStatus}
+                                                playerChoiceArray={playerChoice}
                                             />
                                         </Route>
                                         <Route path="/backup">

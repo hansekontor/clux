@@ -1,12 +1,11 @@
 // modules
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useHistory } from 'react-router-dom';
 
 // react components
 import Header from '@components/Common/Header';
 import ChickenSelector from "./ChickenSelector";
-import RandomNumbers from './RandomNumbers';
 import PrimaryButton, { SettingsButton } from '@components/Common/PrimaryButton';
 
 // styled css components
@@ -31,7 +30,9 @@ const Link = styled.a`
     text-decoration: underline;
 `;
 
-const Select = () => {
+const Select = ({
+    passRandomNumbers
+}) => {
     const history = useHistory();
 
     // helpers
@@ -45,6 +46,8 @@ const Select = () => {
             -collect ticket data
             -submit all required data to callback function
         */
+        // console.log("randomNumbers pushed to checkout state:", randomNumbers)
+        const dummy = "12345";
         history.push('/checkout');
     }
     const handleToSettings = () => {
@@ -57,7 +60,8 @@ const Select = () => {
     return (
         <>
             <Header />
-            <ChickenSelector />
+            <ChickenSelector 
+                passRandomNumbers={passRandomNumbers}/>
             <ButtonCtn>
                 <PrimaryButton onClick={() => handleBuyTicket()}>BUY TICKET</PrimaryButton>
                 <SupportButtonsCtn>

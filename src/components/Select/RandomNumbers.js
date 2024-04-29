@@ -52,6 +52,7 @@ const RandomNumbers = ({
     }
 
     useEffect(()=> {
+        console.log("RandomNumbers useEffect get new random numbers")
         let newRandomNumbers = [];
 
         for (let i = 0; i < 4; i++) {

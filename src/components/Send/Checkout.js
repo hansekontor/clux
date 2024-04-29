@@ -107,7 +107,8 @@ const CustomTotal = styled(Total)`
 `;
 
 const Checkout = ({
-    passLoadingStatus
+    passLoadingStatus,
+    playerChoiceArray
 }) => {
     const history = useHistory(); 
 
@@ -125,7 +126,6 @@ const Checkout = ({
 
     // variables in DOM
     const offer_name = "Raffle Ticket";
-    const offer_description = "Purchase a ticket for this CLUX raffle. Its finalized block will contain all required data to self-mint your payout. This app supports the payout.";
     const merchant_name = "MRC";
     const purchaseTokenAmount = 3.33;
     const displayTicker = "CLUX";
@@ -159,6 +159,15 @@ const Checkout = ({
         passLoadingStatus(false);
         history.push('/waitingroom')
     }
+
+    const getPlayerChoiceBytes = (playerChoiceArray) => {
+        const buffer = Buffer.allocUnsafe(4);
+        playerChoiceArray.forEach((number, offset) => buffer.writeUInt8(number, offset));
+
+        return buffer;
+    }
+
+    console.log("playerChoiceBytes()", getPlayerChoiceBytes(playerChoiceArray).toString('hex'));
 
     return (
         <>  
@@ -214,9 +223,9 @@ const Checkout = ({
                                             </Merchant>                            
                                         </OfferHeader>
                                         {/* <Divider /> */}
-                                        {offer_description && 
-                                            <OfferDescription>{offer_description}</OfferDescription>
-                                        }
+                                        <OfferDescription>
+                                            {`Purchase a ticket for this CLUX raffle with numbers ${playerChoiceArray || "missing"}. Its finalized block will contain all required data to self-mint your payout. This app supports the payout.`}
+                                        </OfferDescription>
                                     </Offer>
                                     <Divider />
                                     <Fee>
