@@ -28,21 +28,19 @@ const PlayButton = styled(PrimaryButton)`
     position: absolute;
     top: 80%;
 `;
-const CenterDemo = styled.div`
-    position: relative;
-    background-color: white;
+const Result = styled.div`
+    position: absolute;
+    background-color: #e6e6e6;
     color: black;
     padding: 20px;
-`;
-const GameDemo = styled.div`
-    position: absolute;
+    border-radius: 40px;
+    opacity: 90%;
     top: 50%;
-    width: 100%;
 `;
 const EntranceCtn = styled.div`
     top: 20%;
     position: absolute;
-    margin-left: 55px;
+    margin-left: -130px;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'};
     overflow: visible;
@@ -50,7 +48,7 @@ const EntranceCtn = styled.div`
 const FightCtn = styled.div`
     top: 20%;
     position: absolute;
-    margin: auto;
+    margin-left: -165px;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'}
     overflow: visible;
@@ -58,26 +56,12 @@ const FightCtn = styled.div`
 const CelebrationCtn = styled.div`
     top: 20%;
     position: absolute;
-    margin-left: -15px;
+    margin-top: -10px;
+    margin-left: -165px;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'};
     overflow: visible;
 `;
-const ChickenDemoLeft = styled.div` 
-    position: absolute;
-    left: 0;
-    background-color: white;
-    color: black;
-    padding: 20px;
-`;
-const ChickenDemoRight = styled.div` 
-    position: absolute;
-    right: 0;
-    background-color: white;
-    color: black;
-    padding: 20px;
-`;
-// const html = "<h1>TEST</h1>";
 
 
 const Game = ({
@@ -107,14 +91,18 @@ const Game = ({
 
     useEffect(async () => {
         // manually disable loader after ticket redemption
-        const fightLabel = "clux-norris";
-        const winner = "A";
-        const tier = 1;
-        const key = `${fightLabel}_${winner}_${tier}`;
-        passAnimationKey(key)
-        await sleep(2000);
-        passLoadingStatus(false)
-        setScriptLoaded(true);
+        console.log("useeffect to load scripts outer")
+        if (!scriptLoaded){
+            console.log("useEffect to load scripts inner")
+            const fightLabel = "clux-norris";
+            const winner = "A";
+            const tier = 1;
+            const key = `${fightLabel}_${winner}_${tier}`;
+            passAnimationKey(key)
+            await sleep(2000);
+            passLoadingStatus(false)
+            setScriptLoaded(true);
+        }
     }, []);
 
 
@@ -122,6 +110,7 @@ const Game = ({
     const handlePlay = async () => {
         setAnimationStage("fight");
         setFightPaused(false);
+        console.log("handlePlay called")
     }
 
     const handleResult = async () => {
@@ -234,7 +223,7 @@ const Game = ({
                             />                                           
                         </FightCtn>
 
-                        {animationStage !== 'entrance' &&
+                        {/* {animationStage !== 'entrance' && */}
                             <> 
                                 <CelebrationCtn active={animationStage === "celebration"}>
                                     <AnimateCC 
@@ -247,46 +236,25 @@ const Game = ({
                                 </CelebrationCtn>              
                                      
                                 {displayResult && (
-                                    <div>
-                                        YOUR PAYOUT: {payoutAmount}
-                                    </div>
+                                    <Result>
+                                        PAYOUT: {payoutAmount}
+                                    </Result>
                                 )}
                             </>
-                        }
+                        {/* } */}
 
                     {animationStage === 'entrance' ? (
-                        <PlayButton onClick={() => handlePlay()}>Play</PlayButton>
+                        <PlayButton onClick={() => handlePlay()}>Fight</PlayButton>
                     ) : (
-                        <PlayButton onClick={() => handleResult()}>See Result</PlayButton>
+                        <>
+                            {!displayResult && 
+                                <PlayButton onClick={() => handleResult()}>See Result</PlayButton>
+                            }
+                        </>
                     )}
 
                 </>
             }
-            {/* {!result ? (
-                <>
-                    {gameRunning ? (
-                        <GameDemo>
-                            <CenterDemo>
-                                Chickens fighting
-                            </CenterDemo>
-                        </GameDemo>
-                    ) : (
-                        <GameDemo>
-                            <ChickenDemoLeft>Player Chicken</ChickenDemoLeft>
-                            <ChickenDemoRight>Enemy Chicken</ChickenDemoRight>
-                        </GameDemo>                        
-                    )}
-
-                    <PlayButton onClick={() => handlePlay()}>Play</PlayButton>
-                </>
-            ) : (
-                <>  
-                    <GameDemo>
-                        <CenterDemo>Congratulations, you have won ${result.win}</CenterDemo>
-                    </GameDemo>
-                    <PlayButton onClick={() => handlePlayAgain()}>Play again</PlayButton>
-                </>
-            )} */}
         </>
     )
 }

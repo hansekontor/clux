@@ -57,6 +57,7 @@ const StyledCollapse = styled(Collapse)`
     margin: 0px auto; 10px;
     background-color: #ffffff;
     min-width: 300px;
+    width: 100%;
 `;
 
 const TicketHistory = ({ 

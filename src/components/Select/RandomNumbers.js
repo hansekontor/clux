@@ -13,7 +13,7 @@ const RandomNumbersCtn = styled.div`
     display: flex;
     align-items: flex-end;
     gap: 5px;
-    top: 14%;
+    top: 105%;
     padding: 0px 6px;
 `;
 const VerticalDivider = styled.div`

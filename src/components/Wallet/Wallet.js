@@ -36,11 +36,12 @@ const Content = styled.div`
     overflow-y: auto;
     gap: 50px;
     display: grid;
-    margin: 200px auto auto;
+    margin-top: 100px;
     width: 90%;
     max-height: 60%;
 `;
 const Tickets = styled.div`
+    width: 100%;
 `;
 const AddressCtn = styled.div`
     width: 90%;
@@ -58,6 +59,7 @@ const Address = styled.div`
     border-radius: 40px;
     color: #333333;
     cursor: pointer;
+    word-break: break-all;
 `;
 
 const Wallet = ({    
