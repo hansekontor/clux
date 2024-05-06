@@ -7,8 +7,7 @@ const SeedPhraseCtn = styled.div`
 `;
 const StyledCollapse = styled(Collapse)`
     background-color: #ffffff;
-    width: 90%;
-    margin-left: 5%;
+    width: inherit;
 
     .ant-collapse-item > .ant-collapse-header {
         color: black;

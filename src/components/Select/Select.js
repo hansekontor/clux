@@ -14,7 +14,7 @@ const ButtonCtn = styled.div`
     display: grid;
     align-items: center;
     justify-content: center;
-    bottom: 5%;
+    bottom: 3%;
     gap: 10px;
 `;
 const SupportButtonsCtn = styled.div`

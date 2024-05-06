@@ -14,7 +14,7 @@ import ArrowRightSvg from '@assets/select_arrow_right.svg';
 
 // styled css components
 const ChickenSelect = styled.div`
-    top: 17%;
+    top: 12%;
     width: 90%;
     align-items: center;
     justify-content: center;
