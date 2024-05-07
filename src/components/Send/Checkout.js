@@ -11,12 +11,12 @@ import {
 // import { CashLoadingIcon } from '@components/Common/CustomIcons';
 // import PrimaryButton from '@components/Common/PrimaryButton';
 // import useBCH from '@hooks/useBCH';
-// import {
+import {
 //     sendXecNotification,
 //     sendTokenNotification,
 //     selfMintTokenNotification,
-//     errorNotification,
-// } from '@components/Common/Notifications';
+    errorNotification,
+} from '@components/Common/Notifications';
 // import {
 //     currency
 // } from '@components/Common/Ticker.js';
@@ -60,7 +60,7 @@ import {
 import Header from '@components/Common/Header';
 import Agree from '@components/Send/Agree';
 import { Enfold } from '@components/Common/CssAnimations';
-import PrimaryButton from '../Common/PrimaryButton';
+import PrimaryButton, { ReturnButton, Support } from '../Common/PrimaryButton';
 import { 
     Merchant, MerchantName, MerchantTag, MerchantIcon
 } from '@components/Common/ContentHeader';
@@ -71,24 +71,15 @@ import MerchantSvg from '@assets/merchant_icon.svg';
 import InfoPng from '@assets/info_icon.png';
 
 // styled css components
-const AgreeButtonCtn = styled.div`
-    height: 120px;
-    bottom: 0;
-    width: inherit;
-    align-items: center;
-    background-color: #ffffff !important;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    justify-content: center;
-    position: fixed;
+const ReturnCtn = styled(Support)`
+    justify-content: left;
 `;
 const Divider = styled.div`
     height: 1px;
     width: 85%;
     background-color: #000000;
 `;
-const Support = styled.div`
+const Help = styled.div`
     height: 40px;
     width: 100%;
     gap: 12px;
@@ -110,6 +101,7 @@ const Checkout = ({
     passLoadingStatus,
     playerChoiceArray
 }) => {
+
     const history = useHistory(); 
 
     // states
@@ -162,7 +154,12 @@ const Checkout = ({
 
     const getPlayerChoiceBytes = (playerChoiceArray) => {
         const buffer = Buffer.allocUnsafe(4);
-        playerChoiceArray.forEach((number, offset) => buffer.writeUInt8(number, offset));
+        try {
+            playerChoiceArray.forEach((number, offset) => buffer.writeUInt8(number, offset));
+        } catch(err) {
+            errorNotification(err, "Missing Random Numbers", "Selected Numbers have not been passed.");
+            history.push('/select');
+        }
 
         return buffer;
     }
@@ -202,10 +199,13 @@ const Checkout = ({
                             // offer_name={prInfoFromUrl.paymentDetails?.merchantDataJson?.ipn_body?.offer_name}
                             offer_name={offer_name}
                             merchant_name={merchant_name}
+                            handleAgree={handleAgree}
                         />
-                        <AgreeButtonCtn>
-                            <PrimaryButton onClick={() => handleAgree()}>Agree</PrimaryButton>
-                        </AgreeButtonCtn>    
+                        <ReturnCtn>
+                            <ReturnButton 
+                                returnToPath={"/select"}
+                            />
+                        </ReturnCtn>
                     </>      
                 ) : (
                     <>
@@ -266,13 +266,19 @@ const Checkout = ({
                                             <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
                                         </>
                                     )} */}
-                                    <Support>
+                                    <Help>
                                         <Link onClick={() => handleCheckoutHelp()}>How does this work?</Link>
-                                    </Support>                                   
+                                    </Help>                                   
                                 </Enfold>
 
                             </>              
-                        )}                 
+                        )}               
+                        <ReturnCtn>
+                            <ReturnButton 
+                                onClick={() => setHasAgreed(false)}
+                                displayOnly={true}
+                            />
+                        </ReturnCtn>  
                     </>         
                 )}
 

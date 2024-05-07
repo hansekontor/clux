@@ -48,7 +48,7 @@ const EntranceCtn = styled.div`
 const FightCtn = styled.div`
     top: 20%;
     position: absolute;
-    margin-left: -165px;
+    margin-left: -175px;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'}
     overflow: visible;
@@ -57,7 +57,7 @@ const CelebrationCtn = styled.div`
     top: 20%;
     position: absolute;
     margin-top: -10px;
-    margin-left: -165px;
+    margin-left: -175px;
     background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'};
     overflow: visible;
@@ -134,11 +134,9 @@ const Game = ({
         setDisplayResult(true);
     }
 
-    const handlePlayAgain = () => {
+    const handleReturnAfterResult = () => {
         history.push('/select');
     }
-
-
 
 
     const calculatePayout = (ttxHash, blockHash, playerChoiceBytes, maxPayoutBufBE) => {
@@ -205,7 +203,7 @@ const Game = ({
                             <EntranceCtn active={animationStage === "entrance"}>
                                 <AnimateCC 
                                     animationName={"CLUX_NORRIS_ENTRANCE"}
-                                    composition={compositions.clux.norris.entrance}
+                                    composition={compositions.CLUX.NORRIS.ENTRANCE}
                                     getAnimationObject={getAnimationObject}
                                     paused={paused}
                                     canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
@@ -216,7 +214,7 @@ const Game = ({
                         <FightCtn active={animationStage === "fight"}>
                             <AnimateCC 
                                 animationName={"CLUX_NORRIS_FIGHT_A"}
-                                composition={compositions.clux.norris.A.fight}
+                                composition={compositions.CLUX.NORRIS.A.FIGHT}
                                 getAnimationObject={getAnimationObject}
                                 paused={fightPaused}
                                 canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
@@ -228,7 +226,7 @@ const Game = ({
                                 <CelebrationCtn active={animationStage === "celebration"}>
                                     <AnimateCC 
                                         animationName={"CLUX_NORRIS_CELEBRATION_A_1"}
-                                        composition={compositions.clux.norris.A.celebration_1}
+                                        composition={compositions.CLUX.NORRIS.A.CELEBRATION}
                                         getAnimationObject={getAnimationObject}
                                         paused={celebrationPaused}
                                         canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
@@ -247,9 +245,11 @@ const Game = ({
                         <PlayButton onClick={() => handlePlay()}>Fight</PlayButton>
                     ) : (
                         <>
-                            {!displayResult && 
+                            {!displayResult ? ( 
                                 <PlayButton onClick={() => handleResult()}>See Result</PlayButton>
-                            }
+                            ) : (
+                                <PlayButton onClick={() => handleReturnAfterResult()}>Return</PlayButton>
+                            )}
                         </>
                     )}
 
