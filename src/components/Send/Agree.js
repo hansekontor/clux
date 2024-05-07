@@ -9,8 +9,9 @@ import {
     MerchantTag,
     MerchantName, 
 } from '@components/Common/ContentHeader';
+import PrimaryButton from '@components/Common/PrimaryButton';
 
-const Agree = ({offer_name, merchant_name}) => {
+const Agree = ({offer_name, merchant_name, handleAgree}) => {
 
     const Divider = styled.div`
         height: 1px;
@@ -95,6 +96,7 @@ const Agree = ({offer_name, merchant_name}) => {
                         </TosLink>.
                     </TosText>                         
                 </TosList>
+                <PrimaryButton onClick={() => handleAgree()}>I Agree</PrimaryButton>
             </AgreeCtn>
         </>
 

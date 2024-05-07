@@ -72,7 +72,7 @@ const QuestionMark = styled.div`
     width: 14px;
     height: 18px;
     left: 12px;
-    top: 3px;
+    top: 6px;
     position: relative;
     color: #000000;
     font-family: "Inter-SemiBold", Helvetica;
@@ -138,7 +138,9 @@ const CustomReturn = styled(RollbackOutlined)`
 `;
 
 export const ReturnButton = ({
-    returnToPath
+    returnToPath,
+    displayOnly = false,
+    ...props
 }) => {
     const history = useHistory();
 
@@ -148,9 +150,17 @@ export const ReturnButton = ({
     }
 
     return (
-        <Circle onClick={() => handleReturn()}>
-            <CustomReturn />
-        </Circle>
+        <>
+            {displayOnly ? (
+                <Circle>
+                    <CustomReturn {...props}/>
+                </Circle>
+            ) : (
+                <Circle onClick={() => handleReturn()}>
+                    <CustomReturn />
+                </Circle>                
+            )}   
+        </>
     )
 }
 ReturnButton.defaultProps = {   
