@@ -66,7 +66,8 @@ const CelebrationCtn = styled.div`
 
 const Game = ({
     passLoadingStatus,
-    passAnimationKey
+    passAnimationKey,
+    ticket
 }) => {
     const history = useHistory();
 
@@ -83,6 +84,7 @@ const Game = ({
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [payoutAmount, setPayoutAmount] = useState(false);
     const [displayResult, setDisplayResult] = useState(false);
+    const [labels, setLabels] = useState({});
 
     // helpers
     const sleep = (ms) => {
@@ -93,12 +95,42 @@ const Game = ({
         // manually disable loader after ticket redemption
         console.log("useeffect to load scripts outer")
         if (!scriptLoaded){
-            console.log("useEffect to load scripts inner")
+            const ttxHashString = ticket.hash;
+            const blockHashString = ticket.block;
+            const ttxHashBuf = Buffer.from(ttxHashString, 'hex');
+            const blockHashBuf = Buffer.from(blockHashString, 'hex');
+            const maxPayoutString = ticket.maxPayout;
+            const maxPayoutBuf = Buffer.from(maxPayoutString, 'hex');        
+            // const playerChoiceString = "34204n67";
+            // const playerChoiceBytes = Buffer.from(playerChoiceString, 'hex');
+            const playerChoiceBytes = ticket.playerChoiceBytes;
+            console.log("playerchoicebytes", playerChoiceBytes);
+            console.log("ttxhashbuf", ttxHashBuf, "blockhashbuf", blockHashBuf);
+            
+            const {payoutNum, tier} = calculatePayout(ttxHashBuf, blockHashBuf, playerChoiceBytes, maxPayoutBuf);
+            // const tier = 5;
+            setPayoutAmount(payoutNum)
+            const win = tier !== 0;
+            console.log("GAME.JS payoiut tier", tier);
+            
+            // console.log("useEffect to load scripts inner")
             const fightLabel = "clux-norris";
-            const winner = "A";
-            const tier = 1;
-            const key = `${fightLabel}_${winner}_${tier}`;
+            const winner = win ? "A" : "B";
+            const key = win ? `${fightLabel}_A_${tier}` : `${fightLabel}_B`;
             passAnimationKey(key)
+            console.log("winner", winner, "tier", String(tier))
+            setLabels({
+                animationName: {
+                    entrance: "CLUX_NORRIS_ENTRANCE",
+                    fight: `CLUX_NORRIS_FIGHT_${winner}`,
+                    celebration: `CLUX_NORRIS_CELEBRATION_${winner}${win ? "_"+String(tier) : ""}`
+                },
+                compositionId: { 
+                    entrance: compositions.CLUX.NORRIS.ENTRANCE, 
+                    fight: compositions.CLUX.NORRIS[winner].FIGHT,
+                    celebration: win ? compositions.CLUX.NORRIS.A.CELEBRATION[tier] : compositions.CLUX.NORRIS.B.CELEBRATION
+                }
+            })
             await sleep(2000);
             passLoadingStatus(false)
             setScriptLoaded(true);
@@ -117,19 +149,6 @@ const Game = ({
         setAnimationStage("celebration");
         setCelebrationPaused(false);
 
-        const ttxHashString = "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6";
-        const blockHashString = "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5";
-        const ttxHashBuf = Buffer.from(ttxHashString, 'hex');
-        const blockHashBuf = Buffer.from(blockHashString, 'hex');
-        const maxPayoutString = "0000000000027100";
-        const maxPayoutBuf = Buffer.from(maxPayoutString, 'hex');        
-        const playerChoiceString = "34204n67";
-        const playerChoiceBytes = Buffer.from(playerChoiceString, 'hex');
-        console.log("playerchoicebytes", playerChoiceBytes);
-        console.log("ttxhashbuf", ttxHashBuf, "blockhashbuf", blockHashBuf);
-        
-        const {payoutNum} = calculatePayout(ttxHashBuf, blockHashBuf, playerChoiceBytes, maxPayoutBuf);
-        setPayoutAmount(payoutNum);
         await sleep(5000);
         setDisplayResult(true);
     }
@@ -178,11 +197,12 @@ const Game = ({
         let tier = 5;
         for (let i = 0; i < paytable.length; i++) {
             if (modSum > paytable[i]) {
-                if (i === paytable.length - 1)
+                if (i === paytable.length - 1) {
                     payoutNum = 0;
-                else {
+                    tier = 0;
+                } else {
                     payoutNum = payoutNum / 2;
-                    tier - 1;
+                    tier = tier - 1;
                 }
             }
         }
@@ -202,8 +222,8 @@ const Game = ({
                         {animationStage !== 'celebration' &&
                             <EntranceCtn active={animationStage === "entrance"}>
                                 <AnimateCC 
-                                    animationName={"CLUX_NORRIS_ENTRANCE"}
-                                    composition={compositions.CLUX.NORRIS.ENTRANCE}
+                                    animationName={labels.animationName.entrance}
+                                    composition={labels.compositionId.entrance}
                                     getAnimationObject={getAnimationObject}
                                     paused={paused}
                                     canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
@@ -213,8 +233,8 @@ const Game = ({
 
                         <FightCtn active={animationStage === "fight"}>
                             <AnimateCC 
-                                animationName={"CLUX_NORRIS_FIGHT_A"}
-                                composition={compositions.CLUX.NORRIS.A.FIGHT}
+                                animationName={labels.animationName.fight}
+                                composition={labels.compositionId.fight}
                                 getAnimationObject={getAnimationObject}
                                 paused={fightPaused}
                                 canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
@@ -225,8 +245,8 @@ const Game = ({
                             <> 
                                 <CelebrationCtn active={animationStage === "celebration"}>
                                     <AnimateCC 
-                                        animationName={"CLUX_NORRIS_CELEBRATION_A_1"}
-                                        composition={compositions.CLUX.NORRIS.A.CELEBRATION}
+                                        animationName={labels.animationName.celebration}
+                                        composition={labels.compositionId.celebration}
                                         getAnimationObject={getAnimationObject}
                                         paused={celebrationPaused}
                                         canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}

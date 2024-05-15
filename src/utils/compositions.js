@@ -14,9 +14,7 @@ const compositions = {
             },
             B: {
                 FIGHT: "2785FC78A17A4BDC9B2C561BFB1E82CC",
-                CELEBRATION: {
-                    1: "E8DEE8A3AAD141F4B805F63830A613C1"
-                } 
+                CELEBRATION: "E8DEE8A3AAD141F4B805F63830A613C1"
             }
         }
     }
