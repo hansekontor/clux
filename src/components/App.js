@@ -123,7 +123,8 @@ const AnimationScript = ({animationKey}) => {
 
             // add script for celebration animation
             const celebrationScript = document.createElement('script');
-            celebrationScript.src = `https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration_${tier}.js`;
+            console.log(`https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`)
+            celebrationScript.src = `https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`;
             celebrationScript.type = "text/javascript";
             document.body.appendChild(celebrationScript);
 
@@ -147,6 +148,8 @@ const App = () => {
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [loader, setLoader] = useState(false);
     const [playerChoice, setPlayerChoice] = useState(false);
+    const [ticketToRedeem, setTicketToRedeem] = useState(false);
+    const [purchasedTicket, setPurchasedTicket] = useState(false);
 
     const validWallet = isValidStoredWallet(wallet);
     // console.log("App wallet", wallet);
@@ -227,6 +230,7 @@ const App = () => {
                                             <Checkout 
                                                 passLoadingStatus={setLoadingStatus}
                                                 playerChoiceArray={playerChoice}
+                                                passPurchasedTicket={setPurchasedTicket}
                                             />
                                         </Route>
                                         <Route path="/backup">
@@ -236,16 +240,20 @@ const App = () => {
                                             <Game 
                                                 passLoadingStatus={setLoadingStatus}
                                                 passAnimationKey={setAnimationKey}
+                                                ticket={purchasedTicket}
                                             />
                                         </Route>
                                         <Route path="/waitingroom">
                                             <WaitingRoom 
                                                 passLoadingStatus={setLoadingStatus}
+                                                passTicket={setTicketToRedeem}
+                                                purchasedTicket={purchasedTicket}
                                             />
                                         </Route>
                                         <Route path="/wallet">
                                             <Wallet 
                                                 passLoadingStatus={setLoadingStatus} 
+                                                passTicket={setTicketToRedeem}
                                             />
                                         </Route>
                                         <Route path="/how">

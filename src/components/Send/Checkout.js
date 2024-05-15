@@ -99,7 +99,8 @@ const CustomTotal = styled(Total)`
 
 const Checkout = ({
     passLoadingStatus,
-    playerChoiceArray
+    playerChoiceArray,
+    passPurchasedTicket
 }) => {
 
     const history = useHistory(); 
@@ -142,6 +143,15 @@ const Checkout = ({
         helpSectionModal.info(helpSectionConfig)
     }
     const handlePayNow = async () => {
+        const purchasedTicket = {
+            block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
+            hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
+            maxPayout: "0000000000027100",
+            // playerChoiceBytesString: "34204n67",
+            playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
+            playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
+        }
+        passPurchasedTicket(purchasedTicket)
         passLoadingStatus("AWAITING PAYMENT");
         await sleep(2000);
         passLoadingStatus("PROCESSING PAYMENT");

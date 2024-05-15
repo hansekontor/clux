@@ -42,7 +42,9 @@ const InfoBar = styled.div`
 `;
 
 const WaitingRoom = ({
-    passLoadingStatus
+    passLoadingStatus, 
+    passTicket,
+    purchasedTicket
 }) => {
     const history = useHistory();
     const ContextValue = useContext(WalletContext);
@@ -90,6 +92,7 @@ const WaitingRoom = ({
     // handlers
     const handleToGame = async () => {
         if (gameEnabled) {
+            passTicket(purchasedTicket);
             passLoadingStatus("FETCHING TICKET DATA")
             await sleep(2000);
             passLoadingStatus("REDEEMING TICKET")
