@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 
 
 const RandomNumbersCtn = styled.div`
-    width: 240px;
-    height: 41px;
+    width: fit-content;
+    height: 40px;
     border-radius: 41px;
     background: #ededed;
     color: #000000;
@@ -14,23 +14,15 @@ const RandomNumbersCtn = styled.div`
     align-items: flex-end;
     gap: 5px;
     top: 105%;
-    padding: 0px 6px;
-`;
-const VerticalDivider = styled.div`
-    width: 1px;
-    height: 41px;
-    background-color: #c6c6c6;
-    margin: 0px;
-    padding 0px;
+    padding: 0px 12px;
+    gap: 10px;
 `;
 const Number = styled.div`
-    width: 38px;
-    height: 35px;
     text-align: center;    
-    font-size: 26px;
+    font-size: 22px;
     font-style: normal;
     font-weight: 400;
-    margin: 6px 7px auto;
+    font-family: "Sequel 100 Wide 95", Helvetica;
 `;
 
 const RandomNumbers = ({
@@ -69,11 +61,8 @@ const RandomNumbers = ({
             {randomNumberArray.length === 4 &&
                 <>
                     <Number>{randomNumberArray[0]}</Number>
-                    <VerticalDivider />
                     <Number>{randomNumberArray[1]}</Number>
-                    <VerticalDivider />
                     <Number>{randomNumberArray[2]}</Number>
-                    <VerticalDivider />
                     <Number>{randomNumberArray[3]}</Number>            
                 </>
             }

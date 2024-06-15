@@ -8,6 +8,8 @@
         "@ant-design/icons": "^4.3.0",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@hansekontor/checkout-components": "../checkout-components",
+        "@stripe/react-stripe-js": "^2.7.1",
+        "@stripe/stripe-js": "^3.4.0",
         "antd": "^5.16.2",
         "b70-checkout": "0.8.1",
         "bignumber.js": "9.1.2",

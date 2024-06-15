@@ -82,5 +82,5 @@ export const theme = {
     },
     a: {
         color: '#000000',
-    }
+    },
 };

@@ -25,7 +25,7 @@ const FooterCtn = styled.div`
 const Footer = () => {
     return (
         <FooterCtn>
-            <div>2023 Operator Co - Terms and Conditions - Privacy Policy</div>
+            <div>Terms of Service - Privacy Policy</div>
         </FooterCtn>
     )
 }

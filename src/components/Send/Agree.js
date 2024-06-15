@@ -72,14 +72,13 @@ const Agree = ({offer_name, merchant_name, handleAgree}) => {
                 </Header>
                 <Divider />          
                 <TosHeader>
-                    You are about to Purchase a <br />
-                    BUX Self-Mint Authorization Code
+                    You are about to Purchase a lottery ticket using a self-mint authorization code.
                 </TosHeader>
                 <TosList>
                     <TosText>
                         The seller of the digital good in this transaction is {" "}
-                        <TosLink href={"https://bux.digital"} rel="noopener noreferrer" target="_blank">
-                        {' BADGER LLC'}
+                        <TosLink href={"https://example.com"} rel="noopener noreferrer" target="_blank">
+                        {' [MRC Services Inc.]'}
                         </TosLink>.
                     </TosText>
                     <TosText>
@@ -87,11 +86,11 @@ const Agree = ({offer_name, merchant_name, handleAgree}) => {
                     </TosText>
                     <TosText>
                         This unhosted wallet, upon receiving the authorization code (after your credit card payment is made),
-                        will mint and send BUX tokens to settle the payment request.
+                        will mint and send lottery tickets to settle the payment request.
                     </TosText>
                     <TosText>
-                        You have read and understand the BUX {" "}                    
-                        <TosLink href="https://bux.digital/tos.html" rel="noopener noreferrer" target="_blank">
+                        You have read and understand the CLUX {" "}                    
+                        <TosLink href="https://example.com" rel="noopener noreferrer" target="_blank">
                             Terms of Service
                         </TosLink>.
                     </TosText>                         

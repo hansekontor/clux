@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
 import { SecondaryButton, SupportButtons } from '@components/Common/PrimaryButton';
 import RingPng from '@assets/ring.png';
+import SeedPhrase from '@components/Common/SeedPhrase';
+import { WalletContext } from '@utils/context';
+
 
 const Background = styled.img`
     position: relative;
@@ -29,22 +32,19 @@ const Title = styled.div`
     font-weight: 600;
 `;
 const Input = styled.input`
-z-index: 1;
-color: #000000;
-    border: none;
-    border-radius: 50px;
-    font-family: "Inter-Regular", Helvetica;
-    font-size: 14px;
-    font-weight: 400;
-    height: 48px;
-    letter-spacing: 0.25px;
-    line-height: 20.2px;
-    padding: 12px 22px;
-    position: relative;
     text-align: center;
     white-space: nowrap;
+
+    border-radius: 40px;
     background-color: #000000;
-    color: #ffffffb2;
+    color: #ffffff;
+    font-family: "Inter-Semibold", Helvetica;
+    font-size: 16px;
+    font-weight: 500;
+    height: 44px;
+    padding: 0 15px;
+    cursor: pointer;
+    width: 90%;
 `;
 const Text = styled.p`
     z-index: 1;
@@ -54,32 +54,72 @@ const Content = styled.div`
     top: 40%;
     position: absolute;
     left: 7%;
-    right: 7px;
+    right: 7%;
     text-align: left;
+`;
+const Skip = styled.a`
+    margin-left: 10px;
+    cursor: pointer;
+`;
+const ButtonCtn = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+`;
+const SubmitButton = styled(SecondaryButton)`
+    width: fit-content;
 `;
 
 
-const Backup = () => {
-    const history = useHistory();
 
-    const [hasBackedUp, setHasBackedUp] = useState(false);
+const Backup = ({
+    purchasedTicket,
+    passLoadingStatus
+}) => {
+    const history = useHistory();
+    const ContextValue = useContext(WalletContext);
+    const { wallet } = ContextValue;
+
+    const [backupRequested, setBackupRequested] = useState(false);
+    const [backupFinished, setBackupFinished] = useState(false);
+
+    // stop loading screen after rendering has been completed
+    useEffect(() => {
+        passLoadingStatus(false);
+    })
 
     // handlers
     const handleOnSubmit = () => {
         history.push('/waitingroom');
     }
+    const handleBackupSeedPhrase = () => {
+        setBackupRequested(true)
+    }
+
 
     return (
         <>
             <Background src={RingPng} />
             <Overlay>
                 <Content>
-                    {!hasBackedUp ? (
+                    {!backupFinished ? (
                         <>
                             <Title>Backup your Wallet</Title>
-                            <Text>The crypto wallet associated with this lottery game is not backed up. Please backup and secure the wallet to avoid loss of funds.</Text>
-                            <SecondaryButton onClick={setHasBackedUp}>Backup Wallet</SecondaryButton>
-                            <a onClick={setHasBackedUp}>Skip Backup</a>                           
+                            <Text>The crypto wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure the wallet to avoid loss of funds.</Text>                        
+                            {backupRequested ? (
+                                <>
+                                    <SeedPhrase 
+                                        phrase={wallet.mnemonic ? wallet.mnemonic : ""}
+                                    />             
+                                    <SecondaryButton onClick={() => setBackupFinished(true)}>Continue</SecondaryButton>       
+                                </>            
+                            ) : (
+                                <>
+                                    <SecondaryButton onClick={handleBackupSeedPhrase}>Backup Wallet</SecondaryButton>
+                                    <Skip onClick={() => setBackupFinished(true)}>Skip Backup</Skip>     
+                                </>
+                            )}
                         </>
                     ) : (
                         <>
@@ -89,12 +129,14 @@ const Backup = () => {
                                 <Input 
                                     placeholder="Enter Email"
                                 />
-                                <SecondaryButton type="submit">Submit</SecondaryButton>
+                                <ButtonCtn>
+                                    <SubmitButton type="submit">Submit</SubmitButton>                                    
+                                </ButtonCtn>
                             </form>                        
                         </>
                     )} 
                 </Content>
-                <SupportButtons />
+                <SupportButtons prev="/backup" types={["help"]}/>
           
             </Overlay>
         </>

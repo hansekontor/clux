@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { Collapse } from 'antd';
 import { SecondaryButton } from '@components/Common/PrimaryButton';
 
+
+
 const TicketDataItem = styled.div`
     display: inline-flex;
     justify-content: space-between;

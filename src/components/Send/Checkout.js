@@ -35,6 +35,8 @@ import {
 // } from '@hansekontor/checkout-components';
 // const { SLP } = script;
 // import { U64 } from 'n64';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import geStripe from '@utils/stripe';
 import {
     AuthCodeCtn, AuthCode,
     AuthCodeTextCtn, AuthCodeText, InfoIcon, 
@@ -57,10 +59,10 @@ import {
 } from 'antd';
 
 // custom react components
-import Header from '@components/Common/Header';
+import Header, { SmallHeader } from '@components/Common/Header';
 import Agree from '@components/Send/Agree';
 import { Enfold } from '@components/Common/CssAnimations';
-import PrimaryButton, { ReturnButton, Support } from '../Common/PrimaryButton';
+import PrimaryButton, { SupportButtons } from '../Common/PrimaryButton';
 import { 
     Merchant, MerchantName, MerchantTag, MerchantIcon
 } from '@components/Common/ContentHeader';
@@ -69,11 +71,13 @@ import {
 import CheckOutIcon from "@assets/checkout_icon.svg";
 import MerchantSvg from '@assets/merchant_icon.svg';
 import InfoPng from '@assets/info_icon.png';
+import { getOutputScriptFromAddress } from 'ecashaddrjs';
+import getStripe from '../../utils/stripe';
 
 // styled css components
-const ReturnCtn = styled(Support)`
-    justify-content: left;
-`;
+// const ReturnCtn = styled(Support)`
+//     justify-content: left;
+// `;
 const Divider = styled.div`
     height: 1px;
     width: 85%;
@@ -96,13 +100,98 @@ const CustomTotal = styled(Total)`
     background-color: #ededed;
     padding: 8px 16px;
 `;
+const CustomForm = styled.form`
+    width: 85%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+`;
+const CustomEnfold = styled(Enfold)`
+    position: absolute;
+    top: 30px;
+`;
+const CheckoutButton = styled(PrimaryButton)`
+    margin-top: 20px;
+`;
+
+
+
+export const StripeCheckoutForm = ({
+    passLoadingStatus, 
+    passPurchasedTicket,
+    playerChoiceArray
+}) => {
+    const stripe = useStripe();
+    const elements = useElements();
+    const history = useHistory();
+    // helpers
+    const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    const handleSubmit = async (event) => {
+        // We don't want to let default form submission happen here,
+        // which would refresh the page.
+        event.preventDefault();
+    
+        if (!stripe || !elements) {
+          // Stripe.js hasn't yet loaded.
+          // Make sure to disable form submission until Stripe.js has loaded.
+          return;
+        }
+    
+        passLoadingStatus("CONFIRMING PAYMENT");
+        const result = await stripe.confirmPayment({
+          //`Elements` instance that was used to create the Payment Element
+          elements,
+          confirmParams: {
+            // return_url: "https",
+          },
+          redirect: 'if_required'        
+        });            
+
+        if (result.error) {
+          // Show error to your customer (for example, payment details incomplete)
+          console.log(result.error.message);
+          passLoadingStatus("PAYMENT FAILED");
+          await sleep(3000);
+          history.push("/checkout");
+        } else {
+          // Your customer will be redirected to your `return_url`. For some payment
+          // methods like iDEAL, your customer will be redirected to an intermediate
+          // site first to authorize the payment, then redirected to the `return_url`.
+          console.log("result", result);
+          passLoadingStatus("PAYMENT CONFIRMED");
+          await sleep(2000);
+          passLoadingStatus("BROADCASTING TICKET");
+          const purchasedTicket = {
+                block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
+                hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
+                maxPayout: "0000000000027100",
+                // playerChoiceBytesString: "34204n67",
+                playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
+                playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
+            }
+            passPurchasedTicket(purchasedTicket)
+          await sleep(2000);
+          passLoadingStatus("TRANSACTION COMPLETE");
+          await sleep(3000);
+          history.push("/backup");      
+        }
+    };
+
+
+    return (
+        <CustomForm onSubmit={handleSubmit}>
+            <PaymentElement />
+            <CheckoutButton disabled={!stripe}>Pay</CheckoutButton>
+        </CustomForm>
+    )
+}
 
 const Checkout = ({
     passLoadingStatus,
     playerChoiceArray,
     passPurchasedTicket
 }) => {
-
     const history = useHistory(); 
 
     // states
@@ -111,6 +200,7 @@ const Checkout = ({
     const [tokensSent, setTokensSent] = useState(false);
     const [isStage1, setState1] = useState(true);
     const [helpSectionModal, helpSectionHolder] = Modal.useModal();
+    const [clientSecret, setClientSecret] = useState("");
 
     // helpers
     const sleep = (ms) => {
@@ -118,12 +208,13 @@ const Checkout = ({
     }
 
     // variables in DOM
-    const offer_name = "Raffle Ticket";
+    const offer_name = "Lottery Ticket";
     const merchant_name = "MRC";
     const purchaseTokenAmount = 3.33;
     const displayTicker = "CLUX";
     const feeAmount = 0.3;
     const totalAmount = purchaseTokenAmount + feeAmount;
+
 
     const helpText = "After payment, your ticket will be broadcasted to the blockchain. When the next block finalizes, it can be redeemed in this app.";
     const helpSectionConfig = {
@@ -142,7 +233,40 @@ const Checkout = ({
     const handleCheckoutHelp = () => {
         helpSectionModal.info(helpSectionConfig)
     }
-    const handlePayNow = async () => {
+
+
+    const getPlayerChoiceBytes = (playerChoiceArray) => {
+        const buffer = Buffer.allocUnsafe(4);
+        try {
+            playerChoiceArray.forEach((number, offset) => buffer.writeUInt8(number, offset));
+        } catch(err) {
+            errorNotification(err, "Missing Random Numbers", "Selected Numbers have not been passed.");
+            history.push('/select');
+        }
+
+        return buffer;
+    }
+
+    // stripe code
+    const [stripeSession, setStripeSession] = useState(false);
+    const [stripeOptions, setStripeOptions] = useState(false);
+    
+    const initPayment = async () => {
+        console.log("initPayment called")
+        const url = "http://localhost:8000/stripe";
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        const { paymentIntent } = await response.json();
+        console.log("paymentIntent collected", paymentIntent);
+        return paymentIntent;
+    }
+
+    const handleCheckout = async () => {
+
         const purchasedTicket = {
             block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
             hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
@@ -158,23 +282,66 @@ const Checkout = ({
         await sleep(2000);
         passLoadingStatus("BROADCASTING TICKET");
         await sleep(2000);
-        passLoadingStatus(false);
-        history.push('/waitingroom')
+        passLoadingStatus("TRANSACTION COMPLETE");
+        await sleep(3000);
+        history.push('/backup')
     }
 
-    const getPlayerChoiceBytes = (playerChoiceArray) => {
-        const buffer = Buffer.allocUnsafe(4);
-        try {
-            playerChoiceArray.forEach((number, offset) => buffer.writeUInt8(number, offset));
-        } catch(err) {
-            errorNotification(err, "Missing Random Numbers", "Selected Numbers have not been passed.");
-            history.push('/select');
+    useEffect(async () => {
+        if(!stripeSession) {
+            const stripeSession = await getStripe();
+            setStripeSession(stripeSession);    
+            console.log("stripe session set")
         }
 
-        return buffer;
-    }
+        if (!stripeOptions) {
+            const stripeOptions = {
+                clientSecret: await initPayment(),
+                appearance: {
+                    theme: 'flat',
+                    variables: {
+                        fontFamily: ' "Gill Sans", sans-serif',
+                        fontLineHeight: '1.5',
+                        borderRadius: '10px',
+                        colorBackground: '#F6F8FA',
+                        accessibleColorOnColorPrimary: '#262626'
+                    },
+                    rules: {
+                        '.Block': {
+                            backgroundColor: 'var(--colorBackground)',
+                            boxShadow: 'none',
+                            padding: '12px'
+                        },
+                        '.Input': {
+                            padding: '12px'
+                        },
+                        '.Input:disabled, .Input--invalid:disabled': {
+                            color: 'lightgray'
+                        },
+                        '.Tab': {
+                            padding: '10px 12px 8px 12px',
+                            border: 'none'
+                        },
+                        '.Tab:hover': {
+                            border: 'none',
+                            boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 7px rgba(18, 42, 66, 0.04)'
+                        },
+                        '.Tab--selected, .Tab--selected:focus, .Tab--selected:hover': {
+                            border: 'none',
+                            backgroundColor: '#fff',
+                            boxShadow: '0 0 0 1.5px var(--colorPrimaryText), 0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 7px rgba(18, 42, 66, 0.04)'
+                        },
+                        '.Label': {
+                            fontWeight: '500'
+                        }
+                    }
+                }
+            };
+            console.log("stripeOptions", stripeOptions);
+            setStripeOptions(stripeOptions);            
+        }
+    })
 
-    console.log("playerChoiceBytes()", getPlayerChoiceBytes(playerChoiceArray).toString('hex'));
 
     return (
         <>  
@@ -202,93 +369,111 @@ const Checkout = ({
                     {displayTicker} to settle this payment request?
                 </p>
             </Modal>*/}                
-                <Header />
                 {!hasAgreed ? (
                     <>
+                        <Header />
                         <Agree 
                             // offer_name={prInfoFromUrl.paymentDetails?.merchantDataJson?.ipn_body?.offer_name}
                             offer_name={offer_name}
                             merchant_name={merchant_name}
                             handleAgree={handleAgree}
                         />
-                        <ReturnCtn>
-                            <ReturnButton 
-                                returnToPath={"/select"}
-                            />
-                        </ReturnCtn>
+                        <SupportButtons prev="/select" types={["return", "help"]}/>
                     </>      
                 ) : (
                     <>
                         {!tokensSent && isStage1 && ( 
                             <>
-                                <Enfold animate={isFirstRendering}>
-                                    <Offer>
-                                        <OfferHeader>
-                                            {offer_name &&                    
-                                                <OfferName>{offer_name}</OfferName>
-                                            }
-                                            <Merchant>
-                                                <MerchantIcon src={MerchantSvg} />
-                                                <MerchantName>MRC</MerchantName>
-                                            </Merchant>                            
-                                        </OfferHeader>
-                                        {/* <Divider /> */}
-                                        <OfferDescription>
-                                            {`Purchase a ticket for this CLUX raffle with numbers ${playerChoiceArray || "missing"}. Its finalized block will contain all required data to self-mint your payout. This app supports the payout.`}
-                                        </OfferDescription>
-                                    </Offer>
-                                    <Divider />
-                                    <Fee>
-                                        <FeeLabel>Ticket</FeeLabel>
-                                        <FeeAmount>$10</FeeAmount>
-                                    </Fee>
-                                    <Fee>
-                                        <FeeLabel>Processing Fee</FeeLabel>
-                                        <FeeAmount>$0.5</FeeAmount>
-                                    </Fee>
-                                    <CustomTotal>
-                                        <TotalLabel>Total</TotalLabel>
-                                        <TotalAmount>${totalAmount}</TotalAmount>
-                                    </CustomTotal>
-                                 
-                                    <PrimaryButton onClick={() => handlePayNow()}>Pay now</PrimaryButton>
-                                    {/* {isStage1 ? (
-                                        <>
-                                            {hasAgreed && (
-                                                <>
-                                                    {uuid && formToken ? (
-                                                        <PrimaryButton onClick={() => setPay(true)}>{payButtonText}</PrimaryButton>
-                                                    ) : (
-                                                        <>
-                                                            {isSending && !tokensSent ? (
-                                                                <Spin spinning={true} indicator={CashLoadingIcon}></Spin>
-                                                            ) : (
-                                                                <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <>
-                                            {isSending && !tokensSent ? <Spin spinning={true} indicator={CashLoadingIcon}></Spin> :
-                                            <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
-                                        </>
-                                    )} */}
-                                    <Help>
-                                        <Link onClick={() => handleCheckoutHelp()}>How does this work?</Link>
-                                    </Help>                                   
-                                </Enfold>
+                                <CustomEnfold animate={isFirstRendering}>          
+                                        <Offer>
+                                            <OfferHeader>
+                                                {offer_name &&                    
+                                                    <OfferName>{offer_name}</OfferName>
+                                                }
+                                                <Merchant>
+                                                    <MerchantIcon src={MerchantSvg} />
+                                                    <MerchantName>MRC</MerchantName>
+                                                </Merchant>                                           
+                                                <SmallHeader />
+                                            </OfferHeader>
+                                            {/* <Divider /> */}
+                                            <OfferDescription>
+                                                {`Purchase a lottery ticket with numbers ${playerChoiceArray.join(', ') || "missing"}. Your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint your potential payout. This game supports the payout.`}
+                                            </OfferDescription>
+                                        </Offer>
+                                        <Divider />
+                                        <Fee>
+                                            <FeeLabel>Ticket</FeeLabel>
+                                            <FeeAmount>$10</FeeAmount>
+                                        </Fee>
+                                        <Fee>
+                                            <FeeLabel>Processing Fee</FeeLabel>
+                                            <FeeAmount>$0.5</FeeAmount>
+                                        </Fee>
+                                        <CustomTotal>
+                                            <TotalLabel>Total</TotalLabel>
+                                            {/* <TotalAmount>${totalAmount}</TotalAmount> */}
+                                            <TotalAmount>$10.5</TotalAmount>
+                                        </CustomTotal>
+
+                                        {/* <PrimaryButton onClick={() => handleCheckout()}>Pay now</PrimaryButton> */}
+
+                                        {stripeSession && stripeOptions &&
+                                            <Elements 
+                                                stripe={stripeSession}
+                                                options={stripeOptions}
+                                            >                  
+                                                <StripeCheckoutForm 
+                                                    passLoadingStatus={passLoadingStatus}
+                                                    passPurchasedTicket={passPurchasedTicket}
+                                                    playerChoiceArray={playerChoiceArray}
+                                                />            
+                                            </Elements>                                        
+                                        }
+
+                                        {/* {stripePromise && (
+                                            <Elements stripe={stripePromise} options={stripeOptions}>
+                                                <PaymentElement />
+                                            </Elements>
+                                        )} */}
+                                        {/* {isStage1 ? (
+                                            <>
+                                                {hasAgreed && (
+                                                    <>
+                                                        {uuid && formToken ? (
+                                                            <PrimaryButton onClick={() => setPay(true)}>{payButtonText}</PrimaryButton>
+                                                        ) : (
+                                                            <>
+                                                                {isSending && !tokensSent ? (
+                                                                    <Spin spinning={true} indicator={CashLoadingIcon}></Spin>
+                                                                ) : (
+                                                                    <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>
+                                                                )}
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {isSending && !tokensSent ? <Spin spinning={true} indicator={CashLoadingIcon}></Spin> :
+                                                <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
+                                            </>
+                                        )} */}
+                                </CustomEnfold>
 
                             </>              
-                        )}               
-                        <ReturnCtn>
+                        )}          
+
+                        <SupportButtons prev="/select" types={["return", "help"]}/>
+
+     
+                        {/* <ReturnCtn>
                             <ReturnButton 
                                 onClick={() => setHasAgreed(false)}
                                 displayOnly={true}
                             />
-                        </ReturnCtn>  
+                        </ReturnCtn>   */}
                     </>         
                 )}
 
