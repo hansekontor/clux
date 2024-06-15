@@ -4,6 +4,7 @@ import { Collapse } from 'antd';
 
 const SeedPhraseCtn = styled.div`
     width: 100%;
+    margin-bottom: 20px;
 `;
 const StyledCollapse = styled(Collapse)`
     background-color: #ffffff;

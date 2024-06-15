@@ -29,6 +29,7 @@ import Footer from '@components/Common/Footer';
 import { LoaderCtn, Loader, LoadingAnimation, LoadingText } from '@components/Common/CustomLoader';
 import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
 import { isValidStoredWallet } from '@utils/cashMethods';
+import SuccessAnimation from '@components/Common/SuccessAnimation';
 
 
 const GlobalStyle = createGlobalStyle`    
@@ -55,6 +56,18 @@ const GlobalStyle = createGlobalStyle`
     .cashLoadingIcon {
         color: #000000 !important;
         font-size: 48px !important;
+    }
+    table {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    td {
+        border: 1px solid black;
+        border-collapse: collapse;
     }
 `;
 const CustomApp = styled.div`
@@ -98,6 +111,9 @@ export const WalletCtn = styled.div`
         box-shadow: none;
     }
 `;
+const SuccessCtn = styled(LoaderCtn)`
+    background: #f6f6f6;
+`;
 
 const AnimationScript = ({animationKey}) => {
     console.log("AnimationScript called with animationKey:", animationKey)
@@ -140,6 +156,7 @@ const AnimationScript = ({animationKey}) => {
 
     return <></>;
 }
+
 
 const App = () => {
     const ContextValue = useContext(WalletContext);
@@ -188,7 +205,7 @@ const App = () => {
         }
     }, [loading]);
 
-    
+
     return (
         <>
             {animationKey &&
@@ -212,12 +229,21 @@ const App = () => {
                                 <Suspense fallback={codeSplitLoader}>
                                     {loader && 
                                         <>  
-                                            <LoaderCtn>
-                                                <Loader>
-                                                    <LoadingAnimation />
-                                                    <LoadingText>{typeof loadingStatus==='string' ? loadingStatus : ""}</LoadingText>
-                                                </Loader>
-                                            </LoaderCtn>
+                                            {loadingStatus === "TRANSACTION COMPLETE" || loadingStatus === "TICKET REDEEMED" ? (
+                                                <SuccessCtn>
+                                                    <Loader>
+                                                        <SuccessAnimation />
+                                                        <LoadingText>{loadingStatus}</LoadingText>
+                                                    </Loader>
+                                                </SuccessCtn>
+                                            ) : (
+                                                <LoaderCtn>
+                                                    <Loader>
+                                                        <LoadingAnimation />
+                                                        <LoadingText>{typeof loadingStatus==='string' ? loadingStatus : ""}</LoadingText>
+                                                    </Loader>
+                                                </LoaderCtn>
+                                            )}
                                         </> 
                                     } 
                                     <Switch>
@@ -234,7 +260,10 @@ const App = () => {
                                             />
                                         </Route>
                                         <Route path="/backup">
-                                            <Backup />
+                                            <Backup 
+                                                purchasedTicket={purchasedTicket}
+                                                passLoadingStatus={setLoadingStatus}
+                                            />
                                         </Route>
                                         <Route path="/game">
                                             <Game 

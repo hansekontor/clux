@@ -31,15 +31,6 @@ const PrimaryButton = styled.button`
     }
 `;
 
-/* sorted out from old primary button
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    padding: 12px 16px;
-    position: relative; 
-    width: 100%;
-    cursor: pointer;
-*/
 
 export const SecondaryButton = styled.button`
     border-radius: 40px;
@@ -61,6 +52,9 @@ const Circle = styled.div`
     width: 40px;
     cursor: pointer;
     text-align: center;
+    &: hover {
+        color: #ffffff;
+    }
 `;
 const SettingsIcon = styled.img`
     width: 28px;
@@ -111,12 +105,12 @@ export const HelpButton = ({
     const history = useHistory();
 
     // handlers 
-    const handleToSettings = () => {
+    const handleToHelp = () => {
         history.push({pathname: '/how', state: { prev } });
     }
 
     return (
-        <Circle onClick={() => handleToSettings()}>
+        <Circle onClick={() => handleToHelp()}>
             <QuestionMark>?</QuestionMark>
         </Circle>
     )
@@ -139,7 +133,6 @@ const CustomReturn = styled(RollbackOutlined)`
 
 export const ReturnButton = ({
     returnToPath,
-    displayOnly = false,
     ...props
 }) => {
     const history = useHistory();
@@ -151,15 +144,9 @@ export const ReturnButton = ({
 
     return (
         <>
-            {displayOnly ? (
-                <Circle>
-                    <CustomReturn {...props}/>
-                </Circle>
-            ) : (
-                <Circle onClick={() => handleReturn()}>
-                    <CustomReturn />
-                </Circle>                
-            )}   
+            <Circle onClick={() => handleReturn()}>
+                <CustomReturn />
+            </Circle>                
         </>
     )
 }
@@ -178,18 +165,133 @@ export const Support = styled.div`
     justify-content: space-between;
     display: inline-flex;
     left: 7%;
+    z-index: -5;
+`;
+
+const RightOnlySupport = styled(Support)`
+    justify-content: right;
 `;
 
 export const SupportButtons = ({
-    prev
+    types,
+    previous = 'select'
 }) => {
-    return (
-        <Support>
-            <SettingsButton prev={prev}/>
-            <HelpButton prev={prev}/>
-        </Support>
-    )
+
+    if (types.length === 2 && types[0] === 'return') {
+        return (
+            <Support>
+                <ReturnButton returnToPath={previous}/>
+                <HelpButton returnToPath={previous} />
+            </Support>
+        )
+    } else if (types-length === 2 && types[0] === 'settings') {
+        return (
+            <Support>
+                <SettingsButton returnToPath={previous}/>
+                <HelpButton returnToPath={previous} />
+            </Support>
+        )
+    } else if (types[0] === 'return') {
+        return (
+            <Support>
+                <ReturnButton returnToPath={previous} />
+            </Support>            
+        )
+    } else {
+        return (
+            <RightOnlySupport>
+                <HelpButton returnToPath={previous}/>
+            </RightOnlySupport>
+        )
+    }
 }
 
+const LargeButton = styled.button`
+    background-color: #ededed;
+    border-radius: 20px;
+    height: 24px;
+    width: fit-content;
+    cursor: pointer;
+    text-align: center;
+    text-color: black;
+    display: inline-flex;
+    border-style: none;
+;`
+const LargeButtonSettingsIcon = styled(SettingsIcon)`
+    width: 18px;
+    height: 18px;
+    position: relative;
+    top: 2px;
+`;
+const LargeButtonText = styled.div`
+    font-family: "Inter-Medium";
+    font-size: 12px;
+    padding: 3px 3px;
+    font-weight: 500;
+`;
+
+const LargeSettingsButton = ({
+    prev
+}) => {
+    const history = useHistory();
+
+    // handlers 
+    const handleToSettings = () => {
+        history.push({pathname: '/wallet', state: { prev } });
+    }
+
+    return (
+        <LargeButton onClick={() => handleToSettings()}>
+            <LargeButtonSettingsIcon src={SettingsSvg} />
+            <LargeButtonText>Settings</LargeButtonText>
+        </LargeButton>
+    )   
+}
+
+const LargeButtonQuestionMark = styled(QuestionMark)`
+    width: 14px;
+    height: 18px;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-size: 18px;
+    font-weight: 600;
+    top: 0px;
+    left: 2px;
+    right: 2px;
+`;
+const LargeHelpButton = ({
+    prev
+}) => {
+    const history = useHistory();
+
+    // handlers 
+    const handleToHelp = () => {
+        history.push({pathname: '/how', state: { prev } });
+    }
+
+    return (
+        <LargeButton onClick={() => handleToHelp()}>
+            <LargeButtonQuestionMark>?</LargeButtonQuestionMark>
+            <LargeButtonText>How to play</LargeButtonText>
+        </LargeButton>
+    )   
+}
+
+const LargeButtonGroup = styled.div`
+    display: inline-flex;
+    gap: 12px;
+    width: fit-content;
+    margin: auto;
+`;
+
+export const LargeButtons = ({
+    prev
+}) => {
+    return (    
+        <LargeButtonGroup>
+            <LargeSettingsButton prev={prev} />
+            <LargeHelpButton prev={prev} />
+        </LargeButtonGroup>
+    )
+}
 
 export default PrimaryButton;

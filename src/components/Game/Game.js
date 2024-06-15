@@ -24,18 +24,41 @@ const Background = styled.img`
     object-fit: cover;
     filter: grayscale(0.6);
 `;
+const Overlay = styled.div`
+    background-color: rgba(255,255,255,0.9);
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    z-index: -3;
+    display: block;
+    top: 0;
+    left: 0; 
+`;
 const PlayButton = styled(PrimaryButton)`
     position: absolute;
     top: 80%;
 `;
 const Result = styled.div`
     position: absolute;
-    background-color: #e6e6e6;
     color: black;
     padding: 20px;
     border-radius: 40px;
-    opacity: 90%;
-    top: 50%;
+    top: 30%;
+    height: fit-content;    
+`;
+    // background-color: rgba(248, 247, 216, 0.9);
+    // opacity: 90%;
+
+const ResultTitle = styled.div`
+    font-family: "Seymour One", Helvetica;
+    font-size: 45px;
+    transform: rotate(-2.2deg);
+`;
+const ResultSubtitle = styled.div`
+    font-family: Helvetica;
+    font-size: 24px;
+`;
+const ResultPayout = styled(ResultTitle)`
 `;
 const EntranceCtn = styled.div`
     top: 20%;
@@ -215,7 +238,8 @@ const Game = ({
 
     return (
         <>
-            <Background src={RingPng}/>
+            <Background src={RingPng} />
+            {displayResult && <Overlay />}
             <Header />
             {scriptLoaded &&
                 <>
@@ -255,7 +279,9 @@ const Game = ({
                                      
                                 {displayResult && (
                                     <Result>
-                                        PAYOUT: {payoutAmount}
+                                        <ResultTitle>WINNER!</ResultTitle>
+                                        <ResultSubtitle>CONGRATULATIONS!</ResultSubtitle>
+                                        <ResultPayout>{(payoutAmount/1000).toFixed(0)} CREDITS</ResultPayout>
                                     </Result>
                                 )}
                             </>

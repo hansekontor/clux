@@ -46,6 +46,7 @@ const WaitingRoom = ({
     passTicket,
     purchasedTicket
 }) => {
+    console.log("purchasedTicket", purchasedTicket);
     const history = useHistory();
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
@@ -66,6 +67,7 @@ const WaitingRoom = ({
 
     // hooks
     useEffect(async () => { 
+        infoNotification("Your ticket's block has not been finalized yet. Please wait.")
         // manually turn off loading
         passLoadingStatus(false);
 
@@ -78,8 +80,8 @@ const WaitingRoom = ({
         }
 
         // simulate waiting time for block --- remove later
-        await sleep (5000);
-        infoNotification("A Ticket can be redeemed.");
+        await sleep (7000);
+        infoNotification("Your ticket can be redeemed.");
         setGameEnabled(true);
     }, [tickets]);
 
@@ -97,6 +99,9 @@ const WaitingRoom = ({
             await sleep(2000);
             passLoadingStatus("REDEEMING TICKET")
             await sleep(2000);
+            passLoadingStatus("TICKET REDEEMED");
+            await sleep(3000);
+            passLoadingStatus(false);
             history.push('/game');
         } else 
             waitingInfoModal.info(waitingInfoConfig);
@@ -106,11 +111,12 @@ const WaitingRoom = ({
     return (
         <>  
             {waitingInfoHolder}
+            {/* {returnInfoHolder} */}
             <Background src={RingPng} />
             <Chicken src={ChickenPng}/>
             <Header />
             <PlayButton onClick={() => handleToGame()} active={gameEnabled}>Redeem</PlayButton>
-            <SupportButtons prev="/waitingroom" />
+            <SupportButtons prev="/waitingroom" types={["help" ]} />
         </>
 
     )

@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 // react components
 import Header from '@components/Common/Header';
 import ChickenSelector from "./ChickenSelector";
-import PrimaryButton, { SettingsButton } from '@components/Common/PrimaryButton';
+import PrimaryButton, { SupportButtons, LargeButtons } from '@components/Common/PrimaryButton';
 
 // styled css components
 const ButtonCtn = styled.div`
@@ -14,20 +14,8 @@ const ButtonCtn = styled.div`
     display: grid;
     align-items: center;
     justify-content: center;
-    bottom: 3%;
+    bottom: 10%;
     gap: 10px;
-`;
-const SupportButtonsCtn = styled.div`
-    height: 40px;
-    width: 100%;
-    gap: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-const Link = styled.a`
-    text-underline-offset: 8px;
-    text-decoration: underline;
 `;
 
 const Select = ({
@@ -42,6 +30,7 @@ const Select = ({
     
     // handlers
     const handleBuyTicket = async () => {
+        console.log("handleBuyTicket called")
         /*
             -collect ticket data
             -submit all required data to callback function
@@ -63,13 +52,9 @@ const Select = ({
             <ChickenSelector 
                 passRandomNumbers={passRandomNumbers}/>
             <ButtonCtn>
-                <PrimaryButton onClick={() => handleBuyTicket()}>BUY TICKET</PrimaryButton>
-                <SupportButtonsCtn>
-                    <SettingsButton origin="/select" onClick={() => handleToSettings()}/>
-                    <Link onClick={() => handleToHowToPlay()}>How to play?</Link>
-                </SupportButtonsCtn>             
+                <PrimaryButton onClick={() => handleBuyTicket()}>Buy Ticket</PrimaryButton>
+                <LargeButtons />                
             </ButtonCtn>
-
         </>
     )
 }
