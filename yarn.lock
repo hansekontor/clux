@@ -1354,7 +1354,7 @@
     bheep "git+https://github.com/bcoin-org/bheep.git#semver:~0.1.5"
     binet "git+https://github.com/bcoin-org/binet.git#semver:~0.3.5"
     blgr "git+https://github.com/bcoin-org/blgr.git#semver:~0.1.7"
-    blru "git+https://github.com/bcoin-org/blru.git#semver:~0.1.6"
+    blru "git+https://github.com/bcoin-org/blru.git#semver:=0.1.6"
     blst "git+https://github.com/bcoin-org/blst.git#semver:~0.1.5"
     bmutex "git+https://github.com/bcoin-org/bmutex.git#semver:~0.1.6"
     brq "git+https://github.com/bcoin-org/brq.git#semver:~0.1.7"
@@ -3515,11 +3515,11 @@ bindings@^1.5.0:
   dependencies:
     bsert "~0.0.10"
 
-"blru@git+https://github.com/bcoin-org/blru.git#semver:~0.1.6":
-  version "0.1.7"
-  resolved "git+https://github.com/bcoin-org/blru.git#6924584415d735cbffbd0be993f031634572472d"
+"blru@git+https://github.com/bcoin-org/blru.git#semver:=0.1.6":
+  version "0.1.6"
+  resolved "git+https://github.com/bcoin-org/blru.git#c2c093e9475439333dfb87bfb2fdc3be6c98b080"
   dependencies:
-    bsert "~0.0.12"
+    bsert "~0.0.10"
 
 "blst@git+https://github.com/bcoin-org/blst.git#semver:~0.1.5":
   version "0.1.6"

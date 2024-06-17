@@ -105,12 +105,29 @@ const CustomForm = styled.form`
     margin-top: 30px;
     margin-bottom: 30px;
 `;
+const Scrollable = styled.div`
+    width: 480px;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1), 0px 3px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0px;
+    overflow-y: scroll;
+`;
 const CustomEnfold = styled(Enfold)`
     position: absolute;
     top: 30px;
 `;
 const CheckoutButton = styled(PrimaryButton)`
     margin-top: 20px;
+    margin-bottom: 30px;
 `;
 
 
@@ -253,7 +270,7 @@ const Checkout = ({
     
     const initPayment = async () => {
         console.log("initPayment called")
-        const url = "http://localhost:8000/stripe";
+        const url = "https://dev.cert.cash:4001/stripe";
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -384,88 +401,93 @@ const Checkout = ({
                     <>
                         {!tokensSent && isStage1 && ( 
                             <>
-                                <CustomEnfold animate={isFirstRendering}>          
-                                        <Offer>
-                                            <OfferHeader>
-                                                {offer_name &&                    
-                                                    <OfferName>{offer_name}</OfferName>
-                                                }
-                                                <Merchant>
-                                                    <MerchantIcon src={MerchantSvg} />
-                                                    <MerchantName>MRC</MerchantName>
-                                                </Merchant>                                           
-                                                <SmallHeader />
-                                            </OfferHeader>
-                                            {/* <Divider /> */}
-                                            <OfferDescription>
-                                                {`Purchase a lottery ticket with numbers ${playerChoiceArray.join(', ') || "missing"}. Your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint your potential payout. This game supports the payout.`}
-                                            </OfferDescription>
-                                        </Offer>
-                                        <Divider />
-                                        <Fee>
-                                            <FeeLabel>Ticket</FeeLabel>
-                                            <FeeAmount>$10</FeeAmount>
-                                        </Fee>
-                                        <Fee>
-                                            <FeeLabel>Processing Fee</FeeLabel>
-                                            <FeeAmount>$0.5</FeeAmount>
-                                        </Fee>
-                                        <CustomTotal>
-                                            <TotalLabel>Total</TotalLabel>
-                                            {/* <TotalAmount>${totalAmount}</TotalAmount> */}
-                                            <TotalAmount>$10.5</TotalAmount>
-                                        </CustomTotal>
+                                <Scrollable>
+                                    <CustomEnfold animate={isFirstRendering}>        
+                                            <Offer>
+                                                <OfferHeader>
+                                                    {offer_name &&                    
+                                                        <OfferName>{offer_name}</OfferName>
+                                                    }
+                                                    <Merchant>
+                                                        <MerchantIcon src={MerchantSvg} />
+                                                        <MerchantName>MRC</MerchantName>
+                                                    </Merchant>                                           
+                                                    <SmallHeader />
+                                                </OfferHeader>
+                                                {/* <Divider /> */}
+                                                <OfferDescription>
+                                                    {`Purchase a lottery ticket with numbers ${playerChoiceArray.join(', ') || "missing"}. Your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint your potential payout. This game supports the payout.`}
+                                                </OfferDescription>
+                                            </Offer>
+                                            <Divider />
+                                            <Fee>
+                                                <FeeLabel>Ticket</FeeLabel>
+                                                <FeeAmount>$10</FeeAmount>
+                                            </Fee>
+                                            <Fee>
+                                                <FeeLabel>Processing Fee</FeeLabel>
+                                                <FeeAmount>$0.5</FeeAmount>
+                                            </Fee>
+                                            <CustomTotal>
+                                                <TotalLabel>Total</TotalLabel>
+                                                {/* <TotalAmount>${totalAmount}</TotalAmount> */}
+                                                <TotalAmount>$10.5</TotalAmount>
+                                            </CustomTotal>
 
-                                        {/* <PrimaryButton onClick={() => handleCheckout()}>Pay now</PrimaryButton> */}
+                                            {/* <PrimaryButton onClick={() => handleCheckout()}>Pay now</PrimaryButton> */}
 
-                                        {stripeSession && stripeOptions &&
-                                            <Elements 
-                                                stripe={stripeSession}
-                                                options={stripeOptions}
-                                            >                  
-                                                <StripeCheckoutForm 
-                                                    passLoadingStatus={passLoadingStatus}
-                                                    passPurchasedTicket={passPurchasedTicket}
-                                                    playerChoiceArray={playerChoiceArray}
-                                                />            
-                                            </Elements>                                        
-                                        }
+                                            {stripeSession && stripeOptions &&
+                                                <Elements 
+                                                    stripe={stripeSession}
+                                                    options={stripeOptions}
+                                                >                  
+                                                    <StripeCheckoutForm 
+                                                        passLoadingStatus={passLoadingStatus}
+                                                        passPurchasedTicket={passPurchasedTicket}
+                                                        playerChoiceArray={playerChoiceArray}
+                                                    />            
+                                                </Elements>                                        
+                                            }
 
-                                        {/* {stripePromise && (
-                                            <Elements stripe={stripePromise} options={stripeOptions}>
-                                                <PaymentElement />
-                                            </Elements>
-                                        )} */}
-                                        {/* {isStage1 ? (
-                                            <>
-                                                {hasAgreed && (
-                                                    <>
-                                                        {uuid && formToken ? (
-                                                            <PrimaryButton onClick={() => setPay(true)}>{payButtonText}</PrimaryButton>
-                                                        ) : (
-                                                            <>
-                                                                {isSending && !tokensSent ? (
-                                                                    <Spin spinning={true} indicator={CashLoadingIcon}></Spin>
-                                                                ) : (
-                                                                    <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    </>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <>
-                                                {isSending && !tokensSent ? <Spin spinning={true} indicator={CashLoadingIcon}></Spin> :
-                                                <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
-                                            </>
-                                        )} */}
-                                </CustomEnfold>
-
+                                            {/* {stripePromise && (
+                                                <Elements stripe={stripePromise} options={stripeOptions}>
+                                                    <PaymentElement />
+                                                </Elements>
+                                            )} */}
+                                            {/* {isStage1 ? (
+                                                <>
+                                                    {hasAgreed && (
+                                                        <>
+                                                            {uuid && formToken ? (
+                                                                <PrimaryButton onClick={() => setPay(true)}>{payButtonText}</PrimaryButton>
+                                                            ) : (
+                                                                <>
+                                                                    {isSending && !tokensSent ? (
+                                                                        <Spin spinning={true} indicator={CashLoadingIcon}></Spin>
+                                                                    ) : (
+                                                                        <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {isSending && !tokensSent ? <Spin spinning={true} indicator={CashLoadingIcon}></Spin> :
+                                                    <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
+                                                </>
+                                            )} */}
+                                    </CustomEnfold>
+                                </Scrollable>
                             </>              
                         )}          
 
-                        <SupportButtons prev="/select" types={["return", "help"]}/>
+                        <SupportButtons 
+                            prev="/select" 
+                            types={["return", "help"]}
+                            sticky={true}    
+                        />
 
      
                         {/* <ReturnCtn>

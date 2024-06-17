@@ -14,15 +14,14 @@ import ArrowRightSvg from '@assets/select_arrow_right.svg';
 
 // styled css components
 const ChickenSelect = styled.div`
-    top: 12%;
     width: 90%;
     align-items: center;
     justify-content: center;
     display: flex;
     flex-direction: column;    
-    position: absolute; 
-    margin-top: 5%;
-    height: 56%;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    height: fit-content;
 `;
 const Background = styled.div`
     z-index: -4;
@@ -73,7 +72,7 @@ const Connector = styled.div`
 `;
 const Selector = styled(SelectorCtn)`
     position: absolute;
-    top: 50%;
+    top: 40%;
 `;
 
 const ChickenSelector = ({
@@ -106,8 +105,6 @@ const ChickenSelector = ({
                         </Connector>  
                     </Selector>
                     
-
-
             </ChickenSelect>
         </>
     )

@@ -25,6 +25,7 @@ const PrimaryButton = styled.button`
     padding: 4px 10px 0px;
     cursor: pointer;
     transition-duration: 0.2s;
+    z-index: 3000;
 
     &: hover {
         color: rgba(0,0,0,0.7);
@@ -160,12 +161,12 @@ ReturnButton.propTypes = {
 
 export const Support = styled.div`
     top: 90%;
-    position: absolute;
+    position: ${props => props.sticky ? "sticky" : "fixed"};
     width: 86%;
     justify-content: space-between;
     display: inline-flex;
     left: 7%;
-    z-index: -5;
+    z-index: 10;
 `;
 
 const RightOnlySupport = styled(Support)`
@@ -174,26 +175,27 @@ const RightOnlySupport = styled(Support)`
 
 export const SupportButtons = ({
     types,
-    previous = 'select'
+    previous = 'select',
+    sticky = false
 }) => {
 
     if (types.length === 2 && types[0] === 'return') {
         return (
-            <Support>
+            <Support sticky={sticky}>
                 <ReturnButton returnToPath={previous}/>
                 <HelpButton returnToPath={previous} />
             </Support>
         )
     } else if (types-length === 2 && types[0] === 'settings') {
         return (
-            <Support>
+            <Support sticky={sticky}>
                 <SettingsButton returnToPath={previous}/>
                 <HelpButton returnToPath={previous} />
             </Support>
         )
     } else if (types[0] === 'return') {
         return (
-            <Support>
+            <Support sticky={sticky}>
                 <ReturnButton returnToPath={previous} />
             </Support>            
         )
@@ -229,7 +231,6 @@ const LargeButtonText = styled.div`
     padding: 3px 3px;
     font-weight: 500;
 `;
-
 const LargeSettingsButton = ({
     prev
 }) => {
@@ -247,7 +248,6 @@ const LargeSettingsButton = ({
         </LargeButton>
     )   
 }
-
 const LargeButtonQuestionMark = styled(QuestionMark)`
     width: 14px;
     height: 18px;
@@ -275,14 +275,12 @@ const LargeHelpButton = ({
         </LargeButton>
     )   
 }
-
 const LargeButtonGroup = styled.div`
     display: inline-flex;
     gap: 12px;
     width: fit-content;
     margin: auto;
 `;
-
 export const LargeButtons = ({
     prev
 }) => {

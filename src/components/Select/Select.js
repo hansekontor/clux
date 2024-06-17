@@ -10,11 +10,9 @@ import PrimaryButton, { SupportButtons, LargeButtons } from '@components/Common/
 
 // styled css components
 const ButtonCtn = styled.div`
-    position: absolute;
     display: grid;
     align-items: center;
     justify-content: center;
-    bottom: 10%;
     gap: 10px;
 `;
 
