@@ -73,32 +73,32 @@ const HowToPlay = ({
                         <tr>
                             <td>0</td>
                             <td>16x</td>
-                            <td>0.001%</td>
+                            <td>1 in 100,000</td>
                         </tr>
                         <tr>
                             <td>1-4</td>
                             <td>8x</td>
-                            <td>0.106%</td>
+                            <td>1 in 943</td>
                         </tr>                        
                         <tr>
                             <td>5-6</td>
                             <td>4x</td>
-                            <td>0.211%</td>
+                            <td>1 in 469</td>
                         </tr>                        
                         <tr>
                             <td>7-15</td>
                             <td>2x</td>
-                            <td>5.577%</td>
+                            <td>1 in 18</td>
                         </tr>                        
                         <tr>
                             <td>16-35</td>
                             <td>1x</td>
-                            <td>65.814%</td>
+                            <td>1 in 2</td>
                         </tr>
                         <tr>
                             <td>36-60</td>
                             <td>0</td>
-                            <td>28.189%</td>
+                            <td>1 in 4</td>
                         </tr>
                     </table>
 
