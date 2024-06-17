@@ -120,6 +120,13 @@ const Scrollable = styled.div`
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1), 0px 3px 6px rgba(0, 0, 0, 0.05);
     margin-bottom: 0px;
     overflow-y: scroll;
+
+    @media (max-width: 480px) {
+        width: 100%;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+    }
 `;
 const CustomEnfold = styled(Enfold)`
     position: absolute;
