@@ -9,11 +9,9 @@ const RandomNumbersCtn = styled.div`
     border-radius: 41px;
     background: #ededed;
     color: #000000;
-    position: absolute;
     display: flex;
     align-items: flex-end;
     gap: 5px;
-    top: 105%;
     padding: 0px 12px;
     gap: 10px;
 `;

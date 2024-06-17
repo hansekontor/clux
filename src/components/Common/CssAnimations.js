@@ -19,7 +19,6 @@ export const Enfold = styled.div`
     gap: 18px;
     width: inherit;
     position: relative;
-    top: 270;
     animation: ${props => props.animate ? 'enfold .4s cubic-bezier(0.39, 0.5, 0.5, 1) both' : 'none'};
     ${EnfoldAnimation}
 }`;
