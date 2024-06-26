@@ -26,6 +26,7 @@ const PrimaryButton = styled.button`
     cursor: pointer;
     transition-duration: 0.2s;
     z-index: 3000;
+    position: relative;
 
     &: hover {
         color: rgba(0,0,0,0.7);
@@ -66,8 +67,8 @@ const SettingsIcon = styled.img`
 const QuestionMark = styled.div`
     width: 14px;
     height: 18px;
-    left: 12px;
-    top: 6px;
+    left: 12.5px;
+    top: 8px;
     position: relative;
     color: #000000;
     font-family: "Inter-SemiBold", Helvetica;
@@ -161,7 +162,7 @@ ReturnButton.propTypes = {
 
 export const Support = styled.div`
     top: 90%;
-    position: ${props => props.sticky ? "sticky" : "fixed"};
+    position: ${props => props.sticky ? "sticky" : "absolute"};
     width: 86%;
     justify-content: space-between;
     display: inline-flex;

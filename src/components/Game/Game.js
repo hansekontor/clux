@@ -183,9 +183,12 @@ const Game = ({
 
     const calculatePayout = (ttxHash, blockHash, playerChoiceBytes, maxPayoutBufBE) => {
     
+        console.log("ttxhash", ttxHash.toString('hex'));
+        console.log("blockhash", blockHash.toString('hex'));
         const combineHashes = Buffer.concat([ttxHash, blockHash]);
+        console.log("combinedHashes", combineHashes.toString('hex'));
         const randomNumber = Hash256.digest(combineHashes);
-        console.log("calcPayoyut, randomNumbers", randomNumber);
+        console.log("randomnumber", randomNumber.toString('hex'));
         let payoutNum = parseInt(U64.fromBE(maxPayoutBufBE).toString());
     
         let modSum = 0;
