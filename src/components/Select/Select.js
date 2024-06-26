@@ -1,5 +1,5 @@
 // modules
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useHistory } from 'react-router-dom';
 
@@ -17,7 +17,8 @@ const ButtonCtn = styled.div`
 `;
 
 const Select = ({
-    passRandomNumbers
+    passRandomNumbers,
+    passLoadingStatus
 }) => {
     const history = useHistory();
 
@@ -25,6 +26,12 @@ const Select = ({
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    // loading might be turned on after redirect from checkout
+    useEffect(async() => {
+        await sleep(2000);
+        passLoadingStatus(false);
+    }, [])
     
     // handlers
     const handleBuyTicket = async () => {

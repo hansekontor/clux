@@ -10,7 +10,7 @@ import { WalletContext } from '@utils/context';
 
 const Background = styled.img`
     position: relative;
-    height: 100vh;
+    height: 100%;
     z-index: -4;
     object-fit: cover;
     filter: grayscale(1);
@@ -87,7 +87,7 @@ const Backup = ({
     // stop loading screen after rendering has been completed
     useEffect(() => {
         passLoadingStatus(false);
-    })
+    }, [])
 
     // handlers
     const handleOnSubmit = () => {

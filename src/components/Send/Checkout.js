@@ -226,11 +226,18 @@ const Checkout = ({
     const [helpSectionModal, helpSectionHolder] = Modal.useModal();
     const [clientSecret, setClientSecret] = useState("");
 
+
+
     // helpers
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    if (!playerChoiceArray) {
+        passLoadingStatus("PLAYER NUMBERS ARE MISSING");
+        history.push("/select");
+    }
+    
     // variables in DOM
     const offer_name = "Lottery Ticket";
     const merchant_name = "MRC";
@@ -312,6 +319,8 @@ const Checkout = ({
     }
 
     useEffect(async () => {
+        passLoadingStatus(false);
+        
         if(!stripeSession) {
             const stripeSession = await getStripe();
             setStripeSession(stripeSession);    
@@ -364,7 +373,7 @@ const Checkout = ({
             console.log("stripeOptions", stripeOptions);
             setStripeOptions(stripeOptions);            
         }
-    })
+    }, [])
 
 
     return (
@@ -408,7 +417,7 @@ const Checkout = ({
                     <>
                         {!tokensSent && isStage1 && ( 
                             <>
-                                <Scrollable>
+                                {/* <Scrollable> */}
                                     <CustomEnfold animate={isFirstRendering}>        
                                             <Offer>
                                                 <OfferHeader>
@@ -486,14 +495,14 @@ const Checkout = ({
                                                 </>
                                             )} */}
                                     </CustomEnfold>
-                                </Scrollable>
+                                {/* </Scrollable> */}
                             </>              
                         )}          
 
                         <SupportButtons 
                             prev="/select" 
                             types={["return", "help"]}
-                            sticky={true}    
+                            sticky={hasAgreed}    
                         />
 
      

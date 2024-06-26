@@ -25,8 +25,7 @@ const FooterCtn = styled.div`
 const Footer = () => {
     return (
         <FooterCtn>
-            <div>Terms of Service - Privacy Policy</div>
-            {/* Terms of Service - Privacy Policy */}
+            Terms of Service - Privacy Policy
         </FooterCtn>
     )
 }

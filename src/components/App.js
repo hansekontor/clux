@@ -90,7 +90,7 @@ export const WalletBody = styled.div`
 `;
 export const WalletCtn = styled.div`
     width: 480px;
-    height: 100vh;
+    height: 100%;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -102,7 +102,7 @@ export const WalletCtn = styled.div`
     top: 0;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1), 0px 3px 6px rgba(0, 0, 0, 0.05);
     margin-bottom: 0px;
-    overflow: hidden;
+    overflow-y: auto;
 
     @media (max-width: 480px) {
         width: 100%;
@@ -250,6 +250,7 @@ const App = () => {
                                         <Route path="/select">
                                             <Select
                                                 passRandomNumbers={setPlayerChoice}
+                                                passLoadingStatus={setLoadingStatus}
                                             />
                                         </Route>
                                         <Route path="/checkout">
@@ -292,7 +293,7 @@ const App = () => {
                                         <Route component={NotFound} />
                                     </Switch>
                                 </Suspense> 
-                                <Footer />
+                                {/* <Footer /> */}
                             </WalletCtn>
                         </WalletBody>
                     </CustomApp>
