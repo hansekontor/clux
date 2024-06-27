@@ -4,31 +4,47 @@ import PropTypes from 'prop-types';
 
 
 const RandomNumbersCtn = styled.div`
-    width: fit-content;
-    height: 40px;
-    border-radius: 41px;
-    background: #ededed;
+    width: 88%;
+    height: 56px;
+    border-radius: 16px;
+    background: #ffffff;
     color: #000000;
     display: flex;
-    align-items: flex-end;
+    justify-content: center;
+    align-items: center;
     gap: 5px;
-    padding: 0px 12px;
-    gap: 10px;
+    margin-bottom: 9px;
+`;
+const VerticalDivider = styled.div`
+    width: 1px;
+    height: 56px;
+    border-left: 1px dashed;
+    background-color: #c6c6c6;
+`;
+const Arrow = styled.div``;
+const LeftArrow = styled(Arrow)`
+    margin-left: 0px;
+    width: 10%;
+`;
+const RightArrow = styled(Arrow)`
+    margin-right: 0px;
+    width: 10%;
 `;
 const Number = styled.div`
     text-align: center;    
-    font-size: 22px;
-    font-style: normal;
+    font-size: 24px;
     font-weight: 400;
     font-family: "Sequel 100 Wide 95", Helvetica;
+    color: #000000;
+    width: 20%;
 `;
 
 const RandomNumbers = ({
-    chickenSelection,
     passRandomNumbers
 }) => {
 
     const [randomNumberArray, setRandomNumberArray] = useState([]);
+    const [arrayHistory, setArrayHistory] = useState([]);
 
     // helpers
     // gets a random integer between min max (both border values inclusive)
@@ -41,29 +57,42 @@ const RandomNumbers = ({
         return randomInt;
     }
 
-    useEffect(()=> {
-        console.log("RandomNumbers useEffect get new random numbers")
-        let newRandomNumbers = [];
+    // hooks 
+    useEffect(() => {
+        handleNewNumbers();
+    }, [])
+
+    // handlers 
+    const handleNewNumbers = () => {
+        console.log("handleNewNumbers()");
+        const newRandomNumbers = [];
 
         for (let i = 0; i < 4; i++) {
             const newRandomNumber = getRandomInt(1,127);
             newRandomNumbers.push(newRandomNumber);
         }
-
+        
         setRandomNumberArray(newRandomNumbers);
         passRandomNumbers(newRandomNumbers);
-    }, [chickenSelection]);
+    }
 
     return (
-        <RandomNumbersCtn>
+        <RandomNumbersCtn>                    
+            <LeftArrow onClick={() => handleNewNumbers()}>L</LeftArrow>
             {randomNumberArray.length === 4 &&
                 <>
+                    <VerticalDivider />
                     <Number>{randomNumberArray[0]}</Number>
+                    <VerticalDivider />
                     <Number>{randomNumberArray[1]}</Number>
+                    <VerticalDivider />
                     <Number>{randomNumberArray[2]}</Number>
+                    <VerticalDivider />
                     <Number>{randomNumberArray[3]}</Number>            
+                    <VerticalDivider />
                 </>
-            }
+            }                    
+            <RightArrow onClick={() => handleNewNumbers()}>R</RightArrow>
         </RandomNumbersCtn>
     );
 }

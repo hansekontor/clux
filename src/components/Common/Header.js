@@ -2,8 +2,9 @@ import React from "react";
 import styled from "styled-components";
 
 const HeaderCtn = styled.div`
-    width: 284px;
+    margin-top: 0px;
     background-color: transparent;
+    height: 83px;
 `;
 const SmallHeaderCtn = styled.div`
     width: 150px;
@@ -41,13 +42,13 @@ const Subtitle = styled.div`
     text-shadow: 0 0 1px #FFF, 0 0 1px #FFF, 0 0 2px #FFF, 0 0 2px , 0 0 3px #00000040, 0 0 4px #00000040, 0 0 5px #00000040, 0 0 6px #00000040;
 `;
 const SmallTitle = styled.div`
-    color: #000000;
+    color: #ffffff;
     font-family: "Seymour One", Helvetica;
-    font-size: 36px;
+    font-size: 54px;
     font-weight: 600;
-    height: 37px;
+    height: 55px;
     text-align: center;
-    -webkit-text-stroke: 3px white;
+    -webkit-text-stroke: 3px #696482;
     -webkit-font-smoothing: antialiased;
     stroke-linejoin: round;
     background-color: transparent;
@@ -62,7 +63,6 @@ const Header = ({...props}) => {
     return (
         <HeaderCtn {...props}>
             <Title>CLUX</Title>
-            <Subtitle>on Frypan Island</Subtitle>
         </HeaderCtn>
     )
 }

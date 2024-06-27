@@ -5,16 +5,11 @@ import { useHistory } from 'react-router-dom';
 
 // react components
 import Header from '@components/Common/Header';
-import ChickenSelector from "./ChickenSelector";
-import PrimaryButton, { SupportButtons, LargeButtons } from '@components/Common/PrimaryButton';
+import JackpotCarousel from './Jackpot';
+import IdleChicken from './IdleChicken';
+import RandomNumbers from './RandomNumbers';
+import PrimaryButton from '@components/Common/PrimaryButton';
 
-// styled css components
-const ButtonCtn = styled.div`
-    display: grid;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-`;
 
 const Select = ({
     passRandomNumbers,
@@ -54,12 +49,13 @@ const Select = ({
     return (
         <>
             <Header />
-            <ChickenSelector 
-                passRandomNumbers={passRandomNumbers}/>
-            <ButtonCtn>
-                <PrimaryButton onClick={() => handleBuyTicket()}>Buy Ticket</PrimaryButton>
-                <LargeButtons />                
-            </ButtonCtn>
+            <JackpotCarousel />
+            <IdleChicken /> 
+            <RandomNumbers passRandomNumbers={passRandomNumbers}/>
+            <PrimaryButton onClick={() => handleBuyTicket()}>
+                Play Now - $10
+            </PrimaryButton>
+            
         </>
     )
 }

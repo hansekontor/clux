@@ -69,6 +69,9 @@ const GlobalStyle = createGlobalStyle`
         border: 1px solid black;
         border-collapse: collapse;
     }
+    .ant-carousel {
+        width: 88%;
+    }
 `;
 const CustomApp = styled.div`
     text-align: center;
@@ -91,18 +94,18 @@ export const WalletBody = styled.div`
 export const WalletCtn = styled.div`
     width: 480px;
     height: 100%;
-    background-color: #ffffff;
+    background-color: #1A2131;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     margin: 0;
     padding: 0;
     position: fixed;
     top: 0;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1), 0px 3px 6px rgba(0, 0, 0, 0.05);
     margin-bottom: 0px;
-    overflow-y: auto;
+    overflow: hidden;
 
     @media (max-width: 480px) {
         width: 100%;
