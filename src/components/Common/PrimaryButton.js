@@ -7,43 +7,21 @@ import SettingsSvg from '@assets/settings.svg';
 import { RollbackOutlined } from '@ant-design/icons';
 
 
-
 const PrimaryButton = styled.button`
-    all: unset;
-    align-items: center;
-    background-color: #ffffff;
     color: #000000;
-    border-radius: 16px;
-    font-family: "Sequel 100 Wide 95", Helvetica;
-    font-size: 27px;
-    font-weight: 600;
-    letter-spacing: 0.54px;
-    text-align: center;
-    border-width: 4px 10px 9px 5px;
-    border-style: solid;
-    height: 51px;
-    padding: 4px 10px 0px;
+    background-color: #f2bc57;
+    height: 52px;
+    border-style: none;
+    border-radius: 12px;
+    font-family: "Sequel 100 Wide 95";
+    font-size: 24;
     cursor: pointer;
-    transition-duration: 0.2s;
-    z-index: 3000;
-    position: relative;
-
-    &: hover {
-        color: rgba(0,0,0,0.7);
-    }
+    width: 88%;
 `;
 
-
-export const SecondaryButton = styled.button`
-    border-radius: 40px;
-    background-color: #000000;
-    color: #ffffff;
-    font-family: "Inter-Semibold", Helvetica;
-    font-size: 16px;
-    font-weight: 500;
-    height: 44px;
-    padding: 0 15px;
-    cursor: pointer;
+export const SecondaryButton = styled(PrimaryButton)`
+    background-color: #ffffff;
+    border: 1px solid #000000;
 `;
 
 
