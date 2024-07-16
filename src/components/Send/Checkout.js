@@ -53,19 +53,18 @@ import {
 // import ProgressDots from '@components/Common/ProgressDots';
 import styled, { css } from 'styled-components';
 import {
-    Form,
     Modal,
-    Spin
+    Radio
 } from 'antd';
 
 // custom react components
 import Header, { SmallHeader } from '@components/Common/Header';
-import Agree from '@components/Send/Agree';
 import { Enfold } from '@components/Common/CssAnimations';
-import PrimaryButton, { SupportButtons } from '../Common/PrimaryButton';
-import { 
-    Merchant, MerchantName, MerchantTag, MerchantIcon
-} from '@components/Common/ContentHeader';
+import PrimaryButton, { ReturnButton } from '../Common/PrimaryButton';
+import NavigationBar from '@components/Common/Navigation';
+import Tos from '@components/Send/Tos'
+import Footer from '@components/Common/Footer';
+import WalletCtn from '@components/App';
 
 // assets
 import CheckOutIcon from "@assets/checkout_icon.svg";
@@ -75,9 +74,6 @@ import { getOutputScriptFromAddress } from 'ecashaddrjs';
 import getStripe from '../../utils/stripe';
 
 // styled css components
-// const ReturnCtn = styled(Support)`
-//     justify-content: left;
-// `;
 const Divider = styled.div`
     height: 1px;
     width: 85%;
@@ -105,39 +101,34 @@ const CustomForm = styled.form`
     margin-top: 30px;
     margin-bottom: 30px;
 `;
+const CustomEnfold = styled(Enfold)`
+`;
 const Scrollable = styled.div`
-    width: 480px;
-    height: 100vh;
-    background-color: #ffffff;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-    position: fixed;
-    top: 0;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1), 0px 3px 6px rgba(0, 0, 0, 0.05);
-    margin-bottom: 0px;
-    overflow-y: scroll;
-
-    @media (max-width: 480px) {
-        width: 100%;
-        -webkit-box-shadow: none;
-        -moz-box-shadow: none;
-        box-shadow: none;
-    }
-`;
-const CustomEnfold = styled(Enfold)`
-    position: absolute;
-    top: 30px;
+    justify-content: flex-start;
+    height: 60%;
+    width: 100%;
+    background-color: #eaeaea;
 `;
 const CheckoutButton = styled(PrimaryButton)`
     margin-top: 20px;
     margin-bottom: 30px;
+    width: 100%;
 `;
-
-
+const AgreeCtn = styled.div`
+    width: 100%;
+    flex-grow: 1;
+    background-color: #EAEAEA;
+`;
+const CustomRadioGroup = styled(Radio.Group)`
+    margin-top: 8px;
+`;
+const LightWalletCtn = styled(WalletCtn)`
+    background-color: #eaeaea;
+`;
 
 export const StripeCheckoutForm = ({
     passLoadingStatus, 
@@ -204,9 +195,9 @@ export const StripeCheckoutForm = ({
 
 
     return (
-        <CustomForm onSubmit={handleSubmit}>
+        <CustomForm onSubmit={handleSubmit} id="checkout-form">
             <PaymentElement />
-            <CheckoutButton disabled={!stripe}>Pay</CheckoutButton>
+            {/* <CheckoutButton disabled={!stripe}>Pay</CheckoutButton> */}
         </CustomForm>
     )
 }
@@ -214,7 +205,8 @@ export const StripeCheckoutForm = ({
 const Checkout = ({
     passLoadingStatus,
     playerChoiceArray,
-    passPurchasedTicket
+    passPurchasedTicket,
+    passAnimationKey
 }) => {
     const history = useHistory(); 
 
@@ -225,6 +217,7 @@ const Checkout = ({
     const [isStage1, setState1] = useState(true);
     const [helpSectionModal, helpSectionHolder] = Modal.useModal();
     const [clientSecret, setClientSecret] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("stripe");
 
 
 
@@ -245,6 +238,9 @@ const Checkout = ({
     const displayTicker = "CLUX";
     const feeAmount = 0.3;
     const totalAmount = purchaseTokenAmount + feeAmount;
+    const agreeButtonText = "Agree and Continue";
+    const purchaseButtonText = "Pay - $10"; 
+
 
 
     const helpText = "After payment, your ticket will be broadcasted to the blockchain. When the next block finalizes, it can be redeemed in this app.";
@@ -257,6 +253,7 @@ const Checkout = ({
         history.push('/backup');
     }
     const handleAgree = async () => {
+        console.log("dev include KYC")
         setHasAgreed(true);
         await sleep(500);
         setFirstRendering(false);
@@ -296,6 +293,11 @@ const Checkout = ({
         return paymentIntent;
     }
 
+    const handlePaymentChange = (e) => {
+        const newPaymentMethod = e.target.value;
+        setPaymentMethod(newPaymentMethod)
+    }
+
     const handleCheckout = async () => {
 
         const purchasedTicket = {
@@ -315,6 +317,10 @@ const Checkout = ({
         await sleep(2000);
         passLoadingStatus("TRANSACTION COMPLETE");
         await sleep(3000);
+
+        // console.log("Checkout disabling animationKey");
+        // passAnimationKey(false);
+        
         history.push('/backup')
     }
 
@@ -375,6 +381,8 @@ const Checkout = ({
         }
     }, [])
 
+    const previousPath = "/select";
+    const title = "Agree";
 
     return (
         <>  
@@ -404,106 +412,94 @@ const Checkout = ({
             </Modal>*/}                
                 {!hasAgreed ? (
                     <>
-                        <Header />
-                        <Agree 
-                            // offer_name={prInfoFromUrl.paymentDetails?.merchantDataJson?.ipn_body?.offer_name}
-                            offer_name={offer_name}
-                            merchant_name={merchant_name}
-                            handleAgree={handleAgree}
+                        <Header background="#EAEAEA" />
+                        <NavigationBar 
+                            returnTo={previousPath}
+                            title={title}
                         />
-                        <SupportButtons prev="/select" types={["return", "help"]}/>
+                        <Tos />
+                        <Footer 
+                            origin="/checkout"
+                            randomNumbers={playerChoiceArray}
+                            buttonOnClick={handleAgree}
+                            buttonText={agreeButtonText}
+                            lightBackground={true}
+                        />
                     </>      
                 ) : (
                     <>
                         {!tokensSent && isStage1 && ( 
                             <>
-                                {/* <Scrollable> */}
-                                    <CustomEnfold animate={isFirstRendering}>        
-                                            <Offer>
-                                                <OfferHeader>
-                                                    {offer_name &&                    
-                                                        <OfferName>{offer_name}</OfferName>
-                                                    }
-                                                    <Merchant>
-                                                        <MerchantIcon src={MerchantSvg} />
-                                                        <MerchantName>MRC</MerchantName>
-                                                    </Merchant>                                           
-                                                    <SmallHeader />
-                                                </OfferHeader>
-                                                {/* <Divider /> */}
-                                                <OfferDescription>
-                                                    {`Purchase a lottery ticket with numbers ${playerChoiceArray.join(', ') || "missing"}. Your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint your potential payout. This game supports the payout.`}
-                                                </OfferDescription>
-                                            </Offer>
-                                            <Divider />
-                                            <Fee>
-                                                <FeeLabel>Ticket</FeeLabel>
-                                                <FeeAmount>$10</FeeAmount>
-                                            </Fee>
-                                            <Fee>
-                                                <FeeLabel>Processing Fee</FeeLabel>
-                                                <FeeAmount>$0.5</FeeAmount>
-                                            </Fee>
-                                            <CustomTotal>
-                                                <TotalLabel>Total</TotalLabel>
-                                                {/* <TotalAmount>${totalAmount}</TotalAmount> */}
-                                                <TotalAmount>$10.5</TotalAmount>
-                                            </CustomTotal>
+                                <Header background="#EAEAEA"/>
+                                <NavigationBar 
+                                    returnTo={"/select"}
+                                    title={"Agree"}
+                                />                                      
+                                {/* <AgreeCtn> */}
+                                <Scrollable>
+                                        {/* </Scrollable>                             */}
+                                    <CustomEnfold animate={isFirstRendering}>     
+                                        {/* <Scrollable> */}
+                                            <CustomRadioGroup onChange={handlePaymentChange} value={paymentMethod}>
+                                                <Radio value={"stripe"} >Stripe</Radio>
+                                                <Radio value={"other"} >Other</Radio>
+                                            </CustomRadioGroup>
+                                                {stripeSession && stripeOptions &&
+                                                    <Elements 
+                                                        stripe={stripeSession}
+                                                        options={stripeOptions}
+                                                    >                  
+                                                        <StripeCheckoutForm 
+                                                            passLoadingStatus={passLoadingStatus}
+                                                            passPurchasedTicket={passPurchasedTicket}
+                                                            playerChoiceArray={playerChoiceArray}
+                                                        />            
+                                                    </Elements>                                        
+                                                }
 
-                                            {/* <PrimaryButton onClick={() => handleCheckout()}>Pay now</PrimaryButton> */}
+                                                {/* {stripePromise && (
+                                                    <Elements stripe={stripePromise} options={stripeOptions}>
+                                                        <PaymentElement />
+                                                    </Elements>
+                                                )} */}
+                                                {/* {isStage1 ? (
+                                                    <>
+                                                        {hasAgreed && (
+                                                            <>
+                                                                {uuid && formToken ? (
+                                                                    <PrimaryButton onClick={() => setPay(true)}>{payButtonText}</PrimaryButton>
+                                                                ) : (
+                                                                    <>
+                                                                        {isSending && !tokensSent ? (
+                                                                            <Spin spinning={true} indicator={CashLoadingIcon}></Spin>
+                                                                        ) : (
+                                                                            <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>
+                                                                        )}
+                                                                    </>
+                                                                )}
+                                                            </>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {isSending && !tokensSent ? <Spin spinning={true} indicator={CashLoadingIcon}></Spin> :
+                                                        <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
+                                                    </>
+                                                )} */}
 
-                                            {stripeSession && stripeOptions &&
-                                                <Elements 
-                                                    stripe={stripeSession}
-                                                    options={stripeOptions}
-                                                >                  
-                                                    <StripeCheckoutForm 
-                                                        passLoadingStatus={passLoadingStatus}
-                                                        passPurchasedTicket={passPurchasedTicket}
-                                                        playerChoiceArray={playerChoiceArray}
-                                                    />            
-                                                </Elements>                                        
-                                            }
-
-                                            {/* {stripePromise && (
-                                                <Elements stripe={stripePromise} options={stripeOptions}>
-                                                    <PaymentElement />
-                                                </Elements>
-                                            )} */}
-                                            {/* {isStage1 ? (
-                                                <>
-                                                    {hasAgreed && (
-                                                        <>
-                                                            {uuid && formToken ? (
-                                                                <PrimaryButton onClick={() => setPay(true)}>{payButtonText}</PrimaryButton>
-                                                            ) : (
-                                                                <>
-                                                                    {isSending && !tokensSent ? (
-                                                                        <Spin spinning={true} indicator={CashLoadingIcon}></Spin>
-                                                                    ) : (
-                                                                        <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    {isSending && !tokensSent ? <Spin spinning={true} indicator={CashLoadingIcon}></Spin> :
-                                                    <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
-                                                </>
-                                            )} */}
-                                    </CustomEnfold>
-                                {/* </Scrollable> */}
+                                        {/* </Scrollable> */}
+                                </CustomEnfold>
+                                </Scrollable>
+                                {/* </AgreeCtn>                             */}
+                                <Footer 
+                                    origin={"/checkout"}
+                                    randomNumbers={playerChoiceArray}
+                                    buttonOnClick={handleCheckout}
+                                    buttonText={purchaseButtonText}
+                                    lightBackground={true}
+                                />
                             </>              
                         )}          
-
-                        <SupportButtons 
-                            prev="/select" 
-                            types={["return", "help"]}
-                            sticky={hasAgreed}    
-                        />
 
      
                         {/* <ReturnCtn>

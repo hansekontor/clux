@@ -1,21 +1,130 @@
-import * as React from 'react';
-import { notification } from 'antd';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from "react-dom";
 import {
     TokenReceivedNotificationIcon,
 } from '@components/Common/CustomIcons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { currency } from '@components/Common/Ticker';
+import { notification } from 'antd';
+import styled, {css} from 'styled-components';
+import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { FadeOutAnimation, SlideInAnimation } from '@components/Common/CssAnimations';
 
-// Success Notifications:
-const infoNotification = (infoString) => {
+const SlideIn = styled.div`
+    z-index: 33;
+    height: 50px;
+    padding: 0 17px;
+    position: absolute;
+    top: 13%;
+    border-radius: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: ${props => props.type ? (
+        props.type === 'success' ? '#38A368' : '#FB918E'
+        ) : '#FFFFFF'};
+
+    animation: slide-in-from-top 0.5s cubic-bezier(0.24, 0.48, 0.47, 0.95);
+    ${SlideInAnimation}
+
+    ${FadeOutAnimation}
+    visibility: ${props => props.fadeOut ? "hidden" : "visible"};
+    opacity: ${props => props.fadeOut ? 0 : 1};
+    transition: ${props => props.fadeOut ? "visibility 0s 2s, opacity 2s linear" : "none"};
+`;
+const CheckIcon = styled(CheckCircleOutlined)`
+    color: #FFFFFF;
+`;
+const ErrorIcon = styled(CloseCircleOutlined)`
+    color: #002152;
+`;
+const InfoIcon = styled(ExclamationCircleOutlined)`
+    color: #002152;
+`;
+const Text = styled. div`
+    color: ${props => props.type ? (
+        props.type === 'success' ? '#FFFFFF' : '#002152'
+    ) : '#002152'};
+    font-size: 18px;
+    font-weight: 600;
+`;
+
+const Notification = ({
+    type,
+    message,
+    callback
+}) => {
+    const [isClosing, setIsClosing] = useState(false);
+    const [isClosed, setIsClosed] = useState(false);
+
+    // helpers
+    const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    useEffect(async () => {
+        await sleep(currency.notificationDurationLong * 1000);
+        setIsClosing(true);
+    }, []);
+
+    useEffect(async() => {
+        if (isClosing) {
+            await sleep(2000);
+            setIsClosed(true);            
+        }
+    }, [isClosing])
+
+    if (isClosed) {
+        return null;
+    }
+
+    return (
+        <SlideIn animate={true} type={type} fadeOut={isClosing}>
+            {type ? (
+                <>
+                    {type === "success" && <CheckIcon />}
+                    {type === "error" && <ErrorIcon />}                
+                </>
+            ) : (
+                <InfoIcon />
+            )}
+            <Text type={type}>{message}</Text>
+        </SlideIn>
+    )
+}
+
+
+
+export const infoNotification = (infoString) => {
     notification.info({
         message: infoString,
         duration: 5,
-        style: {borderRadius: '40px'}
+        style: {
+            width: "88%",
+            height: "50px",
+            position: "absolute",
+            top: "5%",
+            borderRadius: "100px",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+        }
     })
 }
 
-const selfMintTokenNotification = () => {
+export const successNotification = (successString) => {
+    notification.success({
+        message: successString,
+        duration: 5,
+        style: {color: 'green'}
+    })
+}
+
+export const selfMintTokenNotification = () => {
     notification.success({
         message: 'Success',
         description: (
@@ -28,7 +137,7 @@ const selfMintTokenNotification = () => {
     });
 };
 
-const sendTokenNotification = link => {
+export const sendTokenNotification = link => {
     notification.success({
         message: 'Success',
         description: (
@@ -43,7 +152,7 @@ const sendTokenNotification = link => {
     });
 };
 
-const eTokenReceivedNotification = (
+export const eTokenReceivedNotification = (
     currency,
     receivedSlpTicker,
     receivedSlpQty,
@@ -60,10 +169,7 @@ const eTokenReceivedNotification = (
         style: { width: '100%', borderRadius: '0px' },
     });
 };
-
-// Error Notification:
-
-const errorNotification = (error, message, stringDescribingCallEvent) => {
+export const errorNotification = (error, message, stringDescribingCallEvent) => {
     console.log(error, message, stringDescribingCallEvent);
     notification.error({
         message: 'Error',
@@ -74,10 +180,5 @@ const errorNotification = (error, message, stringDescribingCallEvent) => {
 };
 
 
-export {
-    sendTokenNotification,
-    selfMintTokenNotification,
-    eTokenReceivedNotification,
-    errorNotification,
-    infoNotification
-};
+
+export default Notification;

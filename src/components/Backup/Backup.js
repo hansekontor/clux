@@ -2,80 +2,97 @@ import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
-import { SecondaryButton, SupportButtons } from '@components/Common/PrimaryButton';
-import RingPng from '@assets/ring.png';
+import PrimaryButton, { SecondaryButton } from '@components/Common/PrimaryButton';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import { WalletContext } from '@utils/context';
+import Notification from '@components/Common/Notifications';
+import { Enfold } from '@components/Common/CssAnimations';
+import { FadeInAnimation, FadeOutAnimation } from '@components/Common/CssAnimations';
 
 
-const Background = styled.img`
-    position: relative;
-    height: 100%;
-    z-index: -4;
-    object-fit: cover;
-    filter: grayscale(1);
-`;
-const Overlay = styled.div`
-    background-color: rgba(255,255,255,0.9);
-    position: absolute;
-    width: inherit;
-    height: inherit;
-    z-index: -3;
-    display: block;
-    top: 0;
-    left: 0; 
-`;
+// assets
+import BellSvg from '@assets/bell.svg';
+import CopyboardSvg from '@assets/copyboard.svg';
+
+// styled components
 const Title = styled.div`
     color: #000000;
     z-index: 1;
     font-size: 30px;
     font-weight: 600;
 `;
+const CustomForm = styled.form`
+    width: 88%;
+`;
 const Input = styled.input`
-    text-align: center;
-    white-space: nowrap;
-
-    border-radius: 40px;
-    background-color: #000000;
-    color: #ffffff;
+    border-radius: 12px;
+    background-color: #F6F6F6;
+    color: #ABABAB;
     font-family: "Inter-Semibold", Helvetica;
     font-size: 16px;
     font-weight: 500;
-    height: 44px;
-    padding: 0 15px;
+    height: 52px;
     cursor: pointer;
-    width: 90%;
+    width: 100%;
+    border-style: none;
 `;
 const Text = styled.p`
-    z-index: 1;
     color: #000000;
+    font-size: 16px;
+    line-height: 140%;
+    font-size: "Inter-Semibold", Helvetica;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+    width: 88%;
 `;
-const Content = styled.div`
-    top: 40%;
-    position: absolute;
-    left: 7%;
-    right: 7%;
-    text-align: left;
-`;
-const Skip = styled.a`
-    margin-left: 10px;
-    cursor: pointer;
-`;
-const ButtonCtn = styled.div`
+const Modal = styled.div`
+    width: 95%;
+    background-color: #ffffff;
+    gap: 12px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    margin-top: 10px;
+    align-items: center;
+    padding: 24px 0;
+    border-radius: 20px;
 `;
-const SubmitButton = styled(SecondaryButton)`
-    width: fit-content;
-`;
+const ModalCtn = styled.div`
+    width: 100%;
+    gap: 24px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 
+    ${FadeInAnimation}
+    ${FadeOutAnimation}
+`;
+const BellIcon = styled.img``;
+const CopyboardIcon = styled.img`
+    position: relative;
+    top: 3px;
+    margin-right: 5px;
+`;
+const NavigationCount = styled.div`
+    background-color: #f2bc57;
+    border-radius: 33px;
+    width: 100px;
+    height: 30px;
+    margin: auto;
+    font-family: "Sequel 100 Wide 95";
+    font-weight: 300;
+    font-size: 14px;
+    align-content: center;
+`;
+const CustomEnfold = styled(Enfold)`
+    width: 100%;
+`;
 
 
 const Backup = ({
     purchasedTicket,
-    passLoadingStatus
+    passLoadingStatus,
+    showModal
 }) => {
     const history = useHistory();
     const ContextValue = useContext(WalletContext);
@@ -83,10 +100,13 @@ const Backup = ({
 
     const [backupRequested, setBackupRequested] = useState(false);
     const [backupFinished, setBackupFinished] = useState(false);
+    const [phraseCopied, setPhraseCopied] = useState(false);
+    const [isFirstRendering, setFirstRendering] = useState(true);
 
     // stop loading screen after rendering has been completed
     useEffect(() => {
         passLoadingStatus(false);
+        // setFirstRendering(false);
     }, [])
 
     // handlers
@@ -96,49 +116,54 @@ const Backup = ({
     const handleBackupSeedPhrase = () => {
         setBackupRequested(true)
     }
+    const handleCopySeedPhrase = () => {
+        navigator.clipboard.writeText(wallet.mnemonic);
+        setPhraseCopied(true);
+        // successNotification("Copied to clipboard")
+    }
 
 
     return (
         <>
-            <Background src={RingPng} />
-            <Overlay>
-                <Content>
+            {phraseCopied && <Notification type="success" string={"Copied to clipboard"} />}
+            <ModalCtn>
+                <Modal>
+                    <BellIcon src={BellSvg} />
                     {!backupFinished ? (
                         <>
-                            <Title>Backup your Wallet</Title>
-                            <Text>The crypto wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure the wallet to avoid loss of funds.</Text>                        
-                            {backupRequested ? (
-                                <>
-                                    <SeedPhrase 
-                                        phrase={wallet.mnemonic ? wallet.mnemonic : ""}
-                                    />             
-                                    <SecondaryButton onClick={() => setBackupFinished(true)}>Continue</SecondaryButton>       
-                                </>            
-                            ) : (
-                                <>
-                                    <SecondaryButton onClick={handleBackupSeedPhrase}>Backup Wallet</SecondaryButton>
-                                    <Skip onClick={() => setBackupFinished(true)}>Skip Backup</Skip>     
-                                </>
-                            )}
+                            <Title>Backup Wallet</Title>
+                            <Text>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Text>
+                            {/* <CustomEnfold animate={isFirstRendering}> */}
+                                <SeedPhrase 
+                                    phrase={wallet.mnemonic ? wallet.mnemonic : ""}
+                                />             
+                                <SecondaryButton onClick={handleCopySeedPhrase}>
+                                    <CopyboardIcon src={CopyboardSvg} />Copy</SecondaryButton>
+                            {/* </CustomEnfold> */}
+                            <PrimaryButton onClick={() => setBackupFinished(true)}>I've Secured</PrimaryButton> 
                         </>
                     ) : (
                         <>
                             <Title>Get Notified</Title>
-                            <Text>Enter your email to get notified when the results are ready:</Text>
-                            <form onSubmit={() => handleOnSubmit()}>
+                            <Text>Results are usually available in approximately 10 minutes or less.</Text>
+                            <Text>Enter your email address to get notified when your results are ready.</Text>
+                            <CustomForm id='email-form' onSubmit={() => handleOnSubmit()}>
                                 <Input 
-                                    placeholder="Enter Email"
+                                    placeholder="Enter your Email"
                                 />
-                                <ButtonCtn>
-                                    <SubmitButton type="submit">Submit</SubmitButton>                                    
-                                </ButtonCtn>
-                            </form>                        
+                            </CustomForm>                                       
+                            <PrimaryButton form='email-form' type="submit">Submit</PrimaryButton>
+                
                         </>
                     )} 
-                </Content>
-                <SupportButtons prev="/backup" types={["help"]}/>
-          
-            </Overlay>
+                </Modal>
+                {!backupFinished ? (
+                    <NavigationCount>1 / 2</NavigationCount>
+                ) : (
+                    <NavigationCount>2 / 2</NavigationCount>
+                )}
+            </ModalCtn>
+
         </>
     )
 }
