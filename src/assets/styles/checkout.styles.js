@@ -155,11 +155,6 @@ export const Invoice = styled.div`
 	position: relative;
 	right: 0;
 `;
-export const Support = styled.div`
-	min-height: 125px;
-	width: 85%;
-	gap: 6px;
-`;
 export const Heading = styled.h3`
 	font-weight: 600;
 	font-size: 1.125rem;

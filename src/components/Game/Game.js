@@ -8,9 +8,10 @@ const { Hash256 } = bcash.bcrypto;
 import { U64 } from 'n64';
 
 // react components
-import RingPng from '@assets/ring.png';
+import RingPng from '@assets/ring_on_beach.png';
 import PrimaryButton from '@components/Common/PrimaryButton';
 import Header from '@components/Common/Header';
+import Footer from '@components/Common/Footer';
 
 // other
 import compositions from '@utils/compositions';
@@ -18,73 +19,44 @@ import compositions from '@utils/compositions';
 
 // styled css components 
 const Background = styled.img`
-    position: relative;
+    position: absolute;
+    bottom: 200px;
+    margin-left: auto;
+    margin-right: auto;
     height: 100vh;
     z-index: -4;
-    object-fit: cover;
-    filter: grayscale(0.6);
 `;
-const Overlay = styled.div`
-    background-color: rgba(255,255,255,0.9);
-    position: absolute;
-    width: inherit;
-    height: inherit;
-    z-index: -3;
-    display: block;
-    top: 0;
-    left: 0; 
-`;
-const PlayButton = styled(PrimaryButton)`
-    position: absolute;
-    top: 80%;
-`;
-const Result = styled.div`
-    position: absolute;
-    color: black;
-    padding: 20px;
-    border-radius: 40px;
-    top: 30%;
-    height: fit-content;    
-`;
-    // background-color: rgba(248, 247, 216, 0.9);
-    // opacity: 90%;
-
-const ResultTitle = styled.div`
-    font-family: "Seymour One", Helvetica;
-    font-size: 45px;
-    transform: rotate(-2.2deg);
-`;
-const ResultSubtitle = styled.div`
-    font-family: Helvetica;
-    font-size: 24px;
-`;
-const ResultPayout = styled(ResultTitle)`
+const AnimationCtn = styled.div`
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 const EntranceCtn = styled.div`
-    top: 20%;
-    position: absolute;
-    margin-left: -130px;
-    background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'};
+    z-index: 100;
+    position: absolute;
     overflow: visible;
+    width: 150%;
 `;
 const FightCtn = styled.div`
-    top: 20%;
-    position: absolute;
-    margin-left: -175px;
-    background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'}
+    z-index: 100;
+    position: absolute;
     overflow: visible;
+    width: 150%;
 `;
 const CelebrationCtn = styled.div`
-    top: 20%;
-    position: absolute;
-    margin-top: -10px;
-    margin-left: -175px;
-    background-color: transparent;
     visibility: ${props => props.active ? 'show' : 'hidden'};
+    z-index: 100;
+    position: absolute;
     overflow: visible;
+    width: 150%;
 `;
+const canvasStyle = {
+    width: "100%",
+    margin: "auto",
+};
 
 
 const Game = ({
@@ -105,7 +77,7 @@ const Game = ({
     const [fightPaused, setFightPaused] = useState(true);
     const [celebrationPaused, setCelebrationPaused] = useState(true);
     const [scriptLoaded, setScriptLoaded] = useState(false);
-    const [payoutAmount, setPayoutAmount] = useState(false);
+    const [payoutAmount, setPayoutAmount] = useState(20);
     const [displayResult, setDisplayResult] = useState(false);
     const [labels, setLabels] = useState({});
 
@@ -116,32 +88,33 @@ const Game = ({
 
     useEffect(async () => {
         // manually disable loader after ticket redemption
-        console.log("useeffect to load scripts outer")
         if (!scriptLoaded){
-            const ttxHashString = ticket.hash;
-            const blockHashString = ticket.block;
-            const ttxHashBuf = Buffer.from(ttxHashString, 'hex');
-            const blockHashBuf = Buffer.from(blockHashString, 'hex');
-            const maxPayoutString = ticket.maxPayout;
-            const maxPayoutBuf = Buffer.from(maxPayoutString, 'hex');        
-            // const playerChoiceString = "34204n67";
-            // const playerChoiceBytes = Buffer.from(playerChoiceString, 'hex');
-            const playerChoiceBytes = ticket.playerChoiceBytes;
-            console.log("playerchoicebytes", playerChoiceBytes);
-            console.log("ttxhashbuf", ttxHashBuf, "blockhashbuf", blockHashBuf);
+            // const ttxHashString = ticket.hash;
+            // const blockHashString = ticket.block;
+            // const ttxHashBuf = Buffer.from(ttxHashString, 'hex');
+            // const blockHashBuf = Buffer.from(blockHashString, 'hex');
+            // const maxPayoutString = ticket.maxPayout;
+            // const maxPayoutBuf = Buffer.from(maxPayoutString, 'hex');        
+            // // const playerChoiceString = "34204n67";
+            // // const playerChoiceBytes = Buffer.from(playerChoiceString, 'hex');
+            // const playerChoiceBytes = ticket.playerChoiceBytes;
+            // console.log("playerchoicebytes", playerChoiceBytes);
+            // console.log("ttxhashbuf", ttxHashBuf, "blockhashbuf", blockHashBuf);
             
-            const {payoutNum, tier} = calculatePayout(ttxHashBuf, blockHashBuf, playerChoiceBytes, maxPayoutBuf);
-            // const tier = 5;
-            setPayoutAmount(payoutNum)
-            const win = tier !== 0;
-            console.log("GAME.JS payoiut tier", tier);
+            // const {payoutNum, tier} = calculatePayout(ttxHashBuf, blockHashBuf, playerChoiceBytes, maxPayoutBuf);
+            // // const tier = 5;
+            // setPayoutAmount(payoutNum)
+            // const win = tier !== 0;
+            // console.log("GAME.JS payoiut tier", tier);
             
             // console.log("useEffect to load scripts inner")
             const fightLabel = "clux-norris";
+            const win = true;
             const winner = win ? "A" : "B";
-            const key = win ? `${fightLabel}_A_${tier}` : `${fightLabel}_B`;
+            const tier = 2;
+            const key = win ? `${fightLabel}_A_${tier}` : `${fightLabel}_${winner}`;
             passAnimationKey(key)
-            console.log("winner", winner, "tier", String(tier))
+            // console.log("winner", winner, "tier", String(tier))
             setLabels({
                 animationName: {
                     entrance: "CLUX_NORRIS_ENTRANCE",
@@ -154,17 +127,40 @@ const Game = ({
                     celebration: win ? compositions.CLUX.NORRIS.A.CELEBRATION[tier] : compositions.CLUX.NORRIS.B.CELEBRATION
                 }
             })
-            await sleep(2000);
-            passLoadingStatus(false)
-            setScriptLoaded(true);
         }
     }, []);
 
+    useEffect(async()=> {
+        if (labels.animationName?.entrance) {
+            await sleep(4000);
+            passLoadingStatus(false);
+            setScriptLoaded(true);
+        }
+    }, [labels])
+
+
+    useEffect(async() => {
+        if (!fightPaused) {
+            await sleep(9000);
+            setAnimationStage("celebration");
+            setCelebrationPaused(false);
+        }
+    }, [fightPaused])
+
+    useEffect(async() => {
+        if (!celebrationPaused) {
+            await sleep(20000);
+            passAnimationKey(false);
+            // passLoadingStatus("LOADING RESULTS");
+            history.push({pathname: "/result", state: { payoutAmount }})
+        }
+    }, [celebrationPaused])
 
     // handlers
     const handlePlay = async () => {
         setAnimationStage("fight");
         setFightPaused(false);
+        // dev: somehow activate celebration animation
         console.log("handlePlay called")
     }
 
@@ -193,6 +189,7 @@ const Game = ({
     
         let modSum = 0;
     
+        let modArray = [];
     
         for (let i = 0; i < playerChoiceBytes.length; i++) {
             
@@ -208,7 +205,7 @@ const Game = ({
             console.log("calculatePayout() numBuf", numBuf);
             const number = numBuf.readInt16LE(0);
             console.log("calcuPayout number", number);
-            modSum += number % (4 * playerChoiceBytes.length)
+            modSum += number % (4 * playerChoiceBytes.length);
         }
     
         // Paytable zero index pays max amount, the rest divide by) 2 and greater than final pays zero
@@ -239,71 +236,55 @@ const Game = ({
         return {actualPayoutBE, payoutNum, tier};
     }
 
+    const playButtonText = "Fight";
+
     return (
         <>
             <Background src={RingPng} />
-            {displayResult && <Overlay />}
             <Header />
-            {scriptLoaded &&
+            <AnimationCtn>            
+                {scriptLoaded &&
                 <>
-                        {animationStage !== 'celebration' &&
-                            <EntranceCtn active={animationStage === "entrance"}>
-                                <AnimateCC 
-                                    animationName={labels.animationName.entrance}
-                                    composition={labels.compositionId.entrance}
-                                    getAnimationObject={getAnimationObject}
-                                    paused={paused}
-                                    canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
-                                />                                           
-                            </EntranceCtn>
-                        }
+                    <EntranceCtn active={animationStage === "entrance"}>
+                        <AnimateCC 
+                            animationName={labels.animationName.entrance}
+                            composition={labels.compositionId.entrance}
+                            getAnimationObject={getAnimationObject}
+                            paused={paused}
+                            canvasStyle={canvasStyle}
+                        />                                           
+                    </EntranceCtn>
 
-                        <FightCtn active={animationStage === "fight"}>
-                            <AnimateCC 
-                                animationName={labels.animationName.fight}
-                                composition={labels.compositionId.fight}
-                                getAnimationObject={getAnimationObject}
-                                paused={fightPaused}
-                                canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
-                            />                                           
-                        </FightCtn>
+                    <FightCtn active={animationStage === "fight"}>
+                        <AnimateCC
+                            animationName={labels.animationName.fight}
+                            composition={labels.compositionId.fight}
+                            getAnimationObject={getAnimationObject}
+                            paused={fightPaused}
+                            canvasStyle={canvasStyle}
+                        />
+                    </FightCtn>         
 
-                        {/* {animationStage !== 'entrance' && */}
-                            <> 
-                                <CelebrationCtn active={animationStage === "celebration"}>
-                                    <AnimateCC 
-                                        animationName={labels.animationName.celebration}
-                                        composition={labels.compositionId.celebration}
-                                        getAnimationObject={getAnimationObject}
-                                        paused={celebrationPaused}
-                                        canvasStyle={{width: 1920/2.5+"px", height: 1080/2.5+"px"}}
-                                    />                                        
-                                </CelebrationCtn>              
-                                     
-                                {displayResult && (
-                                    <Result>
-                                        <ResultTitle>WINNER!</ResultTitle>
-                                        <ResultSubtitle>CONGRATULATIONS!</ResultSubtitle>
-                                        <ResultPayout>{(payoutAmount/1000).toFixed(0)} CREDITS</ResultPayout>
-                                    </Result>
-                                )}
-                            </>
-                        {/* } */}
-
-                    {animationStage === 'entrance' ? (
-                        <PlayButton onClick={() => handlePlay()}>Fight</PlayButton>
-                    ) : (
-                        <>
-                            {!displayResult ? ( 
-                                <PlayButton onClick={() => handleResult()}>See Result</PlayButton>
-                            ) : (
-                                <PlayButton onClick={() => handleReturnAfterResult()}>Return</PlayButton>
-                            )}
-                        </>
-                    )}
-
+                    <CelebrationCtn active={animationStage === "celebration"}>
+                        <AnimateCC 
+                            animationName={labels.animationName.celebration}
+                            composition={labels.compositionId.celebration}
+                            getAnimationObject={getAnimationObject}
+                            paused={celebrationPaused}
+                            canvasStyle={canvasStyle}
+                        />                                        
+                    </CelebrationCtn>                            
                 </>
-            }
+
+                }
+            </AnimationCtn>
+            <Footer 
+                origin={"/game"}
+                buttonOnClick={handlePlay}
+                buttonText={playButtonText}
+                resultingNumbers={[4,1,13,4]}
+                activeResult={animationStage==="fight"}
+            />
         </>
     )
 }

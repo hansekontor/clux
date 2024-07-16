@@ -17,19 +17,17 @@ import '../index.css';
 // react components
 import { WalletContext } from '@utils/context';
 const Select = lazy(() => import('./Select/Select'));
-const OnBoarding = lazy(() => import('./OnBoarding/OnBoarding'));
 const Checkout = lazy(() => import('./Send/Checkout'));
 const Backup = lazy(() => import('./Backup/Backup'));
 const WaitingRoom = lazy(() => import('./Game/WaitingRoom'));
 const Game = lazy(() => import('./Game/Game'));
+const Result = lazy(() => import('./Game/Result'));
 const Wallet = lazy(() => import('./Wallet/Wallet'));
-const HowToPlay = lazy(() => import('./How/HowToPlay'));
+const Payout = lazy(() => import('./Payout/Payout'));
 const NotFound = lazy(() => import('./NotFound'));
-import Footer from '@components/Common/Footer';
-import { LoaderCtn, Loader, LoadingAnimation, LoadingText } from '@components/Common/CustomLoader';
+import { LoadingAnimation } from '@components/Common/CustomLoader';
 import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
 import { isValidStoredWallet } from '@utils/cashMethods';
-import SuccessAnimation from '@components/Common/SuccessAnimation';
 
 
 const GlobalStyle = createGlobalStyle`    
@@ -94,11 +92,11 @@ export const WalletBody = styled.div`
 export const WalletCtn = styled.div`
     width: 480px;
     height: 100%;
-    background-color: #1A2131;
+    background-color: #1A1826;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     margin: 0;
     padding: 0;
     position: fixed;
@@ -114,47 +112,75 @@ export const WalletCtn = styled.div`
         box-shadow: none;
     }
 `;
-const SuccessCtn = styled(LoaderCtn)`
-    background: #f6f6f6;
-`;
 
-const AnimationScript = ({animationKey}) => {
-    console.log("AnimationScript called with animationKey:", animationKey)
+const AnimationScriptProvider = ({animationKey}) => {
+    const baseUrl = "https://dev.cert.cash:3001";
+    // const baseUrl = "http://localhost:8000";
+    const type = "text/javascript";
+
     useEffect(() => {
-        console.log("AnimationScript hook called")
         if (typeof animationKey === 'string') {
-            const animationFolder = animationKey.split("_")[0];
-            const winner = animationKey.split("_")[1];
-            const tier = animationKey.split("_")[2];
-            console.log("LOADED SCRIPTS FOR winner", winner, "tier", tier);
+            try {
 
-            // add script for entrance animation
-            const entranceScript = document.createElement('script');
-            entranceScript.src = `https://dev.cert.cash:3001/${animationFolder}/entrance.js`;
-            entranceScript.type = "text/javascript";
-            document.body.appendChild(entranceScript);
+                const animationFolder = animationKey.split("_")[0];
+                
+                // create all possible scripts
+                const idleScript = document.createElement('script');
+                const entranceScript = document.createElement('script');
+                const fightScript = document.createElement('script');
+                const celebrationScript = document.createElement('script');
+                console.log("ASP idleScript initial", idleScript)
+            
+                if (animationKey === "idle_clux") {
+                    // add script for dynamic idle chicken on /select
+                    idleScript.src = `${baseUrl}/chicken/clux/idle_dynamic.js`;
+                    idleScript.type = type;                
+                    console.log("ASP idleScript settings", idleScript);
+                    document.body.appendChild(idleScript);
+                } else {
+                    const winner = animationKey.split("_")[1];
+                    const tier = animationKey.split("_")[2];
+                    console.log("LOADED SCRIPTS FOR winner", winner, "tier", tier);  
 
-            // add script for fight animation
-            const fightScript = document.createElement('script');
-            fightScript.src = `https://dev.cert.cash:3001/${animationFolder}/${winner}/fight.js`;
-            fightScript.type = "text/javascript";
-            document.body.appendChild(fightScript);
+                    // add script for entrance animation
+                    // const entranceScript = document.createElement('script');
+                    entranceScript.src = `${baseUrl}/${animationFolder}/entrance.js`;
+                    entranceScript.type = type;
 
-            // add script for celebration animation
-            const celebrationScript = document.createElement('script');
-            console.log(`https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`)
-            celebrationScript.src = `https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`;
-            celebrationScript.type = "text/javascript";
-            document.body.appendChild(celebrationScript);
+                    // add script for fight animation
+                    // const fightScript = document.createElement('script');
+                    fightScript.src = `${baseUrl}/${animationFolder}/${winner}/fight.js`;
+                    fightScript.type = type;
 
+                    // add script for celebration animation
+                    // const celebrationScript = document.createElement('script');
+                    // console.log(`https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`)
+                    celebrationScript.src = `${baseUrl}/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`;
+                    celebrationScript.type = type;
 
+                    // add all scripts to body even if empty
+                    document.body.appendChild(entranceScript);
+                    document.body.appendChild(fightScript);
+                    document.body.appendChild(celebrationScript);
+                }
+            } catch(err) {
+                console.error(err);
+            }
         }
 
-        return () => {
-            document.body.removeChild(entranceScript);
-            document.body.removeChild(fightScript);
-            document.body.removeChild(celebrationScript);
-        }
+        // return () => {     
+        //     console.log("ASP clean up function called during key", animationKey)   
+        //     if (typeof animationKey === "string") {
+        //         console.log("animationKey clean up is String!")
+        //         if (animationKey === "idle_clux")
+        //             document.body.removeChild(idleScript);
+        //         else {
+        //             document.body.removeChild(entranceScript);
+        //             document.body.removeChild(fightScript);
+        //             document.body.removeChild(celebrationScript);            
+        //         }
+        //     } 
+        // }
     }, []);        
 
     return <></>;
@@ -166,20 +192,15 @@ const App = () => {
     const { wallet, loading, createWallet, forceWalletUpdate } = ContextValue;
     const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
     const [loadingStatus, setLoadingStatus] = useState(false);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(true);
     const [playerChoice, setPlayerChoice] = useState(false);
     const [ticketToRedeem, setTicketToRedeem] = useState(false);
     const [purchasedTicket, setPurchasedTicket] = useState(false);
+    const [payout, setPayout] = useState(false);
 
     const validWallet = isValidStoredWallet(wallet);
-    // console.log("App wallet", wallet);
 
     const [animationKey, setAnimationKey] = useState(false);
-
-    // helpers 
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 
     // activates the loading screen on change of loadingStatus
     useEffect(async () => { 
@@ -208,45 +229,22 @@ const App = () => {
         }
     }, [loading]);
 
+    console.log("APP animationKey", animationKey);
 
     return (
         <>
             {animationKey &&
-                <AnimationScript animationKey={animationKey}/>
+                <AnimationScriptProvider animationKey={animationKey}/>
             }
             <ThemeProvider theme={theme}>
                 <GlobalStyle />
                     <CustomApp>
                         <WalletBody>
                             <WalletCtn>
-                            {/* {scriptLoaded &&
-                                <>
-                                    <AnimateCC 
-                                        animationName="CLUX_SC01_HTML5"
-                                        composition={"9CD376263DCA47A78074CFD07FB36864"}
-                                        getAnimationObject={getAnimationObject}
-                                        paused={paused}
-                                    />                                       
-                                </>
-                            } */}
                                 <Suspense fallback={codeSplitLoader}>
                                     {loader && 
                                         <>  
-                                            {loadingStatus === "TRANSACTION COMPLETE" || loadingStatus === "TICKET REDEEMED" ? (
-                                                <SuccessCtn>
-                                                    <Loader>
-                                                        <SuccessAnimation />
-                                                        <LoadingText>{loadingStatus}</LoadingText>
-                                                    </Loader>
-                                                </SuccessCtn>
-                                            ) : (
-                                                <LoaderCtn>
-                                                    <Loader>
-                                                        <LoadingAnimation />
-                                                        <LoadingText>{typeof loadingStatus==='string' ? loadingStatus : ""}</LoadingText>
-                                                    </Loader>
-                                                </LoaderCtn>
-                                            )}
+                                            <LoadingAnimation loadingStatus={loadingStatus}/>
                                         </> 
                                     } 
                                     <Switch>
@@ -254,6 +252,7 @@ const App = () => {
                                             <Select
                                                 passRandomNumbers={setPlayerChoice}
                                                 passLoadingStatus={setLoadingStatus}
+                                                passAnimationKey={setAnimationKey}
                                             />
                                         </Route>
                                         <Route path="/checkout">
@@ -276,11 +275,20 @@ const App = () => {
                                                 ticket={purchasedTicket}
                                             />
                                         </Route>
+                                        <Route path="/result">
+                                            <Result 
+                                                passLoadingStatus={setLoadingStatus}
+                                                payout={payout}
+                                                passAnimationKey={setAnimationKey}
+                                            />
+                                        </Route>
                                         <Route path="/waitingroom">
                                             <WaitingRoom 
                                                 passLoadingStatus={setLoadingStatus}
                                                 passTicket={setTicketToRedeem}
                                                 purchasedTicket={purchasedTicket}
+                                                playerChoice={playerChoice}
+                                                passAnimationKey={setAnimationKey}
                                             />
                                         </Route>
                                         <Route path="/wallet">
@@ -289,14 +297,13 @@ const App = () => {
                                                 passTicket={setTicketToRedeem}
                                             />
                                         </Route>
-                                        <Route path="/how">
-                                            <HowToPlay />
+                                        <Route path="/payout">
+                                            <Payout />
                                         </Route>
                                         <Redirect exact from="/" to="/select" />
                                         <Route component={NotFound} />
                                     </Switch>
                                 </Suspense> 
-                                {/* <Footer /> */}
                             </WalletCtn>
                         </WalletBody>
                     </CustomApp>

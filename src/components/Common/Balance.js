@@ -4,56 +4,40 @@ import PropTypes from 'prop-types';
 
 // styled css components
 const BalanceCtn = styled.div`
-    width: fit-content;
-    height: 41px;
-    border-radius: 41px;
-    background: #ededed;
-    color: #000000;
-    position: relative;
+    width: 112px;
+    height: 38px;
+    border-radius: 12px;
+    background: #1A2131;
+    color: #ffffff;
     display: flex;
-    align-items: flex-end;
-    gap: 5px;
-`;
-const Amount = styled.div`
-height: 35px;
-    text-align: end;
-    font-family: "Sequel 100 Wide 95", Helvetica;
-    font-size: 32px;
-font-style: normal;
-    font-weight: 400;
-    padding-left: 20px;
-    margin-bottom: 7px;
-`;
-const Currency = styled.div`
-    font-family: "Inter-Medium", Helvetica;
-    font-size: 11px;
-font-style: normal;
-    font-weight: 550;
-    line-height: normal;
-    letter-spacing: 0.12px; 
-    padding-right: 10px;
-    margin-bottom: 4px;
+    justify-content: center;
+    align-items: center;
+    font-family: "Inter";
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 2px;
 `;
 
 const Balance = ({
-    amount, 
-    currency
+    amount
 }) => {
+
+    const amountString = String(amount);
+    const digits = amountString.length;
+    const fillupDigitsString = String(0).repeat(6-digits);
+    const displayAmountString = fillupDigitsString.concat(amountString);
     return (
         <BalanceCtn>
-            <Amount>{amount}</Amount>
-            <Currency>{"CREDITS"}</Currency>
+            {displayAmountString}
         </BalanceCtn>
     )
 }
 // dev remove
 Balance.defaultProps = {
     amount: 333,
-    currency: "CREDITS"
 }
 Balance.propTypes = {
     amount: PropTypes.number,
-    currency: PropTypes.currency
 }
 
 

@@ -16,14 +16,19 @@ import { LoadingCtn } from '@components/Common/Atoms';
 import { isValidStoredWallet } from '@utils/cashMethods';
 import { infoNotification, errorNotification } from '@components/Common/Notifications';
 import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
-import PrimaryButton from '@components/Common/PrimaryButton';
+import { ReturnButton } from '@components/Common/PrimaryButton';
 import Balance from '@components/Common/Balance';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import TicketHistory from './TicketHistory';
-import { Support, ReturnButton, HelpButton } from '@components/Common/PrimaryButton';
+import { HelpButton } from '@components/Common/PrimaryButton';
 import Header from '@components/Common/Header'; 
 
 // styled css components
+const AgreeCtn = styled.div`
+width: 100%;
+height: 100%;
+background-color: #EAEAEA;
+`;
 const Text = styled.div`
     color: black;
     font-family: "Inter-Medium", Helvetica;
@@ -69,7 +74,8 @@ const Wallet = ({
     const location = useLocation();
     const ContextValue = useContext(WalletContext);
     const { wallet, loading } = ContextValue;
-console.log("wallet", wallet)
+    console.log("Wallet", location.state);
+
     // states
     const [activeTickets, setActiveTickets] = useState(true);
 
@@ -88,8 +94,11 @@ console.log("wallet", wallet)
     }
     
     return (
-        <>  
+        <AgreeCtn>
             <Header />
+            <ReturnButton 
+                    returnTo={location.state?.returnTo || "/select"}
+            />
             {!loading && (
                 <Content>
                     <Tickets>
@@ -118,15 +127,7 @@ console.log("wallet", wallet)
                 </Content>                
             )}
 
-
-            <Support>
-                <ReturnButton 
-                    returnToPath={location.state?.prev || "/select"}
-                />
-                <Balance/> 
-                <HelpButton />
-            </Support>
-        </>
+        </AgreeCtn>
     );
 
   

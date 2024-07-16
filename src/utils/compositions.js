@@ -1,6 +1,11 @@
 const compositions = {
-    CLUX: {
+    CLUX: {            
+        IDLE: {
+            STATIC: "9B6E2C5B5E4B496C8C9333E606A80FE7",
+            DYNAMIC: "16A04F6925694CC39B312E3A87CF0EBD"
+        },
         NORRIS: {
+
             ENTRANCE: "9CD376263DCA47A78074CFD07FB36864",
             A: {
                 FIGHT: "B5519D86C55F4C62952ECF014A22F68C",

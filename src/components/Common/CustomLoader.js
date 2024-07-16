@@ -1,78 +1,65 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
-export const LoadingAnimation = () => {
-    const green = "#32C770";
-    const grey = "#ADADAD";
-    const props = [
-        {color: green, opacity: 1},
-        {color: green, opacity: 1},
-        {color: grey, opacity: 0.8},
-        {color: grey, opacity: 0.6},
-        {color: grey, opacity: 0.4},
-        {color: grey, opacity: 0.2},
-        {color: grey, opacity: 0.1},
-        {color: grey, opacity: 0},
-    ];
+import { FadeInAnimation, FadeOutAnimation } from '@components/Common/CssAnimations';
 
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+// styled css components
+const Background = styled.div`
+    z-index: 332;
+    background: #000000;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
-    const [count, setCount] = useState(0);
-    
-    const getIndex = (i) => {
-        const j = i - 8 * Math.floor( i/8 );
-        return j;
-    }
+    ${FadeInAnimation}
+    ${FadeOutAnimation}
+`;
+const LoadingCtn = styled.div`
+    z-index: 333;
+    background-color: #ffffff;
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;    
+    padding: 24px 0;    
+    border-radius: 20px;
+    width: 250px;
+    position: fixed;
 
-    useEffect(async () => {
-        await sleep(120);
-        setCount(count + 1);
-    }, [count])
+    ${FadeInAnimation}
+    ${FadeOutAnimation}
+`;
+const LoadingCircle = styled(Spin)`
+    color: #32C770;
+`;
+const CustomLoadingIcon = styled(LoadingOutlined)`
+    width: 64px;
+    height: 64px;
+    font-size: 64px;
+`;
+const Status = styled.div`
+    font-family: Inter-Semibold, Helvetica;
+    font-size: 20px;
+    line-height: 140%;
+`;
+
+
+export const LoadingAnimation = ({
+    loadingStatus
+}) => {
 
     return (
-        <svg width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="100.5" y="45.5947" width="8.81057" height="30.837" rx="4.40529" transform="rotate(90 100.5 45.5947)" fill={props[getIndex(count+1)].color} fill-opacity={props[getIndex(count+1)].opacity} />
-            <rect x="60.9355" y="66.6652" width="8.81057" height="30.837" rx="4.40529" transform="rotate(-45 60.9355 66.6652)" fill={props[getIndex(count)].color} fill-opacity={props[getIndex(count)].opacity} />            
-            <rect x="46.0938" y="69.163" width="8.81057" height="30.837" rx="4.40529" fill={props[getIndex(count+7)].color} fill-opacity={props[getIndex(count+7)].opacity} />            
-            <rect x="33.834" y="60.4355" width="8.81057" height="30.837" rx="4.40529" transform="rotate(45 33.834 60.4355)" fill={props[getIndex(count+6)].color} fill-opacity={props[getIndex(count+6)].opacity} />
-            <rect x="31.3379" y="45.5947" width="8.81057" height="30.837" rx="4.40529" transform="rotate(90 31.3379 45.5947)" fill={props[getIndex(count+5)].color} fill-opacity={props[getIndex(count+5)].opacity} />     
-            <rect x="12.0293" y="17.7597" width="8.81057" height="30.837" rx="4.40529" transform="rotate(-45 12.0293 17.7597)" fill={props[getIndex(count+4)].color} fill-opacity={props[getIndex(count+4)].opacity} />
-            <rect x="46.0938" width="8.81057" height="30.837" rx="4.40528" fill={props[getIndex(count+3)].color} fill-opacity={props[getIndex(count+3)].opacity} />
-            <rect x="82.7402" y="11.5294" width="8.81057" height="30.837" rx="4.40529" transform="rotate(45 82.7402 11.5294)" fill={props[getIndex(count+2)].color} fill-opacity={props[getIndex(count+2)].opacity} />
-        </svg>
+        <>
+            <Background />
+            <LoadingCtn>
+                <LoadingCircle indicator={<CustomLoadingIcon spin />}/>
+                <Status>{loadingStatus}</Status>
+            </LoadingCtn>        
+        </>
     )
 }
-
-export const LoaderCtn = styled.div`
-    background-color: rgba(255, 255, 255,1);
-    background: linear-gradient(180deg, rgb(0,0,0) 0%, rgb(14.58, 14.58, 14.58) 100%);
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: inherit;
-    height: 100%;
-    top: 0;
-    position: fixed;
-    z-index: 9999;
-`;
-export const Loader = styled.div`
-    margin: auto;
-    align-items: center;
-    display: inline-flex;
-    flex-direction: column;
-    gap: 24px;
-`;
-export const LoadingText = styled.div`
-    color: #8B8B8B;
-    font-family: "PP Telegraf-Medium", Helvetica;
-    font-size: 16px;
-    font-weight: 500;
-    left: 0;
-    letter-spacing: 0;
-    line-height: normal;
-    position: relative;
-    top: 0;
-    white-space: nowrap;
-`;

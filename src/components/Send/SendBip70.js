@@ -41,7 +41,6 @@ import {
     Fee, FeeLabel, FeeAmount, 
     TooltipLine, TooltipExpand, 
     Invoice, 
-    Support
 } from "../../assets/styles/checkout.styles";
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { 
@@ -542,46 +541,7 @@ const SendBip70 = ({
                                 )}
                             </div> 
                             {apiError && <ApiError />}
-                        </CustomForm> 
-                        <Support>
-                        {showHowitworks ? (
-                            <>
-                                <TooltipLine>
-                                    <TooltipExpand onClick={() => handleTooltipExpand("how")}>- How it works</TooltipExpand>
-                                    {invoice && <Invoice>INVOICE {invoice}</Invoice>}    
-                                </TooltipLine>
-                                <TooltipLine>
-                                    <TooltipExpand>
-                                        You already have enough tokens and do not need an Authorization Code. 
-                                        Upon sending, the wallet behind this checkout will build and broadcast the transaction to the merchant. 
-                                    </TooltipExpand>
-                                </TooltipLine>                                
-                            </>
-                        ) : (
-                            <>
-                                <TooltipLine>
-                                    <TooltipExpand onClick={() => handleTooltipExpand("how")}>+ How it works</TooltipExpand>
-                                    {invoice && <Invoice>INVOICE {invoice}</Invoice>}    
-                                </TooltipLine>
-                            </>
-                        )}
-                        {/*showHelp ? (
-                            <>
-                                <TooltipLine>
-                                    <TooltipExpand onClick={() => handleTooltipExpand("help")}>- Need help?</TooltipExpand>
-                                </TooltipLine>
-                                <TooltipLine>
-                                    <TooltipExpand>Help Text Placeholder.</TooltipExpand>        
-                                </TooltipLine>           
-                            </>
-                        ) : (
-                            <>
-                                <TooltipLine>
-                                    <TooltipExpand onClick={() => handleTooltipExpand("help")}>+ Need help?</TooltipExpand>
-                                </TooltipLine>                               
-                            </>
-                        )*/}                      
-                        </Support>    
+                        </CustomForm>  
                     </>               
                 )}
             </>

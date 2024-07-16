@@ -1,20 +1,21 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useHistory, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import SettingsSvg from '@assets/settings.svg';
-import { RollbackOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import CashoutSvg from '@assets/cashout.svg';
 
 
 const PrimaryButton = styled.button`
     color: #000000;
-    background-color: #f2bc57;
+    background-color: ${props => props.inactive ? "b9b9b9" : "#f2bc57"};
     height: 52px;
     border-style: none;
     border-radius: 12px;
     font-family: "Sequel 100 Wide 95";
-    font-size: 24;
+    font-size: 20px;
     cursor: pointer;
     width: 88%;
 `;
@@ -28,41 +29,43 @@ export const SecondaryButton = styled(PrimaryButton)`
 const Circle = styled.div`
     background-color: #ededed;
     border-radius: 20px;
-    height: 40px;
-    width: 40px;
+    height: 35px;
+    width: 35px;
     cursor: pointer;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     &: hover {
         color: #ffffff;
     }
 `;
 const SettingsIcon = styled.img`
-    width: 28px;
-    height: 28px;
-    top: 6px;
-    position: relative;
+    width: 24px;
+    height: 24px;
 `;
 const QuestionMark = styled.div`
-    width: 14px;
-    height: 18px;
-    left: 12.5px;
-    top: 8px;
+    width: 8px;
+    height: 8px;
     position: relative;
+    top: -6px;
+    left: -1px;
     color: #000000;
     font-family: "Inter-SemiBold", Helvetica;
-    font-size: 24.5px;
+    font-size: 18px;
     font-weight: 600;
 `;
 
 
 export const SettingsButton = ({
-    prev
+    returnTo
 }) => {
+    console.log("SettingsButton returnTo", returnTo);
     const history = useHistory();
 
     // handlers
     const handleToSettings = () => {
-        history.push({pathname: "/wallet", state: { prev } });
+        history.push({pathname: "/wallet", state: { returnTo } });
     }
 
     return (
@@ -80,194 +83,77 @@ SettingsButton.propTypes = {
 
 
 export const HelpButton = ({
-    prev
+    returnTo
 }) => {
-    const history = useHistory();
-
     // handlers 
     const handleToHelp = () => {
-        history.push({pathname: '/how', state: { prev } });
-    }
-
-    return (
-        <Circle onClick={() => handleToHelp()}>
-            <QuestionMark>?</QuestionMark>
-        </Circle>
-    )
-}
-HelpButton.defaultProps = {
-    prev: "/select",
-};
-HelpButton.propTypes = {
-    prev: PropTypes.string,
-};
-
-
-const CustomReturn = styled(RollbackOutlined)`
-    color: black;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 20px;
-`;
-
-export const ReturnButton = ({
-    returnToPath,
-    ...props
-}) => {
-    const history = useHistory();
-
-    // handlers 
-    const handleReturn = () => {
-        history.push(returnToPath);
+        window.location.href = "https://block.lotto";        
     }
 
     return (
         <>
-            <Circle onClick={() => handleReturn()}>
-                <CustomReturn />
-            </Circle>                
+            <Circle onClick={() => handleToHelp()}>
+                <QuestionMark>?</QuestionMark>
+            </Circle>       
         </>
     )
 }
-ReturnButton.defaultProps = {   
-    returnToPath: "/select",
+HelpButton.defaultProps = {
+    returnTo: "/select",
+};  
+HelpButton.propTypes = {
+    returnTo: PropTypes.string,
 };
-ReturnButton.propTypes = {
-    returnToPath: PropTypes.string,
-};
 
 
-export const Support = styled.div`
-    top: 90%;
-    position: ${props => props.sticky ? "sticky" : "absolute"};
-    width: 86%;
-    justify-content: space-between;
-    display: inline-flex;
-    left: 7%;
-    z-index: 10;
+const CashoutIcon = styled.img`
 `;
 
-const RightOnlySupport = styled(Support)`
-    justify-content: right;
-`;
-
-export const SupportButtons = ({
-    types,
-    previous = 'select',
-    sticky = false
-}) => {
-
-    if (types.length === 2 && types[0] === 'return') {
-        return (
-            <Support sticky={sticky}>
-                <ReturnButton returnToPath={previous}/>
-                <HelpButton returnToPath={previous} />
-            </Support>
-        )
-    } else if (types-length === 2 && types[0] === 'settings') {
-        return (
-            <Support sticky={sticky}>
-                <SettingsButton returnToPath={previous}/>
-                <HelpButton returnToPath={previous} />
-            </Support>
-        )
-    } else if (types[0] === 'return') {
-        return (
-            <Support sticky={sticky}>
-                <ReturnButton returnToPath={previous} />
-            </Support>            
-        )
-    } else {
-        return (
-            <RightOnlySupport>
-                <HelpButton returnToPath={previous}/>
-            </RightOnlySupport>
-        )
-    }
-}
-
-const LargeButton = styled.button`
-    background-color: #ededed;
-    border-radius: 20px;
-    height: 24px;
-    width: fit-content;
-    cursor: pointer;
-    text-align: center;
-    text-color: black;
-    display: inline-flex;
-    border-style: none;
-;`
-const LargeButtonSettingsIcon = styled(SettingsIcon)`
-    width: 18px;
-    height: 18px;
-    position: relative;
-    top: 2px;
-`;
-const LargeButtonText = styled.div`
-    font-family: "Inter-Medium";
-    font-size: 12px;
-    padding: 3px 3px;
-    font-weight: 500;
-`;
-const LargeSettingsButton = ({
-    prev
+export const PayoutButton = ({
+    returnTo
 }) => {
     const history = useHistory();
 
-    // handlers 
+    // handlers
     const handleToSettings = () => {
-        history.push({pathname: '/wallet', state: { prev } });
+        history.push({pathname: "/payout", state: { returnTo } });
     }
 
     return (
-        <LargeButton onClick={() => handleToSettings()}>
-            <LargeButtonSettingsIcon src={SettingsSvg} />
-            <LargeButtonText>Settings</LargeButtonText>
-        </LargeButton>
-    )   
+        <Circle onClick={() => handleToSettings()}>
+            <CashoutIcon src={CashoutSvg} />
+        </Circle>    
+    )
 }
-const LargeButtonQuestionMark = styled(QuestionMark)`
-    width: 14px;
-    height: 18px;
-    font-family: "Inter-SemiBold", Helvetica;
-    font-size: 18px;
-    font-weight: 600;
-    top: 0px;
-    left: 2px;
-    right: 2px;
+
+PayoutButton.defaultProps = {
+    returnTo : "/select",
+};
+PayoutButton.propTypes = {
+    returnTo: PropTypes.string,
+};
+
+
+const ReturnButtonCtn = styled.div`
+    padding: 10px;
+    cursor: pointer;
 `;
-const LargeHelpButton = ({
-    prev
+
+export const ReturnButton = ({
+    returnTo
 }) => {
+    console.log("ReturnButton returnTo", returnTo);
     const history = useHistory();
 
-    // handlers 
-    const handleToHelp = () => {
-        history.push({pathname: '/how', state: { prev } });
+    // handlers
+    const handleReturn = () => {
+        history.push({pathname: returnTo});
     }
 
     return (
-        <LargeButton onClick={() => handleToHelp()}>
-            <LargeButtonQuestionMark>?</LargeButtonQuestionMark>
-            <LargeButtonText>How to play</LargeButtonText>
-        </LargeButton>
-    )   
-}
-const LargeButtonGroup = styled.div`
-    display: inline-flex;
-    gap: 12px;
-    width: fit-content;
-    margin: auto;
-`;
-export const LargeButtons = ({
-    prev
-}) => {
-    return (    
-        <LargeButtonGroup>
-            <LargeSettingsButton prev={prev} />
-            <LargeHelpButton prev={prev} />
-        </LargeButtonGroup>
+        <ReturnButtonCtn onClick={() => handleReturn()}>
+            <ArrowLeftOutlined />
+        </ReturnButtonCtn>
     )
 }
 

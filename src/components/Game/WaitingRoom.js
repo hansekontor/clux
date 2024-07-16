@@ -6,45 +6,35 @@ import { Modal } from 'antd';
 
 // react modules
 import { WalletContext } from '@utils/context';
-import PrimaryButton, { SupportButtons } from '../Common/PrimaryButton';
-import RingPng from '@assets/ring.png';
+import PrimaryButton from '../Common/PrimaryButton';
+import RingPng from '@assets/ring_on_beach.png';
 import ChickenPng from '@assets/chicken_placeholder.png';
 import Header from '@components/Common/Header';
-import { infoNotification } from '@components/Common/Notifications';
+import Notification from '@components/Common/Notifications';
+import Footer from '@components/Common/Footer';
+
 
 // styled css components 
 const Background = styled.img`
-    position: relative;
+    position: absolute;
+    top: 0;
+    margin-left: auto;
+    margin-right: auto;
     height: 100vh;
     z-index: -4;
     object-fit: cover;
-    filter: grayscale(1);
 `;
-const PlayButton = styled(PrimaryButton)`
-    z-index: 1;
-    position: absolute;
-    top: 80%;
-    background-color: ${props => props.active ? '#ffffff' : '#d9dadb'};
-    cursor: ${props => props.active ? 'pointer' : 'wait'};
-    font-weight: 300;
-`;
-const Chicken = styled.img`
-    z-index: -3;
-    position: absolute;
-    top: 25%;
-    left: 28%;
-    height: 400px;
-    width: auto;
-`;
-const InfoBar = styled.div`
-    background-color: #ededed;
-    padding: 8px 16px;
+const Scrollable = styled.div`
+    flex-grow: 1;
+    overflow-y: auto;
 `;
 
 const WaitingRoom = ({
     passLoadingStatus, 
     passTicket,
-    purchasedTicket
+    purchasedTicket,
+    playerChoice,
+    passAnimationKey
 }) => {
     console.log("purchasedTicket", purchasedTicket);
     const history = useHistory();
@@ -66,10 +56,15 @@ const WaitingRoom = ({
     }
 
     // hooks
-    useEffect(async () => { 
-        infoNotification("Your ticket's block has not been finalized yet. Please wait.")
+    useEffect(async () => {
         // manually turn off loading
         passLoadingStatus(false);
+        passAnimationKey(false);
+    }, [])
+
+    useEffect(async () => { 
+        // infoNotification("Your ticket's block has not been finalized yet. Please wait.")
+
 
         if (tickets?.length > 0) {
             const ticketsAwaitingBlock = tickets.filter(ticket => !ticket.block);
@@ -78,12 +73,14 @@ const WaitingRoom = ({
             setUnconfirmedTickets(ticketsAwaitingBlock);
             setOpenTickets(ticketsToBeRedeemed);
         }
+    }, [tickets]);
 
+    useEffect(async () => {
         // simulate waiting time for block --- remove later
         await sleep (7000);
-        infoNotification("Your ticket can be redeemed.");
-        setGameEnabled(true);
-    }, [tickets]);
+        // infoNotification("Your ticket can be redeemed.");
+        setGameEnabled(true);       
+    }, [])
 
     // variables in DOM
     const waitingInfoText = "Your ticket has been broadcasted but its block was not finalized yet. After that, your ticket can be redeemed. Average time between blocks is 10 minutes."
@@ -100,23 +97,33 @@ const WaitingRoom = ({
             passLoadingStatus("REDEEMING TICKET")
             await sleep(2000);
             passLoadingStatus("TICKET REDEEMED");
-            await sleep(3000);
+            await sleep(2000);
             passLoadingStatus(false);
             history.push('/game');
         } else 
             waitingInfoModal.info(waitingInfoConfig);
     };
 
+    const buttonText = "Redeem Ticket";
 
     return (
         <>  
             {waitingInfoHolder}
             {/* {returnInfoHolder} */}
+            {gameEnabled && 
+                <Notification type="success" message="You can redeem your Ticket now" />
+            }
             <Background src={RingPng} />
-            <Chicken src={ChickenPng}/>
+            {/* <Chicken src={ChickenPng}/> */}
             <Header />
-            <PlayButton onClick={() => handleToGame()} active={gameEnabled}>Redeem</PlayButton>
-            <SupportButtons prev="/waitingroom" types={["help" ]} />
+            <Scrollable></Scrollable>
+            <Footer 
+                origin={"/waitingroom"}
+                randomNumbers={playerChoice}
+                buttonOnClick={handleToGame}
+                buttonText={buttonText}
+                activeButton={!gameEnabled}
+            />
         </>
 
     )
