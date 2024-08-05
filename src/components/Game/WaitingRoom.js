@@ -1,18 +1,16 @@
 // node modules
 import React, { useState, useEffect, useContext } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Modal } from 'antd';
 
 // react modules
 import { WalletContext } from '@utils/context';
-import PrimaryButton from '../Common/PrimaryButton';
 import RingPng from '@assets/ring_on_beach.png';
-import ChickenPng from '@assets/chicken_placeholder.png';
 import Header from '@components/Common/Header';
 import Notification from '@components/Common/Notifications';
 import Footer from '@components/Common/Footer';
-
+import { getWalletState } from '@utils/cashMethods'
 
 // styled css components 
 const Background = styled.img`
@@ -29,26 +27,24 @@ const Scrollable = styled.div`
     overflow-y: auto;
 `;
 
+
 const WaitingRoom = ({
     passLoadingStatus, 
-    passTicket,
-    purchasedTicket,
-    playerChoice,
-    passAnimationKey
+    passAnimationKey,
+    activeTicket, 
+    updateActiveTicket
 }) => {
-    console.log("purchasedTicket", purchasedTicket);
     const history = useHistory();
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
-    const { tickets } = wallet;
-    console.log("WaitingRoom wallet", wallet);
-    console.log("WaitingRoom tickets", tickets);
+    const walletState = getWalletState(wallet)
+    const { tickets } = walletState;
+    const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
 
     // states
     const [gameEnabled, setGameEnabled] = useState(false);
     const [waitingInfoModal, waitingInfoHolder] = Modal.useModal();
-    const [unconfirmedTickets, setUnconfirmedTickets] = useState(false);
-    const [openTickets, setOpenTickets] = useState(false);
+    const [ticketData, setTicketData] = useState(false);
 
     // helpers
     const sleep = (ms) => {
@@ -56,28 +52,30 @@ const WaitingRoom = ({
     }
 
     // hooks
+
     useEffect(async () => {
-        // manually turn off loading
+        // manually turn off loading and animation script
         passLoadingStatus(false);
         passAnimationKey(false);
     }, [])
 
+
+    // find active ticket data in tickets from wallet state
     useEffect(async () => { 
-        // infoNotification("Your ticket's block has not been finalized yet. Please wait.")
-
-
-        if (tickets?.length > 0) {
-            const ticketsAwaitingBlock = tickets.filter(ticket => !ticket.block);
-            const ticketsToBeRedeemed = tickets.filter(ticket => ticket.block && !ticket.payout)
-
-            setUnconfirmedTickets(ticketsAwaitingBlock);
-            setOpenTickets(ticketsToBeRedeemed);
+        if (activeTicket) {
+            const activeTicketData = tickets.find((ticket) => ticket.id === activeTicket.id);
+            if (!activeTicketData) {
+                console.log("Error: TICKET NOT FOUND");
+            } else {
+                updateActiveTicket(activeTicketData);
+                setTicketData(activeTicketData)
+            }
         }
-    }, [tickets]);
+    }, []);
 
     useEffect(async () => {
         // simulate waiting time for block --- remove later
-        await sleep (7000);
+        await sleep (1000);
         // infoNotification("Your ticket can be redeemed.");
         setGameEnabled(true);       
     }, [])
@@ -91,7 +89,6 @@ const WaitingRoom = ({
     // handlers
     const handleToGame = async () => {
         if (gameEnabled) {
-            passTicket(purchasedTicket);
             passLoadingStatus("FETCHING TICKET DATA")
             await sleep(2000);
             passLoadingStatus("REDEEMING TICKET")
@@ -109,20 +106,18 @@ const WaitingRoom = ({
     return (
         <>  
             {waitingInfoHolder}
-            {/* {returnInfoHolder} */}
             {gameEnabled && 
                 <Notification type="success" message="You can redeem your Ticket now" />
             }
             <Background src={RingPng} />
-            {/* <Chicken src={ChickenPng}/> */}
             <Header />
             <Scrollable></Scrollable>
             <Footer 
                 origin={"/waitingroom"}
-                randomNumbers={playerChoice}
+                randomNumbers={activeTicket.playerChoice || ticketData.playerChoice}
                 buttonOnClick={handleToGame}
                 buttonText={buttonText}
-                activeButton={!gameEnabled}
+                ticketIndicator={unredeemedTickets.length}
             />
         </>
 

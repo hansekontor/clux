@@ -406,29 +406,64 @@ export default function useBCH() {
     };
 
     const getTicketHistory = async (address, limit = 30) => {
-        console.log("useBCH getTicketHistory called");
+        // console.log("getTicketHistory called with address", address);
         const convertedAddress = convertToEcashPrefix(address);
-        return [
+        const apiTickets = [
             {
-                id: "1234567890123456789012345678901234567890123456789012345678901234",
-                time: "33.33.33 33:33:33 GMT"
+                id: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
+                time: "33.33.33 33:33:33 GMT",
+                playerChoice: [1,2,3,4],
+                maxPayout: "0000000000027100",
+                blockHash: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5"
             },
             {
                 id: "1234567890123456789012345678901234567890123456789012345678901234",
                 time: "22.22.22 22:22:22 GMT",
-                block: 222222,   
-            },
-            {
-                id: "1234567890123456789012345678901234567890123456789012345678901234",
-                time: "11.11.11 11:11:11 GMT",
-                block: 333333,
+                playerChoice: [5,6,7,8],
+                height: 222222,
+                maxPayout: "0000000000027100",
+                blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
                 payout: {
                     id: "1234567890123456789012345678901234567890123456789012345678901234",
-                    block: 444444,
-                    value: 12
+                    height: 222222,
+                    blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
+                    value: 20,
+                    time: "22.22.22 22:22:22 GMT"
+                }
+            },
+            {
+                id: "2345678901234567890123456789012345678901234567890123456789012345",
+                time: "11.11.11 11:11:11 GMT",
+                height: 333333,
+                playerChoice: [9, 10,11,12],
+                blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
+                payout: {
+                    id: "1234567890123456789012345678901234567890123456789012345678901234",
+                    height: 444444,
+                    blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
+                    value: 10,
+                    time: "11.11.11 11:11:11 GMT"
                 }
             }
         ];
+        // console.log("apiTickets", apiTickets);
+
+        const shortifyHash = (hash) => {
+            return String(hash.slice(0,8) + "..." + hash.slice(56,));
+        }
+
+        const formattedTickets = apiTickets.map((ticket, index) => {
+            ticket.displayId = shortifyHash(ticket.id);
+            if (ticket.payout) {
+                ticket.payout.displayId = shortifyHash(ticket.payout.id);
+                ticket.payout.displayBlockHash = shortifyHash(ticket.payout.blockHash);
+            }
+            ticket.key = index;
+
+            return ticket;
+        });
+        
+        return formattedTickets;
         return fetch(`https://tickets.cert.cash/address/${convertedAddress}?limit=${limit}`)
     };
 

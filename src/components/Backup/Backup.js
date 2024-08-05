@@ -1,14 +1,16 @@
+// node modules
 import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
+// custom react components
 import PrimaryButton, { SecondaryButton } from '@components/Common/PrimaryButton';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import { WalletContext } from '@utils/context';
 import Notification from '@components/Common/Notifications';
 import { Enfold } from '@components/Common/CssAnimations';
-import { FadeInAnimation, FadeOutAnimation } from '@components/Common/CssAnimations';
-
+import { FadeInAnimation } from '@components/Common/CssAnimations';
+import FadeInOut from './FadeInOut'
 
 // assets
 import BellSvg from '@assets/bell.svg';
@@ -56,6 +58,7 @@ const Modal = styled.div`
     padding: 24px 0;
     border-radius: 20px;
 `;
+
 const ModalCtn = styled.div`
     width: 100%;
     gap: 24px;
@@ -65,7 +68,6 @@ const ModalCtn = styled.div`
     flex-direction: column;
 
     ${FadeInAnimation}
-    ${FadeOutAnimation}
 `;
 const BellIcon = styled.img``;
 const CopyboardIcon = styled.img`
@@ -84,86 +86,83 @@ const NavigationCount = styled.div`
     font-size: 14px;
     align-content: center;
 `;
-const CustomEnfold = styled(Enfold)`
-    width: 100%;
-`;
 
 
 const Backup = ({
     purchasedTicket,
     passLoadingStatus,
-    showModal
 }) => {
     const history = useHistory();
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
 
-    const [backupRequested, setBackupRequested] = useState(false);
     const [backupFinished, setBackupFinished] = useState(false);
     const [phraseCopied, setPhraseCopied] = useState(false);
-    const [isFirstRendering, setFirstRendering] = useState(true);
+    const [fadeOut, setFadeOut] = useState(false);
+
+    // helpers
+    const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     // stop loading screen after rendering has been completed
     useEffect(() => {
         passLoadingStatus(false);
-        // setFirstRendering(false);
     }, [])
 
     // handlers
-    const handleOnSubmit = () => {
+    const handleOnSubmit = async (e) => {
+        e.preventDefault();
+        // dev add email submission to server
+        setFadeOut(true);
+        await sleep(300);
         history.push('/waitingroom');
-    }
-    const handleBackupSeedPhrase = () => {
-        setBackupRequested(true)
     }
     const handleCopySeedPhrase = () => {
         navigator.clipboard.writeText(wallet.mnemonic);
         setPhraseCopied(true);
-        // successNotification("Copied to clipboard")
+    }
+    const handleBackupFinished = (e) => {
+        e.preventDefault();
+        setBackupFinished(true);
     }
 
 
     return (
         <>
             {phraseCopied && <Notification type="success" string={"Copied to clipboard"} />}
-            <ModalCtn>
-                <Modal>
-                    <BellIcon src={BellSvg} />
-                    {!backupFinished ? (
-                        <>
-                            <Title>Backup Wallet</Title>
-                            <Text>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Text>
-                            {/* <CustomEnfold animate={isFirstRendering}> */}
+            <FadeInOut show={!fadeOut} duration={300}>
+                <ModalCtn>
+                    <Modal >
+                        <BellIcon src={BellSvg} />
+                        {!backupFinished ? (
+                            <>
+                                <Title>Backup Wallet</Title>
+                                <Text>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Text>
                                 <SeedPhrase 
                                     phrase={wallet.mnemonic ? wallet.mnemonic : ""}
                                 />             
-                                <SecondaryButton onClick={handleCopySeedPhrase}>
-                                    <CopyboardIcon src={CopyboardSvg} />Copy</SecondaryButton>
-                            {/* </CustomEnfold> */}
-                            <PrimaryButton onClick={() => setBackupFinished(true)}>I've Secured</PrimaryButton> 
-                        </>
-                    ) : (
-                        <>
-                            <Title>Get Notified</Title>
-                            <Text>Results are usually available in approximately 10 minutes or less.</Text>
-                            <Text>Enter your email address to get notified when your results are ready.</Text>
-                            <CustomForm id='email-form' onSubmit={() => handleOnSubmit()}>
-                                <Input 
-                                    placeholder="Enter your Email"
-                                />
-                            </CustomForm>                                       
-                            <PrimaryButton form='email-form' type="submit">Submit</PrimaryButton>
-                
-                        </>
-                    )} 
-                </Modal>
-                {!backupFinished ? (
-                    <NavigationCount>1 / 2</NavigationCount>
-                ) : (
-                    <NavigationCount>2 / 2</NavigationCount>
-                )}
-            </ModalCtn>
-
+                                <SecondaryButton type="button" onClick={handleCopySeedPhrase}>
+                                <CopyboardIcon src={CopyboardSvg} />Copy</SecondaryButton>
+                                <PrimaryButton type="button" onClick={handleBackupFinished}>I've Secured</PrimaryButton> 
+                            </>
+                        ) : (
+                            <>
+                                <Title>Get Notified</Title>
+                                <Text>Results are usually available in approximately 10 minutes or less.</Text>
+                                <Text>Enter your email address to get notified when your results are ready.</Text>
+                                <CustomForm id='email-form' onSubmit={handleOnSubmit}>
+                                    <Input 
+                                        placeholder="Enter your Email"
+                                    />
+                                </CustomForm>                                       
+                                <PrimaryButton form='email-form' type="submit">Submit</PrimaryButton>                                
+                            </>
+                        )}
+                    </Modal>                                        
+                    <NavigationCount>{!backupFinished ? "1 / 2" : "2 / 2"}</NavigationCount>
+                </ModalCtn>
+            </FadeInOut>
         </>
     )
 }

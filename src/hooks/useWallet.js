@@ -50,7 +50,6 @@ const useWallet = () => {
           };
     const previousBalances = usePrevious(balances);
     const previousTokens = usePrevious(tokens);
-    const previousTickets = usePrevious(tickets);
 
     const normalizeBalance = slpBalancesAndUtxos => {
         const totalBalanceInSatoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
@@ -88,6 +87,7 @@ const useWallet = () => {
     const loadWalletFromStorageOnStartup = async setWallet => {
         // get wallet object from localforage
         const wallet = await getWallet();
+        console.log("loadWalletFromStorageOnStartup wallet", wallet)
         // If wallet object in storage is valid, use it to set state on startup
         if (isValidStoredWallet(wallet)) {
             // Convert all the token balance figures to big numbers
@@ -95,6 +95,7 @@ const useWallet = () => {
             wallet.state = liveWalletState;
 
             setWallet(wallet);
+            console.log("loadWalletFRomStorageOnStartup setWallet", wallet);
             return setLoading(false);
         }
         // Loading will remain true until API calls populate this legacy wallet
@@ -119,16 +120,18 @@ const useWallet = () => {
 
             const utxosHaveChanged = !isEqual(utxosBcash, wallet?.state?.utxos);
 
+            // dev re-add later
             // If the utxo set has not changed,
-            if (!utxosHaveChanged) {
-                // remove api error here; otherwise it will remain if recovering from a rate
-                // limit error with an unchanged utxo set
-                setApiError(false);
-                // then wallet.state has not changed and does not need to be updated
-                // console.log("wallet state not updated")
-                // console.timeEnd(`update.${ms}`);
-                return;
-            }
+            // if (!utxosHaveChanged) {
+            //     console.log("!UTXOSHAVECHANGED")
+            //     // remove api error here; otherwise it will remain if recovering from a rate
+            //     // limit error with an unchanged utxo set
+            //     setApiError(false);
+            //     // then wallet.state has not changed and does not need to be updated
+            //     // console.log("wallet state not updated")
+            //     // console.timeEnd(`update.${ms}`);
+            //     return;
+            // }
 
             const slpBalancesAndUtxos = await getSlpBalancesAndUtxosBcash(utxosBcash);
 
@@ -143,7 +146,6 @@ const useWallet = () => {
             const { tokens } = slpBalancesAndUtxos;
 
             const recentTickets = await getTicketHistory(cashAddresses);
-
             const newState = {
                 balances: {},
                 tokens: [],
@@ -688,6 +690,7 @@ const useWallet = () => {
     };
 
     const handleUpdateWallet = async setWallet => {
+        console.log("handleUpdateWallet called")
         await loadWalletFromStorageOnStartup(setWallet);
     };
 
@@ -957,6 +960,7 @@ const useWallet = () => {
     };
 
     useEffect(async () => {
+        console.log("useWallet useEffect called");
         handleUpdateWallet(setWallet);
         const initialSettings = await loadCashtabSettings();
         initializeFiatPriceApi(initialSettings.fiatCurrency);

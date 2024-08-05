@@ -1,5 +1,5 @@
 // modules
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from 'react-router-dom';
 import { AnimateCC } from 'react-adobe-animate';
 import styled from 'styled-components';
@@ -9,6 +9,12 @@ import Header from '@components/Common/Header';
 import JackpotCarousel from '@components/Common/Jackpot';
 import RandomNumbers from '@components/Common/RandomNumbers';
 import Footer from '@components/Common/Footer';
+import { FadeOutAnimationShort } from '@components/Common/CssAnimations';
+import { WalletCtn } from '@components/App';
+import { WalletContext } from '@utils/context';
+import { getWalletState } from '@utils/cashMethods'
+
+
 
 // assets
 import RingPng from '@assets/ring_on_beach.png';
@@ -65,6 +71,11 @@ const Scrollable = styled.div`
 const StickyRandomNumbers = styled(RandomNumbers)`
     z-index: 1;
 `;
+const FadeOut = styled(WalletCtn)`
+    box-shadow: none;
+    animate: fade-out 1s ease-out both;
+    ${FadeOutAnimationShort}    
+`;
 
 const Select = ({
     passRandomNumbers,
@@ -74,10 +85,18 @@ const Select = ({
     const [labels, setLabels] = useState({});
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [animationObject, getAnimationObject] = useState(null);
+    const [fadeOut, setFadeOut] = useState(false);
 
 
     const history = useHistory();
 
+    // find ticket indicator
+    const ContextValue = useContext(WalletContext);
+    const { wallet } = ContextValue;
+    const { tickets } = getWalletState(wallet);
+    const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
+
+    
     // helpers
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -85,12 +104,10 @@ const Select = ({
 
     useEffect(async () => {
         if (!scriptLoaded) {
-            console.log("Select.js starting script loading sequence");
             passLoadingStatus("LOADING")
             const key = "idle_clux";
             passAnimationKey(key);
-            console.log("passedAnimationKey", key);
-            await sleep (5000);
+            await sleep (2000);
             passLoadingStatus(false)
             setScriptLoaded(true);
         }
@@ -98,34 +115,23 @@ const Select = ({
     
     // handlers
     const handleBuyTicket = async () => {
-        console.log("handleBuyTicket called")
-        /*
-            -collect ticket data
-            -submit all required data to callback function
-        */
-        // console.log("randomNumbers pushed to checkout state:", randomNumbers)
+        setFadeOut(true);
+        await sleep(300);
+
         history.push('/checkout');
-    }
-    const handleToSettings = () => {
-        history.push('/wallet');
-    };
-    const handleToHowToPlay = () => {
-        history.push('/how');
     }
     
     // html contents
     const playButtonText = "Play Now - $10";
 
     return (
-        <>
+        <FadeOut fadeOut={fadeOut}>
             <Header />
             <Scrollable>
                 <JackpotCarousel />
                 <ChickenCtn>
                     <OuterBackgroundCtn>
-                        {/* <InnerBackgroundCtn> */}
-                            <Background src={RingPng} />
-                        {/* </InnerBackgroundCtn>                         */}
+                        <Background src={RingPng} />
                     </OuterBackgroundCtn>
 
                     {scriptLoaded && 
@@ -145,9 +151,10 @@ const Select = ({
             <Footer
                 origin={"/select"}
                 buttonOnClick={handleBuyTicket}
-                buttonText={playButtonText}           
+                buttonText={playButtonText}    
+                ticketIndicator={unredeemedTickets.length}
             />
-        </>
+        </FadeOut>
     )
 }
 

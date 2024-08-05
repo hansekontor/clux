@@ -1,7 +1,7 @@
 // node modules
 import React from 'react';
 import styled from 'styled-components';
-import { Carousel, Flex } from 'antd';
+import { Carousel } from 'antd';
 import CoinBagSvg from '@assets/coin_bag.svg';
 
 // assets
@@ -109,7 +109,7 @@ export const PayoutAmount = ({
         <PayoutAmountCtn>
             <Jackpot>
                 <Text>
-                    Your Payout Placeholder
+                    Your Payout 
                     <Amount>${amount}</Amount>
                 </Text>
                 <CoinBagIcon src={CoinBagSvg}/>

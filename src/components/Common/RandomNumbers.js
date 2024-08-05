@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 
 import LeftArrowSvg from '@assets/arrow_left.svg'
 import RightArrowSvg from '@assets/arrow_right.svg'
@@ -16,6 +15,7 @@ const RandomNumbersCtn = styled.div`
     align-items: center;
     gap: 5px;
     margin-bottom: 9px;
+    margin-bottom: 12px;
 `;
 const VerticalDivider = styled.div`
     width: 1px;
@@ -49,6 +49,17 @@ const Number = styled.div`
     text-shadow: ${props => props.blurred ? "0 0 20px black" : "none"};
 `;
 
+// gets a random integer between min max (both border values inclusive)
+const getRandomInt = (min, max) => {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+
+    const randomInt = Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+
+    return randomInt;
+}
+
+
 const RandomNumbers = ({
     passRandomNumbers,
     fixedRandomNumbers
@@ -56,18 +67,6 @@ const RandomNumbers = ({
     console.log("RandomNumbers()")
 
     const [randomNumberArray, setRandomNumberArray] = useState(fixedRandomNumbers ? fixedRandomNumbers : []);
-    const [arrayHistory, setArrayHistory] = useState([]);
-
-    // helpers
-    // gets a random integer between min max (both border values inclusive)
-    const getRandomInt = (min, max) => {
-        const minCeiled = Math.ceil(min);
-        const maxFloored = Math.floor(max);
-
-        const randomInt = Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
-
-        return randomInt;
-    }
 
     // hooks 
     useEffect(() => {
@@ -119,7 +118,6 @@ const RandomNumbers = ({
             }
                 </>
             }                    
-
         </RandomNumbersCtn>
     );
 }
@@ -129,26 +127,23 @@ RandomNumbers.defaultProps = {
 }
 
 
-
 export const ResultingNumbers = ({
     numberArray, 
     active
 }) => {
-
-    console.log("numberArray", numberArray, "active", active)
-
     const [showFirstNumber, setShowFirstNumber] = useState(false);
     const [showSecondNumber, setShowSecondNumber] = useState(false);
     const [showThirdNumber, setShowThirdNumber] = useState(false);
     const [showFourthNumber, setShowFourthNumber] = useState(false);
+    
+    const sortedNumberArray = numberArray.slice().sort((a,b) => a - b);
 
     // helpers 
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-    const revealNumber = (targetNumber, numberArray) => {
-        console.log("revealNumber(), target", targetNumber);
-        const targetIndex = numberArray.indexOf(targetNumber);
+
+    const revealNumber = (targetIndex) => {
         if (targetIndex === 0) {
             setShowFirstNumber(true);
         } else if (targetIndex === 1) {
@@ -160,62 +155,54 @@ export const ResultingNumbers = ({
         }
     }
 
+    const getIndexToReveal = (iteration) => {
+        const equals = sortedNumberArray[iteration] === sortedNumberArray[iteration-1];
+        let array = numberArray;
+        if (equals) {
+            const lastIndex = numberArray.indexOf(sortedNumberArray[iteration-1]);
+            delete array[lastIndex];
+        } 
+        const index = array.indexOf(sortedNumberArray[iteration]);       
+        return index;
+    }
+
     useEffect(async () => {
-        console.log("called useEffect 1")
+        console.log("called useEffect 0")
         // debug for equal numbers
         if (active) {
-            let array = numberArray;
-            let min = Math.min(...array);
-            console.log("min 1", min);
-            revealNumber(min, numberArray);
+            const index = numberArray.indexOf(sortedNumberArray[0]);
+            console.log("index 0", index);
+            revealNumber(index);
         }
     }, [active])
 
     useEffect(async () => {
-        console.log("called useEffect 2")
-        // debug for equal numbers
         if (active) {
-            let array = numberArray;
-            let min = Math.min(...array);
-            array = array.filter(number => number !== min);
-            min = Math.min(...array);
-            await sleep(2000);
-            console.log("min 2", min)
-            revealNumber(min, numberArray);
+            const stage = 1;
+            await sleep(700*stage);
+            const index = getIndexToReveal(stage);
+            console.log("index 1", index);
+            revealNumber(index);
         }
     }, [active])
 
     useEffect(async () => {
-        console.log("called useEffect 3")
-        // debug for equal numbers
         if (active) {
-            let array = numberArray;
-            let min = Math.min(...array);
-            array = array.filter(number => number !== min);
-            min = Math.min(...array);
-            array = array.filter(number => number !== min);
-            min = Math.min(...array);
-            await sleep(4000);
-            console.log("min 3", min);
-            revealNumber(min, numberArray);
+            const stage = 2;
+            await sleep(700*stage);
+            const index = getIndexToReveal(stage);
+            console.log("index 2")
+            revealNumber(index);
         }
     }, [active])
 
     useEffect(async () => {
-        console.log("called useEffect 4")
-        // debug for equal numbers
         if (active) {
-            let array = numberArray;
-            let min = Math.min(...array);
-            array = array.filter(number => number !== min);
-            min = Math.min(...array);
-            array = array.filter(number => number !== min);
-            min = Math.min(...array);
-            array = array.filter(number => number !== min);
-            min = Math.min(...array);
-            await sleep(6000);
-            console.log("min 4", min);
-            revealNumber(min, numberArray);
+            const stage = 3;
+            await sleep(700*stage);
+            const index = getIndexToReveal(stage);
+            console.log("index 3", index);
+            revealNumber(index);
         }
     }, [active])
 

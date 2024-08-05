@@ -1,3 +1,4 @@
+// node modules
 import React from "react";
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -5,14 +6,14 @@ import PropTypes from 'prop-types';
 // styled css components
 const BalanceCtn = styled.div`
     width: 112px;
-    height: 38px;
+    height: 40px;
     border-radius: 12px;
     background: #1A2131;
     color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: "Inter";
+    font-family: Helvetica;
     font-size: 22px;
     font-weight: 600;
     letter-spacing: 2px;
@@ -32,7 +33,7 @@ const Balance = ({
         </BalanceCtn>
     )
 }
-// dev remove
+// demo placeholder
 Balance.defaultProps = {
     amount: 333,
 }

@@ -50,10 +50,15 @@ export const SlideInAnimation = css`
     }
 `;
 
-export const FadeOutAnimation = css`
+export const FadeOutAnimationLong = css`
     visibility: ${props => props.fadeOut ? "hidden" : "visible"};
     opacity: ${props => props.fadeOut ? 0 : 1};
     transition: ${props => props.fadeOut ? "visibility 0s 2s, opacity 2s linear" : "none"};
+`;
+export const FadeOutAnimationShort = css`
+    visibility: ${props => props.fadeOut ? "hidden" : "visible"};
+    opacity: ${props => props.fadeOut ? 0 : 1};
+    transition: ${props => props.fadeOut ? "visibility 0s 0.5s, opacity 0.3s linear" : "none"};
 `;
 export const FadeInAnimation = css`
     animation: fade-in 1s cubic-bezier(0.4, 0.6, 0.6, 1) both;

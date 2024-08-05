@@ -1,40 +1,9 @@
 // node modules
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { 
-    // useLocation,
     useHistory
 } from 'react-router-dom';
-// import ReactDOM from 'react-dom';
-// import PropTypes from 'prop-types';
-// import { WalletContext } from '@utils/context';
-
-// import { CashLoadingIcon } from '@components/Common/CustomIcons';
-// import PrimaryButton from '@components/Common/PrimaryButton';
-// import useBCH from '@hooks/useBCH';
-import {
-//     sendXecNotification,
-//     sendTokenNotification,
-//     selfMintTokenNotification,
-    errorNotification,
-} from '@components/Common/Notifications';
-// import {
-//     currency
-// } from '@components/Common/Ticker.js';
-// import { Event } from '@utils/GoogleAnalytics';
-// import { 
-//     getWalletState,
-//     fromSmallestDenomination
-// } from '@utils/cashMethods';
-// import ApiError from '@components/Common/ApiError';
-// import { formatFiatBalance } from '@utils/validation';
-// import cashaddr from 'ecashaddrjs';
-// import { 
-//     Output,
-//     Script,
-//     script
-// } from '@hansekontor/checkout-components';
-// const { SLP } = script;
-// import { U64 } from 'n64';
+import { errorNotification } from '@components/Common/Notifications';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import geStripe from '@utils/stripe';
 import {
@@ -49,8 +18,6 @@ import {
     Invoice, 
     Overlay, WidgetContent, WidgetCtn
 } from "../../assets/styles/checkout.styles";
-// import { AcceptHosted, HostedForm } from 'react-acceptjs';
-// import ProgressDots from '@components/Common/ProgressDots';
 import styled, { css } from 'styled-components';
 import {
     Modal,
@@ -65,6 +32,10 @@ import NavigationBar from '@components/Common/Navigation';
 import Tos from '@components/Send/Tos'
 import Footer from '@components/Common/Footer';
 import WalletCtn from '@components/App';
+import { FooterCtn, LightFooterBackground, SupportBar, Links } from '@components/Common/Footer';
+import { WalletContext } from '@utils/context';
+import { getWalletState } from '@utils/cashMethods'
+import RandomNumbers from '@components/Common/RandomNumbers';
 
 // assets
 import CheckOutIcon from "@assets/checkout_icon.svg";
@@ -72,6 +43,10 @@ import MerchantSvg from '@assets/merchant_icon.svg';
 import InfoPng from '@assets/info_icon.png';
 import { getOutputScriptFromAddress } from 'ecashaddrjs';
 import getStripe from '../../utils/stripe';
+import CardIconSvg from '@assets/card_icon.svg'
+import LockIconSvg from '@assets/lock_icon.svg'
+import MastercardIconSvg from '@assets/mastercard_icon.svg'
+import VisaIconSvg from '@assets/visa_icon.svg'
 
 // styled css components
 const Divider = styled.div`
@@ -130,10 +105,124 @@ const LightWalletCtn = styled(WalletCtn)`
     background-color: #eaeaea;
 `;
 
-export const StripeCheckoutForm = ({
-    passLoadingStatus, 
+const CustomInput = styled.input`
+    border-radius: 12px;
+    border-style: none;
+    height: 50px;
+`;
+const CardIcons = styled.div`
+    margin: auto;
+    gap: 12px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    padding: 7px;
+    width: fit-content;
+    display: flex;
+`;
+
+
+const NmiCheckoutForm = ({
+    passLoadingStatus,
     passPurchasedTicket,
     playerChoiceArray
+}) => {
+    const history = useHistory();
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState({});
+
+    useEffect(() => {
+        window.CollectJS.configure({
+            variant: 'lightbox',
+            styleSniffer: false,
+            callback: (token) => {
+                console.log("token", token);
+                handleResult(token);
+            },
+            fields: {
+                ccnumber: {
+                    placeholder: "1234 1234 1234 1234",
+                    selector: "#ccnumber"
+                },
+                ccexp: {
+                    placeholder: "MM / YY",
+                    selector: "#ccexp"
+                },
+                cvv: {
+                    placeholder: "CVV",
+                    selector: "#cvv"
+                }
+            },
+            customCss: {
+                "border-radius": "12px",
+                "height": "44px",
+                "border-style": "none"
+            }
+        })
+    }, []);
+
+    // helpers
+    const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // handlers
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        if (window.CollectJS) {
+            window.CollectJS.startPaymentRequest();
+        } else 
+            console.log("CollectJS unavailable")
+    }
+    const handleFormDataChange = (e) => {
+        let newFormData = formData;
+        newFormData[e.target.name] = e.target.value;
+        setFormData(newFormData);
+    }
+    // dev rename
+    const handleResult = async (result) => {
+        console.log("payment token", result.token);
+        setIsSubmitting(false);
+        passLoadingStatus("CONFIRMING PAYMENT");
+        await sleep(2000);
+        passLoadingStatus("PAYMENT CONFIRMED")
+        await sleep(2000);
+        passLoadingStatus("BROADCASTING TICKET");
+        await sleep(2000);
+        const purchasedTicket = {
+            block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
+            hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
+            maxPayout: "0000000000027100",
+            // playerChoiceBytesString: "34204n67",
+            playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
+            playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
+        }
+        passPurchasedTicket({
+            id: purchasedTicket.hash,
+            playerChoice: playerChoiceArray
+        });
+        passLoadingStatus("TICKET BROADCASTED");
+        await sleep(2000);
+        history.push('/backup')
+    }
+
+    return (
+        <CustomForm onSubmit={handleSubmit} id="nmi-form">
+            <CardIcons>
+                <img src={CardIconSvg} />
+                <img src={LockIconSvg} />
+                <img src={MastercardIconSvg} />
+                <img src={VisaIconSvg} />
+            </CardIcons>
+        </CustomForm>
+    )
+}
+
+const StripeCheckoutForm = ({
+    passLoadingStatus, 
+    passPurchasedTicket,
+    playerChoiceArray // demo placeholder
 }) => {
     const stripe = useStripe();
     const elements = useElements();
@@ -170,14 +259,14 @@ export const StripeCheckoutForm = ({
           await sleep(3000);
           history.push("/checkout");
         } else {
-          // Your customer will be redirected to your `return_url`. For some payment
-          // methods like iDEAL, your customer will be redirected to an intermediate
-          // site first to authorize the payment, then redirected to the `return_url`.
-          console.log("result", result);
-          passLoadingStatus("PAYMENT CONFIRMED");
-          await sleep(2000);
-          passLoadingStatus("BROADCASTING TICKET");
-          const purchasedTicket = {
+            // Your customer will be redirected to your `return_url`. For some payment
+            // methods like iDEAL, your customer will be redirected to an intermediate
+            // site first to authorize the payment, then redirected to the `return_url`.
+            console.log("result", result);
+            passLoadingStatus("PAYMENT CONFIRMED");
+            await sleep(2000);
+            passLoadingStatus("BROADCASTING TICKET");
+            const purchasedTicket = {
                 block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
                 hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
                 maxPayout: "0000000000027100",
@@ -185,19 +274,21 @@ export const StripeCheckoutForm = ({
                 playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
                 playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
             }
-            passPurchasedTicket(purchasedTicket)
-          await sleep(2000);
-          passLoadingStatus("TRANSACTION COMPLETE");
-          await sleep(3000);
-          history.push("/backup");      
+            passPurchasedTicket({
+                id: purchasedTicket.hash,
+                playerChoice: playerChoiceArray
+            })
+            await sleep(2000);
+            passLoadingStatus("TRANSACTION COMPLETE");
+            await sleep(3000);
+            history.push("/backup");      
         }
     };
 
 
     return (
-        <CustomForm onSubmit={handleSubmit} id="checkout-form">
+        <CustomForm onSubmit={handleSubmit} id="stripe-form">
             <PaymentElement />
-            {/* <CheckoutButton disabled={!stripe}>Pay</CheckoutButton> */}
         </CustomForm>
     )
 }
@@ -206,9 +297,14 @@ const Checkout = ({
     passLoadingStatus,
     playerChoiceArray,
     passPurchasedTicket,
-    passAnimationKey
 }) => {
     const history = useHistory(); 
+
+    // find ticket indicator
+    const ContextValue = useContext(WalletContext);
+    const { wallet } = ContextValue;
+    const { tickets } = getWalletState(wallet);
+    const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
 
     // states
     const [isFirstRendering, setFirstRendering] = useState(true);
@@ -252,8 +348,8 @@ const Checkout = ({
     const handleToBackup = () => {
         history.push('/backup');
     }
-    const handleAgree = async () => {
-        console.log("dev include KYC")
+    const handleAgree = async (e) => {
+        e.preventDefault();
         setHasAgreed(true);
         await sleep(500);
         setFirstRendering(false);
@@ -289,7 +385,6 @@ const Checkout = ({
             },
         });
         const { paymentIntent } = await response.json();
-        console.log("paymentIntent collected", paymentIntent);
         return paymentIntent;
     }
 
@@ -299,7 +394,6 @@ const Checkout = ({
     }
 
     const handleCheckout = async () => {
-
         const purchasedTicket = {
             block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
             hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
@@ -308,7 +402,10 @@ const Checkout = ({
             playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
             playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
         }
-        passPurchasedTicket(purchasedTicket)
+        passPurchasedTicket({
+            id: purchasedTicket.hash,
+            playerChoice: playerChoiceArray
+        });
         passLoadingStatus("AWAITING PAYMENT");
         await sleep(2000);
         passLoadingStatus("PROCESSING PAYMENT");
@@ -317,9 +414,6 @@ const Checkout = ({
         await sleep(2000);
         passLoadingStatus("TRANSACTION COMPLETE");
         await sleep(3000);
-
-        // console.log("Checkout disabling animationKey");
-        // passAnimationKey(false);
         
         history.push('/backup')
     }
@@ -376,74 +470,60 @@ const Checkout = ({
                     }
                 }
             };
-            console.log("stripeOptions", stripeOptions);
             setStripeOptions(stripeOptions);            
         }
     }, [])
 
     const previousPath = "/select";
-    const title = "Agree";
+    const tosTitle = "Purchase Terms";
+    const checkoutTitle = "Checkout";
+
 
     return (
         <>  
-            {helpSectionHolder}
-            {/*pay && ( 
-                <PaymentOverlay>
-                    <RollupContent animate={true}>
-                        <PaymentFormWidget 
-                            amount={totalAmount}
-                            sandbox={isSandbox}
-                            onResult={handlePaymentResult}
+            {helpSectionHolder}            
+            {!hasAgreed ? (
+                <>
+                    <Header background="#EAEAEA" />
+                    <NavigationBar 
+                        returnTo={previousPath}
+                        title={tosTitle}
+                    />
+                    <Tos />
+                    <FooterCtn>
+                        <LightFooterBackground />
+                        <RandomNumbers 
+                            fixedRandomNumbers={playerChoiceArray}
                         />
-                    </RollupContent>
-                </PaymentOverlay>
-            )} */}
-
-            {/*<Modal
-                title="Confirm Send"
-                visible={isModalVisible}
-                onOk={handleOk}
-                onCancel={handleCancel}
-            >
-                <p>
-                    Are you sure you want to send {formData.value}{' '}
-                    {displayTicker} to settle this payment request?
-                </p>
-            </Modal>*/}                
-                {!hasAgreed ? (
-                    <>
-                        <Header background="#EAEAEA" />
-                        <NavigationBar 
-                            returnTo={previousPath}
-                            title={title}
+                        <PrimaryButton 
+                            onClick={handleAgree}
+                        >
+                            {agreeButtonText}
+                        </PrimaryButton>
+                        <SupportBar 
+                            returnTo={"/checkout"}
+                            ticketIndicator={unredeemedTickets.length}
                         />
-                        <Tos />
-                        <Footer 
-                            origin="/checkout"
-                            randomNumbers={playerChoiceArray}
-                            buttonOnClick={handleAgree}
-                            buttonText={agreeButtonText}
-                            lightBackground={true}
-                        />
-                    </>      
-                ) : (
-                    <>
-                        {!tokensSent && isStage1 && ( 
-                            <>
-                                <Header background="#EAEAEA"/>
-                                <NavigationBar 
-                                    returnTo={"/select"}
-                                    title={"Agree"}
-                                />                                      
-                                {/* <AgreeCtn> */}
-                                <Scrollable>
-                                        {/* </Scrollable>                             */}
-                                    <CustomEnfold animate={isFirstRendering}>     
-                                        {/* <Scrollable> */}
-                                            <CustomRadioGroup onChange={handlePaymentChange} value={paymentMethod}>
-                                                <Radio value={"stripe"} >Stripe</Radio>
-                                                <Radio value={"other"} >Other</Radio>
-                                            </CustomRadioGroup>
+                    </FooterCtn>
+                </>      
+            ) : (
+                <>
+                    {!tokensSent && isStage1 && ( 
+                        <>
+                            <Header background="#EAEAEA"/>
+                            <NavigationBar 
+                                returnTo={"/select"}
+                                title={checkoutTitle}
+                            />                                      
+                            <Scrollable>
+                                <CustomEnfold animate={isFirstRendering}>     
+                                        <CustomRadioGroup onChange={handlePaymentChange} value={paymentMethod}>
+                                            <Radio value={"stripe"} >Stripe</Radio>
+                                            <Radio value={"nmi"} >Credit Card</Radio>
+                                            <Radio value={"other"} >Other</Radio>
+                                        </CustomRadioGroup>
+                                        {paymentMethod === "stripe" && (
+                                            <>
                                                 {stripeSession && stripeOptions &&
                                                     <Elements 
                                                         stripe={stripeSession}
@@ -455,63 +535,39 @@ const Checkout = ({
                                                             playerChoiceArray={playerChoiceArray}
                                                         />            
                                                     </Elements>                                        
-                                                }
-
-                                                {/* {stripePromise && (
-                                                    <Elements stripe={stripePromise} options={stripeOptions}>
-                                                        <PaymentElement />
-                                                    </Elements>
-                                                )} */}
-                                                {/* {isStage1 ? (
-                                                    <>
-                                                        {hasAgreed && (
-                                                            <>
-                                                                {uuid && formToken ? (
-                                                                    <PrimaryButton onClick={() => setPay(true)}>{payButtonText}</PrimaryButton>
-                                                                ) : (
-                                                                    <>
-                                                                        {isSending && !tokensSent ? (
-                                                                            <Spin spinning={true} indicator={CashLoadingIcon}></Spin>
-                                                                        ) : (
-                                                                            <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>
-                                                                        )}
-                                                                    </>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {isSending && !tokensSent ? <Spin spinning={true} indicator={CashLoadingIcon}></Spin> :
-                                                        <PrimaryButton onClick={() => handleOk()}>Send</PrimaryButton>}
-                                                    </>
-                                                )} */}
-
-                                        {/* </Scrollable> */}
+                                                }                                                    
+                                            </>
+                                        )}
+                                        {paymentMethod === "nmi" && (
+                                            <NmiCheckoutForm 
+                                                passLoadingStatus={passLoadingStatus}
+                                                passPurchasedTicket={passPurchasedTicket}
+                                                playerChoiceArray={playerChoiceArray}
+                                            />
+                                        )}
                                 </CustomEnfold>
-                                </Scrollable>
-                                {/* </AgreeCtn>                             */}
-                                <Footer 
-                                    origin={"/checkout"}
-                                    randomNumbers={playerChoiceArray}
-                                    buttonOnClick={handleCheckout}
-                                    buttonText={purchaseButtonText}
-                                    lightBackground={true}
+                            </Scrollable>
+                            <FooterCtn>
+                                <LightFooterBackground />
+                                <RandomNumbers 
+                                    fixedRandomNumbers={playerChoiceArray}
+
                                 />
-                            </>              
-                        )}          
-
-     
-                        {/* <ReturnCtn>
-                            <ReturnButton 
-                                onClick={() => setHasAgreed(false)}
-                                displayOnly={true}
-                            />
-                        </ReturnCtn>   */}
-                    </>         
-                )}
-
-                {/* {apiError && <ApiError />} */}
+                                <PrimaryButton 
+                                    type="submit"
+                                    form={`${paymentMethod}-form`}
+                                >
+                                    {purchaseButtonText}
+                                </PrimaryButton>
+                                <SupportBar 
+                                    returnTo="/checkout"
+                                    ticketIndicator={unredeemedTickets.length}
+                                />
+                            </FooterCtn>
+                        </>              
+                    )}          
+                </>         
+            )}
         </>
     );
 }

@@ -173,6 +173,7 @@ export const getWalletState = wallet => {
             slpBalancesAndUtxos: {},
             parsedTxHistory: [],
             utxos: [],
+            tickets: [],
         };
     }
 
