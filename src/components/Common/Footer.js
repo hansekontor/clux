@@ -4,7 +4,7 @@ import styled from "styled-components";
 import PropTypes from 'prop-types';
 
 // react components 
-import PrimaryButton, { SettingsButton, HelpButton, PayoutButton } from '@components/Common/PrimaryButton';
+import PrimaryButton, { WalletButton, HelpButton, PayoutButton } from '@components/Common/PrimaryButton';
 import Balance from '@components/Common/Balance';
 import RandomNumbers, {ResultingNumbers} from '@components/Common/RandomNumbers';
 
@@ -12,7 +12,7 @@ import RandomNumbers, {ResultingNumbers} from '@components/Common/RandomNumbers'
 import CnmiPng from '@assets/cnmi.png';
 
 // styled css components
-const LightFooterBackground = styled.div`
+export const LightFooterBackground = styled.div`
     z-index: -1;
     position: absolute;
     top: 0;
@@ -21,33 +21,23 @@ const LightFooterBackground = styled.div`
     height: 100%;
     background-color: #eaeaea;
 `;
-const FooterCtn = styled.div`
+export const FooterCtn = styled.div`
     background-color: #48445c;
     align-items: center;
     justify-content: flex-start;
     display: flex;
     flex-direction: column;
     width: inherit;
-    padding-top: 18px;
     border-radius: 16px 16px 0 0;
-`;
-const Ticket = styled.div``;
-const Links = styled.div`
-    margin-top: 3px;
-    color: #aaa9b4
+    padding: 18px 0;
 `;
 
 const SupportBarCtn = styled.div`
     display: flex;
     justify-content: space-evenly;
-    padding-top: 18px;
     width: 88%;
-`;
-const ButtonCtn = styled.div`
-    display: flex;
-    justify-content: space-evenly;
-    flex-grow: 1;
-`;
+    padding-top: 18px;
+`;  
 const CnmiIconCtn = styled.div`
     cursor: pointer;
 `
@@ -56,21 +46,18 @@ const CnmiIcon = styled.img`
     width: 35px;
 `;
 
-const SupportBar = ({
-    returnTo
+export const SupportBar = ({
+    returnTo,
+    ticketIndicator
 }) => {
-    
     // handler 
     const handleCnmiRedirect = () => {
         window.location.href = "https://example.com";        
     }
-
     return ( 
         <SupportBarCtn>
-            {/* <ButtonCtn> */}
-                <SettingsButton returnTo={returnTo}/>
-                <HelpButton />                
-            {/* </ButtonCtn> */}
+            <WalletButton returnTo={returnTo} indicator={ticketIndicator}/>
+            <HelpButton />                
             <Balance />
             <PayoutButton returnTo={returnTo}/>
             <CnmiIconCtn onClick={() => handleCnmiRedirect()}>
@@ -88,7 +75,8 @@ const Footer = ({
     activeButton = true,
     resultingNumbers,
     activeResult,
-    lightBackground = false
+    lightBackground = false,
+    ticketIndicator
 }) => {
     return (
         <FooterCtn>
@@ -103,21 +91,12 @@ const Footer = ({
             }
             {buttonText && 
                 <>
-                    {/* {buttonText.startsWith("Pay") ? (
-                        <PrimaryButton active={activeButton} type="submit" form="checkout-form">
-                            {buttonText}
-                        </PrimaryButton>
-                    ) : ( */}
-                        <PrimaryButton onClick={buttonOnClick} active={activeButton}>
-                            {buttonText}
-                        </PrimaryButton>  
-                    {/* )} */}
+                    <PrimaryButton onClick={buttonOnClick} active={activeButton}>
+                        {buttonText}
+                    </PrimaryButton>  
                 </> 
             }
-            <SupportBar returnTo={origin}/>
-            <Links>
-                Terms of Service - Privacy Policy
-            </Links>
+            <SupportBar returnTo={origin} ticketIndicator={ticketIndicator}/>
         </FooterCtn>
     )
 }

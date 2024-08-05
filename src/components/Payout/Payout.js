@@ -4,37 +4,39 @@ import styled from 'styled-components';
 
 // react components
 import { ReturnButton } from '@components/Common/PrimaryButton';
-import Footer from '@components/Common/Footer';
+import { FooterCtn, SupportBar, Links, LightFooterBackground } from '@components/Common/Footer';
+import PrimaryButton from '@components/Common/PrimaryButton';
+import NavigationBar from '@components/Common/Navigation';
+import Header from '@components/Common/Header'
+import FadeInOut from '@components/Backup/FadeInOut';
 
 // css styled components
-const AgreeCtn = styled.div`
+const Input = styled.input`
+    border-radius: 12px;
+    background-color: #F6F6F6;
+    color: #ABABAB;
+    font-family: "Inter-Semibold", Helvetica;
+    font-size: 16px;
+    font-weight: 500;
+    height: 52px;
+    cursor: pointer;
+    width: 86%;
+    border-style: none;
+`;
+const FadeIn = styled(FadeInOut)`
     width: 100%;
     height: 100%;
     background-color: #EAEAEA;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 `;
-const AgreeHeader = styled.div`
-    width: 88%;
-    height: 50px;
-    background-color: #EAEAEA;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-`;
-const Title = styled.div`
-    font-family: "Sequel 100 Wide 95", Helvetica;
-`;
-const Navigation = styled.div`
-    display: flex;
-    flex-direction: row;
-`;
-const HorizontalDivider = styled.div`
-    height: 1px;
-    width: 100%;
-    background-color: #000000;
+const Form = styled.form`
+    flex-grow: 1;
 `;
 
 const Payout = ({
-    returnTo
 }) => {
     // handlers
     const handlePayout = async () => {
@@ -42,27 +44,32 @@ const Payout = ({
     }
 
     // DOM variables
-    const payoutButtonText = "Payout placeholder";
+    const payoutButtonText = "Payout";
+    const title = "Payout";
+
+    const previousPath = location.state?.returnTo || "/select";
+    console.log("Payout previousPath", previousPath);
 
     return (
-        <>
-            <AgreeCtn>
-                <AgreeHeader>
-                    <Navigation>
-                        <ReturnButton returnTo={returnTo}/>
-                        <Title>Payout</Title>                        
-                    </Navigation>                    
-                </AgreeHeader>
-                <HorizontalDivider />  
+        <FadeIn duration={300} show={true}>
+            <Header />
+                <NavigationBar 
+                    returnTo={previousPath}
+                    title={title}                              
+                />
+                <Form id="payout-form">
+                    <Input 
+                        placeholder={"Payout Amount"}
+                        name="amount"
+                        type="number"
+                    />         
+                </Form>
 
-                <div>RUNA PAYOUT</div>
-            </AgreeCtn>
-            <Footer
-                origin={"/payout"} 
-                buttonText={payoutButtonText}
-                buttonOnClick={handlePayout}
-            />        
-        </>
+            <FooterCtn>
+                <LightFooterBackground />
+                <PrimaryButton type="submit" form="payout-form" onClick={handlePayout}>{payoutButtonText}</PrimaryButton>
+            </FooterCtn>
+        </FadeIn>
     )
 }
 

@@ -3,11 +3,12 @@ import React, { useState, Suspense, lazy, useEffect, useContext } from 'react';
 import {
     Route,
     Switch,
-    Redirect
+    Redirect,
+    useLocation, 
+    useHistory
 } from 'react-router-dom';
 // import 'antd/dist/antd.less';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
-import { AnimateCC } from 'react-adobe-animate';
 
 // css components
 import { theme } from '../assets/styles/theme';
@@ -21,9 +22,10 @@ const Checkout = lazy(() => import('./Send/Checkout'));
 const Backup = lazy(() => import('./Backup/Backup'));
 const WaitingRoom = lazy(() => import('./Game/WaitingRoom'));
 const Game = lazy(() => import('./Game/Game'));
-const Result = lazy(() => import('./Game/Result'));
+const Result = lazy(() => import('./Result/Result'));
 const Wallet = lazy(() => import('./Wallet/Wallet'));
 const Payout = lazy(() => import('./Payout/Payout'));
+const TicketDetails = lazy(() => import('./Result/TicketDetails'))
 const NotFound = lazy(() => import('./NotFound'));
 import { LoadingAnimation } from '@components/Common/CustomLoader';
 import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
@@ -70,6 +72,11 @@ const GlobalStyle = createGlobalStyle`
     .ant-carousel {
         width: 88%;
     }
+    .ant-radio-checked {
+        background-color: #48445c;
+        border-color: #48445c;
+    }
+        
 `;
 const CustomApp = styled.div`
     text-align: center;
@@ -129,18 +136,16 @@ const AnimationScriptProvider = ({animationKey}) => {
                 const entranceScript = document.createElement('script');
                 const fightScript = document.createElement('script');
                 const celebrationScript = document.createElement('script');
-                console.log("ASP idleScript initial", idleScript)
             
                 if (animationKey === "idle_clux") {
                     // add script for dynamic idle chicken on /select
                     idleScript.src = `${baseUrl}/chicken/clux/idle_dynamic.js`;
                     idleScript.type = type;                
-                    console.log("ASP idleScript settings", idleScript);
                     document.body.appendChild(idleScript);
                 } else {
                     const winner = animationKey.split("_")[1];
-                    const tier = animationKey.split("_")[2];
-                    console.log("LOADED SCRIPTS FOR winner", winner, "tier", tier);  
+                    // const tier = animationKey.split("_")[2];
+                    const tier = 1;
 
                     // add script for entrance animation
                     // const entranceScript = document.createElement('script');
@@ -154,7 +159,6 @@ const AnimationScriptProvider = ({animationKey}) => {
 
                     // add script for celebration animation
                     // const celebrationScript = document.createElement('script');
-                    // console.log(`https://dev.cert.cash:3001/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`)
                     celebrationScript.src = `${baseUrl}/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`;
                     celebrationScript.type = type;
 
@@ -169,9 +173,7 @@ const AnimationScriptProvider = ({animationKey}) => {
         }
 
         // return () => {     
-        //     console.log("ASP clean up function called during key", animationKey)   
         //     if (typeof animationKey === "string") {
-        //         console.log("animationKey clean up is String!")
         //         if (animationKey === "idle_clux")
         //             document.body.removeChild(idleScript);
         //         else {
@@ -188,48 +190,55 @@ const AnimationScriptProvider = ({animationKey}) => {
 
 
 const App = () => {
+    const history = useHistory();
     const ContextValue = useContext(WalletContext);
-    const { wallet, loading, createWallet, forceWalletUpdate } = ContextValue;
+    const { wallet, loading, createWallet } = ContextValue;
     const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [loader, setLoader] = useState(true);
     const [playerChoice, setPlayerChoice] = useState(false);
-    const [ticketToRedeem, setTicketToRedeem] = useState(false);
-    const [purchasedTicket, setPurchasedTicket] = useState(false);
+    const [activeTicket, setActiveTicket] = useState(false);
     const [payout, setPayout] = useState(false);
 
     const validWallet = isValidStoredWallet(wallet);
 
     const [animationKey, setAnimationKey] = useState(false);
 
+    const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     // activates the loading screen on change of loadingStatus
     useEffect(async () => { 
-        console.log("1st")
         if (loadingStatus && !loader) {
-            console.log("1st if")
             setLoader(true);
         } else if (!loadingStatus && loader) {
-            console.log("1st else if")
+            // await sleep(500);
             setLoader(false);
-            console.log("App turned off loader")
         }
     }, [loadingStatus]);
 
     useEffect(async () => {
-        console.log("3rd");
         if (!loading && (!wallet || (wallet && !validWallet))) {
-            console.log("3rd if clause");
             await createWallet();
             setLoadingStatus(false);
         } else if (loading) {
             setLoadingStatus("LOADING WALLET");
         } else {
-            console.log("3rd else clause")
             setLoadingStatus(false);
         }
     }, [loading]);
 
-    console.log("APP animationKey", animationKey);
+    // handle query parameters
+    useEffect(() => {
+        const ticketIdFromQuery = new URLSearchParams(location?.search).get("ticket");
+        const hasCorrectLength = ticketIdFromQuery?.length === 64;
+        if (ticketIdFromQuery && hasCorrectLength) {
+            setActiveTicket({id: ticketIdFromQuery});
+            history.push("/waitingroom");
+        }
+    }, []);
+
 
     return (
         <>
@@ -243,10 +252,10 @@ const App = () => {
                             <WalletCtn>
                                 <Suspense fallback={codeSplitLoader}>
                                     {loader && 
-                                        <>  
+                                        <>
                                             <LoadingAnimation loadingStatus={loadingStatus}/>
-                                        </> 
-                                    } 
+                                        </>
+                                    }
                                     <Switch>
                                         <Route path="/select">
                                             <Select
@@ -259,12 +268,12 @@ const App = () => {
                                             <Checkout 
                                                 passLoadingStatus={setLoadingStatus}
                                                 playerChoiceArray={playerChoice}
-                                                passPurchasedTicket={setPurchasedTicket}
+                                                passPurchasedTicket={setActiveTicket}
                                             />
                                         </Route>
                                         <Route path="/backup">
                                             <Backup 
-                                                purchasedTicket={purchasedTicket}
+                                                purchasedTicket={activeTicket}
                                                 passLoadingStatus={setLoadingStatus}
                                             />
                                         </Route>
@@ -272,7 +281,7 @@ const App = () => {
                                             <Game 
                                                 passLoadingStatus={setLoadingStatus}
                                                 passAnimationKey={setAnimationKey}
-                                                ticket={purchasedTicket}
+                                                ticket={activeTicket}
                                             />
                                         </Route>
                                         <Route path="/result">
@@ -280,21 +289,26 @@ const App = () => {
                                                 passLoadingStatus={setLoadingStatus}
                                                 payout={payout}
                                                 passAnimationKey={setAnimationKey}
+                                                ticket={activeTicket}
                                             />
                                         </Route>
                                         <Route path="/waitingroom">
                                             <WaitingRoom 
                                                 passLoadingStatus={setLoadingStatus}
-                                                passTicket={setTicketToRedeem}
-                                                purchasedTicket={purchasedTicket}
-                                                playerChoice={playerChoice}
+                                                activeTicket={activeTicket}
                                                 passAnimationKey={setAnimationKey}
+                                                updateActiveTicket={setActiveTicket}
                                             />
                                         </Route>
                                         <Route path="/wallet">
                                             <Wallet 
                                                 passLoadingStatus={setLoadingStatus} 
-                                                passTicket={setTicketToRedeem}
+                                                passSelectedTicket={setActiveTicket}
+                                            />
+                                        </Route>
+                                        <Route path="/ticketdetails">
+                                            <TicketDetails 
+                                                ticket={activeTicket}
                                             />
                                         </Route>
                                         <Route path="/payout">

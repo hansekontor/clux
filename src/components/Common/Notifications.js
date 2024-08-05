@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from "react-dom";
-import {
-    TokenReceivedNotificationIcon,
-} from '@components/Common/CustomIcons';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { currency } from '@components/Common/Ticker';
 import { notification } from 'antd';
 import styled, {css} from 'styled-components';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { FadeOutAnimation, SlideInAnimation } from '@components/Common/CssAnimations';
+import { FadeOutAnimationLong, SlideInAnimation } from '@components/Common/CssAnimations';
 
 const SlideIn = styled.div`
     z-index: 33;
@@ -29,7 +25,7 @@ const SlideIn = styled.div`
     animation: slide-in-from-top 0.5s cubic-bezier(0.24, 0.48, 0.47, 0.95);
     ${SlideInAnimation}
 
-    ${FadeOutAnimation}
+    ${FadeOutAnimationLong}
     visibility: ${props => props.fadeOut ? "hidden" : "visible"};
     opacity: ${props => props.fadeOut ? 0 : 1};
     transition: ${props => props.fadeOut ? "visibility 0s 2s, opacity 2s linear" : "none"};
@@ -170,7 +166,6 @@ export const eTokenReceivedNotification = (
     });
 };
 export const errorNotification = (error, message, stringDescribingCallEvent) => {
-    console.log(error, message, stringDescribingCallEvent);
     notification.error({
         message: 'Error',
         description: message,

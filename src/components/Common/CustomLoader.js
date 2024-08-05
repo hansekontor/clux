@@ -3,7 +3,7 @@ import styled, {css} from 'styled-components';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { FadeInAnimation, FadeOutAnimation } from '@components/Common/CssAnimations';
+import { FadeInAnimation, FadeOutAnimationShort } from '@components/Common/CssAnimations';
 
 // styled css components
 const Background = styled.div`
@@ -16,7 +16,7 @@ const Background = styled.div`
     right: 0;
 
     ${FadeInAnimation}
-    ${FadeOutAnimation}
+    ${FadeOutAnimationShort}
 `;
 const LoadingCtn = styled.div`
     z-index: 333;
@@ -32,7 +32,7 @@ const LoadingCtn = styled.div`
     position: fixed;
 
     ${FadeInAnimation}
-    ${FadeOutAnimation}
+    ${FadeOutAnimationShort}
 `;
 const LoadingCircle = styled(Spin)`
     color: #32C770;
@@ -50,13 +50,13 @@ const Status = styled.div`
 
 
 export const LoadingAnimation = ({
-    loadingStatus
+    loadingStatus, 
 }) => {
 
     return (
         <>
             <Background />
-            <LoadingCtn>
+            <LoadingCtn >
                 <LoadingCircle indicator={<CustomLoadingIcon spin />}/>
                 <Status>{loadingStatus}</Status>
             </LoadingCtn>        

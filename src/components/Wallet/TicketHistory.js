@@ -3,8 +3,7 @@ import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Collapse } from 'antd';
-import { SecondaryButton } from '@components/Common/PrimaryButton';
-
+import PrimaryButton, {SecondaryButton, TertiaryButton} from '@components/Common/PrimaryButton';
 
 
 const TicketDataItem = styled.div`
@@ -24,7 +23,14 @@ const Link = styled.div`
     color: black;
     text-decoration: underline;
 `;
-const TicketData = ({ticket}) => {
+const TicketData = ({ticket, passSelectedTicket}) => {
+    const history = useHistory();
+    
+    const handleTicketDetails = () => {
+        passSelectedTicket(ticket);
+        history.push("/ticketdetails");
+    }
+
     return(
         <>
             <TicketDataItem>
@@ -32,8 +38,8 @@ const TicketData = ({ticket}) => {
                 <TicketDataValue>{ticket.time}</TicketDataValue>
             </TicketDataItem>
             <TicketDataItem>
-                <TicketDataLabel>Ticket Txid:</TicketDataLabel>
-                <Link href={`https://explorer.cert.cash/tx/${ticket.id}`}>{ticket.idShort}</Link>
+                <TicketDataLabel>Ticket ID:</TicketDataLabel>
+                <Link href={`https://explorer.cert.cash/tx/${ticket.id}`}>{ticket.displayId}</Link>
             </TicketDataItem>
             {ticket.payout && (
                 <>
@@ -42,29 +48,51 @@ const TicketData = ({ticket}) => {
                         <TicketDataValue>{ticket.payout.time}</TicketDataValue>
                     </TicketDataItem>
                     <TicketDataItem>
-                        <TicketDataLabel>Payout:</TicketDataLabel>
+                        <TicketDataLabel>Payout Amount:</TicketDataLabel>
                         <TicketDataValue>{ticket.payout.value}</TicketDataValue>
                     </TicketDataItem>
                     <TicketDataItem>
-                        <TicketDataLabel>Payout Txid:</TicketDataLabel>
-                        <Link href={`https://explorer.cert.cash/tx/${ticket.payout.id}`}>{ticket.payout.idShort}</Link>
+                        <TicketDataLabel>Payout ID:</TicketDataLabel>
+                        <Link href={`https://explorer.cert.cash/tx/${ticket.payout.id}`}>{ticket.payout.displayId}</Link>
                     </TicketDataItem>                             
                 </>
             )}
-            <SecondaryButton onClick={() => handleRedeemTicket()}>Redeem and Play</SecondaryButton>
+            <SecondaryButton onClick={() => handleTicketDetails()}>See Ticket Details</SecondaryButton>
+            <PrimaryButton onClick={() => handleRedeemTicket()}>Redeem</PrimaryButton>
         </>
     )
 }
-const StyledCollapse = styled(Collapse)`
-    margin: 0px auto; 10px;
-    background-color: #ffffff;
-    min-width: 300px;
-    width: 100%;
-`;
 
+const Circle = styled.div`
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 20px;
+    height: 35px;
+    width: 35px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+const LeftGroup = styled.div`
+    gap: 7px;
+`;
+const RightGroup = styled(LeftGroup)``;
+const TicketItem = styled.div`
+    background-color: #a6a6a6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+const Label = styled.div`
+    font-weight: 600;
+`;
+const RightArrow = styled.div``;
 const TicketHistory = ({ 
-    // txs 
-    passLoadingStatus
+    tickets,
+    passLoadingStatus, 
+    passSelectedTicket
 }) => {
     const history = useHistory();
 
@@ -78,7 +106,6 @@ const TicketHistory = ({
 
     // handlers
     const handleChange = (key) => {
-        console.log("handleChange key", key);
         setActiveKey(key);
     }
     const handleRedeemTicket = async () => {
@@ -89,34 +116,33 @@ const TicketHistory = ({
         history.push('/game');
     }
 
-
-    const tickets = [
-        {id:"1234567890123456789012345678901234567890123456789012345678901234", time: "33:33 33.33.33 GMT"},
-        {id:"123456789012345678901234567890", time: "33:33 33.33.33 GMT"},
-        {id:"123456789012345678901234567890", time: "33:33 33.33.33 GMT"},
-    ]
-
-    const formattedTickets = tickets.map((ticket, index) => {
-        ticket.idShort = String(ticket.id.slice(0,8) + "..." + ticket.id.slice(56,));
-        ticket.payout = {
-            time: "33:33 33.33.33 GMT",
-            value: 20,
-            id: ticket.id,
-            idShort: ticket.idShort,
+    const displayTickets = tickets.map(ticket => {
+        let label = "Ticket";
+        if (!ticket.payout && ticket.height) {
+            ticket.label = "Redeem your Ticket";
         }
-        ticket.key = index;
-        ticket.label = ticket.payout ? "Redeemed Ticket"+index : "Open Ticket"+index;
+        const children = <TicketData ticket={ticket} passSelectedTicket={passSelectedTicket}/>;
 
-        return ticket;
-    });
-
-    const displayTickets = formattedTickets.map(ticket => {
-        ticket.children = <TicketData ticket={ticket}/>;
-        return ticket;
+        return {
+            label, 
+            children
+        };
     })
 
     return (
-        <StyledCollapse accordion items={displayTickets}></StyledCollapse>
+        <TicketItem>
+            <LeftGroup>
+                <Circle />
+                <Label>Ticket 01</Label>                
+            </LeftGroup>
+            <RightGroup>
+                <TertiaryButton>Redeem</TertiaryButton>
+                <TertiaryButton>
+                    <RightArrow>{"->"}</RightArrow>
+                </TertiaryButton>
+            </RightGroup>
+
+        </TicketItem>
     );
 };
 
