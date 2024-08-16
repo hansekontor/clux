@@ -18,7 +18,7 @@ const PrimaryButton = styled.button`
     font-family: "Sequel 100 Wide 95";
     font-size: 20px;
     cursor: pointer;
-    width: 88%;
+    width: 90%;
 `;
 
 export const SecondaryButton = styled(PrimaryButton)`

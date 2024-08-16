@@ -98,7 +98,7 @@ export const infoNotification = (infoString) => {
         message: infoString,
         duration: 5,
         style: {
-            width: "88%",
+            width: "90%",
             height: "50px",
             position: "absolute",
             top: "5%",

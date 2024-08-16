@@ -30,7 +30,7 @@ const TosList = styled.ol`
     flex-direction: column;
     height: fit-content;
     position: relative;
-    width: 88%;
+    width: 90%;
     gap: 10px;
 `;
 const TosHeader = styled.p`
@@ -41,7 +41,7 @@ const TosHeader = styled.p`
     letter-spacing: 0; 
     line-height: 25px;
     position: relative;
-    width: 88%;
+    width: 90%;
     top: 10px;
     text-align: left;
 `; 
@@ -54,7 +54,7 @@ const TosText = styled.li`
     line-height: 20px;
     position: relative;
     text-align: left;
-    width: 88%;
+    width: 90%;
 `;
 const TosLink = styled.a`
     text-decoration-line: none;

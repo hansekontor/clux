@@ -5,7 +5,7 @@ import LeftArrowSvg from '@assets/arrow_left.svg'
 import RightArrowSvg from '@assets/arrow_right.svg'
 
 const RandomNumbersCtn = styled.div`
-    width: 88%;
+    width: 90%;
     height: 56px;
     border-radius: 16px;
     background: #fefffe;

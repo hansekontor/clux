@@ -24,7 +24,7 @@ const Title = styled.div`
     font-weight: 600;
 `;
 const CustomForm = styled.form`
-    width: 88%;
+    width: 90%;
 `;
 const Input = styled.input`
     border-radius: 12px;
@@ -45,7 +45,7 @@ const Text = styled.p`
     font-size: "Inter-Semibold", Helvetica;
     margin-block-start: 0px;
     margin-block-end: 0px;
-    width: 88%;
+    width: 90%;
 `;
 const Modal = styled.div`
     width: 95%;

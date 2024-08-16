@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Collapse } from 'antd';
 
 const SeedPhraseCtn = styled.div`
-    width: 88%;
+    width: 90%;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -103,7 +103,7 @@ const OldSeedPhrase = ({
 const CustomCollapse = styled(Collapse)`
     background-color: #fefffe;
     color: black;
-    width: 88%;
+    width: 90%;
     border-radius:12px;
 `;
 const CustomPanel = styled(Collapse.Panel)`

@@ -35,7 +35,7 @@ export const FooterCtn = styled.div`
 const SupportBarCtn = styled.div`
     display: flex;
     justify-content: space-evenly;
-    width: 88%;
+    width: 90%;
     padding-top: 18px;
 `;  
 const CnmiIconCtn = styled.div`
