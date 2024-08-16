@@ -149,7 +149,7 @@ const Select = ({
                     
                 </ChickenCtn>
             </Scrollable>                
-            <StickyRandomNumbers passRandomNumbers={passRandomNumbers}/>
+            <StickyRandomNumbers passRandomNumbers={passRandomNumbers} background={'#1A1826'}/>
             <Footer
                 origin={"/select"}
                 buttonOnClick={handleBuyTicket}
