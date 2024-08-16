@@ -120,74 +120,6 @@ export const WalletCtn = styled.div`
     }
 `;
 
-const AnimationScriptProvider = ({animationKey}) => {
-    const baseUrl = "https://dev.cert.cash:3001";
-    // const baseUrl = "http://localhost:8000";
-    const type = "text/javascript";
-
-    useEffect(() => {
-        if (typeof animationKey === 'string') {
-            try {
-
-                const animationFolder = animationKey.split("_")[0];
-                
-                // create all possible scripts
-                const idleScript = document.createElement('script');
-                const entranceScript = document.createElement('script');
-                const fightScript = document.createElement('script');
-                const celebrationScript = document.createElement('script');
-            
-                if (animationKey === "idle_clux") {
-                    // add script for dynamic idle chicken on /select
-                    idleScript.src = `${baseUrl}/chicken/clux/idle_dynamic.js`;
-                    idleScript.type = type;                
-                    document.body.appendChild(idleScript);
-                } else {
-                    const winner = animationKey.split("_")[1];
-                    // const tier = animationKey.split("_")[2];
-                    const tier = 1;
-
-                    // add script for entrance animation
-                    // const entranceScript = document.createElement('script');
-                    entranceScript.src = `${baseUrl}/${animationFolder}/entrance.js`;
-                    entranceScript.type = type;
-
-                    // add script for fight animation
-                    // const fightScript = document.createElement('script');
-                    fightScript.src = `${baseUrl}/${animationFolder}/${winner}/fight.js`;
-                    fightScript.type = type;
-
-                    // add script for celebration animation
-                    // const celebrationScript = document.createElement('script');
-                    celebrationScript.src = `${baseUrl}/${animationFolder}/${winner}/celebration${winner === "A" ? "_"+tier : ""}.js`;
-                    celebrationScript.type = type;
-
-                    // add all scripts to body even if empty
-                    document.body.appendChild(entranceScript);
-                    document.body.appendChild(fightScript);
-                    document.body.appendChild(celebrationScript);
-                }
-            } catch(err) {
-                console.error(err);
-            }
-        }
-
-        // return () => {     
-        //     if (typeof animationKey === "string") {
-        //         if (animationKey === "idle_clux")
-        //             document.body.removeChild(idleScript);
-        //         else {
-        //             document.body.removeChild(entranceScript);
-        //             document.body.removeChild(fightScript);
-        //             document.body.removeChild(celebrationScript);            
-        //         }
-        //     } 
-        // }
-    }, []);        
-
-    return <></>;
-}
-
 
 const App = () => {
     const history = useHistory();
@@ -242,9 +174,6 @@ const App = () => {
 
     return (
         <>
-            {animationKey &&
-                <AnimationScriptProvider animationKey={animationKey}/>
-            }
             <ThemeProvider theme={theme}>
                 <GlobalStyle />
                     <CustomApp>

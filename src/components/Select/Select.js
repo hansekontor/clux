@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from 'react-router-dom';
 import { AnimateCC } from 'react-adobe-animate';
 import styled from 'styled-components';
+import { Flash } from 'react-ruffle';
 
 // react components
 import Header from '@components/Common/Header';
@@ -52,6 +53,10 @@ const IdleChicken = styled.div`
     position: absolute;
     overflow: visible;
     top: 10%;
+    width: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 const canvasStyle = {
     height: "100%",
@@ -95,23 +100,11 @@ const Select = ({
     const { wallet } = ContextValue;
     const { tickets } = getWalletState(wallet);
     const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
-
-    
+ 
     // helpers
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-
-    useEffect(async () => {
-        if (!scriptLoaded) {
-            passLoadingStatus("LOADING")
-            const key = "idle_clux";
-            passAnimationKey(key);
-            await sleep (2000);
-            passLoadingStatus(false)
-            setScriptLoaded(true);
-        }
-    }, [])
     
     // handlers
     const handleBuyTicket = async () => {
@@ -123,6 +116,8 @@ const Select = ({
     
     // html contents
     const playButtonText = "Play Now - $10";
+    const animationName = "./animations/Clux_2_Ready_Stance.swf";
+
 
     return (
         <FadeOut fadeOut={fadeOut}>
@@ -134,17 +129,24 @@ const Select = ({
                         <Background src={RingPng} />
                     </OuterBackgroundCtn>
 
-                    {scriptLoaded && 
                         <IdleChicken> 
-                            <AnimateCC 
-                                animationName={"CLUX_IDLE_DYNAMIC"}
-                                composition={compositions.CLUX.IDLE.DYNAMIC}
-                                getAnimationObject={getAnimationObject}
-                                paused={false}
-                                canvasStyle={canvasStyle}
-                            />
+                            <Flash 
+                                src={animationName}
+                                config={{
+                                    autoplay: "on",
+                                    unmuteOverlay: "hidden",
+                                    splashScreen: false,
+                                    contextMenu: "off",
+                                    allowScriptAccess: true,
+                                    forceScale: true,
+                                    scale: "noBorder",
+                                    wmode: "transparent"                                    
+                                }}
+                            >
+                                <div>PLACEHOLDER</div>
+                            </Flash>
                         </IdleChicken>                     
-                    }
+                    
                 </ChickenCtn>
             </Scrollable>                
             <StickyRandomNumbers passRandomNumbers={passRandomNumbers}/>
