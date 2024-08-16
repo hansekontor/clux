@@ -13,8 +13,8 @@ import { Flash } from 'react-ruffle';
 import RingPng from '@assets/ring_on_beach.png';
 import PrimaryButton from '@components/Common/PrimaryButton';
 import Header from '@components/Common/Header';
-import {FooterCtn, SupportBar, Links} from '@components/Common/Footer';
-import {ResultingNumbers} from '@components/Common/RandomNumbers';
+import { FooterCtn } from '@components/Common/Footer';
+import { ResultingNumbers } from '@components/Common/RandomNumbers';
 import { WalletCtn } from '@components/App';
 import { FadeOutAnimationShort } from '@components/Common/CssAnimations';
 
@@ -30,37 +30,25 @@ const Background = styled.img`
     height: 100vh;
     z-index: -4;
 `;
-const AnimationCtn = styled.div`
+const FlexGrow = styled.div`
     flex-grow: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    position: relative;
 `;
-const EntranceCtn = styled.div`
-    visibility: ${props => props.active ? 'show' : 'hidden'};
-    z-index: 100;
+const Animation = styled.div`
+    width: inherit;
+    position: absolute; 
+    display: ${props => props.hidden ? 'none' : 'flex'};
+    justify-content: center;
+    align-items: center;
+`;
+const CustomFlash = styled(Flash)`
     position: absolute;
-    overflow: visible;
-    width: 150%;
+    visibility: ${props => props.hidden ? "hidden" : "visible"};
 `;
-const FightCtn = styled.div`
-    visibility: ${props => props.active ? 'show' : 'hidden'}
-    z-index: 100;
-    position: absolute;
-    overflow: visible;
-    width: 150%;
-`;
-const CelebrationCtn = styled.div`
-    visibility: ${props => props.active ? 'show' : 'hidden'};
-    z-index: 100;
-    position: absolute;
-    overflow: visible;
-    width: 150%;
-`;
-const canvasStyle = {
-    width: "100%",
-    margin: "auto",
-};
 const FadeOut = styled(WalletCtn)`
     box-shadow: none;
     animate: fade-out 1s ease-out both;
@@ -150,17 +138,11 @@ const Game = ({
     const history = useHistory();
 
     // states
-    const [paused, setPaused] = useState(false);
-    const [animationObject, getAnimationObject] = useState(null);
     const [animationStage, setAnimationStage] = useState("entrance");
-    const [entrancePaused, setEntrancePaused] = useState(false);
-    const [fightPaused, setFightPaused] = useState(true);
-    const [celebrationPaused, setCelebrationPaused] = useState(true);
-    const [scriptLoaded, setScriptLoaded] = useState(false);
-    const [payoutAmount, setPayoutAmount] = useState(20);
+    const [payoutAmount, setPayoutAmount] = useState(20); // !hardcoded demo value
     const [labels, setLabels] = useState({});
     const [payoutData, setPayoutData] = useState(false);
-    const [fadeOut, setFadeOut] = useState(false);
+    const [fightStarted, setFightStarted] = useState(false);
 
     if (!payoutData) {
         const playerChoiceBytes = Buffer.from(ticket.playerChoice, 'hex');
@@ -172,144 +154,163 @@ const Game = ({
             resultingNumbers
         });
     }
+
     // helpers
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    // useEffect(async () => {
+    //     // manually disable loader after ticket redemption
+    //     if (!scriptLoaded){
+    //         const fightLabel = "clux-norris";            
+    //         const tier = payoutData.tier;
+    //         const win = tier != 0;
+    //         const winner = win ? "A" : "B";
+    //         const key = win ? `${fightLabel}_A_${tier}` : `${fightLabel}_${winner}`;
+    //         passAnimationKey(key)
+    //         // console.log("winner", winner, "tier", String(tier))
+    //         setLabels({
+    //             animationName: {
+    //                 entrance: "CLUX_NORRIS_ENTRANCE",
+    //                 fight: `CLUX_NORRIS_FIGHT_${winner}`,
+    //                 celebration: `CLUX_NORRIS_CELEBRATION_${winner}${win ? "_"+String(tier) : ""}`
+    //             },
+    //             compositionId: { 
+    //                 entrance: compositions.CLUX.NORRIS.ENTRANCE, 
+    //                 fight: compositions.CLUX.NORRIS[winner].FIGHT,
+    //                 celebration: win ? compositions.CLUX.NORRIS.A.CELEBRATION[tier] : compositions.CLUX.NORRIS.B.CELEBRATION
+    //             }
+    //         })
+    //     }
+    // }, []);
 
+    // useEffect(async()=> {
+    //     if (labels.animationName?.entrance) {
+    //         await sleep(4000);
+    //         passLoadingStatus(false);
+    //         setScriptLoaded(true);
+    //     }
+    // }, [labels])
 
-    useEffect(async () => {
-        // manually disable loader after ticket redemption
-        if (!scriptLoaded){
-            const fightLabel = "clux-norris";            
-            const tier = payoutData.tier;
-            const win = tier != 0;
-            const winner = win ? "A" : "B";
-            const key = win ? `${fightLabel}_A_${tier}` : `${fightLabel}_${winner}`;
-            passAnimationKey(key)
-            // console.log("winner", winner, "tier", String(tier))
-            setLabels({
-                animationName: {
-                    entrance: "CLUX_NORRIS_ENTRANCE",
-                    fight: `CLUX_NORRIS_FIGHT_${winner}`,
-                    celebration: `CLUX_NORRIS_CELEBRATION_${winner}${win ? "_"+String(tier) : ""}`
-                },
-                compositionId: { 
-                    entrance: compositions.CLUX.NORRIS.ENTRANCE, 
-                    fight: compositions.CLUX.NORRIS[winner].FIGHT,
-                    celebration: win ? compositions.CLUX.NORRIS.A.CELEBRATION[tier] : compositions.CLUX.NORRIS.B.CELEBRATION
-                }
-            })
-        }
+    useEffect(async() => {
+        passLoadingStatus(false);
     }, []);
 
-    useEffect(async()=> {
-        if (labels.animationName?.entrance) {
-            await sleep(4000);
-            passLoadingStatus(false);
-            setScriptLoaded(true);
-        }
-    }, [labels])
-
-
+    // switch to celebration loop for demo
     useEffect(async() => {
-        if (!fightPaused) {
-            await sleep(9000);
+        if (animationStage === "fight") {
+            await sleep(5000);
             setAnimationStage("celebration");
-            setCelebrationPaused(false);
         }
-    }, [fightPaused])
+    }, [animationStage])
 
+    // end animations for demo
     useEffect(async() => {
-        if (!celebrationPaused) {
-            await sleep(16000);
-            setFadeOut(true);
+        if (animationStage === "celebration") {
+            await sleep(5000);
+            history.push({pathname: "/result", state: {payoutAmount}});
         }
-    }, [celebrationPaused])
+    }, [animationStage])
 
-    useEffect(async() => {
-        if(fadeOut){
-            await sleep(300);
-            passAnimationKey(false);            
-            passLoadingStatus("LOADING RESULTS");
-            console.log("pushed to /result with payoutAmount", payoutAmount);
-            history.push({pathname: "/result", state: { payoutAmount }})
-        }
-    }, [fadeOut])
+    // useEffect(async() => {
+    //     if (!celebrationPaused) {
+    //         await sleep(16000);
+    //         setFadeOut(true);
+    //     }
+    // }, [celebrationPaused])
+
+    // useEffect(async() => {
+    //     if(fadeOut){
+    //         await sleep(300);
+    //         passAnimationKey(false);            
+    //         passLoadingStatus("LOADING RESULTS");
+    //         console.log("pushed to /result with payoutAmount", payoutAmount);
+    //         history.push({pathname: "/result", state: { payoutAmount }})
+    //     }
+    // }, [fadeOut])
 
     // handlers
     const handlePlay = async () => {
         setAnimationStage("fight");
-        setFightPaused(false);
-        // dev: somehow activate celebration animation
-        console.log("handlePlay called")
+        setFightStarted(true);
     }
 
     const playButtonText = "Fight";
+    const folder = "./animations/"
+    const entranceAnimation = folder + "Clux_3_Face_Off.swf";
+    const fightAnimation = folder + "Clux_4_Fight_Clux_Wins.swf";
+    const celebrationAnimation = folder + "Clux_5_Celebration_5.swf";    
 
     return (
-        <FadeOut fadeOut={fadeOut}>
+        <>
             <Background src={RingPng} />
             <Header />
-            <AnimationCtn>    
-                {/*<Flash 
-                    src={'test.swf'}
-                    config={{
-                        autoplay: "off",
-                        backgroundColor: "null",
-                        preloader: false,
-                        parameters: {}
-                    }} 
-                >
-                    <div>placeholder content</div>
-                </Flash>     */}   
-                {scriptLoaded &&
-                    <>
-                        <EntranceCtn active={animationStage === "entrance"}>
-                            <AnimateCC 
-                                animationName={labels.animationName.entrance}
-                                composition={labels.compositionId.entrance}
-                                getAnimationObject={getAnimationObject}
-                                paused={paused}
-                                canvasStyle={canvasStyle}
-                            />                                           
-                        </EntranceCtn>
-
-                        <FightCtn active={animationStage === "fight"}>
-                            <AnimateCC
-                                animationName={labels.animationName.fight}
-                                composition={labels.compositionId.fight}
-                                getAnimationObject={getAnimationObject}
-                                paused={fightPaused}
-                                canvasStyle={canvasStyle}
-                            />
-                        </FightCtn>         
-
-                        <CelebrationCtn active={animationStage === "celebration"}>
-                            <AnimateCC 
-                                animationName={labels.animationName.celebration}
-                                composition={labels.compositionId.celebration}
-                                getAnimationObject={getAnimationObject}
-                                paused={celebrationPaused}
-                                canvasStyle={canvasStyle}
-                            />                                        
-                        </CelebrationCtn>
-                    </> 
-                }
-            </AnimationCtn>
+            <FlexGrow>    
+                <Animation hidden={animationStage !== "entrance"}>
+                    <CustomFlash 
+                        src={entranceAnimation}
+                        config={{
+                            autoplay: "on",
+                            unmuteOverlay: "hidden",
+                            splashScreen: false,
+                            contextMenu: "off",
+                            allowScriptAccess: true,
+                            forceScale: true,
+                            scale: "noBorder",
+                            wmode: "transparent"                                    
+                        }}
+                    >
+                        <div>FACEOFF PLACEHOLDER</div>   
+                    </CustomFlash>
+                </Animation>
+                <Animation hidden={animationStage !== "fight"}>
+                    <CustomFlash 
+                        src={fightAnimation}
+                        config={{
+                            autoplay: "on",
+                            unmuteOverlay: "hidden",
+                            splashScreen: false,
+                            contextMenu: "off",
+                            allowScriptAccess: true,
+                            forceScale: true,
+                            scale: "noBorder",
+                            wmode: "transparent"                                    
+                        }}
+                    >       
+                        <div>FIGHT PLACEHOLDER</div>   
+                    </CustomFlash>             
+                </Animation>
+                <Animation hidden={animationStage !== "celebration"}>
+                    <CustomFlash 
+                        src={celebrationAnimation}
+                        config={{
+                            autoplay: "on",
+                            unmuteOverlay: "hidden",
+                            splashScreen: false,
+                            contextMenu: "off",
+                            allowScriptAccess: true,
+                            forceScale: true,
+                            scale: "noBorder",
+                            wmode: "transparent"                                    
+                        }}
+                    >        
+                        <div>CELEBRATION PLACEHOLDER</div>   
+                    </CustomFlash>            
+                </Animation>
+            </FlexGrow>
             <FooterCtn>
                 {payoutData.resultingNumbers &&
                     <ResultingNumbers 
                         numberArray={payoutData.resultingNumbers}
-                        active={!fightPaused}
+                        active={fightStarted}
                     />                
                 }
                 <PrimaryButton onClick={handlePlay}>
                     {playButtonText}
                 </PrimaryButton>
             </FooterCtn>
-        </FadeOut>
+        </>
     )
 }
 
