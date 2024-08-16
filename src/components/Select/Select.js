@@ -27,7 +27,7 @@ const ChickenCtn = styled.div`
     background-color: #fefffe;
     border-radius: 24px;
     border-style: none;
-    width: 88%;
+    width: 90%;
     margin-top: 9px;
     margin-bottom: 9px;
     height: 60%;

@@ -70,7 +70,7 @@ const GlobalStyle = createGlobalStyle`
         border-collapse: collapse;
     }
     .ant-carousel {
-        width: 88%;
+        width: 90%;
     }
     .ant-radio-checked {
         background-color: #48445c;

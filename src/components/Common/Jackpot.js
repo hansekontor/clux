@@ -27,7 +27,7 @@ const StyledCarousel = styled(Carousel)`
 const Slide = styled.div`
     border-radius: 24px;
     border-style: none;
-    width: 88%;
+    width: 90%;
     height: 10%;
     min-height: 70px;
 `;

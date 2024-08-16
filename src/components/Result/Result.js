@@ -16,7 +16,7 @@ import Placeholder from '@assets/ring_on_beach.png';
 
 const ChickenZoomIn = styled.img`
     border-radius: 12px;
-    width: 88%;
+    width: 90%;
     height: 40%;
     flex-grow: 1;
     min-height: 300px;
