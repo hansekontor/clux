@@ -19,7 +19,7 @@ export const LightFooterBackground = styled.div`
     left: 0; 
     width: 100%;
     height: 100%;
-    background-color: #eaeaea;
+    background-color: #FEFFFE;
 `;
 export const FooterCtn = styled.div`
     background-color: #48445c;

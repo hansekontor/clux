@@ -18,7 +18,7 @@ import '../index.css';
 // react components
 import { WalletContext } from '@utils/context';
 const Select = lazy(() => import('./Select/Select'));
-const Checkout = lazy(() => import('./Send/Checkout'));
+const Checkout = lazy(() => import('./Checkout/Checkout'));
 const Backup = lazy(() => import('./Backup/Backup'));
 const WaitingRoom = lazy(() => import('./Game/WaitingRoom'));
 const Game = lazy(() => import('./Game/Game'));
