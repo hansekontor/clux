@@ -530,7 +530,6 @@ const Checkout = ({
 
                                 <RandomNumbers 
                                     fixedRandomNumbers={playerChoiceArray}
-                                    background={"EAEAEA"}
                                 />
                                 <PrimaryButton 
                                     form={"email-form"}
