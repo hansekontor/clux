@@ -8,7 +8,7 @@ import MerchantSvg from '@assets/merchant_icon.svg';
 
 const AgreeHeader = styled.div`
     width: 100%;
-    background-color: ${props => props.light ? "FEFFFE" : "#EAEAEA"};
+    background-color: #FEFFFE;
     display: flex;
     justify-content: space-between;
     flex-direction: row;

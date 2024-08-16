@@ -10,11 +10,6 @@ import Footer from '@components/Common/Footer';
 import MerchantSvg from '@assets/merchant_icon.svg';
 
 // styled css components
-const AgreeCtn = styled.div`
-    width: 100%;
-    background-color: #EAEAEA;
-    flex-grow: 1;
-`;
 const Scrollable = styled.div`
     overflow-y: auto;
     display: flex;
@@ -22,7 +17,7 @@ const Scrollable = styled.div`
     align-items: center;
     justify-content: flex-start;
     height: 100%;
-    background-color: #EAEAEA;
+    background-color: #FEFFFE;
 `;
 const TosList = styled.ol`
     align-items: flex-start;
@@ -59,7 +54,7 @@ const TosText = styled.li`
 const TosLink = styled.a`
     text-decoration-line: none;
 `;
-const Tos = ({randomNumbers, handleAgree}) => {
+const Tos = () => {
 
     const previousPath = "/select";
     const title = "Agree";

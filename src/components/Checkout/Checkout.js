@@ -5,19 +5,7 @@ import {
 } from 'react-router-dom';
 import { errorNotification } from '@components/Common/Notifications';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import geStripe from '@utils/stripe';
-import {
-    AuthCodeCtn, AuthCode,
-    AuthCodeTextCtn, AuthCodeText, InfoIcon, 
-    AuthCodeAmount, 
-    AuthCodeDescription, 
-    Offer, OfferHeader, OfferName, OfferDescription,
-    Fee, FeeLabel, FeeAmount, 
-    Total, TotalLabel, TotalAmount,
-    TooltipLine, TooltipExpand, TooltipExpandText,
-    Invoice, 
-    Overlay, WidgetContent, WidgetCtn
-} from "../../assets/styles/checkout.styles";
+
 import styled, { css } from 'styled-components';
 import {
     Modal,
@@ -25,90 +13,46 @@ import {
 } from 'antd';
 
 // custom react components
-import Header, { SmallHeader } from '@components/Common/Header';
+import Header from '@components/Common/Header';
 import { Enfold } from '@components/Common/CssAnimations';
-import PrimaryButton, { ReturnButton } from '../Common/PrimaryButton';
+import PrimaryButton from '../Common/PrimaryButton';
 import NavigationBar from '@components/Common/Navigation';
-import Tos from '@components/Send/Tos'
-import Footer from '@components/Common/Footer';
-import WalletCtn from '@components/App';
-import { FooterCtn, LightFooterBackground, SupportBar, Links } from '@components/Common/Footer';
+import Tos from '@components/Checkout/Tos'
+import { FooterCtn, LightFooterBackground } from '@components/Common/Footer';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 import RandomNumbers from '@components/Common/RandomNumbers';
+import Ticket from '@components/Checkout/Ticket';
+import KycInfo from '@components/Checkout/KycInfo';
+import getStripe from '../../utils/stripe';
 
 // assets
-import CheckOutIcon from "@assets/checkout_icon.svg";
-import MerchantSvg from '@assets/merchant_icon.svg';
-import InfoPng from '@assets/info_icon.png';
-import { getOutputScriptFromAddress } from 'ecashaddrjs';
-import getStripe from '../../utils/stripe';
 import CardIconSvg from '@assets/card_icon.svg'
 import LockIconSvg from '@assets/lock_icon.svg'
 import MastercardIconSvg from '@assets/mastercard_icon.svg'
 import VisaIconSvg from '@assets/visa_icon.svg'
 
 // styled css components
-const Divider = styled.div`
-    height: 1px;
-    width: 85%;
-    background-color: #000000;
-`;
-const Help = styled.div`
-    height: 40px;
-    width: 100%;
-    gap: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-const Link = styled.a`
-    text-underline-offset: 8px;
-    text-decoration: underline;
-`;
-const CustomTotal = styled(Total)`
-    border-radius: 40px;
-    background-color: #ededed;
-    padding: 8px 16px;
-`;
 const CustomForm = styled.form`
     width: 85%;
     margin-top: 30px;
     margin-bottom: 30px;
 `;
 const CustomEnfold = styled(Enfold)`
+    flex-grow: 1;
 `;
 const Scrollable = styled.div`
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    height: 60%;
+    justify-content: flex;
+    height: 80%;
     width: 100%;
-    background-color: #eaeaea;
-`;
-const CheckoutButton = styled(PrimaryButton)`
-    margin-top: 20px;
-    margin-bottom: 30px;
-    width: 100%;
-`;
-const AgreeCtn = styled.div`
-    width: 100%;
-    flex-grow: 1;
     background-color: #EAEAEA;
 `;
 const CustomRadioGroup = styled(Radio.Group)`
     margin-top: 8px;
-`;
-const LightWalletCtn = styled(WalletCtn)`
-    background-color: #eaeaea;
-`;
-
-const CustomInput = styled.input`
-    border-radius: 12px;
-    border-style: none;
-    height: 50px;
 `;
 const CardIcons = styled.div`
     margin: auto;
@@ -118,6 +62,50 @@ const CardIcons = styled.div`
     padding: 7px;
     width: fit-content;
     display: flex;
+`;
+const EvenLighterFooterBackground = styled(LightFooterBackground)`
+    background-color: #EAEAEA;
+`;
+const InfoText = styled.p`
+    width: 90%;
+    font-size: 11px;
+    line-height: 150%;
+    color: #1A1826;
+    text-align: justify;
+    hyphens: auto;
+    text-align-last: none;
+`;
+const PaymentHeader = styled.div`
+    font-size: 20px;
+    font-weight: 600;
+    margin: 12px 0;
+    width: 90%;
+    text-align: left;
+`;
+const FlexGrow = styled.div`
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFFFF;
+    flex-direction: column;
+    width: 100%;
+`;
+const EmailForm = styled.form`
+    width: 90%;
+    padding-bottom: 12px;
+`;
+const Input = styled.input`
+    border-radius: 12px;
+    background-color: #F6F6F6;
+    font-family: "Inter-Semibold", Helvetica;
+    font-size: 16px;
+    font-weight: 500;
+    height: 52px;
+    cursor: pointer;
+    width: 100%;
+    border-style: none;
+    text-color: #ABCDEF;
 `;
 
 
@@ -314,6 +302,9 @@ const Checkout = ({
     const [helpSectionModal, helpSectionHolder] = Modal.useModal();
     const [clientSecret, setClientSecret] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("stripe");
+    const [isKYCed, setIsKYCed] = useState(false);
+    const [email, setEmail] = useState(false);
+    const [kycConfig, setKycConfig] = useState(false);
 
 
 
@@ -358,6 +349,48 @@ const Checkout = ({
         helpSectionModal.info(helpSectionConfig)
     }
 
+    const handleKYCResult = async (result) => {
+        console.log("KYC", result);
+
+        switch (result.status) {
+            // ----Incomplete workflow-----
+            case "user_cancelled":
+                break;
+            case "error":
+                break;
+        
+            // ----Complete workflow-----
+            case "auto_approved":
+                break;
+            case "auto_declined":
+                break;
+            case "needs_review":
+                break;
+            }
+    }
+    const handleEmailAndKYC = async (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        // check if KYC necessary
+        // if yes: create kyc config            
+        // const accessToken = "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6InhjYjlmbiIsImhhc2giOiJiZDZkMDM2OWQwYWI1MjE3YzJjNzE0ZTVhN2U4ZjIxOGM5YTliNzMyY2QwZjY4Y2RlNWZmYTYwNTRkNjA3NDNjIiwiaWF0IjoxNzIzNTM3MTcwLCJleHAiOjE3MjM2MjM1NzAsImp0aSI6ImYxYjczYjg4LTA3NTQtNGQ4OC05NGZkLTMzNGVhOTI1OThlYiJ9.P2QYdyjmxe1MpaxAD8AUk_21ZrVJWKUeWeoWf1Ia_tC8XN5l2k38o7-fLnxI-pxIyRatjS7BmYsh2g15v39qJQw4uHOMq5W3m5VyB1rmmYLCoPftfKjtpvdRhGExgsaKRk9t5hT-YiCiBBkxYIFuBA6XEzb33GUGQNvkAWhV8c4";
+        // // AML workflow id
+        // // const workflowId = "workflow_UCfjDcF";
+        // const workflowId = "workflow_a93TCBh";
+        // const transactionId = "ecash:1234567";
+        // const config = new window.HyperKycConfig(accessToken, workflowId, transactionId); 
+        // config.setInputs({
+        //     email: email
+        // })
+        // setKycConfig(config);   
+        setIsKYCed(true);
+        console.log("setIsKYced to true")
+    }
+    // useEffect(()=> {
+    //     if (kycConfig) {
+    //         window.HyperKYCModule.launch(kycConfig, handleKYCResult);
+    //     }
+    // }, [kycConfig])
 
     const getPlayerChoiceBytes = (playerChoiceArray) => {
         const buffer = Buffer.allocUnsafe(4);
@@ -482,87 +515,103 @@ const Checkout = ({
     return (
         <>  
             {helpSectionHolder}            
-            {!hasAgreed ? (
+            {!(hasAgreed && isKYCed) ? (
                 <>
-                    <Header background="#EAEAEA" />
-                    <NavigationBar 
-                        returnTo={previousPath}
-                        title={tosTitle}
-                    />
-                    <Tos />
-                    <FooterCtn>
-                        <LightFooterBackground />
-                        <RandomNumbers 
-                            fixedRandomNumbers={playerChoiceArray}
-                        />
-                        <PrimaryButton 
-                            onClick={handleAgree}
-                        >
-                            {agreeButtonText}
-                        </PrimaryButton>
-                        <SupportBar 
-                            returnTo={"/checkout"}
-                            ticketIndicator={unredeemedTickets.length}
-                        />
-                    </FooterCtn>
+                    <Header background="#FEFFFE" />
+                    {!hasAgreed ? (
+                        <>
+                            <NavigationBar 
+                                returnTo={previousPath}
+                                title={tosTitle}
+                            />
+                            <Tos />
+                            <FooterCtn>
+                                <LightFooterBackground />
+
+                                <RandomNumbers 
+                                    fixedRandomNumbers={playerChoiceArray}
+                                    background={"EAEAEA"}
+                                />
+                                <PrimaryButton 
+                                    form={"email-form"}
+                                    onClick={handleAgree}
+                                >
+                                    {agreeButtonText}
+                                </PrimaryButton>
+                            </FooterCtn>
+                        </>
+                    ) : (
+                        <>
+                            <FlexGrow>
+                                <KycInfo />                       
+                                <EmailForm id='email-form' onSubmit={handleEmailAndKYC}>
+                                    <Input 
+                                        placeholder="Enter your Email"
+                                        name="email"
+                                    />
+                                </EmailForm>
+                                <PrimaryButton form="email-form">Continue</PrimaryButton>
+                            </FlexGrow>
+                        </>  
+                    )}
                 </>      
             ) : (
                 <>
                     {!tokensSent && isStage1 && ( 
                         <>
-                            <Header background="#EAEAEA"/>
+                            <Header background="#FEFFFE"/>
                             <NavigationBar 
                                 returnTo={"/select"}
                                 title={checkoutTitle}
                             />                                      
                             <Scrollable>
                                 <CustomEnfold animate={isFirstRendering}>     
-                                        <CustomRadioGroup onChange={handlePaymentChange} value={paymentMethod}>
-                                            <Radio value={"stripe"} >Stripe</Radio>
-                                            <Radio value={"nmi"} >Credit Card</Radio>
-                                            <Radio value={"other"} >Other</Radio>
-                                        </CustomRadioGroup>
-                                        {paymentMethod === "stripe" && (
-                                            <>
-                                                {stripeSession && stripeOptions &&
-                                                    <Elements 
-                                                        stripe={stripeSession}
-                                                        options={stripeOptions}
-                                                    >                  
-                                                        <StripeCheckoutForm 
-                                                            passLoadingStatus={passLoadingStatus}
-                                                            passPurchasedTicket={passPurchasedTicket}
-                                                            playerChoiceArray={playerChoiceArray}
-                                                        />            
-                                                    </Elements>                                        
-                                                }                                                    
-                                            </>
-                                        )}
-                                        {paymentMethod === "nmi" && (
-                                            <NmiCheckoutForm 
-                                                passLoadingStatus={passLoadingStatus}
-                                                passPurchasedTicket={passPurchasedTicket}
-                                                playerChoiceArray={playerChoiceArray}
-                                            />
-                                        )}
+                                    <Ticket 
+                                        numbers={playerChoiceArray}
+                                        background={'#EAEAEA'}
+                                    />
+                                    <InfoText>
+                                        To purchase this lottery ticket your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint our potential payout. This game supports the payout.
+                                    </InfoText>
+                                    <PaymentHeader>Payment</PaymentHeader>
+                                    <CustomRadioGroup onChange={handlePaymentChange} value={paymentMethod}>
+                                        <Radio value={"stripe"} >Stripe</Radio>
+                                        <Radio value={"nmi"} >Credit Card</Radio>
+                                        <Radio value={"other"} >Other</Radio>
+                                    </CustomRadioGroup>
+                                    {paymentMethod === "stripe" && (
+                                        <>
+                                            {stripeSession && stripeOptions &&
+                                                <Elements 
+                                                    stripe={stripeSession}
+                                                    options={stripeOptions}
+                                                >                  
+                                                    <StripeCheckoutForm 
+                                                        passLoadingStatus={passLoadingStatus}
+                                                        passPurchasedTicket={passPurchasedTicket}
+                                                        playerChoiceArray={playerChoiceArray}
+                                                    />            
+                                                </Elements>                                        
+                                            }                                                    
+                                        </>
+                                    )}
+                                    {paymentMethod === "nmi" && (
+                                        <NmiCheckoutForm 
+                                            passLoadingStatus={passLoadingStatus}
+                                            passPurchasedTicket={passPurchasedTicket}
+                                            playerChoiceArray={playerChoiceArray}
+                                        />
+                                    )}
                                 </CustomEnfold>
                             </Scrollable>
                             <FooterCtn>
-                                <LightFooterBackground />
-                                <RandomNumbers 
-                                    fixedRandomNumbers={playerChoiceArray}
-
-                                />
+                                <EvenLighterFooterBackground />
                                 <PrimaryButton 
                                     type="submit"
                                     form={`${paymentMethod}-form`}
                                 >
                                     {purchaseButtonText}
                                 </PrimaryButton>
-                                <SupportBar 
-                                    returnTo="/checkout"
-                                    ticketIndicator={unredeemedTickets.length}
-                                />
                             </FooterCtn>
                         </>              
                     )}          
