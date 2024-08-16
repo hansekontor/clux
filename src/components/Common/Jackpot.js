@@ -39,11 +39,13 @@ const Jackpot = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 `;
 const Text = styled.div`
     padding-left: 30px;
     text-align: left;
     padding-top: 15px;
+    font-family: Helvetica;
 `;
 const Amount = styled.div`
     font-family: 'Sequel 100 Wide 95';
