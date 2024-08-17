@@ -24,7 +24,7 @@ const WaitingRoom = lazy(() => import('./Game/WaitingRoom'));
 const Game = lazy(() => import('./Game/Game'));
 const Result = lazy(() => import('./Result/Result'));
 const Wallet = lazy(() => import('./Wallet/Wallet'));
-const Payout = lazy(() => import('./Payout/Payout'));
+const Cashout = lazy(() => import('./Cashout/Cashout'));
 const TicketDetails = lazy(() => import('./Result/TicketDetails'))
 const NotFound = lazy(() => import('./NotFound'));
 import { LoadingAnimation } from '@components/Common/CustomLoader';
@@ -240,8 +240,8 @@ const App = () => {
                                                 ticket={activeTicket}
                                             />
                                         </Route>
-                                        <Route path="/payout">
-                                            <Payout />
+                                        <Route path="/cashout">
+                                            <Cashout />
                                         </Route>
                                         <Redirect exact from="/" to="/select" />
                                         <Route component={NotFound} />

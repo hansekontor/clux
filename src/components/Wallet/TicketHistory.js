@@ -1,71 +1,28 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Collapse } from 'antd';
-import PrimaryButton, {SecondaryButton, TertiaryButton} from '@components/Common/PrimaryButton';
+import PropTypes from 'prop-types';
+import { CopyOutlined } from '@ant-design/icons';
+
+import { Item } from './Wallet.js';
+import { TertiaryButton } from '@components/Common/PrimaryButton';
+
+import TicketSvg from '@assets/ticket_icon_filled.svg';
+import RightArrowSvg from '@assets/arrow_right_white.svg';
 
 
-const TicketDataItem = styled.div`
-    display: inline-flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 20px;
+const LeftCtn = styled.div`
+    display: flex;
+    gap: 12px;    
+    margin-left: 12px;
 `;
-const TicketDataLabel = styled.div`
-    color: black;
-    font-weight: 500;
+const RightCtn = styled.div`
+    display: flex;
+    gap: 12px;
+    margin-right: 12px;
 `;
-const TicketDataValue = styled.div`
-    color: black;
-`;
-const Link = styled.div`
-    color: black;
-    text-decoration: underline;
-`;
-const TicketData = ({ticket, passSelectedTicket}) => {
-    const history = useHistory();
-    
-    const handleTicketDetails = () => {
-        passSelectedTicket(ticket);
-        history.push("/ticketdetails");
-    }
-
-    return(
-        <>
-            <TicketDataItem>
-                <TicketDataLabel>Broadcasted:</TicketDataLabel>
-                <TicketDataValue>{ticket.time}</TicketDataValue>
-            </TicketDataItem>
-            <TicketDataItem>
-                <TicketDataLabel>Ticket ID:</TicketDataLabel>
-                <Link href={`https://explorer.cert.cash/tx/${ticket.id}`}>{ticket.displayId}</Link>
-            </TicketDataItem>
-            {ticket.payout && (
-                <>
-                    <TicketDataItem>
-                        <TicketDataLabel>Redeemed:</TicketDataLabel>
-                        <TicketDataValue>{ticket.payout.time}</TicketDataValue>
-                    </TicketDataItem>
-                    <TicketDataItem>
-                        <TicketDataLabel>Payout Amount:</TicketDataLabel>
-                        <TicketDataValue>{ticket.payout.value}</TicketDataValue>
-                    </TicketDataItem>
-                    <TicketDataItem>
-                        <TicketDataLabel>Payout ID:</TicketDataLabel>
-                        <Link href={`https://explorer.cert.cash/tx/${ticket.payout.id}`}>{ticket.payout.displayId}</Link>
-                    </TicketDataItem>                             
-                </>
-            )}
-            <SecondaryButton onClick={() => handleTicketDetails()}>See Ticket Details</SecondaryButton>
-            <PrimaryButton onClick={() => handleRedeemTicket()}>Redeem</PrimaryButton>
-        </>
-    )
-}
-
-const Circle = styled.div`
+const StyledCircle = styled.div`
     position: relative;
-    background-color: #ffffff;
+    background-color: #FFFFFF;
     border-radius: 20px;
     height: 35px;
     width: 35px;
@@ -75,81 +32,220 @@ const Circle = styled.div`
     justify-content: center;
     align-items: center;
 `;
-const LeftGroup = styled.div`
-    gap: 7px;
-`;
-const RightGroup = styled(LeftGroup)``;
-const TicketItem = styled.div`
-    background-color: #a6a6a6;
-    display: flex;
-    justify-content: space-between;
+
+const Button = styled.button`
+    background-color: #44405B;
+    border-radius: 100px;
+    padding: 7px;
+    color: #FFFFFF
+    font-weight: 600;
+    height: 25px;
+    display: flex; 
     align-items: center;
 `;
-const Label = styled.div`
-    font-weight: 600;
+const RoundButton = styled(Button)`
+    border-radius: 70px;
+    width: 25px;
+    padding-right: 10px;
 `;
-const RightArrow = styled.div``;
-const TicketHistory = ({ 
-    tickets,
-    passLoadingStatus, 
-    passSelectedTicket
+const LabelCtn = styled.div`
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+`;
+const Subscript = styled.div`    
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 7px;
+`;
+const IdCtn = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+    cursor: pointer;
+`;
+const Id = styled.div`
+    font-size: 12px;`;
+const Time = styled.div`
+    font-size: 12px;
+`;
+const TicketCtn = styled.div`
+    border-radius: 7px;
+    background-color: #f6f6f6;
+    width: 100%;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+`;
+const TicketData = styled.div`
+    width: 95%;
+`;
+const TicketDataItem = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+const Label = styled.div`
+    font-weight: 600
+`;
+const TicketDataValue = styled.div`
+    font-weight: 500;
+`;
+const Divider = styled.div`
+    height: 1px;
+    width: 100%;
+    background-color: #EAEAEA;
+    margin: 18px 0px;
+`;
+const TableHeader = styled(Label)`
+    font-size: 16ps;
+    text-align: left;
+    padding-bottom: 7px;
+`;
+const Table = styled.table`
+    width: 100%;
+    border-style: none;
+`;
+const TableRow = styled.tr``;
+const Element = styled.td`
+    border-style: none;
+`;
+const RightArrow = styled.img`
+    height: 14px;
+`;
+
+
+
+const Ticket = ({
+    data
 }) => {
-    const history = useHistory();
 
-    // states
-    const [activeKey, setActiveKey] = useState(1);
+    const [showDetails, setShowDetails] = useState(false);
+    const [copied, setCopied] = useState(false);
 
-    // helpers
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    const handleTicketOnClick = () => {
+        if (showDetails)
+            setShowDetails(false)
+        else
+            setShowDetails(true);
     }
-
-    // handlers
-    const handleChange = (key) => {
-        setActiveKey(key);
-    }
-    const handleRedeemTicket = async () => {
-        passLoadingStatus("FETCHING TICKET DATA")
-        await sleep(2000);
-        passLoadingStatus("REDEEMING TICKET")
-        await sleep(2000);
-        history.push('/game');
-    }
-
-    const displayTickets = tickets.map(ticket => {
-        let label = "Ticket";
-        if (!ticket.payout && ticket.height) {
-            ticket.label = "Redeem your Ticket";
-        }
-        const children = <TicketData ticket={ticket} passSelectedTicket={passSelectedTicket}/>;
-
-        return {
-            label, 
-            children
-        };
-    })
+    const handleCopyId = () => {
+        navigator.clipboard.writeText(data.id);
+        setCopied(true);
+    };
 
     return (
-        <TicketItem>
-            <LeftGroup>
-                <Circle />
-                <Label>Ticket 01</Label>                
-            </LeftGroup>
-            <RightGroup>
-                <TertiaryButton>Redeem</TertiaryButton>
-                <TertiaryButton>
-                    <RightArrow>{"->"}</RightArrow>
-                </TertiaryButton>
-            </RightGroup>
+        <TicketCtn>
+            <Item onClick={handleTicketOnClick}>
+                <LeftCtn>
+                    <StyledCircle>
+                        <img src={TicketSvg}/>
+                    </StyledCircle>
+                    <LabelCtn>
+                        <Label>Ticket</Label>
+                        <Subscript>
+                            <IdCtn onClick={handleCopyId}>
+                                <Id>qwer...tzui</Id>
+                                <CopyOutlined />
+                            </IdCtn>
+                            <Time>12:06 GMT</Time>
+                        </Subscript>
+                    </LabelCtn>
+                </LeftCtn>
+                <RightCtn>
+                    <Button>Redeem</Button>
+                    <RoundButton>
+                        <RightArrow src={RightArrowSvg} />
+                    </RoundButton>                   
+                </RightCtn>
+            </Item>
+            {showDetails && (
+                <TicketData>
+                    <TicketDataItem>
+                        <Label>Broadcasted</Label>
+                        <TicketDataValue>12:06 GMT</TicketDataValue>
+                    </TicketDataItem>
+                    <TicketDataItem>
+                        <Label>Ticket ID</Label>
+                        <TicketDataValue>qwer...tzui</TicketDataValue>
+                    </TicketDataItem>
+                    <TicketDataItem>
+                        <Label>Redeemed</Label>
+                        <TicketDataValue>12:06 GMT</TicketDataValue>
+                    </TicketDataItem>
+                    <TicketDataItem>
+                        <Label>Payout</Label>
+                        <TicketDataValue>$20</TicketDataValue>
+                    </TicketDataItem>
+                    <TicketDataItem>
+                        <Label>Payout ID</Label>
+                        <TicketDataValue>qwer...tzui</TicketDataValue>
+                    </TicketDataItem>
 
-        </TicketItem>
-    );
-};
+                    <Divider />
+                    <TableHeader>Ticket Calculations</TableHeader>
+                    <Table>
+                        <TableRow>
+                            <Element>You</Element>
+                            <Element>Block</Element>
+                            <Element>Sum</Element>
+                            <Element>Modulo</Element>
+                        </TableRow>
+                        <TableRow>
+                            <Element>1</Element>
+                            <Element>2</Element>
+                            <Element>3</Element>
+                            <Element>4</Element>
+                        </TableRow>
+                        <TableRow>
+                            <Element>1</Element>
+                            <Element>2</Element>
+                            <Element>3</Element>
+                            <Element>4</Element>
+                        </TableRow>
+                        <TableRow>
+                            <Element>1</Element>
+                            <Element>2</Element>
+                            <Element>3</Element>
+                            <Element>4</Element>
+                        </TableRow>
+                        <TableRow>
+                            <Element>1</Element>
+                            <Element>2</Element>
+                            <Element>3</Element>
+                            <Element>4</Element>
+                        </TableRow>
+                    </Table>
+                </TicketData>
+            )}        
+        </TicketCtn>
+
+    )
+}
+
+const TicketHistory = ({
+    tickets
+}) => {
+    return (
+        <>
+            {tickets.map((ticket, index) => (
+                <Ticket>
+                    key={index}
+                    data={ticket}
+                </Ticket>
+            ))}
+        </>
+    )
+}
 
 TicketHistory.propTypes = {
-    txs: PropTypes.array,
-    fiatPrice: PropTypes.number,
-    fiatCurrency: PropTypes.string,
-};
+    tickets: PropTypes.array
+}
+TicketHistory.defaultProps = {
+    tickets: [{}, {}, {}, {}, {}]
+}
 
 export default TicketHistory;

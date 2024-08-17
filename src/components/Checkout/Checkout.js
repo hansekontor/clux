@@ -87,7 +87,7 @@ const FlexGrow = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #FFFFFF;
+    background-color: #FEFFFE;
     flex-direction: column;
     width: 100%;
 `;
@@ -562,6 +562,7 @@ const Checkout = ({
                             <NavigationBar 
                                 returnTo={"/select"}
                                 title={checkoutTitle}
+                                merchantTag={true}
                             />                                      
                             <Scrollable>
                                 <CustomEnfold animate={isFirstRendering}>     
