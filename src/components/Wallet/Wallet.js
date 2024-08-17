@@ -9,18 +9,10 @@ import { CopyOutlined } from '@ant-design/icons';
 
 // react components tbc
 import { WalletContext } from '@utils/context';
-import { currency } from '@components/Common/Ticker.js';
-import { getUrlFromQueryString } from '@utils/bip70';
-import { getPaymentRequest } from '../../utils/bip70';
-import { LoadingCtn } from '@components/Common/Atoms';
 import { isValidStoredWallet } from '@utils/cashMethods';
 import { infoNotification, errorNotification } from '@components/Common/Notifications';
-import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
-import { ReturnButton } from '@components/Common/PrimaryButton';
-import Balance from '@components/Common/Balance';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import TicketHistory from './TicketHistory';
-import { HelpButton } from '@components/Common/PrimaryButton';
 import Header from '@components/Common/Header'; 
 import { getWalletState } from '@utils/cashMethods';
 import useBCH from '@hooks/useBCH';
@@ -89,14 +81,15 @@ const Address = styled.div`
     cursor: pointer;
     word-break: break-all;
 `;
-const Item = styled.div`
+export const Item = styled.div`
     border-radius: 7px;
     background-color: #f6f6f6;
     width: 100%;
-    height: 60px;
+    min-height: 60px;
     display: flex;
     justify-content: space-between; 
     align-items: center;
+    cursor: pointer;
 `;
 const Circle = styled.div`
     position: relative;
@@ -117,7 +110,7 @@ const TicketCircle = styled(Circle)`
     background-color: #FBEDD2;
 `;
 const Icon = styled.img``;
-const LabelCtn = styled.div`
+export const LabelCtn = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -131,7 +124,7 @@ const Value = styled.div`
     text-align: right;
     padding-right: 10px;
 `;
-const Label = styled.div`
+export const Label = styled.div`
     font-weight: 600;
 `;
 // dev change color
@@ -173,8 +166,7 @@ const Wallet = ({
     const { tickets } = walletState;
     const indicator = 1;
     const [exiting, setExiting] = useState(false);
-
-    console.log("Wallet tickets", tickets);
+    const [selection, setSelection] = useState(false);
 
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -182,21 +174,21 @@ const Wallet = ({
 
     // handlers
     const handleToCashout = () => {
-        console.log("to cashout");
+        history.push("/cashout");
     }
     const handleToTickets = () => {
-        console.log("to tickets");
+        setSelection("Tickets");        
     }
     const handleCopyAddress = (address) => {
         navigator.clipboard.writeText(address);
-        infoNotification("Copied!")
+        infoNotification("Copied!");
     }
     const handleShowPhrase = () => {
-        console.log("show phrase");
+        setSelection("Seed Phrase");
     };
-    const handleChangeEmail = () => [
-        console.log("change email")
-    ]
+    const handleChangeEmail = () => {
+        setSelection("Email");
+    }
     const handleImportWallet = () => {
         console.log("import wallet");
     }
@@ -222,111 +214,130 @@ const Wallet = ({
             <Header />
             <NavigationBar 
                 returnTo={previousPath}
-                title={title}
+                title={selection ? selection : title}
                 light={true}
             />
 
             {!loading && (
                 <WalletCtn>
-                    <Item onClick={handleToCashout}>
-                        <LabelCtn>
-                            <CashoutCircle>
-                                <Icon src={BillIconSvg}/>
-                            </CashoutCircle>
-                            <Label>Cash Out</Label>                            
-                        </LabelCtn>
-                       <Button src={RightArrowSvg}/>
-                    </Item>
-                    <Item onClick={handleToTickets}>
-                        <LabelCtn>
-                            <TicketCircle>
-                                {indicator > 0 && <Alert indicator={indicator} />}
-                                <Icon src={TicketIconSvg} />
-                            </TicketCircle>
-                            <Label>Your Tickets</Label>                            
-                        </LabelCtn>
-                       <Button src={RightArrowSvg}/>
-                    </Item>
-                    <Item onClick={handleToTickets}>
-                        <LabelCtn>
-                            <Circle>
-                                <Icon src={ContactIconSvg} />
-                            </Circle>
-                            <Label>Contact Us</Label>                            
-                        </LabelCtn>
-                       <Button src={RightArrowSvg}/>
-                    </Item>
+                    {!selection && (
+                        <>
+                            <Item onClick={handleToCashout}>
+                                <LabelCtn>
+                                    <CashoutCircle>
+                                        <Icon src={BillIconSvg}/>
+                                    </CashoutCircle>
+                                    <Label>Cash Out</Label>                            
+                                </LabelCtn>
+                            <Button src={RightArrowSvg}/>
+                            </Item>
+                            <Item onClick={handleToTickets}>
+                                <LabelCtn>
+                                    <TicketCircle>
+                                        {indicator > 0 && <Alert indicator={indicator} />}
+                                        <Icon src={TicketIconSvg} />
+                                    </TicketCircle>
+                                    <Label>Your Tickets</Label>                            
+                                </LabelCtn>
+                            <Button src={RightArrowSvg}/>
+                            </Item>
+                            <Item onClick={handleToTickets}>
+                                <LabelCtn>
+                                    <Circle>
+                                        <Icon src={ContactIconSvg} />
+                                    </Circle>
+                                    <Label>Contact Us</Label>                            
+                                </LabelCtn>
+                            <Button src={RightArrowSvg}/>
+                            </Item>
 
-                    <SmallItem>
-                        Your Wallet
-                    </SmallItem>
-                    <Item onClick={handleShowPhrase}>
-                        <LabelCtn>
-                            <Circle>
-                                <Icon src={KeyIconSvg} />
-                            </Circle>
-                            <Label>Show Seed Phrase</Label>                            
-                        </LabelCtn>
-                       <Button src={RightArrowSvg}/>
-                    </Item>
-                    <Item onClick={handleCopyAddress}>
-                        <LabelCtn>
-                            <Circle>
-                                <Icon src={WalletIconSvg} />
-                            </Circle>
-                            <Label>Wallet Address</Label>                            
-                        </LabelCtn>
-                        <Value>
-                            ecash:qzrw...jd93
-                        </Value>
-                        <StyledCopyOutlined />                            
-                    </Item>
-                    <Item onClick={handleChangeEmail}>
-                        <LabelCtn>
-                            <Circle>
-                                <Icon src={EnvelopeIconSvg} />
-                            </Circle>
-                            <Label>Email</Label>                            
-                        </LabelCtn>                            
-                        <Value>youraddress@email.com</Value>
-                        <Button src={PencilIconSvg}/>                            
-                    </Item>
+                            <SmallItem>
+                                Your Wallet
+                            </SmallItem>
 
+                            <Item onClick={handleShowPhrase}>
+                                <LabelCtn>
+                                    <Circle>
+                                        <Icon src={KeyIconSvg} />
+                                    </Circle>
+                                    <Label>Show Seed Phrase</Label>                            
+                                </LabelCtn>
+                            <Button src={RightArrowSvg}/>
+                            </Item>
+                            <Item onClick={handleCopyAddress}>
+                                <LabelCtn>
+                                    <Circle>
+                                        <Icon src={WalletIconSvg} />
+                                    </Circle>
+                                    <Label>Wallet Address</Label>                            
+                                </LabelCtn>
+                                <Value>
+                                    ecash:qzrw...jd93
+                                </Value>
+                                <StyledCopyOutlined />                            
+                            </Item>
+                            <Item onClick={handleChangeEmail}>
+                                <LabelCtn>
+                                    <Circle>
+                                        <Icon src={EnvelopeIconSvg} />
+                                    </Circle>
+                                    <Label>Email</Label>                            
+                                </LabelCtn>                            
+                                <Value>youraddress@email.com</Value>
+                                <Button src={PencilIconSvg}/>                            
+                            </Item>
 
-                    <SmallItem onClick={handleImportWallet}>
-                        <Label>
-                            Import Wallet
-                        </Label>
-                       <Button src={RightArrowSvg}/>
+                            <SmallItem onClick={handleImportWallet}>
+                                <Label>
+                                    Import Wallet
+                                </Label>
+                            <Button src={RightArrowSvg}/>
 
-                    </SmallItem>
-                    <SmallItem onClick={handleToTos}>
-                        <Label>
-                            Terms of Use
-                        </Label>
-                       <Button src={RightArrowSvg}/>
+                            </SmallItem>
+                            <SmallItem onClick={handleToTos}>
+                                <Label>
+                                    Terms of Use
+                                </Label>
+                            <Button src={RightArrowSvg}/>
 
-                    </SmallItem>
-                    <SmallItem onClick={handleToPrivacyPolicy}>
-                        <Label>
-                            Privacy Policy
-                        </Label>
-                       <Button src={RightArrowSvg}/>
+                            </SmallItem>
+                            <SmallItem onClick={handleToPrivacyPolicy}>
+                                <Label>
+                                    Privacy Policy
+                                </Label>
+                            <Button src={RightArrowSvg}/>
 
-                    </SmallItem>
-                    <SmallItem onClick={handleToRegulation}>
-                        <Label>
-                            Regulatory Information
-                        </Label>
-                       <Button src={RightArrowSvg}/>
+                            </SmallItem>
+                            <SmallItem onClick={handleToRegulation}>
+                                <Label>
+                                    Regulatory Information
+                                </Label>
+                            <Button src={RightArrowSvg}/>
 
-                    </SmallItem>
-                    <SmallItem onClick={handleToResponsibleGaming}>
-                        <Label>
-                            Responsible Gaming Policy
-                        </Label>
-                       <Button src={RightArrowSvg}/>
-                    </SmallItem>
+                            </SmallItem>
+                            <SmallItem onClick={handleToResponsibleGaming}>
+                                <Label>
+                                    Responsible Gaming Policy
+                                </Label>
+                            <Button src={RightArrowSvg}/>
+                            </SmallItem>                        
+                        </>
+                    )}
+                    {selection === "Tickets" &&
+                        <TicketHistory 
+                            tickets={tickets} />
+                    }
+                    {selection === "Seed Phrase" &&
+                        <SeedPhrase 
+                            phrase={wallet.mnemonic ? wallet.mnemonic : ""}
+                        />
+                    }
+                    {selection === "Change Email" &&
+                        <ChangeEmail />
+                    }
+                    {selection === "Import Wallet" && 
+                        <ImportWallet />
+                    }
                 </WalletCtn>                
             )}
             <FooterCtn>
@@ -334,8 +345,6 @@ const Wallet = ({
             </FooterCtn>
         </StyledFadeInOut>
     );
-
-  
 };
 
 Wallet.defaultProps = {

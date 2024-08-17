@@ -3,9 +3,9 @@ import React from 'react';
 import { Modal } from 'antd';
 
 // custom react modules
-import { TertiaryButton } from '@components/Common/PrimaryButton';
+import { SecondaryButton } from '@components/Common/PrimaryButton';
 
-const ChangeWallet = () => {
+const ImportWallet = () => {
     const [alertModal, alertModalHolder] = Modal.useModal();
 
     const handleImportAlert = () => {
@@ -15,11 +15,13 @@ const ChangeWallet = () => {
     return (
         <>
             {alertModalHolder}
-            <TertiaryButton
+            <SecondaryButton
                 onClick={handleImportAlert}
             >
                 Import Seed Phrase
-            </TertiaryButton>        
+            </SecondaryButton>        
         </>
     )
 }
+
+export default ImportWallet;
