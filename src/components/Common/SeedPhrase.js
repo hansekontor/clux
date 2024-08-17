@@ -33,7 +33,7 @@ const Word = styled.div`
     font-family: Inter-Medium, Helvetica;
 `;
 
-const OldSeedPhrase = ({ 
+const SeedPhrase = ({ 
     phrase 
 }) => {
     const phraseArray = phrase.split(" ");
@@ -108,7 +108,7 @@ const CustomCollapse = styled(Collapse)`
 `;
 const CustomPanel = styled(Collapse.Panel)`
 `;
-const SeedPhrase = ({
+const SimpleSeedPhrase = ({
     phrase
 }) => {
     return (
