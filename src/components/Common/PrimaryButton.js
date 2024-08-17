@@ -27,9 +27,11 @@ export const SecondaryButton = styled(PrimaryButton)`
 `;
 
 export const TertiaryButton = styled.button`
-    background-color: #t7t7t7;
-    border-radius: 7px;
+    background-color: #44405B;
+    border-radius: 70px;
     padding: 7px;
+    color: #FFFFFF;
+    font-weight: 600;
 `;
 
 const Circle = styled.div`
