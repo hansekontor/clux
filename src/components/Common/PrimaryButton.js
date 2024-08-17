@@ -161,18 +161,9 @@ const ReturnButtonCtn = styled.div`
     cursor: pointer;
 `;
 
-export const ReturnButton = ({
-    returnTo
-}) => {
-    const history = useHistory();
-
-    // handlers
-    const handleReturn = () => {
-        history.push({pathname: returnTo});
-    }
-
+export const ReturnButton = (props) => {
     return (
-        <ReturnButtonCtn onClick={() => handleReturn()}>
+        <ReturnButtonCtn {...props}>
             <ArrowLeftOutlined />
         </ReturnButtonCtn>
     )

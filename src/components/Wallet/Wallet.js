@@ -173,6 +173,12 @@ const Wallet = ({
     } 
 
     // handlers
+    const handleReturn = () => {
+        if (selection)
+            setSelection(false);
+        else 
+            history.push(previousPath);
+    }
     const handleToCashout = () => {
         history.push("/cashout");
     }
@@ -213,7 +219,7 @@ const Wallet = ({
         <StyledFadeInOut duration={300} show={true}>
             <Header />
             <NavigationBar 
-                returnTo={previousPath}
+                handleOnClick={handleReturn}
                 title={selection ? selection : title}
                 light={true}
             />
@@ -241,7 +247,7 @@ const Wallet = ({
                                 </LabelCtn>
                             <Button src={RightArrowSvg}/>
                             </Item>
-                            <Item onClick={handleToTickets}>
+                            <Item>
                                 <LabelCtn>
                                     <Circle>
                                         <Icon src={ContactIconSvg} />
