@@ -451,6 +451,11 @@ const Checkout = ({
         history.push('/backup')
     }
 
+    const handleReturn = () => {
+        const previousPath = "/select";
+        history.push(previousPath);
+    }
+
     useEffect(async () => {
         passLoadingStatus(false);
         
@@ -507,7 +512,6 @@ const Checkout = ({
         }
     }, [])
 
-    const previousPath = "/select";
     const tosTitle = "Purchase Terms";
     const checkoutTitle = "Checkout";
 
@@ -521,7 +525,7 @@ const Checkout = ({
                     {!hasAgreed ? (
                         <>
                             <NavigationBar 
-                                returnTo={previousPath}
+                                handleOnClick={handleReturn}
                                 title={tosTitle}
                             />
                             <Tos />
@@ -560,7 +564,7 @@ const Checkout = ({
                         <>
                             <Header background="#FEFFFE"/>
                             <NavigationBar 
-                                returnTo={"/select"}
+                                handleOnClick={handleReturn}
                                 title={checkoutTitle}
                                 merchantTag={true}
                             />                                      

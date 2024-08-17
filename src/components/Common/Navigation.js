@@ -47,15 +47,15 @@ const MerchantName = styled.div`
 
 
 const NavigationBar = ({
-    returnTo,
     title,
-    merchantTag
+    merchantTag,
+    handleOnClick
 }) => {
 
     return (
         <AgreeHeader>
             <Navigation>
-                <ReturnButton returnTo={returnTo}/>
+                <ReturnButton onClick={handleOnClick}/>
                 <Title>{title}</Title>                        
             </Navigation>       
             {merchantTag && (
