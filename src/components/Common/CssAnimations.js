@@ -16,7 +16,7 @@ export const Enfold = styled.div`
     display: flex;
     align-items: center;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     width: inherit;
     animation: ${props => props.animate ? 'enfold .4s cubic-bezier(0.39, 0.5, 0.5, 1) both' : 'none'};
     ${EnfoldAnimation}
