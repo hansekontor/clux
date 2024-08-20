@@ -101,22 +101,23 @@ const JackpotCarousel = ({
     )
 }
 
-const PayoutAmountCtn = styled(DailyJackpotSlide)`
-    height: 100px;
+const ResultCtn = styled(DailyJackpotSlide)`
+    min-height: 95px;
+    border-radius: 24px 24px 0px 0px;
 `;
-export const PayoutAmount = ({
+export const TicketResult = ({
     amount
 }) => {
     return (
-        <PayoutAmountCtn>
+        <ResultCtn>
             <Jackpot>
                 <Text>
-                    Your Payout 
+                    Winner 
                     <Amount>${amount}</Amount>
                 </Text>
                 <CoinBagIcon src={CoinBagSvg}/>
             </Jackpot>            
-        </PayoutAmountCtn>
+        </ResultCtn>
     )
 }
 

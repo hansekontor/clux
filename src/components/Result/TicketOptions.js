@@ -3,38 +3,55 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 // assets 
-import GiftboxSvg from '@assets/giftbox_icon.svg';
-import ExportSvg from '@assets/export.svg';
+import BillIconSvg from '@assets/bill_icon.svg';
+import TicketIconSvg from '@assets/ticket_icon_filled.svg';
 
 // css styled components
 const ButtonCtn = styled.div`
-    width: 100%;
+    width: 90%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 12px;
     padding-bottom:16px;
 `;
 const CustomButton = styled.button`
-    border-radius: 100px;
-    background: #44405B;
-    color: #FFFFFF;
-    height: 34px;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #000000;
+    height: 52px;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
     align-items: center;
-    padding: 7px 12px;
     border-style: none;
     gap: 4px;
+    flex-grow: 1;
+    gap: 12px;
  `;
 const Text = styled.div`
     font-size: 12px;
-    font-weight: 700;   
+    font-weight: 700;      
 `;
-const ButtonIcon = styled.img``;
-
+const Circle = styled.div`
+    position: relative;
+    background-color: #D0CED8;
+    border-radius: 20px;
+    height: 35px;
+    width: 35px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 12px;
+`;
+const CashoutCircle = styled(Circle)`
+    background-color: #D2EFD0;
+`;
+const TicketCircle = styled(Circle)`
+    background-color: #FBEDD2;
+`;
 
 const CashoutButton = () => {
     const history = useHistory();
@@ -46,10 +63,12 @@ const CashoutButton = () => {
     return (
         <>
             <CustomButton onClick={handleToCashout}>
+                <CashoutCircle>
+                    <img src={BillIconSvg}/>
+                </CashoutCircle>                
                 <Text>
                     Cashout
                 </Text> 
-                <ButtonIcon src={GiftboxSvg}/> 
             </CustomButton>         
         </>
     )
@@ -66,10 +85,12 @@ const TicketDetailButton = ({
 
     return (
         <CustomButton>
+            <TicketCircle>
+                <img src={TicketIconSvg} />
+            </TicketCircle>           
             <Text>
-                Ticket details
+                Ticket Details
             </Text>
-            <ButtonIcon src={ExportSvg}/>
         </CustomButton>
     )
 }

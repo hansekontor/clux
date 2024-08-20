@@ -5,11 +5,11 @@ import styled from 'styled-components';
 // custom react components
 import Header from '@components/Common/Header';
 import Footer from '@components/Common/Footer'
-import { PayoutAmount } from '@components/Common/Jackpot';
 import TicketOptions from './TicketOptions';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
-
+import { TicketResult } from '@components/Common/Jackpot';
+import RandomNumbers from '@components/Common/RandomNumbers';
 
 // assets
 import Placeholder from '@assets/ring_on_beach.png';
@@ -19,11 +19,9 @@ const ChickenZoomIn = styled.img`
     width: 90%;
     height: 40%;
     flex-grow: 1;
-    min-height: 300px;
 `;
 const Scrollable = styled.div`
     width: 100%;
-    height: 55%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,7 +30,16 @@ const Scrollable = styled.div`
     z-index: 1;
     flex-grow: 1;
     gap: 16px;
+    height: 70%;
 `;
+const Ticket = styled.div`
+    width: 100%;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`;
+
 
 
 const Result = ({
@@ -68,15 +75,23 @@ const Result = ({
             <Header />
             <Scrollable>
                 <ChickenZoomIn src={Placeholder}/>
-                <PayoutAmount amount={location.state?.payoutAmount || 40}/>
+                <Ticket>
+                    <TicketResult 
+                        amount={location.state?.payoutAmount || 20}
+                    />
+                    <RandomNumbers 
+                        fixedRandomNumbers={ticket.numbers || [4,1,13,7]}
+                        background={"#1A1826"}
+                    />                  
+                </Ticket>
                 <TicketOptions ticket={ticket}/>
             </Scrollable>
+
 
             <Footer
                 origin={"/result"}
                 buttonOnClick={handlePlayAgain}
                 buttonText={playButtonText}
-                randomNumbers={ticket?.numbers || [4,1,13,7]}
                 ticketIndicator={unredeemedTickets.length}
             />
         </>
