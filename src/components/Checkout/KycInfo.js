@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 import VideoPersonSvg from '@assets/video_person_icon.svg';
+import PicturesSvg from '@assets/pictures_icon.svg';
+import SmartphoneSvg from '@assets/smartphone_icon.svg';
 
 
 const Container = styled.div`
@@ -28,6 +30,12 @@ const Item = styled.div`
     border: 1px solid #DFDFDF; 
     display: flex;
     align-items: center;
+`;
+const TopItem = styled(Item)`
+    border-radius: 8px 8px 0 0;
+`;
+const BottomItem = styled(Item)`
+    border-radius: 0 0 8px 8px;
 `;
 const Subscript = styled.div`
     font-size: 12px;
@@ -77,16 +85,20 @@ const KycInfo = () => {
             </Circle>
             <Header>Complete KYC</Header>
             <Subtitle>You need to submit a photo ID and liveness check</Subtitle>
-            <Item>
-                <SmallCircle />
+            <TopItem>
+                <SmallCircle>
+                    <img src={PicturesSvg} />
+                </SmallCircle>
                 <BoldText>Submit a photo ID</BoldText>
                 <Text>1 minute</Text>
-            </Item>
-            <Item>
-                <SmallCircle />
+            </TopItem>
+            <BottomItem>
+                <SmallCircle>
+                    <img src={SmartphoneSvg} />
+                </SmallCircle>
                 <BoldText>Do a liveness check</BoldText>
                 <Text>1 minute</Text>
-            </Item>
+            </BottomItem>
             <Subscript>Total time 2 minutes</Subscript>
         </Container>   
     )
