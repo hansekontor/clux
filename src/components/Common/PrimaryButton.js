@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import GiftboxSvg from '@assets/giftbox_icon.svg';
-import QuestionMarkSvg from '@assets/questionmark_icon.svg';
-import WalletSvg from '@assets/wallet_white_icon.svg';
+import { CashoutIcon, HelpIcon, WalletIcon } from '@components/Common/CustomIcons';
 
 
 const PrimaryButton = styled.button`
@@ -94,10 +92,7 @@ export const WalletButton = ({
     }
 
     return (
-        <Circle onClick={() => handleToSettings()}>
-            {indicator > 0 && <Alert indicator={indicator} />}
-            <Icon src={WalletSvg} />
-        </Circle>    
+        <WalletIcon onClick={() => handleToSettings()} indicator={indicator}/>  
     )
 }
 WalletButton.defaultProps = {
@@ -108,50 +103,34 @@ WalletButton.propTypes = {
 };
 
 
-export const HelpButton = ({
-    returnTo
-}) => {
-    // handlers 
+export const HelpButton = () => {
+
     const handleToHelp = () => {
         window.location.href = "https://block.lotto";        
     }
 
-    return (
-        <>
-            <Circle onClick={() => handleToHelp()}>
-                <Icon src={QuestionMarkSvg} />
-            </Circle>       
-        </>
+    return ( 
+        <HelpIcon onClick={() => handleToHelp()} />
     )
 }
-HelpButton.defaultProps = {
-    returnTo: "/select",
-};  
-HelpButton.propTypes = {
-    returnTo: PropTypes.string,
-};
 
-
-export const PayoutButton = ({
+export const CashoutButton = ({
     returnTo,
 }) => {
     const history = useHistory();
 
-    // handlers
     const handleToSettings = () => {
         history.push({pathname: "/payout", state: { returnTo } });
     }
 
     return (
-        <Circle onClick={() => handleToSettings()}>
-            <Icon src={GiftboxSvg} />
-        </Circle>    
+        <CashoutIcon onClick={() => handleToSettings()} />
     )
 }
-PayoutButton.defaultProps = {
+CashoutButton.defaultProps = {
     returnTo : "/select",
 };
-PayoutButton.propTypes = {
+CashoutButton.propTypes = {
     returnTo: PropTypes.string,
 };
 

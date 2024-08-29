@@ -33,7 +33,6 @@ const Merchant = styled.div`
     gap: 3px;
     padding-right: 6%;
 `;
-const MerchantIcon = styled.img``;
 const MerchantLabel = styled.div`
     font-family: "Inter-Regular", Helvetica;
     font-size: 14px;
@@ -60,7 +59,7 @@ const NavigationBar = ({
             </Navigation>       
             {merchantTag && (
                 <Merchant>
-                    <MerchantIcon src={MerchantSvg} />
+                    <img src={MerchantSvg} />
                     <MerchantLabel></MerchantLabel>
                     <MerchantName>MRC</MerchantName>                        
                 </Merchant>                    
