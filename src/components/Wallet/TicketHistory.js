@@ -6,7 +6,7 @@ import { CopyOutlined } from '@ant-design/icons';
 import { Item } from './Wallet.js';
 import { TertiaryButton } from '@components/Common/PrimaryButton';
 
-import TicketSvg from '@assets/ticket_icon_filled.svg';
+import TicketSvg from '@assets/ticket_filled.svg';
 import RightArrowSvg from '@assets/arrow_right_white.svg';
 
 

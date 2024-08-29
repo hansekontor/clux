@@ -2,30 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 
 import RandomNumbers from '@components/Common/RandomNumbers';
-import TicketIconSvg from '@assets/ticket_icon_filled.svg';
+import { TicketFilledIcon } from '@components/Common/CustomIcons';
 
-const Circle = styled.div`
-    background-color: #D0CED8;
-    border-radius: 177px;
-    height: 64px;
-    width: 64px;
-    cursor: pointer;
-    cursor: pointer;
-    text-align: center;
-    cursor: pointer;    
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-`;
-const SmallCircle = styled(Circle)`
-    width: 40px;
-    height: 40px;
-    background-color: #FFFFFF;
-    margin: 0px 12px;
-    border-radius: 20px;
-`;
+
 const BoldText = styled.div`
     font-weight: 600;
     font-family: Helvetica;
@@ -45,12 +24,15 @@ const Details = styled.div`
 const Row = styled.div`
     display: flex;
     align-items: center;
-`
+    margin-left: 12px;
+    gap: 12px;
+`;
 const Column = styled(Row)`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 46px;
+    margin: 0;
 `;
 const DateColumn = styled(Column)`
     align-items: baseline;
@@ -71,9 +53,7 @@ const Ticket = ({
         <>
             <Details>
                 <Row>
-                    <SmallCircle>
-                        <img src={TicketIconSvg} />
-                    </SmallCircle>
+                    <TicketFilledIcon />
                     <DateColumn>
                         <BoldText>Date</BoldText>
                         <BoldText>15 Oct 2024</BoldText>

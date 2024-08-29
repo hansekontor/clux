@@ -4,12 +4,10 @@ import styled from "styled-components";
 import PropTypes from 'prop-types';
 
 // react components 
-import PrimaryButton, { WalletButton, HelpButton, PayoutButton } from '@components/Common/PrimaryButton';
+import PrimaryButton, { WalletButton, HelpButton, CashoutButton } from '@components/Common/PrimaryButton';
 import Balance from '@components/Common/Balance';
 import RandomNumbers, {ResultingNumbers} from '@components/Common/RandomNumbers';
-
-// assets
-import CnmiPng from '@assets/cnmi.png';
+import { CnmiIcon } from '@components/Common/CustomIcons';
 
 // styled css components
 export const LightFooterBackground = styled.div`
@@ -38,13 +36,7 @@ const SupportBarCtn = styled.div`
     width: 90%;
     padding-top: 18px;
 `;  
-const CnmiIconCtn = styled.div`
-    cursor: pointer;
-`
-const CnmiIcon = styled.img`
-    height: 35px;
-    width: 35px;
-`;
+
 
 export const SupportBar = ({
     returnTo,
@@ -59,10 +51,8 @@ export const SupportBar = ({
             <WalletButton returnTo={returnTo} indicator={ticketIndicator}/>
             <HelpButton />                
             <Balance />
-            <PayoutButton returnTo={returnTo}/>
-            <CnmiIconCtn onClick={() => handleCnmiRedirect()}>
-                <CnmiIcon src={CnmiPng}/>
-            </CnmiIconCtn>
+            <CashoutButton returnTo={returnTo}/>
+            <CnmiIcon onClick={() => handleCnmiRedirect()}/>
         </SupportBarCtn>
     )
 }

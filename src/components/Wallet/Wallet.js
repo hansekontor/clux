@@ -19,15 +19,9 @@ import useBCH from '@hooks/useBCH';
 import NavigationBar from '@components/Common/Navigation';
 import FadeInOut from '@components/Backup/FadeInOut';
 import { FooterCtn, SupportBar } from '@components/Common/Footer';
-import { Alert } from '@components/Common/PrimaryButton'; 
+import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Common/CustomIcons';
 
 // assets 
-import BillIconSvg from '@assets/bill_icon.svg';
-import TicketIconSvg from '@assets/ticket_icon.svg';
-import ContactIconSvg from '@assets/contact_icon.svg';
-import KeyIconSvg from '@assets/key_icon.svg';
-import WalletIconSvg from '@assets/wallet_icon.svg';
-import EnvelopeIconSvg from '@assets/envelope_icon.svg';
 import RightArrowSvg from '@assets/arrow_right.svg';
 import PencilIconSvg from '@assets/pencil_icon.svg';
 
@@ -230,28 +224,21 @@ const Wallet = ({
                         <>
                             <Item onClick={handleToCashout}>
                                 <LabelCtn>
-                                    <CashoutCircle>
-                                        <Icon src={BillIconSvg}/>
-                                    </CashoutCircle>
+                                    <BillIcon />
                                     <Label>Cash Out</Label>                            
                                 </LabelCtn>
                             <Button src={RightArrowSvg}/>
                             </Item>
                             <Item onClick={handleToTickets}>
                                 <LabelCtn>
-                                    <TicketCircle>
-                                        {indicator > 0 && <Alert indicator={indicator} />}
-                                        <Icon src={TicketIconSvg} />
-                                    </TicketCircle>
+                                    <TicketIcon indicator={indicator}/>
                                     <Label>Your Tickets</Label>                            
                                 </LabelCtn>
                             <Button src={RightArrowSvg}/>
                             </Item>
                             <Item>
                                 <LabelCtn>
-                                    <Circle>
-                                        <Icon src={ContactIconSvg} />
-                                    </Circle>
+                                    <ContactIcon />
                                     <Label>Contact Us</Label>                            
                                 </LabelCtn>
                             <Button src={RightArrowSvg}/>
@@ -263,18 +250,14 @@ const Wallet = ({
 
                             <Item onClick={handleShowPhrase}>
                                 <LabelCtn>
-                                    <Circle>
-                                        <Icon src={KeyIconSvg} />
-                                    </Circle>
+                                    <KeyIcon />
                                     <Label>Show Seed Phrase</Label>                            
                                 </LabelCtn>
                             <Button src={RightArrowSvg}/>
                             </Item>
                             <Item onClick={handleCopyAddress}>
                                 <LabelCtn>
-                                    <Circle>
-                                        <Icon src={WalletIconSvg} />
-                                    </Circle>
+                                    <LightWalletIcon />
                                     <Label>Wallet Address</Label>                            
                                 </LabelCtn>
                                 <Value>
@@ -284,9 +267,7 @@ const Wallet = ({
                             </Item>
                             <Item onClick={handleChangeEmail}>
                                 <LabelCtn>
-                                    <Circle>
-                                        <Icon src={EnvelopeIconSvg} />
-                                    </Circle>
+                                    <EnvelopeIcon />
                                     <Label>Email</Label>                            
                                 </LabelCtn>                            
                                 <Value>youraddress@email.com</Value>

@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 // assets 
-import BillIconSvg from '@assets/bill_icon.svg';
-import TicketIconSvg from '@assets/ticket_icon_filled.svg';
+import BillIconSvg from '@assets/bill.svg';
+import TicketIconSvg from '@assets/ticket_filled.svg';
 
 // css styled components
 const ButtonCtn = styled.div`
