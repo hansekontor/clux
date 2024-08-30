@@ -3,14 +3,16 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Modal } from 'antd';
+import { Flash } from 'react-ruffle';
 
 // react modules
 import { WalletContext } from '@utils/context';
-import RingPng from '@assets/ring_on_beach.png';
 import Header from '@components/Common/Header';
 import Notification from '@components/Common/Notifications';
 import Footer from '@components/Common/Footer';
 import { getWalletState } from '@utils/cashMethods'
+
+import LockerPng from '@assets/locker.png';
 
 // styled css components 
 const Background = styled.img`
@@ -18,13 +20,15 @@ const Background = styled.img`
     top: 0;
     margin-left: auto;
     margin-right: auto;
-    height: 100vh;
+    height: 85vh;
     z-index: -4;
     object-fit: cover;
 `;
-const Scrollable = styled.div`
+const FlexGrow = styled.div`
     flex-grow: 1;
-    overflow-y: auto;
+    display: flex; 
+    flex-direction: column;
+    justify-content: flex-end;
 `;
 
 
@@ -85,6 +89,7 @@ const WaitingRoom = ({
     const waitingInfoConfig = {
         content: <p>{waitingInfoText}</p>
     }
+    const animationName = "./animations/Shadowbox.swf"
 
     // handlers
     const handleToGame = async () => {
@@ -109,9 +114,23 @@ const WaitingRoom = ({
             {gameEnabled && 
                 <Notification type="success" message="You can redeem your Ticket now" />
             }
-            <Background src={RingPng} />
+            <Background src={LockerPng} />
             <Header />
-            <Scrollable></Scrollable>
+            <FlexGrow>
+                <Flash                
+                    src={animationName}
+                    config={{
+                        autoplay: "on",
+                        unmuteOverlay: "hidden",
+                        splashScreen: false,
+                        contextMenu: "off",
+                        allowScriptAccess: true,
+                        scale: "exactFit",
+                        wmode: "transparent"                                      
+                    }}>
+                        <div>FLASH PLACEHOLDER</div>
+                </Flash>                    
+            </FlexGrow>
             <Footer 
                 origin={"/waitingroom"}
                 randomNumbers={activeTicket.playerChoice || ticketData.playerChoice}

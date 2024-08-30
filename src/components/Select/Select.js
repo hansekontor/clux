@@ -16,7 +16,6 @@ import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 
 
-
 // assets
 import RingPng from '@assets/ring_on_beach.png';
 
@@ -53,7 +52,7 @@ const IdleChicken = styled.div`
     position: absolute;
     overflow: visible;
     top: 10%;
-    width: 250px;
+    width: 400px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -81,6 +80,7 @@ const FadeOut = styled(WalletCtn)`
     animate: fade-out 1s ease-out both;
     ${FadeOutAnimationShort}    
 `;
+
 
 const Select = ({
     passRandomNumbers,
@@ -139,7 +139,7 @@ const Select = ({
                                     contextMenu: "off",
                                     allowScriptAccess: true,
                                     forceScale: true,
-                                    scale: "noBorder",
+                                    scale: "exactFit",
                                     wmode: "transparent"                                    
                                 }}
                             >

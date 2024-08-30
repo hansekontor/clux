@@ -16,9 +16,10 @@ import Header from '@components/Common/Header';
 import { FooterCtn } from '@components/Common/Footer';
 import { ResultingNumbers } from '@components/Common/RandomNumbers';
 import { WalletCtn } from '@components/App';
-import { FadeOutAnimationShort } from '@components/Common/CssAnimations';
+import { SlideInAnimation, FadeOutAnimationShort } from '@components/Common/CssAnimations';
 
-// other
+// assets and other
+import VersusPng from '@assets/versus.png';
 import compositions from '@utils/compositions';
 
 // styled css components 
@@ -44,15 +45,25 @@ const Animation = styled.div`
     display: ${props => props.hidden ? 'none' : 'flex'};
     justify-content: center;
     align-items: center;
+    width: 600px;
 `;
 const CustomFlash = styled(Flash)`
     position: absolute;
     visibility: ${props => props.hidden ? "hidden" : "visible"};
 `;
-const FadeOut = styled(WalletCtn)`
-    box-shadow: none;
-    animate: fade-out 1s ease-out both;
-    ${FadeOutAnimationShort}    
+const SlideIn = styled.div`
+    position: absolute;
+    z-index: 200;
+    top: 0;
+    animation: slide-in-from-top 0.5s cubic-bezier(0.24, 0.48, 0.47, 0.95);
+
+    ${SlideInAnimation};
+`;
+const FadeOut = styled.div`
+    ${FadeOutAnimationShort};
+`;
+const Versus = styled.img`
+    width: 70%;
 `;
 
 const calculatePayout = (ttxHashString, blockHashString, playerChoiceBytes, maxPayoutBufBE) => {
@@ -143,6 +154,7 @@ const Game = ({
     const [labels, setLabels] = useState({});
     const [payoutData, setPayoutData] = useState(false);
     const [fightStarted, setFightStarted] = useState(false);
+    const [fadeOutVersus, setFadeOutVersus] = useState(false);
 
     if (!payoutData) {
         const playerChoiceBytes = Buffer.from(ticket.playerChoice, 'hex');
@@ -205,6 +217,11 @@ const Game = ({
         }
     }, [animationStage])
 
+    useEffect(async () => {
+        await sleep(5000);
+        setFadeOutVersus(true);
+    }, [])
+
     // end animations for demo
     useEffect(async() => {
         if (animationStage === "celebration") {
@@ -247,6 +264,11 @@ const Game = ({
             <Background src={RingPng} />
             <Header />
             <FlexGrow>    
+                <SlideIn>
+                    <FadeOut fadeOut={fadeOutVersus}>
+                        <Versus src={VersusPng}/>
+                    </FadeOut>
+                </SlideIn>
                 <Animation hidden={animationStage !== "entrance"}>
                     <CustomFlash 
                         src={entranceAnimation}
@@ -257,7 +279,7 @@ const Game = ({
                             contextMenu: "off",
                             allowScriptAccess: true,
                             forceScale: true,
-                            scale: "noBorder",
+                            scale: "exactFit",
                             wmode: "transparent"                                    
                         }}
                     >
@@ -273,8 +295,7 @@ const Game = ({
                             splashScreen: false,
                             contextMenu: "off",
                             allowScriptAccess: true,
-                            forceScale: true,
-                            scale: "noBorder",
+                            scale: "showAll",
                             wmode: "transparent"                                    
                         }}
                     >       
@@ -291,7 +312,7 @@ const Game = ({
                             contextMenu: "off",
                             allowScriptAccess: true,
                             forceScale: true,
-                            scale: "noBorder",
+                            scale: "exactFit",
                             wmode: "transparent"                                    
                         }}
                     >        
