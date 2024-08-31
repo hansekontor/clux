@@ -20,7 +20,7 @@ const WordBox = styled.div`
     justify-content: space-between;
     padding-left: 7px;
     padding-right: 7px;
-    min-width: 70px;
+    min-width: 80px;
     height: 42px;
     align-items: center;
     border-radius: 4px;
