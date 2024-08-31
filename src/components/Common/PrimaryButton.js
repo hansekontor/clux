@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { CashoutIcon, HelpIcon, WalletIcon } from '@components/Common/CustomIcons';
+import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@components/Common/CustomIcons';
 
 
 const PrimaryButton = styled.button`
@@ -32,26 +32,6 @@ export const TertiaryButton = styled.button`
     font-weight: 600;
 `;
 
-const Circle = styled.div`
-    background-color: #1A1826;
-    border-radius: 20px;
-    height: 40px;
-    width: 40px;
-    cursor: pointer;
-    cursor: pointer;
-    text-align: center;
-    cursor: pointer;    
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-`;
-const Icon = styled.img`
-    width: 24px;
-    height: 24px;
-    position: absolute;
-`;
 const AlertCtn = styled.div`
     background-color: red;
     border-radius: 40px;
@@ -145,6 +125,68 @@ export const ReturnButton = (props) => {
         <ReturnButtonCtn {...props}>
             <ArrowLeftOutlined />
         </ReturnButtonCtn>
+    )
+}
+
+const WhiteButton = styled.button`
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #000000;
+    height: 52px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-style: none;
+    gap: 12px;
+    flex-grow: 1;
+    gap: 12px;
+ `;
+const Text = styled.div`
+    font-size: 12px;
+    font-weight: 700;      
+`;
+const CustomBillIcon = styled(BillIcon)`
+    margin-left: 12px;
+`;
+const CustomTicketIcon = styled(TicketIcon)`
+    margin-left: 12px;
+`;
+
+export const WhiteCashoutButton = () => {
+    const history = useHistory();
+
+    const handleToCashout = () => {
+        history.push({path:'/cashout'})
+    }
+    
+    return (
+        <>
+            <WhiteButton onClick={handleToCashout}>
+                <CustomBillIcon />              
+                <Text>
+                    Cashout
+                </Text> 
+            </WhiteButton>         
+        </>
+    )
+}
+
+export const WhiteTicketButton = ({
+    id
+}) => {
+    const history = useHistory();
+
+    const handleToTicketDetails = () => {
+        history.push({path:'/ticket'});
+    }
+
+    return (
+        <WhiteButton>
+            <CustomTicketIcon />
+            <Text>
+                Ticket Details
+            </Text>
+        </WhiteButton>
     )
 }
 
