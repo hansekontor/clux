@@ -209,19 +209,24 @@ const Game = ({
         passLoadingStatus(false);
     }, []);
 
+
+
+    const playButtonText = "Fight";
+    const folder = "./animations/"
+    const entranceAnimation = folder + "Clux_3_Face_Off.swf";
+    const fightAnimation = folder + "Clux_4_Fight_Clux_Wins.swf";
+    const celebrationAnimation = folder + "Celebrate_1.swf";  
+
+   
     // switch to celebration loop for demo
     useEffect(async() => {
         if (animationStage === "fight") {
             await sleep(5000);
             setAnimationStage("celebration");
+            document.getElementById(celebrationAnimation).startCelebrationAnimation();
         }
-    }, [animationStage])
-
-    useEffect(async () => {
-        await sleep(5000);
-        setFadeOutVersus(true);
-    }, [])
-
+    }, [animationStage]) 
+    
     // end animations for demo
     useEffect(async() => {
         if (animationStage === "celebration") {
@@ -250,15 +255,11 @@ const Game = ({
     // handlers
     const handlePlay = async () => {
         setAnimationStage("fight");
+        document.getElementById(fightAnimation).startFightAnimation();
         setFightStarted(true);
     }
 
-    const playButtonText = "Fight";
-    const folder = "./animations/"
-    const entranceAnimation = folder + "Clux_3_Face_Off.swf";
-    const fightAnimation = folder + "Clux_4_Fight_Clux_Wins.swf";
-    const celebrationAnimation = folder + "Clux_5_Celebration_5.swf";    
-
+    
     return (
         <>
             <Background src={RingPng} />
@@ -295,7 +296,7 @@ const Game = ({
                             splashScreen: false,
                             contextMenu: "off",
                             allowScriptAccess: true,
-                            scale: "showAll",
+                            scale: "exactFit",
                             wmode: "transparent"                                    
                         }}
                     >       
