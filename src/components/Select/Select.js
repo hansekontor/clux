@@ -1,7 +1,6 @@
 // modules
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from 'react-router-dom';
-import { AnimateCC } from 'react-adobe-animate';
 import styled from 'styled-components';
 import { Flash } from 'react-ruffle';
 
@@ -15,12 +14,13 @@ import { WalletCtn } from '@components/App';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 
+// util
+import animationLabels from '@utils/animations.js';
+
 
 // assets
 import RingPng from '@assets/ring_on_beach.png';
 
-// other
-import compositions from '@utils/compositions';
 
 // styled css components
 const ChickenCtn = styled.div`
@@ -116,7 +116,8 @@ const Select = ({
     
     // html contents
     const playButtonText = "Play Now - $10";
-    const animationName = "./animations/Clux_2_Ready_Stance.swf";
+    const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
+    const animationPath = animationLabels.PUBLICPATH + animationName;
 
 
     return (
@@ -131,7 +132,7 @@ const Select = ({
 
                         <IdleChicken> 
                             <Flash 
-                                src={animationName}
+                                src={animationPath}
                                 config={{
                                     autoplay: "on",
                                     unmuteOverlay: "hidden",
@@ -142,6 +143,7 @@ const Select = ({
                                     scale: "exactFit",
                                     wmode: "transparent"                                    
                                 }}
+                                id={animationName}
                             >
                                 <div>PLACEHOLDER</div>
                             </Flash>

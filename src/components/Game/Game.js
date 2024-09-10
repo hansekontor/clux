@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { AnimateCC } from 'react-adobe-animate';
 import bcash from '@hansekontor/checkout-components';
 const { Hash256 } = bcash.bcrypto;
 import { U64 } from 'n64';
@@ -15,12 +14,11 @@ import PrimaryButton from '@components/Common/PrimaryButton';
 import Header from '@components/Common/Header';
 import { FooterCtn } from '@components/Common/Footer';
 import { ResultingNumbers } from '@components/Common/RandomNumbers';
-import { WalletCtn } from '@components/App';
 import { SlideInAnimation, FadeOutAnimationShort } from '@components/Common/CssAnimations';
 
 // assets and other
 import VersusPng from '@assets/versus.png';
-import compositions from '@utils/compositions';
+import animationLabels from '@utils/animations';
 
 // styled css components 
 const Background = styled.img`
@@ -45,7 +43,6 @@ const Animation = styled.div`
     display: ${props => props.hidden ? 'none' : 'flex'};
     justify-content: center;
     align-items: center;
-    width: 600px;
 `;
 const CustomFlash = styled(Flash)`
     position: absolute;
@@ -65,6 +62,8 @@ const FadeOut = styled.div`
 const Versus = styled.img`
     width: 70%;
 `;
+const animationStyle = { width: "960px", height: "600px" };
+const faceoffAnimationStyle = { width: "960px", height: "600px", position: "absolute", marginLeft: "15%" };
 
 const calculatePayout = (ttxHashString, blockHashString, playerChoiceBytes, maxPayoutBufBE) => {
     console.log("calculatePayout", ttxHashString, blockHashString, playerChoiceBytes, maxPayoutBufBE);
@@ -147,13 +146,13 @@ const Game = ({
 }) => {
 
     const history = useHistory();
-
     // states
-    const [animationStage, setAnimationStage] = useState("entrance");
+    const [animationStage, setAnimationStage] = useState("faceoff");
     const [payoutAmount, setPayoutAmount] = useState(20); // !hardcoded demo value
     const [labels, setLabels] = useState({});
     const [payoutData, setPayoutData] = useState(false);
     const [fightStarted, setFightStarted] = useState(false);
+    const [versus, setVersus] = useState(false);
     const [fadeOutVersus, setFadeOutVersus] = useState(false);
 
     if (!payoutData) {
@@ -212,18 +211,31 @@ const Game = ({
 
 
     const playButtonText = "Fight";
-    const folder = "./animations/"
-    const entranceAnimation = folder + "Clux_3_Face_Off.swf";
-    const fightAnimation = folder + "Clux_4_Fight_Clux_Wins.swf";
-    const celebrationAnimation = folder + "Celebrate_1.swf";  
+    const folder = animationLabels.PUBLICPATH;
+    const faceoffAnimationName = animationLabels.CLUX.NORRIS.FACEOFF;
+    const faceoffAnimationPath = folder + faceoffAnimationName;
+    const fightAnimationName = animationLabels.CLUX.NORRIS.A.FIGHT;
+    const fightAnimationPath = folder + fightAnimationName;
+    const celebrationAnimationName = animationLabels.CLUX.NORRIS.A.CELEBRATIONS[0];
+    const celebrationAnimationPath = folder + celebrationAnimationName;
+    
+    
+    // slide-in and fadeout animation for versus
+    useEffect(async() => {
+        await sleep(1000);
+        setVersus(true);
+    }, [])   
+    useEffect(async() => {
+        await sleep(5000);
+        setFadeOutVersus(true);
+    })
 
-   
     // switch to celebration loop for demo
     useEffect(async() => {
         if (animationStage === "fight") {
             await sleep(5000);
             setAnimationStage("celebration");
-            document.getElementById(celebrationAnimation).startCelebrationAnimation();
+            document.getElementById(celebrationAnimationName).startCelebrationAnimation();
         }
     }, [animationStage]) 
     
@@ -234,13 +246,6 @@ const Game = ({
             history.push({pathname: "/result", state: {payoutAmount}});
         }
     }, [animationStage])
-
-    // useEffect(async() => {
-    //     if (!celebrationPaused) {
-    //         await sleep(16000);
-    //         setFadeOut(true);
-    //     }
-    // }, [celebrationPaused])
 
     // useEffect(async() => {
     //     if(fadeOut){
@@ -255,7 +260,7 @@ const Game = ({
     // handlers
     const handlePlay = async () => {
         setAnimationStage("fight");
-        document.getElementById(fightAnimation).startFightAnimation();
+        document.getElementById(fightAnimationName).startFightAnimation();
         setFightStarted(true);
     }
 
@@ -266,13 +271,16 @@ const Game = ({
             <Header />
             <FlexGrow>    
                 <SlideIn>
-                    <FadeOut fadeOut={fadeOutVersus}>
-                        <Versus src={VersusPng}/>
-                    </FadeOut>
+                    {versus && 
+                        <FadeOut fadeOut={fadeOutVersus}>
+                            <Versus src={VersusPng}/>
+                        </FadeOut>                    
+                    }
+
                 </SlideIn>
-                <Animation hidden={animationStage !== "entrance"}>
+                <Animation hidden={animationStage !== "faceoff"}>
                     <CustomFlash 
-                        src={entranceAnimation}
+                        src={faceoffAnimationPath}
                         config={{
                             autoplay: "on",
                             unmuteOverlay: "hidden",
@@ -283,13 +291,15 @@ const Game = ({
                             scale: "exactFit",
                             wmode: "transparent"                                    
                         }}
+                        id={faceoffAnimationName}
+                        style={faceoffAnimationStyle}
                     >
                         <div>FACEOFF PLACEHOLDER</div>   
                     </CustomFlash>
                 </Animation>
                 <Animation hidden={animationStage !== "fight"}>
                     <CustomFlash 
-                        src={fightAnimation}
+                        src={fightAnimationPath}
                         config={{
                             autoplay: "on",
                             unmuteOverlay: "hidden",
@@ -299,13 +309,15 @@ const Game = ({
                             scale: "exactFit",
                             wmode: "transparent"                                    
                         }}
+                        id={fightAnimationName}
+                        style={animationStyle}
                     >       
                         <div>FIGHT PLACEHOLDER</div>   
                     </CustomFlash>             
                 </Animation>
                 <Animation hidden={animationStage !== "celebration"}>
                     <CustomFlash 
-                        src={celebrationAnimation}
+                        src={celebrationAnimationPath}
                         config={{
                             autoplay: "on",
                             unmuteOverlay: "hidden",
@@ -316,6 +328,8 @@ const Game = ({
                             scale: "exactFit",
                             wmode: "transparent"                                    
                         }}
+                        id={celebrationAnimationName}
+                        style={animationStyle}
                     >        
                         <div>CELEBRATION PLACEHOLDER</div>   
                     </CustomFlash>            
