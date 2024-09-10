@@ -102,9 +102,11 @@ const Backup = ({
                         <Text>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Text>
                         <SeedPhrase 
                             phrase={wallet.mnemonic ? wallet.mnemonic : ""}
-                        />             
+                        />            
                         <SecondaryButton type="button" onClick={handleCopySeedPhrase}>
-                        <CopyboardIcon src={CopyboardSvg} />Copy</SecondaryButton>
+                            <CopyboardIcon src={CopyboardSvg} />
+                            Copy
+                        </SecondaryButton>
                         <PrimaryButton type="button" onClick={handleBackedUp}>I've Secured</PrimaryButton> 
                     </Modal>                                        
                 </ModalCtn>

@@ -17,6 +17,7 @@ const PrimaryButton = styled.button`
     font-size: 20px;
     cursor: pointer;
     width: 90%;
+    letter-spacing: 1px;
 `;
 
 export const SecondaryButton = styled(PrimaryButton)`
@@ -100,7 +101,7 @@ export const CashoutButton = ({
     const history = useHistory();
 
     const handleToSettings = () => {
-        history.push({pathname: "/payout", state: { returnTo } });
+        history.push({pathname: "/cashout", state: { returnTo } });
     }
 
     return (
@@ -189,7 +190,5 @@ export const WhiteTicketButton = ({
         </WhiteButton>
     )
 }
-
-
 
 export default PrimaryButton;
