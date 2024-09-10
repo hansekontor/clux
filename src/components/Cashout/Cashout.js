@@ -1,5 +1,6 @@
 // node modules
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 // react components
@@ -36,25 +37,35 @@ const Form = styled.form`
 `;
 
 const Cashout = ({
+    passLoadingStatus
 }) => {
     const balance = 333;
 
-        // handlers
-    const handleCashout = () => {
-        console.log("handleCashout()");
-    }
+    const history = useHistory();
 
     // DOM variables
     const cashoutButtonText = "Confirm Amount";
     const title = "Cashout";
-    const previousPath = location.state?.returnTo || "/select";
+    const previousPath = location.state?.returnTo || "/select";    
+    
+    // handlers
+    const handleCashout = () => {
+        console.log("handleCashout()");
+    }
+    const handleReturn = () => {
+        history.push(previousPath);
+    }
+
+
+
+    console.log("CASHOUT.js previousPath", previousPath);
 
 
     return (
         <FlexGrow>
             <Header />
             <NavigationBar 
-                returnTo={previousPath}
+                handleOnClick={handleReturn}
                 title={title}                              
             />
             <Form id="cashout-form">
