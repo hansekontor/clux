@@ -5,13 +5,17 @@ import styled from 'styled-components';
 import { Modal } from 'antd';
 import { Flash } from 'react-ruffle';
 
-// react modules
+// react components
 import { WalletContext } from '@utils/context';
 import Header from '@components/Common/Header';
 import Notification from '@components/Common/Notifications';
 import Footer from '@components/Common/Footer';
 import { getWalletState } from '@utils/cashMethods'
 
+// util
+import animationLabels from '@utils/animations';
+
+// assets
 import LockerPng from '@assets/locker.png';
 
 // styled css components 
@@ -89,7 +93,8 @@ const WaitingRoom = ({
     const waitingInfoConfig = {
         content: <p>{waitingInfoText}</p>
     }
-    const animationName = "./animations/Shadowbox.swf"
+    const animationName = animationLabels.CLUX.SHADOWBOX;
+    const animationPath = animationLabels.PUBLICPATH + animationName;
 
     // handlers
     const handleToGame = async () => {
@@ -118,7 +123,7 @@ const WaitingRoom = ({
             <Header />
             <FlexGrow>
                 <Flash                
-                    src={animationName}
+                    src={animationPath}
                     config={{
                         autoplay: "on",
                         unmuteOverlay: "hidden",
@@ -127,7 +132,9 @@ const WaitingRoom = ({
                         allowScriptAccess: true,
                         scale: "exactFit",
                         wmode: "transparent"                                      
-                    }}>
+                    }}
+                    id={animationName}
+                >
                         <div>FLASH PLACEHOLDER</div>
                 </Flash>                    
             </FlexGrow>
