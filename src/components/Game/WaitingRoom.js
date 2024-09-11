@@ -131,7 +131,8 @@ const WaitingRoom = ({
                         contextMenu: "off",
                         allowScriptAccess: true,
                         scale: "exactFit",
-                        wmode: "transparent"                                      
+                        wmode: "transparent",
+                        preferredRenderer: "canvas"                                      
                     }}
                     id={animationName}
                 >

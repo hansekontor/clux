@@ -141,7 +141,8 @@ const Select = ({
                                     allowScriptAccess: true,
                                     forceScale: true,
                                     scale: "exactFit",
-                                    wmode: "transparent"                                    
+                                    wmode: "transparent",
+                                    preferredRenderer: "canvas"                               
                                 }}
                                 id={animationName}
                             >
