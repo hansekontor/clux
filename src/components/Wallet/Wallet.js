@@ -23,6 +23,7 @@ import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIc
 import { SecondaryButton } from '@components/Common/PrimaryButton';
 import Notification from '@components/Common/Notifications';
 import Email from '@components/Wallet/Email';
+import ImportWallet from '@components/Wallet/ImportWallet';
 
 
 // assets 
@@ -137,6 +138,7 @@ const SmallItem = styled.div`
     justify-content: space-between;
     height: 38px;
     align-items: center;
+    cursor: pointer;
 `;
 const Button = styled.img`
     padding-right: 10px;
@@ -210,7 +212,7 @@ const Wallet = ({
         setSelection("Email");
     }
     const handleImportWallet = () => {
-        console.log("import wallet");
+        setSelection("Import Wallet");
     }
     const handleToTos = () => {
         console.log("to terms of service")
@@ -358,7 +360,10 @@ const Wallet = ({
                             <Email />
                         }
                         {selection === "Import Wallet" && 
-                            <ImportWallet />
+                            <ImportWallet 
+                                currentAddress={wallet.Path1899.cashAddress}
+                                passLoadingStatus={passLoadingStatus}
+                            />
                         }
                     </WalletCtn>                
                 )}
