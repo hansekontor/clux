@@ -289,7 +289,8 @@ const Game = ({
                             allowScriptAccess: true,
                             forceScale: true,
                             scale: "exactFit",
-                            wmode: "transparent"                                    
+                            wmode: "transparent",
+                            preferredRenderer: "canvas"                                    
                         }}
                         id={faceoffAnimationName}
                         style={faceoffAnimationStyle}
@@ -307,7 +308,8 @@ const Game = ({
                             contextMenu: "off",
                             allowScriptAccess: true,
                             scale: "exactFit",
-                            wmode: "transparent"                                    
+                            wmode: "transparent",
+                            preferredRenderer: "canvas"                                    
                         }}
                         id={fightAnimationName}
                         style={animationStyle}
@@ -326,7 +328,8 @@ const Game = ({
                             allowScriptAccess: true,
                             forceScale: true,
                             scale: "exactFit",
-                            wmode: "transparent"                                    
+                            wmode: "transparent",
+                            preferredRenderer: "canvas"                                    
                         }}
                         id={celebrationAnimationName}
                         style={animationStyle}
