@@ -5,7 +5,6 @@ const isWsl = require('is-wsl');
 const path = require('path');
 const webpack = require('webpack');
 const resolve = require('resolve');
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
@@ -14,7 +13,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const safePostCssParser = require('postcss-safe-parser');
-const ManifestPlugin = require('webpack-manifest-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
@@ -288,9 +287,7 @@ module.exports = function (webpackEnv) {
             // In development, it does not produce real files.
             filename: isEnvProduction
                 ? 'static/js/[name].[contenthash:8].js'
-                : isEnvDevelopment && 'static/js/bundle.js',
-            // TODO: remove this when upgrading to webpack 5
-            futureEmitAssets: true,
+                : isEnvDevelopment && 'static/js/[name].js',
             // There are also additional JS chunk files if you use code splitting.
             chunkFilename: isEnvProduction
                 ? 'static/js/[name].[contenthash:8].chunk.js'
@@ -311,7 +308,7 @@ module.exports = function (webpackEnv) {
                           .replace(/\\/g, '/')),
             // Prevents conflicts when multiple Webpack runtimes (from different apps)
             // are used on the same page.
-            jsonpFunction: `webpackJsonp${appPackageJson.name}`,
+            chunkLoadingGlobal: `webpackJsonp${appPackageJson.name}`,
         },
         optimization: {
             minimize: isEnvProduction,
@@ -380,7 +377,6 @@ module.exports = function (webpackEnv) {
             // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
             splitChunks: {
                 chunks: 'all',
-                name: false,
             },
             // Keep the runtime chunk separated to enable long term caching
             // https://twitter.com/wSokra/status/969679223278505985
@@ -414,31 +410,48 @@ module.exports = function (webpackEnv) {
                 '@components': path.resolve(paths.appPath, 'src/components/'),
                 '@utils': path.resolve(paths.appPath, 'src/utils/'),
                 '@assets': path.resolve(paths.appPath, 'src/assets/'),
+                'react': path.resolve(paths.appPath, 'node_modules/react')
             },
             plugins: [
                 // Adds support for installing with Plug'n'Play, leading to faster installs and adding
                 // guards against forgotten dependencies and such.
-                PnpWebpackPlugin,
                 // Prevents users from importing files from outside of src/ (or node_modules/).
                 // This often causes confusion because we only process files within src/ with babel.
                 // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
                 // please link the files into your node_modules/ and let module-resolution kick in.
                 // Make sure your source files are compiled, as they will not be processed in any way.
-                new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+                new ModuleScopePlugin([paths.appSrc, paths.appNodeModules], [paths.appPackageJson]),
             ],
+            fallback: {
+                buffer: require.resolve('buffer/'),
+                dgram: false,
+                dns: false,
+                fs: require.resolve('fs-extra'),
+                http2: false,
+                net: false,
+                tls: false,
+                child_process: false,
+                path: require.resolve('path'),
+                url: require.resolve('url'),
+                process: require.resolve('process'),
+                constants: require.resolve("constants-browserify"),
+                stream: require.resolve("stream-browserify"),
+                os: require.resolve("os-browserify/browser"),
+                util: require.resolve("util")
+            }
         },
         resolveLoader: {
             plugins: [
-                // Also related to Plug'n'Play, but this time it tells Webpack to load its loaders
-                // from the current package.
-                PnpWebpackPlugin.moduleLoader(module),
             ],
         },
         module: {
             strictExportPresence: true,
             rules: [
                 // Disable require.ensure as it's not a standard language feature.
-                { parser: { requireEnsure: false } },
+                { 
+                    parser: {requireEnsure: false},
+                    test: /\.[cm]?js$/,
+                },
                 {
                     // "oneOf" will traverse all following loaders until one will
                     // match the requirements. When no loader matches it will fall
@@ -449,11 +462,7 @@ module.exports = function (webpackEnv) {
                         // A missing `test` is equivalent to a match.
                         {
                             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-                            loader: require.resolve('url-loader'),
-                            options: {
-                                limit: imageInlineSizeLimit,
-                                name: 'static/media/[name].[hash:8].[ext]',
-                            },
+                            type: 'asset'
                         },
                         // Process application JS with Babel.
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
@@ -462,25 +471,6 @@ module.exports = function (webpackEnv) {
                             include: paths.appSrc,
                             loader: require.resolve('babel-loader'),
                             options: {
-                                customize: require.resolve(
-                                    'babel-preset-react-app/webpack-overrides',
-                                ),
-
-                                plugins: [
-                                    [
-                                        require.resolve(
-                                            'babel-plugin-named-asset-import',
-                                        ),
-                                        {
-                                            loaderMap: {
-                                                svg: {
-                                                    ReactComponent:
-                                                        '@svgr/webpack?-svgo,+titleProp,+ref![path]',
-                                                },
-                                            },
-                                        },
-                                    ],
-                                ],
                                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                                 // It enables caching results in ./node_modules/.cache/babel-loader/
                                 // directory for faster rebuilds.
@@ -500,14 +490,6 @@ module.exports = function (webpackEnv) {
                                 babelrc: false,
                                 configFile: false,
                                 compact: false,
-                                presets: [
-                                    [
-                                        require.resolve(
-                                            'babel-preset-react-app/dependencies',
-                                        ),
-                                        { helpers: true },
-                                    ],
-                                ],
                                 cacheDirectory: true,
                                 // See #6846 for context on why cacheCompression is disabled
                                 cacheCompression: false,
@@ -593,7 +575,6 @@ module.exports = function (webpackEnv) {
                         // This loader doesn't use a "test" so it will catch all modules
                         // that fall through the other loaders.
                         {
-                            loader: require.resolve('file-loader'),
                             // Exclude `js` files to keep "css" loader working as it injects
                             // its runtime that would otherwise be processed through "file" loader.
                             // Also exclude `html` and `json` extensions so they get processed
@@ -603,9 +584,7 @@ module.exports = function (webpackEnv) {
                                 /\.html$/,
                                 /\.json$/,
                             ],
-                            options: {
-                                name: 'static/media/[name].[hash:8].[ext]',
-                            },
+                            type: 'asset'
                         },
                         // ** STOP ** Are you adding a new loader?
                         // Make sure to add the new loader(s) before the "file" loader.
@@ -687,7 +666,7 @@ module.exports = function (webpackEnv) {
             // Generate a manifest file which contains a mapping of all asset filenames
             // to their corresponding output file so that tools can pick it up without
             // having to parse `index.html`.
-            new ManifestPlugin({
+            new WebpackManifestPlugin({
                 fileName: 'asset-manifest.json',
                 publicPath: publicPath,
                 generate: (seed, files) => {
@@ -705,12 +684,6 @@ module.exports = function (webpackEnv) {
                     };
                 },
             }),
-            // Moment.js is an extremely popular library that bundles large locale files
-            // by default due to how Webpack interprets its code. This is a practical
-            // solution that requires the user to opt into importing specific locales.
-            // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-            // You can remove this if you don't use Moment.js:
-            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
             // TypeScript type checking
             useTypeScript &&
                 new ForkTsCheckerWebpackPlugin({
@@ -744,19 +717,13 @@ module.exports = function (webpackEnv) {
                 swSrc: './src/serviceWorker.js',
                 swDest: 'serviceWorker.js',
             }),
+            new webpack.ProvidePlugin({
+                Buffer: ['buffer', 'Buffer'],
+            }),
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
+              }),
         ].filter(Boolean),
-        // Some libraries import Node modules but don't use them in the browser.
-        // Tell Webpack to provide empty mocks for them so importing them works.
-        node: {
-            module: 'empty',
-            dgram: 'empty',
-            dns: 'mock',
-            fs: 'empty',
-            http2: 'empty',
-            net: 'empty',
-            tls: 'empty',
-            child_process: 'empty',
-        },
         // Turn off performance processing because we utilize
         // our own hints via the FileSizeReporter
         performance: false,
