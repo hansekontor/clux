@@ -149,7 +149,7 @@ const Game = ({
     // states
     const [animationStage, setAnimationStage] = useState("faceoff");
     const [payoutAmount, setPayoutAmount] = useState(20); // !hardcoded demo value
-    const [labels, setLabels] = useState({});
+    const [labels, setLabels] = useState(false);
     const [payoutData, setPayoutData] = useState(false);
     const [fightStarted, setFightStarted] = useState(false);
     const [versus, setVersus] = useState(false);
@@ -166,60 +166,28 @@ const Game = ({
         });
     }
 
+
     // helpers
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // useEffect(async () => {
-    //     // manually disable loader after ticket redemption
-    //     if (!scriptLoaded){
-    //         const fightLabel = "clux-norris";            
-    //         const tier = payoutData.tier;
-    //         const win = tier != 0;
-    //         const winner = win ? "A" : "B";
-    //         const key = win ? `${fightLabel}_A_${tier}` : `${fightLabel}_${winner}`;
-    //         passAnimationKey(key)
-    //         // console.log("winner", winner, "tier", String(tier))
-    //         setLabels({
-    //             animationName: {
-    //                 entrance: "CLUX_NORRIS_ENTRANCE",
-    //                 fight: `CLUX_NORRIS_FIGHT_${winner}`,
-    //                 celebration: `CLUX_NORRIS_CELEBRATION_${winner}${win ? "_"+String(tier) : ""}`
-    //             },
-    //             compositionId: { 
-    //                 entrance: compositions.CLUX.NORRIS.ENTRANCE, 
-    //                 fight: compositions.CLUX.NORRIS[winner].FIGHT,
-    //                 celebration: win ? compositions.CLUX.NORRIS.A.CELEBRATION[tier] : compositions.CLUX.NORRIS.B.CELEBRATION
-    //             }
-    //         })
-    //     }
-    // }, []);
+    // load labels and manually stop loading screen
+    useEffect(() => {    
+        if (!labels){
+            const tier = payoutData.tier;
+            const win = tier != 0;
+            const winner = win ? "A" : "B";
 
-    // useEffect(async()=> {
-    //     if (labels.animationName?.entrance) {
-    //         await sleep(4000);
-    //         passLoadingStatus(false);
-    //         setScriptLoaded(true);
-    //     }
-    // }, [labels])
+            setLabels({ 
+                faceoff: animationLabels.CLUX.NORRIS.FACEOFF, 
+                fight: animationLabels.CLUX.NORRIS[winner].FIGHT,
+                celebration: win ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION    
+            })
+        }
+        passLoadingStatus(false)
+    }, [labels]);
 
-    useEffect(async() => {
-        passLoadingStatus(false);
-    }, []);
-
-
-
-    const playButtonText = "Fight";
-    const folder = animationLabels.PUBLICPATH;
-    const faceoffAnimationName = animationLabels.CLUX.NORRIS.FACEOFF;
-    const faceoffAnimationPath = folder + faceoffAnimationName;
-    const fightAnimationName = animationLabels.CLUX.NORRIS.A.FIGHT;
-    const fightAnimationPath = folder + fightAnimationName;
-    const celebrationAnimationName = animationLabels.CLUX.NORRIS.A.CELEBRATIONS[0];
-    const celebrationAnimationPath = folder + celebrationAnimationName;
-    
-    
     // slide-in and fadeout animation for versus
     useEffect(async() => {
         await sleep(1000);
@@ -230,16 +198,16 @@ const Game = ({
         setFadeOutVersus(true);
     })
 
-    // switch to celebration loop for demo
+    // switch from fight to celebration animation
     useEffect(async() => {
         if (animationStage === "fight") {
-            await sleep(5000);
+            await sleep(4000);
             setAnimationStage("celebration");
-            document.getElementById(celebrationAnimationName).startCelebrationAnimation();
+            document.getElementById(labels.celebration).startCelebrationAnimation();
         }
     }, [animationStage]) 
     
-    // end animations for demo
+    // go to result page automatically
     useEffect(async() => {
         if (animationStage === "celebration") {
             await sleep(5000);
@@ -260,11 +228,14 @@ const Game = ({
     // handlers
     const handlePlay = async () => {
         setAnimationStage("fight");
-        document.getElementById(fightAnimationName).startFightAnimation();
+        document.getElementById(labels.fight).startFightAnimation();
         setFightStarted(true);
     }
 
-    
+    const playButtonText = "Fight";
+    const folder = animationLabels.PUBLICPATH;
+
+
     return (
         <>
             <Background src={RingPng} />
@@ -278,65 +249,69 @@ const Game = ({
                     }
 
                 </SlideIn>
-                <Animation hidden={animationStage !== "faceoff"}>
-                    <CustomFlash 
-                        src={faceoffAnimationPath}
-                        config={{
-                            autoplay: "on",
-                            unmuteOverlay: "hidden",
-                            splashScreen: false,
-                            contextMenu: "off",
-                            allowScriptAccess: true,
-                            forceScale: true,
-                            scale: "exactFit",
-                            wmode: "transparent",
-                            preferredRenderer: "canvas"                                    
-                        }}
-                        id={faceoffAnimationName}
-                        style={faceoffAnimationStyle}
-                    >
-                        <div>FACEOFF PLACEHOLDER</div>   
-                    </CustomFlash>
-                </Animation>
-                <Animation hidden={animationStage !== "fight"}>
-                    <CustomFlash 
-                        src={fightAnimationPath}
-                        config={{
-                            autoplay: "on",
-                            unmuteOverlay: "hidden",
-                            splashScreen: false,
-                            contextMenu: "off",
-                            allowScriptAccess: true,
-                            scale: "exactFit",
-                            wmode: "transparent",
-                            preferredRenderer: "canvas"                                    
-                        }}
-                        id={fightAnimationName}
-                        style={animationStyle}
-                    >       
-                        <div>FIGHT PLACEHOLDER</div>   
-                    </CustomFlash>             
-                </Animation>
-                <Animation hidden={animationStage !== "celebration"}>
-                    <CustomFlash 
-                        src={celebrationAnimationPath}
-                        config={{
-                            autoplay: "on",
-                            unmuteOverlay: "hidden",
-                            splashScreen: false,
-                            contextMenu: "off",
-                            allowScriptAccess: true,
-                            forceScale: true,
-                            scale: "exactFit",
-                            wmode: "transparent",
-                            preferredRenderer: "canvas"                                    
-                        }}
-                        id={celebrationAnimationName}
-                        style={animationStyle}
-                    >        
-                        <div>CELEBRATION PLACEHOLDER</div>   
-                    </CustomFlash>            
-                </Animation>
+                {labels && (
+                    <>
+                        <Animation hidden={animationStage !== "faceoff"}>
+                            <CustomFlash 
+                                src={folder + labels.faceoff}
+                                config={{
+                                    autoplay: "on",
+                                    unmuteOverlay: "hidden",
+                                    splashScreen: false,
+                                    contextMenu: "off",
+                                    allowScriptAccess: true,
+                                    forceScale: true,
+                                    scale: "exactFit",
+                                    wmode: "transparent",
+                                    preferredRenderer: "canvas"                                    
+                                }}
+                                id={labels.faceoff}
+                                style={faceoffAnimationStyle}
+                            >
+                                <div>FACEOFF PLACEHOLDER</div>   
+                            </CustomFlash>
+                        </Animation>
+                        <Animation hidden={animationStage !== "fight"}>
+                            <CustomFlash 
+                                src={folder + labels.fight}
+                                config={{
+                                    autoplay: "on",
+                                    unmuteOverlay: "hidden",
+                                    splashScreen: false,
+                                    contextMenu: "off",
+                                    allowScriptAccess: true,
+                                    scale: "exactFit",
+                                    wmode: "transparent",
+                                    preferredRenderer: "canvas"                                    
+                                }}
+                                id={labels.fight}
+                                style={animationStyle}
+                            >       
+                                <div>FIGHT PLACEHOLDER</div>   
+                            </CustomFlash>             
+                        </Animation>
+                        <Animation hidden={animationStage !== "celebration"}>
+                            <CustomFlash 
+                                src={folder + labels.celebration}
+                                config={{
+                                    autoplay: "on",
+                                    unmuteOverlay: "hidden",
+                                    splashScreen: false,
+                                    contextMenu: "off",
+                                    allowScriptAccess: true,
+                                    forceScale: true,
+                                    scale: "exactFit",
+                                    wmode: "transparent",
+                                    preferredRenderer: "canvas"                                    
+                                }}
+                                id={labels.celebration}
+                                style={animationStyle}
+                            >        
+                                <div>CELEBRATION PLACEHOLDER</div>   
+                            </CustomFlash>            
+                        </Animation>                    
+                    </>
+                )}
             </FlexGrow>
             <FooterCtn>
                 {payoutData.resultingNumbers &&
