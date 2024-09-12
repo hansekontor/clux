@@ -1,15 +1,6 @@
-// node modules
 import React from 'react';
 import styled from 'styled-components';
 
-// react component
-import PrimaryButton, { ReturnButton } from '@components/Common/PrimaryButton';
-import Footer from '@components/Common/Footer';
-
-// assets
-import MerchantSvg from '@assets/merchant_icon.svg';
-
-// styled css components
 const Scrollable = styled.div`
     overflow-y: auto;
     display: flex;
@@ -54,8 +45,9 @@ const TosText = styled.li`
 const TosLink = styled.a`
     text-decoration-line: none;
 `;
-const Tos = () => {
 
+
+const Tos = () => {
     const previousPath = "/select";
     const title = "Agree";
 

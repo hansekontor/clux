@@ -1,15 +1,15 @@
+// node modules
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { CopyOutlined } from '@ant-design/icons';
 
-import { Item } from './Wallet.js';
-import { TertiaryButton } from '@components/Common/PrimaryButton';
-
+// assets
 import TicketSvg from '@assets/ticket_filled.svg';
 import RightArrowSvg from '@assets/arrow_right_white.svg';
 
-
+// styled css components
+import { Item } from './Wallet.js';
 const LeftCtn = styled.div`
     display: flex;
     gap: 12px;    

@@ -5,11 +5,9 @@ import styled from 'styled-components';
 import bcash from '@hansekontor/checkout-components';
 const { Hash256 } = bcash.bcrypto;
 import { U64 } from 'n64';
-import PropTypes from 'prop-types'
 import { Flash } from 'react-ruffle';
 
 // react components
-import RingPng from '@assets/ring_on_beach.png';
 import PrimaryButton from '@components/Common/PrimaryButton';
 import Header from '@components/Common/Header';
 import { FooterCtn } from '@components/Common/Footer';
@@ -18,6 +16,9 @@ import { SlideInAnimation, FadeOutAnimationShort } from '@components/Common/CssA
 
 // assets and other
 import VersusPng from '@assets/versus.png';
+import RingPng from '@assets/ring_on_beach.png';
+
+// util
 import animationLabels from '@utils/animations';
 
 // styled css components 
@@ -146,7 +147,7 @@ const Game = ({
 }) => {
 
     const history = useHistory();
-    // states
+
     const [animationStage, setAnimationStage] = useState("faceoff");
     const [payoutAmount, setPayoutAmount] = useState(20); // !hardcoded demo value
     const [labels, setLabels] = useState(false);
@@ -166,8 +167,6 @@ const Game = ({
         });
     }
 
-
-    // helpers
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }

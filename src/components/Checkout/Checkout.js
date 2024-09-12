@@ -1,36 +1,27 @@
 // node modules
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { 
-    useHistory
-} from 'react-router-dom';
-import { errorNotification } from '@components/Common/Notifications';
+import { useHistory } from 'react-router-dom';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-
-import styled, { css } from 'styled-components';
-import {
-    Modal,
-    Radio
-} from 'antd';
+import styled from 'styled-components';
+import { Modal, Radio } from 'antd';
 
 // custom react components
 import Header from '@components/Common/Header';
-import { Enfold } from '@components/Common/CssAnimations';
-import PrimaryButton from '../Common/PrimaryButton';
-import NavigationBar from '@components/Common/Navigation';
 import Tos from '@components/Checkout/Tos'
+import KycInfo from '@components/Checkout/KycInfo';
+import Ticket from '@components/Checkout/Ticket';
+import { Enfold } from '@components/Common/CssAnimations';
+import PrimaryButton from '@components/Common/PrimaryButton';
+import NavigationBar from '@components/Common/Navigation';
 import { FooterCtn, LightFooterBackground } from '@components/Common/Footer';
+import RandomNumbers from '@components/Common/RandomNumbers';
+import { errorNotification } from '@components/Common/Notifications';
+import { CardIconBox } from '@components/Common/CustomIcons';
+
+// utils
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
-import RandomNumbers from '@components/Common/RandomNumbers';
-import Ticket from '@components/Checkout/Ticket';
-import KycInfo from '@components/Checkout/KycInfo';
-import getStripe from '../../utils/stripe';
-
-// assets
-import CardIconSvg from '@assets/card_icon.svg'
-import LockIconSvg from '@assets/lock_icon.svg'
-import MastercardIconSvg from '@assets/mastercard_icon.svg'
-import VisaIconSvg from '@assets/visa_icon.svg'
+import getStripe from '@utils/stripe';
 
 // styled css components
 const CustomForm = styled.form`
@@ -53,15 +44,6 @@ const Scrollable = styled.div`
 `;
 const CustomRadioGroup = styled(Radio.Group)`
     margin-top: 8px;
-`;
-const CardIcons = styled.div`
-    margin: auto;
-    gap: 12px;
-    border-radius: 12px;
-    background-color: #ffffff;
-    padding: 7px;
-    width: fit-content;
-    display: flex;
 `;
 const EvenLighterFooterBackground = styled(LightFooterBackground)`
     background-color: #EAEAEA;
@@ -109,15 +91,17 @@ const Input = styled.input`
 `;
 
 
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 const NmiCheckoutForm = ({
     passLoadingStatus,
     passPurchasedTicket,
     playerChoiceArray
 }) => {
     const history = useHistory();
-
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formData, setFormData] = useState({});
 
     useEffect(() => {
         window.CollectJS.configure({
@@ -149,29 +133,17 @@ const NmiCheckoutForm = ({
         })
     }, []);
 
-    // helpers
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     // handlers
     const handleSubmit = (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
         if (window.CollectJS) {
             window.CollectJS.startPaymentRequest();
         } else 
             console.log("CollectJS unavailable")
     }
-    const handleFormDataChange = (e) => {
-        let newFormData = formData;
-        newFormData[e.target.name] = e.target.value;
-        setFormData(newFormData);
-    }
     // dev rename
     const handleResult = async (result) => {
         console.log("payment token", result.token);
-        setIsSubmitting(false);
         passLoadingStatus("CONFIRMING PAYMENT");
         await sleep(2000);
         passLoadingStatus("PAYMENT CONFIRMED")
@@ -197,12 +169,7 @@ const NmiCheckoutForm = ({
 
     return (
         <CustomForm onSubmit={handleSubmit} id="nmi-form">
-            <CardIcons>
-                <img src={CardIconSvg} />
-                <img src={LockIconSvg} />
-                <img src={MastercardIconSvg} />
-                <img src={VisaIconSvg} />
-            </CardIcons>
+            <CardIconBox />
         </CustomForm>
     )
 }
@@ -292,7 +259,6 @@ const Checkout = ({
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
     const { tickets } = getWalletState(wallet);
-    const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
 
     // states
     const [isFirstRendering, setFirstRendering] = useState(true);
@@ -306,47 +272,26 @@ const Checkout = ({
     const [email, setEmail] = useState(false);
     const [kycConfig, setKycConfig] = useState(false);
 
-
-
-    // helpers
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     if (!playerChoiceArray) {
         passLoadingStatus("PLAYER NUMBERS ARE MISSING");
+        // sleep?
         history.push("/select");
     }
     
     // variables in DOM
-    const offer_name = "Lottery Ticket";
-    const merchant_name = "MRC";
-    const purchaseTokenAmount = 3.33;
-    const displayTicker = "CLUX";
-    const feeAmount = 0.3;
-    const totalAmount = purchaseTokenAmount + feeAmount;
     const agreeButtonText = "Agree and Continue";
     const purchaseButtonText = "Pay - $10"; 
-
-
-
     const helpText = "After payment, your ticket will be broadcasted to the blockchain. When the next block finalizes, it can be redeemed in this app.";
     const helpSectionConfig = {
         content: <p>{helpText}</p>
     };
 
     // handlers
-    const handleToBackup = () => {
-        history.push('/backup');
-    }
     const handleAgree = async (e) => {
         e.preventDefault();
         setHasAgreed(true);
         await sleep(500);
         setFirstRendering(false);
-    }
-    const handleCheckoutHelp = () => {
-        helpSectionModal.info(helpSectionConfig)
     }
 
     const handleKYCResult = async (result) => {
@@ -368,6 +313,7 @@ const Checkout = ({
                 break;
             }
     }
+
     const handleEmailAndKYC = async (e) => {
         e.preventDefault();
         const email = e.target.email.value;
@@ -439,14 +385,14 @@ const Checkout = ({
             id: purchasedTicket.hash,
             playerChoice: playerChoiceArray
         });
-        passLoadingStatus("AWAITING PAYMENT");
-        await sleep(2000);
-        passLoadingStatus("PROCESSING PAYMENT");
-        await sleep(2000);
-        passLoadingStatus("BROADCASTING TICKET");
-        await sleep(2000);
-        passLoadingStatus("TRANSACTION COMPLETE");
-        await sleep(3000);
+        // passLoadingStatus("AWAITING PAYMENT");
+        // await sleep(2000);
+        // passLoadingStatus("PROCESSING PAYMENT");
+        // await sleep(2000);
+        // passLoadingStatus("BROADCASTING TICKET");
+        // await sleep(2000);
+        // passLoadingStatus("TRANSACTION COMPLETE");
+        // await sleep(3000);
         
         history.push('/backup')
     }
@@ -610,9 +556,14 @@ const Checkout = ({
                             </Scrollable>
                             <FooterCtn>
                                 <EvenLighterFooterBackground />
-                                <PrimaryButton 
+                                {/* <PrimaryButton 
                                     type="submit"
                                     form={`${paymentMethod}-form`}
+                                >
+                                    {purchaseButtonText}
+                                </PrimaryButton>                                 */}
+                                <PrimaryButton 
+                                    onClick={handleCheckout}
                                 >
                                     {purchaseButtonText}
                                 </PrimaryButton>

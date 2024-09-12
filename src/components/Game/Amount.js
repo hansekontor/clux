@@ -1,12 +1,11 @@
+// node modules
 import React from 'react';
 import styled from 'styled-components';
 
 // assets
 import CoinBagSvg from '@assets/coin_bag.svg';
 
-
-
-// css styled components
+// styled css components
 const AmountCtn = styled.div`
     height: 98px;
     width: 75%;
@@ -33,7 +32,6 @@ const Amount = styled.div`
 const Image = styled.img`
     z-index: 10;
 `;
-
 
 const ResultingAmount = ({amount}) => {
     return (

@@ -50,15 +50,10 @@ const Cashout = ({
     
     // handlers
     const handleCashout = () => {
-        console.log("handleCashout()");
     }
     const handleReturn = () => {
         history.push(previousPath);
     }
-
-
-
-    console.log("CASHOUT.js previousPath", previousPath);
 
 
     return (

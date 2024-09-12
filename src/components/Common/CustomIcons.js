@@ -4,7 +4,6 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
 import { currency } from '@components/Common/Ticker';
 
-// assets
 import CnmiPng from '@assets/cnmi.png';
 import GiftboxSvg from '@assets/giftbox.svg';
 import QuestionMarkSvg from '@assets/questionmark.svg';
@@ -19,6 +18,10 @@ import ContactSvg from '@assets/contact.svg';
 import KeySvg from '@assets/key.svg';
 import WalletSvg from '@assets/wallet.svg';
 import EnvelopeSvg from '@assets/envelope.svg';
+import CardIconSvg from '@assets/card_icon.svg'
+import LockIconSvg from '@assets/lock_icon.svg'
+import MastercardIconSvg from '@assets/mastercard_icon.svg'
+import VisaIconSvg from '@assets/visa_icon.svg'
 
 
 
@@ -254,5 +257,25 @@ export const EnvelopeIcon = () => {
         <SmallCircle>
             <img src={EnvelopeSvg} />
         </SmallCircle>
+    )
+}
+
+const CardIcons = styled.div`
+    margin: auto;
+    gap: 12px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    padding: 7px;
+    width: fit-content;
+    display: flex;
+`;
+export const CardIconBox = () => {
+    return (
+        <CardIcons>
+            <img src={CardIconSvg} />
+            <img src={LockIconSvg} />
+            <img src={MastercardIconSvg} />
+            <img src={VisaIconSvg} />
+        </CardIcons>
     )
 }

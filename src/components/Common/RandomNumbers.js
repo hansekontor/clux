@@ -1,6 +1,8 @@
+// node modules
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+// assets
 import LeftArrowSvg from '@assets/arrow_left.svg'
 import RightArrowSvg from '@assets/arrow_right.svg';
 import WhiteRightArrowSvg from '@assets/arrow_right_white.svg';
@@ -82,17 +84,13 @@ const RandomNumbers = ({
     fixedRandomNumbers,
     background
 }) => {
-    console.log("RandomNumbers()")
-
     const [randomNumberArray, setRandomNumberArray] = useState(fixedRandomNumbers ? fixedRandomNumbers : []);
 
-    // hooks 
     useEffect(() => {
         if (!fixedRandomNumbers)
             handleNewNumbers();
     }, [])
 
-    // handlers 
     const handleNewNumbers = () => {
         console.log("handleNewNumbers()");
         const newRandomNumbers = [];
@@ -164,7 +162,6 @@ export const ResultingNumbers = ({
     
     const sortedNumberArray = numberArray.slice().sort((a,b) => a - b);
 
-    // helpers 
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -255,6 +252,5 @@ export const ResultingNumbers = ({
         </RandomNumbersCtn>
     )
 }
-
 
 export default RandomNumbers;

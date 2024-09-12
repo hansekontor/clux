@@ -1,9 +1,7 @@
-// node modules
 import React from "react";
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-// styled css components
 const BalanceCtn = styled.div`
     width: 112px;
     height: 40px;
@@ -18,6 +16,7 @@ const BalanceCtn = styled.div`
     font-weight: 600;
     letter-spacing: 2px;
 `;
+
 
 const Balance = ({
     amount
