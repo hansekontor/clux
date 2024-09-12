@@ -2,10 +2,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// styled css components
+// custom react modules
 import { ReturnButton } from '@components/Common/PrimaryButton';
+
+// assets
 import MerchantSvg from '@assets/merchant_icon.svg';
 
+// styled css components
 const AgreeHeader = styled.div`
     width: 100%;
     background-color: #FEFFFE;

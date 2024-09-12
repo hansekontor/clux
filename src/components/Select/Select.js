@@ -1,4 +1,4 @@
-// modules
+// node modules
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,16 +11,14 @@ import RandomNumbers from '@components/Common/RandomNumbers';
 import Footer from '@components/Common/Footer';
 import { FadeOutAnimationShort } from '@components/Common/CssAnimations';
 import { WalletCtn } from '@components/App';
-import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods'
 
 // util
 import animationLabels from '@utils/animations.js';
-
+import { WalletContext } from '@utils/context';
+import { getWalletState } from '@utils/cashMethods'
 
 // assets
 import RingPng from '@assets/ring_on_beach.png';
-
 
 // styled css components
 const ChickenCtn = styled.div`
@@ -57,10 +55,6 @@ const IdleChicken = styled.div`
     justify-content: center;
     align-items: center;
 `;
-const canvasStyle = {
-    height: "100%",
-    margin: "auto",
-}
 const Scrollable = styled.div`
     width: 100%;
     height: 55%;
@@ -85,15 +79,10 @@ const FadeOut = styled(WalletCtn)`
 const Select = ({
     passRandomNumbers,
     passLoadingStatus,
-    passAnimationKey
 }) => {
-    const [labels, setLabels] = useState({});
-    const [scriptLoaded, setScriptLoaded] = useState(false);
-    const [animationObject, getAnimationObject] = useState(null);
-    const [fadeOut, setFadeOut] = useState(false);
-
-
     const history = useHistory();
+
+    const [fadeOut, setFadeOut] = useState(false);
 
     // find ticket indicator
     const ContextValue = useContext(WalletContext);
@@ -101,12 +90,10 @@ const Select = ({
     const { tickets } = getWalletState(wallet);
     const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
  
-    // helpers
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     
-    // handlers
     const handleBuyTicket = async () => {
         setFadeOut(true);
         await sleep(300);
@@ -114,7 +101,7 @@ const Select = ({
         history.push('/checkout');
     }
     
-    // html contents
+    // DOM contents
     const playButtonText = "Play Now - $10";
     const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
     const animationPath = animationLabels.PUBLICPATH + animationName;
@@ -129,7 +116,6 @@ const Select = ({
                     <OuterBackgroundCtn>
                         <Background src={RingPng} />
                     </OuterBackgroundCtn>
-
                         <IdleChicken> 
                             <Flash 
                                 src={animationPath}
@@ -149,7 +135,6 @@ const Select = ({
                                 <div>PLACEHOLDER</div>
                             </Flash>
                         </IdleChicken>                     
-                    
                 </ChickenCtn>
             </Scrollable>                
             <StickyRandomNumbers passRandomNumbers={passRandomNumbers} background={'#1A1826'}/>

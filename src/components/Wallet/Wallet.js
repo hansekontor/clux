@@ -1,21 +1,16 @@
-require('dotenv').config();
-
 // node modules
-import React, { useEffect, useState, useContext }  from 'react';
+import React, { useState, useContext }  from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { CopyOutlined } from '@ant-design/icons';
 
-// react components tbc
-import { WalletContext } from '@utils/context';
-import { isValidStoredWallet } from '@utils/cashMethods';
+// react components 
+
 import { infoNotification, errorNotification } from '@components/Common/Notifications';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import TicketHistory from './TicketHistory';
 import Header from '@components/Common/Header'; 
-import { getWalletState } from '@utils/cashMethods';
-import useBCH from '@hooks/useBCH';
 import NavigationBar from '@components/Common/Navigation';
 import FadeInOut from '@components/Backup/FadeInOut';
 import { FooterCtn, SupportBar } from '@components/Common/Footer';
@@ -25,13 +20,17 @@ import Notification from '@components/Common/Notifications';
 import Email from '@components/Wallet/Email';
 import ImportWallet from '@components/Wallet/ImportWallet';
 
+import useBCH from '@hooks/useBCH';
+
+// util
+import { WalletContext } from '@utils/context';
+import { isValidStoredWallet } from '@utils/cashMethods';
+import { getWalletState } from '@utils/cashMethods';
 
 // assets 
 import RightArrowSvg from '@assets/arrow_right.svg';
 import PencilIconSvg from '@assets/pencil_icon.svg';
 import CopyboardSvg from '@assets/copyboard.svg';
-
-
 
 // styled css components
 const StyledFadeInOut = styled(FadeInOut)`
@@ -43,14 +42,6 @@ const StyledFadeInOut = styled(FadeInOut)`
     justify-content: center;
     align-items: center;
 `;
-const Text = styled.div`
-    color: black;
-    font-family: "Inter-Medium", Helvetica;
-    font-size: 16px;
-`;
-const Link = styled.a`
-    text-decoration: underline;
-`;
 const WalletCtn = styled.div`
     overflow-y: auto;
     width: 90%;
@@ -60,27 +51,6 @@ const WalletCtn = styled.div`
     justify-content: flex-start;
     gap: 12px;
     padding-top: 10px;
-`;
-const Tickets = styled.div`
-    width: 100%;
-`;
-const AddressCtn = styled.div`
-    width: 90%;
-    margin: auto auto 0px;
-`;
-const AddressLabel = styled.div`
-    margin: 0 auto;
-    font-size: 14px;
-    padding: 0;
-    cursor: pointer;
-`;
-const Address = styled.div`
-    background-color: #ededed;
-    padding: 5px 10px;
-    border-radius: 40px;
-    color: #333333;
-    cursor: pointer;
-    word-break: break-all;
 `;
 export const Item = styled.div`
     border-radius: 7px;
@@ -104,13 +74,6 @@ const Circle = styled.div`
     justify-content: center;
     align-items: center;
 `;
-const CashoutCircle = styled(Circle)`
-    background-color: #D2EFD0;
-`;
-const TicketCircle = styled(Circle)`
-    background-color: #FBEDD2;
-`;
-const Icon = styled.img``;
 export const LabelCtn = styled.div`
     display: flex;
     justify-content: center;
@@ -160,12 +123,6 @@ const SeedPhraseCtn = styled.div`
     align-items: center;
     flex-direction: column;
 `;
-
-
-// dev rmv
-const shortifyHash = (hash) => {
-        return String(hash.slice(0,8) + "..." + hash.slice(56,));
-}
 
 const Wallet = ({    
     passLoadingStatus,

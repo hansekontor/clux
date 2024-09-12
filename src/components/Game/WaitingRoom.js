@@ -38,7 +38,6 @@ const FlexGrow = styled.div`
 
 const WaitingRoom = ({
     passLoadingStatus, 
-    passAnimationKey,
     activeTicket, 
     updateActiveTicket
 }) => {
@@ -59,14 +58,10 @@ const WaitingRoom = ({
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // hooks
-
+    // manually turn off loading screen
     useEffect(async () => {
-        // manually turn off loading and animation script
         passLoadingStatus(false);
-        passAnimationKey(false);
     }, [])
-
 
     // find active ticket data in tickets from wallet state
     useEffect(async () => { 
@@ -99,13 +94,13 @@ const WaitingRoom = ({
     // handlers
     const handleToGame = async () => {
         if (gameEnabled) {
-            passLoadingStatus("FETCHING TICKET DATA")
-            await sleep(2000);
-            passLoadingStatus("REDEEMING TICKET")
-            await sleep(2000);
-            passLoadingStatus("TICKET REDEEMED");
-            await sleep(2000);
-            passLoadingStatus(false);
+            // passLoadingStatus("FETCHING TICKET DATA")
+            // await sleep(2000);
+            // passLoadingStatus("REDEEMING TICKET")
+            // await sleep(2000);
+            // passLoadingStatus("TICKET REDEEMED");
+            // await sleep(2000);
+            // passLoadingStatus(false);
             history.push('/game');
         } else 
             waitingInfoModal.info(waitingInfoConfig);

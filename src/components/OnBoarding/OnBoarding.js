@@ -1,6 +1,6 @@
+// node modules
 import React, { useState, useEffect } from 'react';
 import { WalletContext } from '@utils/context';
-
 
 
 const OnBoarding = ({

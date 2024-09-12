@@ -4,7 +4,6 @@ import {
     Route,
     Switch,
     Redirect,
-    useLocation, 
     useHistory
 } from 'react-router-dom';
 // import 'antd/dist/antd.less';
@@ -16,7 +15,6 @@ import { theme } from '../assets/styles/theme';
 import '../index.css';
 
 // react components
-import { WalletContext } from '@utils/context';
 const Select = lazy(() => import('./Select/Select'));
 const Checkout = lazy(() => import('./Checkout/Checkout'));
 const Backup = lazy(() => import('./Backup/Backup'));
@@ -25,13 +23,15 @@ const Game = lazy(() => import('./Game/Game'));
 const Result = lazy(() => import('./Result/Result'));
 const Wallet = lazy(() => import('./Wallet/Wallet'));
 const Cashout = lazy(() => import('./Cashout/Cashout'));
-const TicketDetails = lazy(() => import('./Result/TicketDetails'))
 const NotFound = lazy(() => import('./NotFound'));
 import { LoadingAnimation } from '@components/Common/CustomLoader';
 import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
+
+// util
+import { WalletContext } from '@utils/context';
 import { isValidStoredWallet } from '@utils/cashMethods';
 
-
+// styled css components
 const GlobalStyle = createGlobalStyle`    
     .ant-modal-wrap > div > div.ant-modal-content > div > div > div.ant-modal-confirm-btns > button, .ant-modal > button, .ant-modal-confirm-btns > button, .ant-modal-footer > button, #cropControlsConfirm {
         border-radius: 8px;
@@ -134,8 +134,6 @@ const App = () => {
 
     const validWallet = isValidStoredWallet(wallet);
 
-    const [animationKey, setAnimationKey] = useState(false);
-
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -190,7 +188,6 @@ const App = () => {
                                             <Select
                                                 passRandomNumbers={setPlayerChoice}
                                                 passLoadingStatus={setLoadingStatus}
-                                                passAnimationKey={setAnimationKey}
                                             />
                                         </Route>
                                         <Route path="/checkout">
@@ -209,7 +206,6 @@ const App = () => {
                                         <Route path="/game">
                                             <Game 
                                                 passLoadingStatus={setLoadingStatus}
-                                                passAnimationKey={setAnimationKey}
                                                 ticket={activeTicket}
                                             />
                                         </Route>
@@ -217,7 +213,6 @@ const App = () => {
                                             <Result 
                                                 passLoadingStatus={setLoadingStatus}
                                                 payout={payout}
-                                                passAnimationKey={setAnimationKey}
                                                 ticket={activeTicket}
                                             />
                                         </Route>
@@ -225,7 +220,6 @@ const App = () => {
                                             <WaitingRoom 
                                                 passLoadingStatus={setLoadingStatus}
                                                 activeTicket={activeTicket}
-                                                passAnimationKey={setAnimationKey}
                                                 updateActiveTicket={setActiveTicket}
                                             />
                                         </Route>
@@ -233,11 +227,6 @@ const App = () => {
                                             <Wallet 
                                                 passLoadingStatus={setLoadingStatus} 
                                                 passSelectedTicket={setActiveTicket}
-                                            />
-                                        </Route>
-                                        <Route path="/ticketdetails">
-                                            <TicketDetails 
-                                                ticket={activeTicket}
                                             />
                                         </Route>
                                         <Route path="/cashout">

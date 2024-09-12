@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 // react components 
 import PrimaryButton, { WalletButton, HelpButton, CashoutButton } from '@components/Common/PrimaryButton';
 import Balance from '@components/Common/Balance';
-import RandomNumbers, {ResultingNumbers} from '@components/Common/RandomNumbers';
+import RandomNumbers, { ResultingNumbers } from '@components/Common/RandomNumbers';
 import { CnmiIcon } from '@components/Common/CustomIcons';
 
 // styled css components
@@ -42,10 +42,11 @@ export const SupportBar = ({
     returnTo,
     ticketIndicator
 }) => {
-    // handler 
+    
     const handleCnmiRedirect = () => {
         window.location.href = "https://example.com";        
     }
+
     return ( 
         <SupportBarCtn>
             <WalletButton returnTo={returnTo} indicator={ticketIndicator}/>
@@ -62,26 +63,16 @@ const Footer = ({
     randomNumbers, 
     buttonOnClick,
     buttonText,
-    activeButton = true,
-    resultingNumbers,
-    activeResult,
-    lightBackground = false,
     ticketIndicator
 }) => {
     return (
         <FooterCtn>
-            {lightBackground && 
-                <LightFooterBackground />
-            }
             {randomNumbers && 
                 <RandomNumbers fixedRandomNumbers={randomNumbers} />
             }
-            {resultingNumbers && 
-                <ResultingNumbers numberArray={resultingNumbers} active={activeResult}/>
-            }
             {buttonText && 
                 <>
-                    <PrimaryButton onClick={buttonOnClick} active={activeButton}>
+                    <PrimaryButton onClick={buttonOnClick}>
                         {buttonText}
                     </PrimaryButton>  
                 </> 

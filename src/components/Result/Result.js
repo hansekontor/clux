@@ -1,19 +1,23 @@
-import React, { useState, useEffect, useContext } from 'react';
+// node modules
+import React, { useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 // custom react components
 import Header from '@components/Common/Header';
 import Footer from '@components/Common/Footer'
-import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods'
 import { TicketResult } from '@components/Common/Jackpot';
 import RandomNumbers from '@components/Common/RandomNumbers';
-import { WhiteCashoutButton, WhiteTicketButton } from '@components/Common/PrimaryButton'
+import { WhiteCashoutButton, WhiteTicketButton } from '@components/Common/PrimaryButton';
+
+// util
+import { WalletContext } from '@utils/context';
+import { getWalletState } from '@utils/cashMethods'
 
 // assets
 import Placeholder from '@assets/ring_on_beach.png';
 
+// styled css components
 const ChickenZoomIn = styled.img`
     border-radius: 12px;
     width: 90%;
@@ -49,14 +53,10 @@ const ButtonCtn = styled.div`
     padding-bottom:16px;
 `;
 
-
-
 const Result = ({
     passLoadingStatus,
     ticket,
-    passAnimationKey
 }) => {
-    // hooks
     const history = useHistory();
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
@@ -64,10 +64,9 @@ const Result = ({
     const { tickets } = walletState;
     const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
 
-
+    // manually stop loading screen
     useEffect(()=>{
         passLoadingStatus(false);
-        passAnimationKey(false);
     });
 
     // handlers
@@ -98,8 +97,6 @@ const Result = ({
                     <WhiteTicketButton id={ticket.id}/>
                 </ButtonCtn>
             </Scrollable>
-
-
             <Footer
                 origin={"/result"}
                 buttonOnClick={handlePlayAgain}

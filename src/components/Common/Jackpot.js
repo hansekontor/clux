@@ -4,8 +4,6 @@ import styled from 'styled-components';
 import { Carousel } from 'antd';
 import CoinBagSvg from '@assets/coin_bag.svg';
 
-// assets
-
 // styled css components
 const StyledCarousel = styled(Carousel)`
     > .slick-slider {
@@ -101,13 +99,16 @@ const JackpotCarousel = ({
     )
 }
 
+
 const ResultCtn = styled(DailyJackpotSlide)`
     min-height: 95px;
     border-radius: 24px 24px 0px 0px;
 `;
+
 export const TicketResult = ({
     amount
 }) => {
+    
     return (
         <ResultCtn>
             <Jackpot>

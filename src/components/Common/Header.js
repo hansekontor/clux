@@ -1,8 +1,11 @@
+// node modules
 import React from "react";
 import styled from "styled-components";
 
+// assets
 import CluxLogo from '@assets/clux_logo.png';
 
+// styled css modules
 const HeaderCtn = styled.div`
     margin-top: 0px;
     background-color:${props => props.background ? props.background : "transparent"};
@@ -22,6 +25,5 @@ const Header = ({...props}) => {
         </HeaderCtn>
     )
 }
-
 
 export default Header;

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+// node modules
+import React from "react";
 import styled from 'styled-components';
 import { Collapse } from 'antd';
 
+// styled css components
 const SeedPhraseCtn = styled.div`
     width: 90%;
     display: flex;
@@ -99,25 +101,5 @@ const SeedPhrase = ({
         </SeedPhraseCtn>
     );
 };
-
-const CustomCollapse = styled(Collapse)`
-    background-color: #fefffe;
-    color: black;
-    width: 90%;
-    border-radius:12px;
-`;
-const CustomPanel = styled(Collapse.Panel)`
-`;
-const SimpleSeedPhrase = ({
-    phrase
-}) => {
-    return (
-        <CustomCollapse>
-            <CustomPanel header="Seed Phrase">
-                {phrase}
-            </CustomPanel>
-        </CustomCollapse>
-    )
-}
 
 export default SeedPhrase;

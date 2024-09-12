@@ -8,7 +8,6 @@ import PrimaryButton, { SecondaryButton } from '@components/Common/PrimaryButton
 import SeedPhrase from '@components/Common/SeedPhrase';
 import { WalletContext } from '@utils/context';
 import Notification from '@components/Common/Notifications';
-import { Enfold } from '@components/Common/CssAnimations';
 import { FadeInAnimation } from '@components/Common/CssAnimations';
 import FadeInOut from './FadeInOut'
 
@@ -70,12 +69,7 @@ const Backup = ({
     const [phraseCopied, setPhraseCopied] = useState(false);
     const [fadeOut, setFadeOut] = useState(false);
 
-    // helpers
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // stop loading screen after rendering has been completed
+    // manually stop loading screen
     useEffect(() => {
         passLoadingStatus(false);
     }, [])

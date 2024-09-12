@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { useHistory, Redirect } from 'react-router-dom';
+// node modules
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-
 import { ArrowLeftOutlined } from '@ant-design/icons';
+
+// custom react modules
 import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@components/Common/CustomIcons';
 
-
+// styled css modules
 const PrimaryButton = styled.button`
     color: #000000;
     background-color: ${props => props.inactive ? "b9b9b9" : "#f2bc57"};
@@ -19,12 +21,10 @@ const PrimaryButton = styled.button`
     width: 90%;
     letter-spacing: 1px;
 `;
-
 export const SecondaryButton = styled(PrimaryButton)`
     background-color: #ffffff;
     border: 1px solid #000000;
 `;
-
 export const TertiaryButton = styled.button`
     background-color: #44405B;
     border-radius: 70px;
@@ -32,7 +32,6 @@ export const TertiaryButton = styled.button`
     color: #FFFFFF;
     font-weight: 600;
 `;
-
 const AlertCtn = styled.div`
     background-color: red;
     border-radius: 40px;
@@ -51,6 +50,8 @@ const Indicator = styled.div`
     font-weight: 600;
     font-family: Helvetica;
 `;
+
+
 export const Alert = ({
     indicator
 }) => {
@@ -61,13 +62,13 @@ export const Alert = ({
     )
 }
 
+
 export const WalletButton = ({
     returnTo,
     indicator
 }) => {
     const history = useHistory();
 
-    // handlers
     const handleToSettings = () => {
         history.push({pathname: "/wallet", state: { returnTo } });
     }
@@ -76,6 +77,7 @@ export const WalletButton = ({
         <WalletIcon onClick={() => handleToSettings()} indicator={indicator}/>  
     )
 }
+
 WalletButton.defaultProps = {
     prev: "/select",
 };
@@ -85,7 +87,6 @@ WalletButton.propTypes = {
 
 
 export const HelpButton = () => {
-
     const handleToHelp = () => {
         window.location.href = "https://block.lotto";        
     }
@@ -94,6 +95,7 @@ export const HelpButton = () => {
         <HelpIcon onClick={() => handleToHelp()} />
     )
 }
+
 
 export const CashoutButton = ({
     returnTo,
@@ -108,6 +110,7 @@ export const CashoutButton = ({
         <CashoutIcon onClick={() => handleToSettings()} />
     )
 }
+
 CashoutButton.defaultProps = {
     returnTo : "/select",
 };
@@ -128,6 +131,7 @@ export const ReturnButton = (props) => {
         </ReturnButtonCtn>
     )
 }
+
 
 const WhiteButton = styled.button`
     border-radius: 8px;
@@ -182,7 +186,7 @@ export const WhiteTicketButton = ({
     }
 
     return (
-        <WhiteButton>
+        <WhiteButton onClick={handleToTicketDetails}>
             <CustomTicketIcon />
             <Text>
                 Ticket Details
