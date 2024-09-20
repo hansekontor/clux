@@ -15,7 +15,6 @@ import PrimaryButton from '@components/Common/PrimaryButton';
 import NavigationBar from '@components/Common/Navigation';
 import { FooterCtn, LightFooterBackground } from '@components/Common/Footer';
 import RandomNumbers from '@components/Common/RandomNumbers';
-import { errorNotification } from '@components/Common/Notifications';
 import { CardIconBox } from '@components/Common/CustomIcons';
 
 // utils
@@ -90,11 +89,9 @@ const Input = styled.input`
     text-color: #ABCDEF;
 `;
 
-
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
 
 const NmiCheckoutForm = ({
     passLoadingStatus,
@@ -133,7 +130,7 @@ const NmiCheckoutForm = ({
         })
     }, []);
 
-    // handlers
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (window.CollectJS) {
@@ -141,7 +138,6 @@ const NmiCheckoutForm = ({
         } else 
             console.log("CollectJS unavailable")
     }
-    // dev rename
     const handleResult = async (result) => {
         console.log("payment token", result.token);
         passLoadingStatus("CONFIRMING PAYMENT");
@@ -150,19 +146,14 @@ const NmiCheckoutForm = ({
         await sleep(2000);
         passLoadingStatus("BROADCASTING TICKET");
         await sleep(2000);
-        const purchasedTicket = {
-            block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
-            hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
-            maxPayout: "0000000000027100",
-            // playerChoiceBytesString: "34204n67",
-            playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
-            playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
-        }
+        passLoadingStatus("TICKET BROADCASTED");        
+        
+        // demo to pass ticket data to /backup and /waitingroom
         passPurchasedTicket({
-            id: purchasedTicket.hash,
+            id: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
             playerChoice: playerChoiceArray
         });
-        passLoadingStatus("TICKET BROADCASTED");
+        
         await sleep(2000);
         history.push('/backup')
     }
@@ -265,7 +256,6 @@ const Checkout = ({
     const [hasAgreed, setHasAgreed] = useState(false);
     const [tokensSent, setTokensSent] = useState(false);
     const [isStage1, setState1] = useState(true);
-    const [helpSectionModal, helpSectionHolder] = Modal.useModal();
     const [clientSecret, setClientSecret] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("stripe");
     const [isKYCed, setIsKYCed] = useState(false);
@@ -274,17 +264,18 @@ const Checkout = ({
 
     if (!playerChoiceArray) {
         passLoadingStatus("PLAYER NUMBERS ARE MISSING");
-        // sleep?
         history.push("/select");
     }
     
-    // variables in DOM
+    // variables DOM
+    const offer_name = "Lottery Ticket";
+    const merchant_name = "MRC";
+    const purchaseTokenAmount = 3.33;
+    const displayTicker = "CLUX";
+    const feeAmount = 0.3;
+    const totalAmount = purchaseTokenAmount + feeAmount;
     const agreeButtonText = "Agree and Continue";
     const purchaseButtonText = "Pay - $10"; 
-    const helpText = "After payment, your ticket will be broadcasted to the blockchain. When the next block finalizes, it can be redeemed in this app.";
-    const helpSectionConfig = {
-        content: <p>{helpText}</p>
-    };
 
     // handlers
     const handleAgree = async (e) => {
@@ -293,7 +284,6 @@ const Checkout = ({
         await sleep(500);
         setFirstRendering(false);
     }
-
     const handleKYCResult = async (result) => {
         console.log("KYC", result);
 
@@ -313,7 +303,6 @@ const Checkout = ({
                 break;
             }
     }
-
     const handleEmailAndKYC = async (e) => {
         e.preventDefault();
         const email = e.target.email.value;
@@ -337,18 +326,6 @@ const Checkout = ({
     //         window.HyperKYCModule.launch(kycConfig, handleKYCResult);
     //     }
     // }, [kycConfig])
-
-    const getPlayerChoiceBytes = (playerChoiceArray) => {
-        const buffer = Buffer.allocUnsafe(4);
-        try {
-            playerChoiceArray.forEach((number, offset) => buffer.writeUInt8(number, offset));
-        } catch(err) {
-            errorNotification(err, "Missing Random Numbers", "Selected Numbers have not been passed.");
-            history.push('/select');
-        }
-
-        return buffer;
-    }
 
     // stripe code
     const [stripeSession, setStripeSession] = useState(false);
@@ -464,7 +441,6 @@ const Checkout = ({
 
     return (
         <>  
-            {helpSectionHolder}            
             {!(hasAgreed && isKYCed) ? (
                 <>
                     <Header background="#FEFFFE" />
@@ -556,14 +532,9 @@ const Checkout = ({
                             </Scrollable>
                             <FooterCtn>
                                 <EvenLighterFooterBackground />
-                                {/* <PrimaryButton 
+                                <PrimaryButton 
                                     type="submit"
                                     form={`${paymentMethod}-form`}
-                                >
-                                    {purchaseButtonText}
-                                </PrimaryButton>                                 */}
-                                <PrimaryButton 
-                                    onClick={handleCheckout}
                                 >
                                     {purchaseButtonText}
                                 </PrimaryButton>
