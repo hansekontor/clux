@@ -230,7 +230,9 @@ const App = () => {
                                             />
                                         </Route>
                                         <Route path="/cashout">
-                                            <Cashout />
+                                            <Cashout 
+                                                passLoadingStatus={setLoadingStatus}
+                                            />
                                         </Route>
                                         <Redirect exact from="/" to="/select" />
                                         <Route component={NotFound} />
