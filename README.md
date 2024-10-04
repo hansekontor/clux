@@ -1,6 +1,4 @@
-# Self Mint Checkout
-
-![CashAppHome](./screenshots/ss-readme.png)
+# CLUX APP
 
 ## Features
 
@@ -37,25 +35,3 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-## Implementation
-Include the following script:
-```html
-<script type="text/javascript" src="https://domain/checkout-v0.1.js"></script>
-```
-
-To render the checkout popup, run the following script with a valid paymentUrl. Modify the callback functions to your needs. Success callback has the final transaction id as input.
-
-```html
-<script>
-    Checkout({ 
-        paymentUrl: "https://pay.badger.cash/i/KP4E9",
-        onSuccess: function(link) {
-            console.log("Success, link:", link);
-        },
-        onCancel: function() {
-            console.log("payment canceled");
-        }
-    }).render();
-</script>
-```
