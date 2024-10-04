@@ -1,18 +1,22 @@
-export const getTilloBrands = async () => {
-    const response = await fetch("https://dev.cert.cash:4002/tillo/brands");
-    const responseData = await response.json();   
-    console.log("responseData", responseData);
-    const brandsObj = responseData.data.brands;
-    const keys = Object.keys(brandsObj);
-    const brandsArray = keys.map(key => brandsObj[key]);
+export const getTilloOptions = async () => {
+    const response = await fetch("https://dev.cert.cash:4002/tillo/currencies");
+    const tilloOptions = await response.json();
 
-    return brandsArray;
+    return tilloOptions;
 }
-export const getTilloGiftcard = async (brand, currency, value) => {
+
+export const getTilloBrands = async (country, currency, amount) => {
+    const params = new URLSearchParams({country, currency, amount}).toString();
+    const response = await fetch("https://dev.cert.cash:4002/tillo/brands?" + params);
+    const tilloBrands = await response.json();   
+
+    return tilloBrands;
+}
+export const getTilloGiftcard = async (brand, currency, amount) => {
     const params = {
         brand, 
         currency,
-        value
+        value: amount
     };
     const keys = Object.keys(params);
     const query = keys.map(key => `${key}=${encodeURIComponent(params[key])}`)
