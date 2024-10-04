@@ -58,6 +58,7 @@ const Notification = ({
     type, 
     message,
 }) => {
+    console.log("NOTIFICATION type, message", type, message);
     const [isClosing, setIsClosing] = useState(false);
     const [isClosed, setIsClosed] = useState(false);
 
@@ -90,6 +91,8 @@ const Notification = ({
         </SlideIn>
     )
 }
+
+
 
 export const infoNotification = (infoString) => {
     notification.info({

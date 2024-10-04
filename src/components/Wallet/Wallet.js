@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { CopyOutlined } from '@ant-design/icons';
 
 // react components 
-import { infoNotification, errorNotification } from '@components/Common/Notifications';
+import { successNotification, errorNotification } from '@components/Common/Notifications';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import TicketHistory from './TicketHistory';
 import Header from '@components/Common/Header'; 
@@ -134,7 +134,6 @@ const Wallet = ({
     const walletState = getWalletState(wallet);
     const { tickets } = walletState;
     const indicator = 1;
-    const [exiting, setExiting] = useState(false);
     const [selection, setSelection] = useState(false);
 
 
@@ -157,7 +156,7 @@ const Wallet = ({
     }
     const handleCopyAddress = (address) => {
         navigator.clipboard.writeText(address);
-        infoNotification("Copied to Clipboard!");
+        successNotification("Copied to Clipboard!");
     }
     const handleShowPhrase = () => {
         setSelection("Seed Phrase");
@@ -183,7 +182,7 @@ const Wallet = ({
 
     const handleCopySeedPhrase = () => {
         navigator.clipboard.writeText(wallet.mnemonic);
-        setPhraseCopied(true);
+		successNotification("Copied to Clipboard!");
     }
 
 
@@ -193,7 +192,6 @@ const Wallet = ({
 
     return (
         <>
-            {phraseCopied && <Notification type="success" message={"Copied to clipboard"} />}
             <StyledFadeInOut duration={300} show={true}>
                 <Header />
                 <NavigationBar 

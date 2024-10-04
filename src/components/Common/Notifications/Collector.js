@@ -20,6 +20,27 @@ const NotificationBody = styled.div`
     justify-content: center;
     align-items: center;
 `;
+// const NotificationCtn = styled.div`
+//     width: 480px;
+//     height: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: center;
+//     margin: 0;
+//     padding: 0;
+//     position: fixed;
+//     top: 0;
+//     margin-bottom: 0px;
+//     overflow: hidden;
+
+//     @media (max-width: 480px) {
+//         width: 100%;
+//         -webkit-box-shadow: none;
+//         -moz-box-shadow: none;
+//         box-shadow: none;
+//     }
+// `;
 const NotificationCtn = styled.div`
     width: 480px;
     height: 100%;
