@@ -6,7 +6,6 @@ import {
     Redirect,
     useHistory
 } from 'react-router-dom';
-// import 'antd/dist/antd.less';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 
 // css components

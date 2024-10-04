@@ -1,8 +1,6 @@
-// node_modules
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-// custom react components
 import NotificationCollector from './Collector';
 import Notification from "./Notification";
 import createNotificationContainer from './createContainer';
@@ -12,12 +10,14 @@ let notify;
 
 ReactDOM.render(
     <NotificationCollector
-        setNotification={(notifier) => {
-            notify = notifier;
+        setNotification={(notifyFn) => {
+            notify = notifyFn;
         }}
     />,
     container
 )
+
+export { Notification };
 
 export const infoNotification = (message) => {
     return notify({
@@ -39,5 +39,3 @@ export const errorNotification = (message) => {
         message
     })
 }
-
-export { Notification };
