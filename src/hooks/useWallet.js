@@ -18,7 +18,7 @@ import isEqual from 'lodash.isequal';
 import {
     // xecReceivedNotification,
     eTokenReceivedNotification,
-} from '@components/Common/Notifications';
+} from '@components/Common/Notifications/Notification';
 import cashaddr from 'ecashaddrjs';
 import { 
     Mnemonic,

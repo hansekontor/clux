@@ -6,7 +6,7 @@ import styled from 'styled-components';
 // custom react modules
 import { SecondaryButton } from '@components/Common/PrimaryButton';
 import { WalletContext } from '@utils/context';
-import Notification from '@components/Common/Notifications';
+import { infoNotification } from '@components/Common/Notifications';
 
 // styled css modules
 const ImportWalletCtn = styled.div`
@@ -88,14 +88,13 @@ const ImportWallet = ({
         passLoadingStatus("IMPORT WALLET");
         createWallet(formData.mnemonic);
         passLoadingStatus(false);
-        setWalletChanged(true);
+        infoNotification("Imported Wallet");
     }
 
     console.log("dirty", formData.dirty, "isvalidmnemonic", isValidMnemonic);
 
     return (
         <ImportWalletCtn>
-            {walletChanged && <Notification type="success" message={"Imported Wallet"} />}
             {alertModalHolder}
             <Address>
                 <AddressLabel>Current Wallet Address</AddressLabel>

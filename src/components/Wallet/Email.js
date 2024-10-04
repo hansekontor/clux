@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 // custom react components
 import { SecondaryButton } from '@components/Common/PrimaryButton';
-import Notification from '@components/Common/Notifications';
+import { infoNotification } from '@components/Common/Notifications';
 
 // styled components
 const EmailCtn = styled.div`
@@ -40,14 +40,13 @@ const Email = ({
     const handleChangeEmail = (e) => {
         e.preventDefault();
         // change email placeholder
-        setEmailChanged(true);
+        infoNotification("Email Changed")
     }
 
 
     return (
         <>
             <EmailCtn>
-                {emailChanged && <Notification type="success" message={"Email changed"} />}
                 <Form id="email-form" onSubmit={handleChangeEmail}>
                     <Input 
                         placeholder={"new email address"}
