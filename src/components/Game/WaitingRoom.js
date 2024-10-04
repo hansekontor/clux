@@ -109,9 +109,6 @@ const WaitingRoom = ({
     return (
         <>  
             {waitingInfoHolder}
-            {gameEnabled && 
-                <Notification type="success" message="You can redeem your Ticket now" />
-            }
             <Background src={LockerPng} />
             <Header />
             <FlexGrow>
