@@ -15,7 +15,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const safePostCssParser = require('postcss-safe-parser');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
+// const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 const paths = require('./paths');
@@ -23,7 +23,7 @@ const modules = require('./modules');
 const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
-const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+// const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const workboxPlugin = require('workbox-webpack-plugin');
 
 const postcssNormalize = require('postcss-normalize');
@@ -531,7 +531,7 @@ module.exports = function (webpackEnv) {
                                 sourceMap:
                                     isEnvProduction && shouldUseSourceMap,
                                 modules: true,
-                                getLocalIdent: getCSSModuleLocalIdent,
+                                // getLocalIdent: getCSSModuleLocalIdent,
                             }),
                         },
                         // Opt-in support for SASS (using .scss or .sass extensions).
@@ -564,7 +564,7 @@ module.exports = function (webpackEnv) {
                                     sourceMap:
                                         isEnvProduction && shouldUseSourceMap,
                                     modules: true,
-                                    getLocalIdent: getCSSModuleLocalIdent,
+                                    // getLocalIdent: getCSSModuleLocalIdent,
                                 },
                                 'sass-loader',
                             ),
@@ -653,8 +653,8 @@ module.exports = function (webpackEnv) {
             // to restart the development server for Webpack to discover it. This plugin
             // makes the discovery automatic so you don't have to restart.
             // See https://github.com/facebook/create-react-app/issues/186
-            isEnvDevelopment &&
-                new WatchMissingNodeModulesPlugin(paths.appNodeModules),
+            // isEnvDevelopment &&
+            //     new WatchMissingNodeModulesPlugin(paths.appNodeModules),
             isEnvProduction &&
                 new MiniCssExtractPlugin({
                     // Options similar to the same options in webpackOptions.output
@@ -709,9 +709,9 @@ module.exports = function (webpackEnv) {
                     ],
                     silent: true,
                     // The formatter is invoked directly in WebpackDevServerUtils during development
-                    formatter: isEnvProduction
-                        ? typescriptFormatter
-                        : undefined,
+                    // formatter: isEnvProduction
+                    //     ? typescriptFormatter
+                    //     : undefined,
                 }),
             new workboxPlugin.InjectManifest({
                 swSrc: './src/serviceWorker.js',
