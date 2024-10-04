@@ -8,9 +8,9 @@ import { Flash } from 'react-ruffle';
 // react components
 import { WalletContext } from '@utils/context';
 import Header from '@components/Common/Header';
-import Notification from '@components/Common/Notifications';
 import Footer from '@components/Common/Footer';
 import { getWalletState } from '@utils/cashMethods'
+import { successNotification } from '@components/Common/Notifications';
 
 // util
 import animationLabels from '@utils/animations';
@@ -35,6 +35,10 @@ const FlexGrow = styled.div`
     justify-content: flex-end;
 `;
 
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 const WaitingRoom = ({
     passLoadingStatus, 
@@ -53,18 +57,13 @@ const WaitingRoom = ({
     const [waitingInfoModal, waitingInfoHolder] = Modal.useModal();
     const [ticketData, setTicketData] = useState(false);
 
-    // helpers
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // manually turn off loading screen
+    // hooks
     useEffect(async () => {
+        // manually turn off loading screen
         passLoadingStatus(false);
     }, [])
-
-    // find active ticket data in tickets from wallet state
     useEffect(async () => { 
+        // find active ticket data in tickets from wallet state
         if (activeTicket) {
             const activeTicketData = tickets.find((ticket) => ticket.id === activeTicket.id);
             if (!activeTicketData) {
@@ -75,11 +74,10 @@ const WaitingRoom = ({
             }
         }
     }, []);
-
     useEffect(async () => {
         // simulate waiting time for block --- remove later
         await sleep (1000);
-        // infoNotification("Your ticket can be redeemed.");
+        successNotification("You can redeem your Ticket now");
         setGameEnabled(true);       
     }, [])
 
@@ -94,13 +92,13 @@ const WaitingRoom = ({
     // handlers
     const handleToGame = async () => {
         if (gameEnabled) {
-            // passLoadingStatus("FETCHING TICKET DATA")
-            // await sleep(2000);
-            // passLoadingStatus("REDEEMING TICKET")
-            // await sleep(2000);
-            // passLoadingStatus("TICKET REDEEMED");
-            // await sleep(2000);
-            // passLoadingStatus(false);
+            passLoadingStatus("FETCHING TICKET DATA")
+            await sleep(2000);
+            passLoadingStatus("REDEEMING TICKET")
+            await sleep(2000);
+            passLoadingStatus("TICKET REDEEMED");
+            await sleep(2000);
+            passLoadingStatus(false);
             history.push('/game');
         } else 
             waitingInfoModal.info(waitingInfoConfig);

@@ -7,9 +7,9 @@ import { useHistory } from 'react-router-dom';
 import PrimaryButton, { SecondaryButton } from '@components/Common/PrimaryButton';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import { WalletContext } from '@utils/context';
-import Notification from '@components/Common/Notifications';
 import { FadeInAnimation } from '@components/Common/CssAnimations';
 import FadeInOut from './FadeInOut'
+import { successNotification } from '@components/Common/Notifications';
 
 // assets
 import CopyboardSvg from '@assets/copyboard.svg';
@@ -66,7 +66,6 @@ const Backup = ({
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
 
-    const [phraseCopied, setPhraseCopied] = useState(false);
     const [fadeOut, setFadeOut] = useState(false);
 
     // manually stop loading screen
@@ -77,7 +76,7 @@ const Backup = ({
     // handlers
     const handleCopySeedPhrase = () => {
         navigator.clipboard.writeText(wallet.mnemonic);
-        setPhraseCopied(true);
+        successNotification("Copied to clipboard");
     }
     const handleBackedUp = (e) => {
         e.preventDefault();
@@ -88,7 +87,6 @@ const Backup = ({
 
     return (
         <>
-            {phraseCopied && <Notification type="success" message={"Copied to clipboard"} />}
             <FadeInOut show={!fadeOut} duration={300}>
                 <ModalCtn>
                     <Modal >
