@@ -160,42 +160,36 @@ export const ResultingNumbers = ({
     const [showThirdNumber, setShowThirdNumber] = useState(false);
     const [showFourthNumber, setShowFourthNumber] = useState(false);
     
-    const sortedNumberArray = numberArray.slice().sort((a,b) => a - b);
+	const indexMap = new Map();
+	for (let i = 0; i < numberArray.length; i++) {
+		indexMap.set(i, numberArray[i]);
+	}
+
+    const sortedNumberArray = Array.from(indexMap).sort((a,b) => a[1] - b[1]);
 
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    const revealNumber = (targetIndex) => {
-        if (targetIndex === 0) {
+    const revealNumber = (stage) => {
+		const index = sortedNumberArray[stage][0];
+
+        if (index === 0) {
             setShowFirstNumber(true);
-        } else if (targetIndex === 1) {
+        } else if (index === 1) {
             setShowSecondNumber(true);
-        } else if (targetIndex === 2) {
+        } else if (index === 2) {
             setShowThirdNumber(true);
-        } else if (targetIndex === 3) {
+        } else if (index === 3) {
             setShowFourthNumber(true);
         }
     }
 
-    const getIndexToReveal = (iteration) => {
-        const equals = sortedNumberArray[iteration] === sortedNumberArray[iteration-1];
-        let array = numberArray;
-        if (equals) {
-            const lastIndex = numberArray.indexOf(sortedNumberArray[iteration-1]);
-            delete array[lastIndex];
-        } 
-        const index = array.indexOf(sortedNumberArray[iteration]);       
-        return index;
-    }
-
+	// hooks reveal one number every 700ms
     useEffect(async () => {
-        console.log("called useEffect 0")
-        // debug for equal numbers
         if (active) {
-            const index = numberArray.indexOf(sortedNumberArray[0]);
-            console.log("index 0", index);
-            revealNumber(index);
+			const stage = 0;
+			revealNumber(stage);
         }
     }, [active])
 
@@ -203,9 +197,7 @@ export const ResultingNumbers = ({
         if (active) {
             const stage = 1;
             await sleep(700*stage);
-            const index = getIndexToReveal(stage);
-            console.log("index 1", index);
-            revealNumber(index);
+            revealNumber(stage);
         }
     }, [active])
 
@@ -213,9 +205,7 @@ export const ResultingNumbers = ({
         if (active) {
             const stage = 2;
             await sleep(700*stage);
-            const index = getIndexToReveal(stage);
-            console.log("index 2")
-            revealNumber(index);
+            revealNumber(stage);
         }
     }, [active])
 
@@ -223,9 +213,7 @@ export const ResultingNumbers = ({
         if (active) {
             const stage = 3;
             await sleep(700*stage);
-            const index = getIndexToReveal(stage);
-            console.log("index 3", index);
-            revealNumber(index);
+            revealNumber(stage);
         }
     }, [active])
 
