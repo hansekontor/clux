@@ -113,18 +113,6 @@ const Cashout = ({
     const handleCurrencyChange = (e) => {
         const selectedCurrency = e.value;
         console.log("selectedCurrency", selectedCurrency);
-        // const selectedOption = tilloOptions.find(item => item.currency === selectedCurrency);
-        // console.log("selectedOption", selectedOption);
-        // const selectedCountries = selectedOption.countries;
-        // console.log("countries", selectedCountries);
-        // const countryOptionsForCurrency = selectedCountries.map(country => {
-        //     // dev later add country names for labels
-        //     return {
-        //         label: country,
-        //         value: country
-        //     }
-        // });
-        // console.log("countryoptionsofr currency", countryOptionsForCurrency)
         const countryOptionsForCurrency = tilloOptions.find(item => item.currency === selectedCurrency)
             .countries
             .map(country => {
@@ -161,6 +149,7 @@ const Cashout = ({
         setBrandData(selectedBrandData);
     }
     const handleBrandSubmit = async (e) => {
+        e.preventDefault();
         const giftcardLink = await getTilloGiftcard(brandData.slug, currency, amount);
 
         setLink(giftcardLink);
