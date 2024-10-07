@@ -214,17 +214,6 @@ const Game = ({
         }
     }, [animationStage])
 
-    // useEffect(async() => {
-    //     if(fadeOut){
-    //         await sleep(300);
-    //         passAnimationKey(false);            
-    //         passLoadingStatus("LOADING RESULTS");
-    //         console.log("pushed to /result with payoutAmount", payoutAmount);
-    //         history.push({pathname: "/result", state: { payoutAmount }})
-    //     }
-    // }, [fadeOut])
-
-    // handlers
     const handlePlay = async () => {
         setAnimationStage("fight");
         document.getElementById(labels.fight).startFightAnimation();
