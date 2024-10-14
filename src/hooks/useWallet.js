@@ -15,10 +15,7 @@ import { isValidCashtabSettings } from '@utils/validation';
 import localforage from 'localforage';
 import { currency } from '@components/Common/Ticker';
 import isEqual from 'lodash.isequal';
-import {
-    // xecReceivedNotification,
-    eTokenReceivedNotification,
-} from '@components/Common/Notifications/Notification';
+import { infoNotification } from '@components/Common/Notifications';
 import cashaddr from 'ecashaddrjs';
 import { 
     Mnemonic,
@@ -801,12 +798,8 @@ const useWallet = () => {
             .minus(previousBalances.totalBalance)
             .gt(0)
     ) {
-        // xecReceivedNotification(
-        //     balances,
-        //     previousBalances,
-        //     cashtabSettings,
-        //     fiatPrice,
-        // );
+		const delta = parseFLoat(Number(balances.totalBalance - previousBalances.totalBalance,).toFixed(currency.cashDecimals),).toLocaleString();
+		infoNotification(`Received ${delta} XEC`);
     }
 
     // Parse for incoming eToken transactions
@@ -864,12 +857,8 @@ const useWallet = () => {
 
             // Notification if you received SLP
             if (receivedSlpQty > 0) {
-                eTokenReceivedNotification(
-                    currency,
-                    receivedSlpTicker,
-                    receivedSlpQty,
-                    receivedSlpName,
-                );
+				// dev todo: limit tokens to supported ones
+				infoNotification(`+${receivedSlpQty.toString()} ${receivedSlpTicker}`);
             }
             //
         } else {
