@@ -4,29 +4,34 @@ import { currency } from '@components/Common/Ticker';
 import { notification } from 'antd';
 import styled from 'styled-components';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { FadeOutAnimationLong, SlideInAnimation } from '@components/Common/CssAnimations';
+import { SlideInAnimation } from '@components/Common/CssAnimations';
 
-const SlideIn = styled.div`
-    z-index: 33;
-    height: 50px;
-    padding: 0 17px;
-    position: absolute;
-    top: 13%;
+
+const AnimationCtn = styled.div`
+	max-width: 480px;
+	position: relative;
+	z-index: 3000;
+
+    animation: slide-in-from-top 0.5s cubic-bezier(0.24, 0.48, 0.47, 0.95);
+    ${SlideInAnimation}	
+
+	overflow: hidden;
+    visibility: ${props => props.fadeOut ? "hidden" : "visible"};
+    opacity: ${props => props.fadeOut ? 0 : 1};
+    transition: ${props => props.fadeOut ? "visibility 0.5s linear, opacity 0.5s linear, max-height 1s 0.5s ease-out, margin-bottom 1s 0.5s" : "none"};
+	max-height: ${props => props.fadeOut ? "0px" : "50px"};
+	margin-bottom: ${props => props.fadeOut ? "0px" : "12px"};
+`;
+const NotificationCtn =  styled.div`    
+	height: 50px;    
+	padding: 0 17px;    
+	gap: 10px;
     border-radius: 100px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 10px;
     background: ${props => props.color ? props.color : '#FFFFFF'};
-
-    animation: slide-in-from-top 0.5s cubic-bezier(0.24, 0.48, 0.47, 0.95);
-    ${SlideInAnimation}
-
-    ${FadeOutAnimationLong}
-    visibility: ${props => props.fadeOut ? "hidden" : "visible"};
-    opacity: ${props => props.fadeOut ? 0 : 1};
-    transition: ${props => props.fadeOut ? "visibility 0s 2s, opacity 2s linear" : "none"};
 `;
 const CheckIcon = styled(CheckCircleOutlined)`
     color: #FFFFFF;
@@ -58,7 +63,6 @@ const Notification = ({
     type, 
     message,
 }) => {
-    console.log("NOTIFICATION type, message", type, message);
     const [isClosing, setIsClosing] = useState(false);
     const [isClosed, setIsClosed] = useState(false);
 
@@ -83,98 +87,16 @@ const Notification = ({
     }
 
     return (
-        <SlideIn animate={true} color={backgroundColor[type]}fadeOut={isClosing}>
-            {type === "success" && <CheckIcon />}
-            {type === "error" && <ErrorIcon />}                
-            {type === "info" && <InfoIcon />}
-            <Text color={textColor[type]}>{message}</Text>
-        </SlideIn>
+		<AnimationCtn animate={true} fadeOut={isClosing}>
+			<NotificationCtn color={backgroundColor[type]}>
+				{type === "success" && <CheckIcon />}
+				{type === "error" && <ErrorIcon />}                
+				{type === "info" && <InfoIcon />}
+				<Text color={textColor[type]}>{message}</Text>
+			</NotificationCtn>s
+		</AnimationCtn>
+
     )
 }
-
-
-
-export const infoNotification = (infoString) => {
-    notification.info({
-        message: infoString,
-        duration: 5,
-        style: {
-            width: "90%",
-            height: "50px",
-            position: "absolute",
-            top: "5%",
-            borderRadius: "100px",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
-        }
-    })
-}
-
-export const successNotification = (successString) => {
-    notification.success({
-        message: successString,
-        duration: 5,
-        style: {color: 'green'}
-    })
-}
-
-export const selfMintTokenNotification = () => {
-    notification.success({
-        message: 'Success',
-        description: (
-            <Paragraph>
-                Tokens successfully minted!
-            </Paragraph>
-        ),
-        duration: currency.notificationDurationLong,
-        style: { borderRadius: '0px' },
-    });
-};
-
-export const sendTokenNotification = link => {
-    notification.success({
-        message: 'Success',
-        description: (
-            <a href={link} target="_blank" rel="noopener noreferrer">
-                <Paragraph>
-                    Transaction successful!
-                </Paragraph>
-            </a>
-        ),
-        duration: currency.notificationDurationLong,
-        style: { borderRadius: '0px' },
-    });
-};
-
-export const eTokenReceivedNotification = (
-    currency,
-    receivedSlpTicker,
-    receivedSlpQty,
-    receivedSlpName,
-) => {
-    notification.success({
-        message: `${currency.tokenTicker} transaction received: ${receivedSlpTicker}`,
-        description: (
-            <Paragraph>
-                You received {receivedSlpQty.toString()} {receivedSlpName}
-            </Paragraph>
-        ),
-        duration: currency.notificationDurationShort,
-        style: { width: '100%', borderRadius: '0px' },
-    });
-};
-
-export const errorNotification = (error, message, stringDescribingCallEvent) => {
-    notification.error({
-        message: 'Error',
-        description: message,
-        duration: currency.notificationDurationLong,
-        style: { borderRadius: '0px' },
-    });
-};
-
 
 export default Notification;

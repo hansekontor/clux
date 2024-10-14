@@ -14,36 +14,15 @@ const NotificationBody = styled.div`
     padding: 0;
     width: 100%;
     min-height: 100vh;
-    overlap: scroll;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 `;
-// const NotificationCtn = styled.div`
-//     width: 480px;
-//     height: 100%;
-//     display: flex;
-//     flex-direction: column;
-//     align-items: center;
-//     justify-content: center;
-//     margin: 0;
-//     padding: 0;
-//     position: fixed;
-//     top: 0;
-//     margin-bottom: 0px;
-//     overflow: hidden;
-
-//     @media (max-width: 480px) {
-//         width: 100%;
-//         -webkit-box-shadow: none;
-//         -moz-box-shadow: none;
-//         box-shadow: none;
-//     }
-// `;
 const NotificationCtn = styled.div`
+	position: fixed;
+	top: 30px;
     width: 480px;
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -95,11 +74,11 @@ const NotificationCollector = ({
                 <>
                     {notificationArray.map((item, index) => {
                         return (
-                            <Notification 
-                                key={item.id}
-                                message={item.message}
-                                type={item.type}
-                            />                    
+							<Notification 
+								key={item.id}
+								message={item.message}
+								type={item.type}
+							/>        
                         )
                     })}                
                 </>
