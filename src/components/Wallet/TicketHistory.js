@@ -1,8 +1,11 @@
 // node modules
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { CopyOutlined } from '@ant-design/icons';
+
+// 
+import { TertiaryButton } from '@components/Common/PrimaryButton'
 
 // assets
 import TicketSvg from '@assets/ticket_filled.svg';
@@ -42,11 +45,15 @@ const Button = styled.button`
     height: 25px;
     display: flex; 
     align-items: center;
+	border-style: none;
 `;
 const RoundButton = styled(Button)`
     border-radius: 70px;
     width: 25px;
     padding-right: 10px;
+	transition: transform 0.5s;
+	transform: ${props => props.rotate ? "rotate(90deg)" : "none"};
+	position: relative;
 `;
 const LabelCtn = styled.div`
     display: flex;
@@ -82,7 +89,7 @@ const TicketCtn = styled.div`
     cursor: pointer;
 `;
 const TicketData = styled.div`
-    width: 95%;
+    width: 100%;
 `;
 const TicketDataItem = styled.div`
     display: flex;
@@ -114,28 +121,52 @@ const Element = styled.td`
     border-style: none;
 `;
 const RightArrow = styled.img`
-    height: 14px;
+    height: 12px;
+	left: 10px;
+	position: absolute;
 `;
-
+const Collapsible = styled.div`
+	overflow: hidden;
+	transition: height 0.5s ease-in-out;
+	width: 95%;
+`;
 
 
 const Ticket = ({
     data
 }) => {
 
-    const [showDetails, setShowDetails] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
     const [copied, setCopied] = useState(false);
+	const [height, setHeight] = useState(collapsed ? 0 : undefined);
+
+	const ref = useRef(null);
+
+	useEffect(() => {
+		if (!collapsed) 
+			setHeight(0)
+		else 
+			setHeight(ref.current?.getBoundingClientRect().height);
+	}, [collapsed]);
 
     const handleTicketOnClick = () => {
-        if (showDetails)
-            setShowDetails(false)
-        else
-            setShowDetails(true);
+		setCollapsed((prev) => !prev);
     }
     const handleCopyId = () => {
         navigator.clipboard.writeText(data.id);
         setCopied(true);
     };
+
+	const TableRows = data.results.map(item => {
+		return (
+			<TableRow>
+				<Element>{item.player}</Element>
+				<Element>{item.block}</Element>
+				<Element>{item.sum}</Element>
+				<Element>{item.modulo}</Element>
+			</TableRow>			
+		)
+	});                       
 
     return (
         <TicketCtn>
@@ -157,74 +188,67 @@ const Ticket = ({
                 </LeftCtn>
                 <RightCtn>
                     <Button>Redeem</Button>
-                    <RoundButton>
+                    <RoundButton rotate={collapsed}>
                         <RightArrow src={RightArrowSvg} />
                     </RoundButton>                   
                 </RightCtn>
             </Item>
-            {showDetails && (
-                <TicketData>
-                    <TicketDataItem>
-                        <Label>Broadcasted</Label>
-                        <TicketDataValue>12:06 GMT</TicketDataValue>
-                    </TicketDataItem>
-                    <TicketDataItem>
-                        <Label>Ticket ID</Label>
-                        <TicketDataValue>qwer...tzui</TicketDataValue>
-                    </TicketDataItem>
-                    <TicketDataItem>
-                        <Label>Redeemed</Label>
-                        <TicketDataValue>12:06 GMT</TicketDataValue>
-                    </TicketDataItem>
-                    <TicketDataItem>
-                        <Label>Payout</Label>
-                        <TicketDataValue>$20</TicketDataValue>
-                    </TicketDataItem>
-                    <TicketDataItem>
-                        <Label>Payout ID</Label>
-                        <TicketDataValue>qwer...tzui</TicketDataValue>
-                    </TicketDataItem>
+			<Collapsible style={{ height }}>
+				<TicketData ref={ref}>
+					<TicketDataItem>
+						<Label>Broadcasted</Label>
+						<TicketDataValue>12:06 GMT</TicketDataValue>
+					</TicketDataItem>
+					<TicketDataItem>
+						<Label>Ticket ID</Label>
+						<TicketDataValue>qwer...tzui</TicketDataValue>
+					</TicketDataItem>
+					<TicketDataItem>
+						<Label>Redeemed</Label>
+						<TicketDataValue>12:06 GMT</TicketDataValue>
+					</TicketDataItem>
+					<TicketDataItem>
+						<Label>Payout</Label>
+						<TicketDataValue>$20</TicketDataValue>
+					</TicketDataItem>
+					<TicketDataItem>
+						<Label>Payout ID</Label>
+						<TicketDataValue>qwer...tzui</TicketDataValue>
+					</TicketDataItem>
 
-                    <Divider />
-                    <TableHeader>Ticket Calculations</TableHeader>
-                    <Table>
-                        <TableRow>
-                            <Element>You</Element>
-                            <Element>Block</Element>
-                            <Element>Sum</Element>
-                            <Element>Modulo</Element>
-                        </TableRow>
-                        <TableRow>
-                            <Element>1</Element>
-                            <Element>2</Element>
-                            <Element>3</Element>
-                            <Element>4</Element>
-                        </TableRow>
-                        <TableRow>
-                            <Element>1</Element>
-                            <Element>2</Element>
-                            <Element>3</Element>
-                            <Element>4</Element>
-                        </TableRow>
-                        <TableRow>
-                            <Element>1</Element>
-                            <Element>2</Element>
-                            <Element>3</Element>
-                            <Element>4</Element>
-                        </TableRow>
-                        <TableRow>
-                            <Element>1</Element>
-                            <Element>2</Element>
-                            <Element>3</Element>
-                            <Element>4</Element>
-                        </TableRow>
-                    </Table>
-                </TicketData>
-            )}        
+					<Divider />
+					<TableHeader>Ticket Calculations</TableHeader>
+					<Table>
+						<TableRow>
+							<Element>You</Element>
+							<Element>Block</Element>
+							<Element>Sum</Element>
+							<Element>Modulo</Element>
+						</TableRow>
+						{TableRows}
+					</Table>
+				</TicketData>
+			</Collapsible>
+
         </TicketCtn>
 
     )
 }
+
+Ticket.propTypes = {
+    data: PropTypes.array
+}
+Ticket.defaultProps = {
+    data: {
+		results: [
+			{ player: 3, block: 24, sum: 442, modulo: 2 },
+			{ player: 100, block: 122, sum: 35, modulo: 6 },
+			{ player: 70, block: 89, sum: 75, modulo: 15 },
+			{ player: 33, block: 4, sum: 576, modulo: 8 },
+		]
+	}
+}
+
 
 const TicketHistory = ({
     tickets
