@@ -82,7 +82,7 @@ const calculatePayout = (ttxHashString, blockHashString, playerChoiceBytes, maxP
     let modSum = 0;
 
     let modArray = [];
-    let resultingNumbers = [];
+    let resultingNumbers = new Array(4);
 
     for (let i = 0; i < playerChoiceBytes.length; i++) {
         
@@ -97,7 +97,7 @@ const calculatePayout = (ttxHashString, blockHashString, playerChoiceBytes, maxP
         const numBuf = Buffer.concat([randomByte, playerByte])
         console.log("calculatePayout() numBuf", numBuf);
         const number = numBuf.readInt16LE(0);
-        resultingNumbers.push(number % (4*playerChoiceBytes.length));
+        resultingNumbers[i] = number % (4*playerChoiceBytes.length);
         console.log("calcuPayout number", number);
         modSum += number % (4 * playerChoiceBytes.length);
     }
