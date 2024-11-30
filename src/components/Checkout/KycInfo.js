@@ -60,7 +60,7 @@ const KycInfo = () => {
     return (
         <Container>
             <VideoIcon />
-            <Header>Complete KYC</Header>
+            <Header>Complete KYC - Coming Soon</Header>
             <Subtitle>You need to submit a photo ID and liveness check</Subtitle>
             <TopItem>
                 <Content>
