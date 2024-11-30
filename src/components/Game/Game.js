@@ -192,10 +192,6 @@ const Game = ({
         await sleep(1000);
         setVersus(true);
     }, [])   
-    useEffect(async() => {
-        await sleep(5000);
-        setFadeOutVersus(true);
-    })
 
     // switch from fight to celebration animation
     useEffect(async() => {
@@ -215,6 +211,7 @@ const Game = ({
     }, [animationStage])
 
     const handlePlay = async () => {
+		setFadeOutVersus(true);
         setAnimationStage("fight");
         document.getElementById(labels.fight).startFightAnimation();
         setFightStarted(true);
