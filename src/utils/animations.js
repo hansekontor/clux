@@ -3,9 +3,11 @@ const animationLabels = {
     CLUX: {            
         IDLE: {
             STATIC: "9B6E2C5B5E4B496C8C9333E606A80FE7",
-            DYNAMIC: "Clux_2_Ready_Stance.swf"
+            DYNAMIC: "Clux_2_Ready_Stance.swf",
+			WIN: "Final_Screen_WIN.swf",
+			LOSE: "Final_Screen_LOSE.swf",
+			SHADOWBOX: "Shadowbox.swf",
         },
-        SHADOWBOX: "Shadowbox.swf",
         NORRIS: {
 
             FACEOFF: "Clux_3_Face_Off.swf",
