@@ -86,7 +86,7 @@ const WaitingRoom = ({
     const waitingInfoConfig = {
         content: <p>{waitingInfoText}</p>
     }
-    const animationName = animationLabels.CLUX.SHADOWBOX;
+    const animationName = animationLabels.CLUX.IDLE.SHADOWBOX;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
     // handlers

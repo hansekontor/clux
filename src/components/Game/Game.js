@@ -209,7 +209,7 @@ const Game = ({
     // go to result page automatically
     useEffect(async() => {
         if (animationStage === "celebration") {
-            await sleep(5000);
+            await sleep(3000);
             history.push({pathname: "/result", state: {payoutAmount}});
         }
     }, [animationStage])

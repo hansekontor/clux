@@ -2,6 +2,7 @@
 import React, { useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import { Flash } from 'react-ruffle';
 
 // custom react components
 import Header from '@components/Common/Header';
@@ -13,16 +14,18 @@ import { WhiteCashoutButton, WhiteTicketButton } from '@components/Common/Primar
 // util
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
+import animationLabels from '@utils/animations';
 
 // assets
-import Placeholder from '@assets/ring_on_beach.png';
+import ChickenBackgroundPng from '@assets/ResultBackground.png';
 
 // styled css components
-const ChickenZoomIn = styled.img`
+const FlashCtn = styled.div`
     border-radius: 12px;
     width: 90%;
     height: 40%;
     flex-grow: 1;
+	background-image: url(${ChickenBackgroundPng});
 `;
 const Scrollable = styled.div`
     width: 100%;
@@ -77,12 +80,34 @@ const Result = ({
     // DOM variables
     const playButtonText = "Play Again";
 
+	const payoutAmount = 20;
+    const animationName = payoutAmount > 0 ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
+    const animationPath = animationLabels.PUBLICPATH + animationName;
 
     return (
         <>
             <Header />
             <Scrollable>
-                <ChickenZoomIn src={Placeholder}/>
+					<FlashCtn>                
+						{/* <Background src={ChickenBackgroundPng}/> */}
+						<Flash                
+							src={animationPath}
+							config={{
+								autoplay: "on",
+								unmuteOverlay: "hidden",
+								splashScreen: false,
+								contextMenu: "off",
+								allowScriptAccess: true,
+								scale: "exactFit",
+								wmode: "transparent",
+								preferredRenderer: "canvas"                                      
+							}}
+							id={animationName}
+						>
+								<div>FLASH PLACEHOLDER</div>
+						</Flash> 			
+					</FlashCtn>
+
                 <Ticket>
                     <TicketResult 
                         amount={location.state?.payoutAmount || 20}
