@@ -72,7 +72,8 @@ const JackpotCarousel = ({
                 <Jackpot>
                     <Text>
                         Daily Jackpot
-                        <Amount>$2,000</Amount>                    
+                        {/* <Amount>$2,000</Amount>                     */}
+                        <Amount>Coming Soon</Amount>                    
                     </Text>
                     <CoinBagIcon src={CoinBagSvg}/>
                 </Jackpot>
@@ -81,7 +82,8 @@ const JackpotCarousel = ({
                 <Jackpot>
                     <Text>
                         Weekly Jackpot
-                        <Amount>$12,000</Amount>                        
+                        {/* <Amount>$12,000</Amount>                         */}
+						<Amount>Coming Soon</Amount>
                     </Text>
                     <CoinBagIcon src={CoinBagSvg}/>
                 </Jackpot>
@@ -90,7 +92,8 @@ const JackpotCarousel = ({
                 <Jackpot>
                     <Text>
                         Monthly Jackpot
-                        <Amount>$50,000</Amount>                    
+                        {/* <Amount>$50,000</Amount>                     */}
+						<Amount>Coming Soon</Amount>
                     </Text>
                     <CoinBagIcon src={CoinBagSvg}/>
                 </Jackpot>
