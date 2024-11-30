@@ -97,7 +97,7 @@ const Result = ({
             <Scrollable>
 					<FlashCtn>                
 						{/* <Background src={ChickenBackgroundPng}/> */}
-						<Flash                
+						<StyledFlash                
 							src={animationPath}
 							config={{
 								autoplay: "on",
@@ -112,7 +112,7 @@ const Result = ({
 							id={animationName}
 						>
 								<div>FLASH PLACEHOLDER</div>
-						</Flash> 			
+						</StyledFlash> 			
 					</FlashCtn>
 
                 <Ticket>
