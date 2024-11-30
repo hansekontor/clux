@@ -64,7 +64,7 @@ const NavigationBar = ({
                 <Merchant>
                     <img src={MerchantSvg} />
                     <MerchantLabel></MerchantLabel>
-                    <MerchantName>MRC</MerchantName>                        
+                    <MerchantName>Marianas Blockchain Lottery</MerchantName>                        
                 </Merchant>                    
             )}             
 

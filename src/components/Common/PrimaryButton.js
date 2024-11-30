@@ -11,7 +11,7 @@ import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@compon
 // styled css modules
 const PrimaryButton = styled.button`
     color: #000000;
-    background-color: ${props => props.inactive ? "b9b9b9" : "#f2bc57"};
+    background-color: ${props => props.grey ? "b9b9b9" : "#f2bc57"};
     height: 52px;
     border-style: none;
     border-radius: 12px;
