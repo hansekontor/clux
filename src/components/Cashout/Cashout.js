@@ -25,6 +25,7 @@ const Input = styled.input`
     cursor: pointer;
     width: 100%;
     border: ${props => props.error ? "1px solid red" : "none"};
+	text-indent: 12px;
 `;
 const FlexGrow = styled.div`
     flex-grow: 1;

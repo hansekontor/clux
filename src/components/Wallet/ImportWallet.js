@@ -37,6 +37,7 @@ const Input = styled.input`
     border: ${props => props.error ? "1px solid red" : "none"};
     margin-top: 12px;
     margin-bottom: 12px;
+	text-indent: 12px;
 `;
 const Help = styled.div`
     color: red;

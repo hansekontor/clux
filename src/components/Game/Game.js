@@ -308,7 +308,7 @@ const Game = ({
                         active={fightStarted}
                     />                
                 }
-                <PrimaryButton onClick={handlePlay}>
+                <PrimaryButton onClick={handlePlay} grey={fightStarted} disabled={fightStarted}>
                     {playButtonText}
                 </PrimaryButton>
             </FooterCtn>

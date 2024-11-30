@@ -87,6 +87,7 @@ const Input = styled.input`
     width: 100%;
     border-style: none;
     text-color: #ABCDEF;
+	text-indent: 12px;
 `;
 
 const sleep = (ms) => {

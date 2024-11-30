@@ -47,7 +47,7 @@ const Text = styled.div`
 `;
 const Amount = styled.div`
     font-family: 'Sequel 100 Wide 95';
-    font-size: 28px;
+    font-size: 20px;
 `;
 const CoinBagIcon = styled.img`
     z-index: 10;

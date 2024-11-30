@@ -90,7 +90,7 @@ const Backup = ({
             <FadeInOut show={!fadeOut} duration={300}>
                 <ModalCtn>
                     <Modal >
-                        <Title>Backup Wallet</Title>
+                        <Title>Backup Account</Title>
                         <Text>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Text>
                         <SeedPhrase 
                             phrase={wallet.mnemonic ? wallet.mnemonic : ""}
