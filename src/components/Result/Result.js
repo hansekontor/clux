@@ -26,6 +26,13 @@ const FlashCtn = styled.div`
     height: 40%;
     flex-grow: 1;
 	background-image: url(${ChickenBackgroundPng});
+	position: relative;
+	display: flex;
+	justify-content:center;
+`;
+const StyledFlash = styled(Flash)`
+	position: absolute;
+	bottom: 0;
 `;
 const Scrollable = styled.div`
     width: 100%;
