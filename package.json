@@ -2,7 +2,7 @@
     "name": "clux-app",
     "version": "0.0.1",
     "private": true,
-    "homepage": "https://wallet.badger.cash/",
+    "homepage": "https://dev.cert.cash/",
     "license": "MIT license",
     "dependencies": {
         "@ant-design/icons": "^4.3.0",
