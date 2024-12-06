@@ -1,5 +1,6 @@
 // node modules
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 // assets
@@ -84,23 +85,25 @@ const RandomNumbers = ({
     fixedRandomNumbers,
     background
 }) => {
+	// todo: change var names
     const [randomNumberArray, setRandomNumberArray] = useState(fixedRandomNumbers ? fixedRandomNumbers : []);
-
     useEffect(() => {
         if (!fixedRandomNumbers)
             handleNewNumbers();
     }, [])
 
     const handleNewNumbers = () => {
-        console.log("handleNewNumbers()");
         const newRandomNumbers = [];
 
         for (let i = 0; i < 4; i++) {
             const newRandomNumber = getRandomInt(1,127);
             newRandomNumbers.push(newRandomNumber);
         }
-        
+		console.log("RandomNumbers", newRandomNumbers);
+		// set component state
         setRandomNumberArray(newRandomNumbers);
+		
+		// set parent state
         passRandomNumbers(newRandomNumbers);
     }
 
@@ -145,8 +148,10 @@ const RandomNumbers = ({
     );
 }
 
-RandomNumbers.defaultProps = {
-    passRandomNumbers: (numbers) => console.log(numbers),
+RandomNumbers.propTypes = {
+	passRandomNumbers: PropTypes.func,
+	fixedRandomNumbers: PropTypes.array,
+	background: PropTypes.string 
 }
 
 

@@ -437,7 +437,9 @@ module.exports = function (webpackEnv) {
                 constants: require.resolve("constants-browserify"),
                 stream: require.resolve("stream-browserify"),
                 os: require.resolve("os-browserify/browser"),
-                util: require.resolve("util")
+                util: require.resolve("util"),
+				crypto: require.resolve("crypto-browserify"),
+				querystring: require.resolve("querystring-es3")
             }
         },
         resolveLoader: {

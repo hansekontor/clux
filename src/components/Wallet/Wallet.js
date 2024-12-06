@@ -1,5 +1,5 @@
 // node modules
-import React, { useState, useContext }  from 'react';
+import React, { useState, useContext, useEffect }  from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -18,7 +18,7 @@ import { SecondaryButton } from '@components/Common/PrimaryButton';
 import Email from '@components/Wallet/Email';
 import ImportWallet from '@components/Wallet/ImportWallet';
 
-import useBCH from '@hooks/useBCH';
+import useWallet from '@hooks/useWallet';
 
 // util
 import { WalletContext } from '@utils/context';
@@ -124,18 +124,25 @@ const SeedPhraseCtn = styled.div`
 
 const Wallet = ({    
     passLoadingStatus,
-    passSelectedTicket
 }) => {
     const history = useHistory();
     const location = useLocation();
-    // const { getTicketHistory } = useBCH();
     const ContextValue = useContext(WalletContext);
     const { wallet, loading } = ContextValue;
     const walletState = getWalletState(wallet);
     const { tickets } = walletState;
-    const indicator = 1;
     const [selection, setSelection] = useState(false);
+	// console.log("Wallet.js walletState", walletState);
+	// console.log("Wallet.js tickets", tickets);
+    const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
 
+	const { forceWalletUpdate } = useWallet();
+	
+	// console.log("tickets from wallet state", tickets);
+
+	useEffect(() => {
+		passLoadingStatus(false);
+	}, [])
 
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -188,7 +195,6 @@ const Wallet = ({
 
     const title = "Wallet, Settings and Legal";
     const previousPath = location.state?.returnTo || "/select";
-    console.log("Wallet previousPath", previousPath);
 
     return (
         <>
@@ -211,13 +217,15 @@ const Wallet = ({
                                     </LabelCtn>
                                 <Button src={RightArrowSvg}/>
                                 </Item>
-                                <Item onClick={handleToTickets}>
-                                    <LabelCtn>
-                                        <TicketIcon indicator={indicator}/>
-                                        <Label>Your Tickets</Label>                            
-                                    </LabelCtn>
-                                <Button src={RightArrowSvg}/>
-                                </Item>
+								{tickets.length > 0 && (
+									<Item onClick={handleToTickets}>
+										<LabelCtn>
+											<TicketIcon indicator={unredeemedIndicator}/>
+											<Label>Your Tickets</Label>                            
+										</LabelCtn>
+									<Button src={RightArrowSvg}/>
+									</Item>
+								)}
                                 <Item>
                                     <LabelCtn>
                                         <ContactIcon />
@@ -237,7 +245,7 @@ const Wallet = ({
                                     </LabelCtn>
                                 <Button src={RightArrowSvg}/>
                                 </Item>
-                                <Item onClick={handleCopyAddress}>
+                                <Item onClick={() => handleCopyAddress(wallet.Path1899.cashAddress)}>
                                     <LabelCtn>
                                         <LightWalletIcon />
                                         <Label>Wallet Address</Label>                            
@@ -294,7 +302,9 @@ const Wallet = ({
                         )}
                         {selection === "Tickets" &&
                             <TicketHistory 
-                                tickets={tickets} />
+                                tickets={tickets}
+								passLoadingStatus={passLoadingStatus}
+							/>
                         }
                         {selection === "Seed Phrase" &&
                         <SeedPhraseCtn>

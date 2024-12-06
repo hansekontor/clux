@@ -1,13 +1,17 @@
-const bio = require('bufio');
-const bcash = require('@hansekontor/checkout-components');
-const MTX = bcash.MTX;
-const consensus = bcash.consensus;
-const { hashType } = bcash.Script;
+import bio from 'bufio';
+import { 
+	MTX, 
+	script, 
+	consensus,
+	Script, 
+	bcrypto
+} from '@hansekontor/checkout-components';
+const { hashType } = Script;
 const { 
     SLP,
     common: { opcodes }
-} = bcash.script;
-const hash256 = bcash.bcrypto.Hash256;
+} = script;
+const hash256 = bcrypto.Hash256;
 const { i64, u64 } = require('n64');
 
 export const authPubKeys = [
@@ -23,90 +27,7 @@ export const authPubKeys = [
 
 ]
 
-export const buildOutScript = (authPubKey, checkIsFirstInput = false) => {
-    const script = new bcash.Script()
-        .pushSym('2dup')
-        .pushInt(36)
-        .pushSym('split')
-        .pushSym('drop');
-
-        if (checkIsFirstInput) {
-            script.pushSym('dup')
-            script.pushInt(6)
-            script.pushSym('pick')
-            script.pushInt(104)
-            script.pushSym('split')
-            script.pushSym('drop')
-            script.pushInt(68)
-            script.pushSym('split')
-            script.pushSym('nip')
-            script.pushSym('equalverify');
-        }
-
-        script.pushSym('swap')
-        .pushSym('dup')
-        .pushInt(78)
-        .pushSym('split')
-        .pushSym('nip')
-        .pushInt(20)
-        .pushSym('split')
-        .pushSym('drop')
-        .pushInt(7)
-        .pushSym('pick')
-        .pushSym('hash160')
-        .pushSym('equalverify')
-
-        .pushInt(132)
-        .pushSym('split')
-        .pushSym('drop')
-        .pushSym('cat')
-        .pushInt(3)
-        .pushSym('roll')
-        .pushSym('swap')
-        .pushData(authPubKey)
-        .pushSym('checkdatasigverify')
-        .pushInt(2)
-        .pushSym('roll')
-        .pushSym('dup')
-        .pushSym('size')
-        .pushInt(40)
-        .pushSym('sub')
-        .pushSym('split')
-        .pushSym('swap')
-        .pushInt(4)
-        .pushSym('split')
-        .pushSym('nip')
-        .pushInt(32)
-        .pushSym('split')
-        .pushSym('drop')
-        .pushInt(3)
-        .pushSym('roll')
-        .pushSym('hash256')
-        .pushSym('equalverify')
-        .pushInt(32)
-        .pushSym('split')
-        .pushSym('drop')
-        .pushSym('rot')
-        .pushSym('hash256')
-        .pushSym('equalverify')
-        .pushSym('sha256')
-        .pushSym('3dup')
-        .pushSym('rot')
-        .pushSym('size')
-        .pushSym('1sub')
-        .pushSym('split')
-        .pushSym('drop')
-        .pushSym('swap')
-        .pushSym('rot')
-        .pushSym('checkdatasigverify')
-        .pushSym('drop')
-        .pushSym('checksig')
-        .compile();
-
-    return script;
-}
-
-export class TXUtil extends MTX {
+class TXUtil extends MTX {
 
     constructor(options) {
         super(options);
@@ -240,3 +161,5 @@ export class TXUtil extends MTX {
     return bw.render();
   }
 }
+
+export default TXUtil;

@@ -1,9 +1,21 @@
 // node modules
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import styled from 'styled-components';
 import { Modal, Radio } from 'antd';
+import bcurl from 'bcurl';
+import brq from 'brq';
+import bio from 'bufio';
+import {
+	KeyRing, 
+	TX, 
+} from '@hansekontor/checkout-components';
+
+import {
+	Payment, 
+	PaymentRequest, 
+	PaymentACK
+} from 'b70-checkout';
 
 // custom react components
 import Header from '@components/Common/Header';
@@ -17,10 +29,10 @@ import { FooterCtn, LightFooterBackground } from '@components/Common/Footer';
 import RandomNumbers from '@components/Common/RandomNumbers';
 import { CardIconBox } from '@components/Common/CustomIcons';
 
-// utils
+// utils & hooks
+import useWallet from '@hooks/useWallet';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
-import getStripe from '@utils/stripe';
 
 // styled css components
 const CustomForm = styled.form`
@@ -93,11 +105,20 @@ const Input = styled.input`
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+const signMessage = (secret, msg) => {
+	const keyring = KeyRing.fromSecret(secret);
+	const sig = keyring.sign(msg);
+	
+	return sig;
+}
+
+/**
+ * Component structure explanation placeholder
+ * 
+ */
 
 const NmiCheckoutForm = ({
-    passLoadingStatus,
-    passPurchasedTicket,
-    playerChoiceArray
+	passMetadata
 }) => {
     const history = useHistory();
 
@@ -133,6 +154,7 @@ const NmiCheckoutForm = ({
 
 
     const handleSubmit = (e) => {
+		console.log("handleSubmit()")
         e.preventDefault();
         if (window.CollectJS) {
             window.CollectJS.startPaymentRequest();
@@ -141,129 +163,54 @@ const NmiCheckoutForm = ({
     }
     const handleResult = async (result) => {
         console.log("payment token", result.token);
-        passLoadingStatus("CONFIRMING PAYMENT");
-        await sleep(2000);
-        passLoadingStatus("PAYMENT CONFIRMED")
-        await sleep(2000);
-        passLoadingStatus("BROADCASTING TICKET");
-        await sleep(2000);
-        passLoadingStatus("TICKET BROADCASTED");        
-        
-        // demo to pass ticket data to /backup and /waitingroom
-        passPurchasedTicket({
-            id: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
-            playerChoice: playerChoiceArray
-        });
-        
-        await sleep(2000);
-        history.push('/backup')
-    }
+		const paymentMetadata = result.token; 
 
+		passMetadata(paymentMetadata);
+	}
+	
     return (
-        <CustomForm onSubmit={handleSubmit} id="nmi-form">
+        <CustomForm onSubmit={handleSubmit} id="NMIC-form">
             <CardIconBox />
         </CustomForm>
     )
 }
 
-const StripeCheckoutForm = ({
-    passLoadingStatus, 
-    passPurchasedTicket,
-    playerChoiceArray // demo placeholder
-}) => {
-    const stripe = useStripe();
-    const elements = useElements();
-    const history = useHistory();
-    // helpers
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    const handleSubmit = async (event) => {
-        // We don't want to let default form submission happen here,
-        // which would refresh the page.
-        event.preventDefault();
-    
-        if (!stripe || !elements) {
-          // Stripe.js hasn't yet loaded.
-          // Make sure to disable form submission until Stripe.js has loaded.
-          return;
-        }
-    
-        passLoadingStatus("CONFIRMING PAYMENT");
-        const result = await stripe.confirmPayment({
-          //`Elements` instance that was used to create the Payment Element
-          elements,
-          confirmParams: {
-            // return_url: "https",
-          },
-          redirect: 'if_required'        
-        });            
-
-        if (result.error) {
-          // Show error to your customer (for example, payment details incomplete)
-          console.log(result.error.message);
-          passLoadingStatus("PAYMENT FAILED");
-          await sleep(3000);
-          history.push("/checkout");
-        } else {
-            // Your customer will be redirected to your `return_url`. For some payment
-            // methods like iDEAL, your customer will be redirected to an intermediate
-            // site first to authorize the payment, then redirected to the `return_url`.
-            console.log("result", result);
-            passLoadingStatus("PAYMENT CONFIRMED");
-            await sleep(2000);
-            passLoadingStatus("BROADCASTING TICKET");
-            const purchasedTicket = {
-                block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
-                hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
-                maxPayout: "0000000000027100",
-                // playerChoiceBytesString: "34204n67",
-                playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
-                playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
-            }
-            passPurchasedTicket({
-                id: purchasedTicket.hash,
-                playerChoice: playerChoiceArray
-            })
-            await sleep(2000);
-            passLoadingStatus("TRANSACTION COMPLETE");
-            await sleep(3000);
-            history.push("/backup");      
-        }
-    };
-
-
-    return (
-        <CustomForm onSubmit={handleSubmit} id="stripe-form">
-            <PaymentElement />
-        </CustomForm>
-    )
-}
+const lottoApiClient = bcurl.client({
+    url: "https://lsbx.nmrai.com",
+    timeout: 20000,
+    headers: { 'Content-Type': 'application/etoken-paymentrequest' },
+});
 
 const Checkout = ({
     passLoadingStatus,
-    playerChoiceArray,
-    passPurchasedTicket,
+    playerNumbers,
 }) => {
     const history = useHistory(); 
+	// const { addTxsToHistory } = useWallet();
 
     // find ticket indicator
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
     const { tickets } = getWalletState(wallet);
+	const { forceWalletUpdate, addIssueTxs } = useWallet();
 
     // states
     const [isFirstRendering, setFirstRendering] = useState(true);
     const [hasAgreed, setHasAgreed] = useState(false);
-    const [tokensSent, setTokensSent] = useState(false);
+    const [ticketIssued, setTicketIssued] = useState(false);
     const [isStage1, setState1] = useState(true);
-    const [clientSecret, setClientSecret] = useState("");
-    const [paymentMethod, setPaymentMethod] = useState("stripe");
+    const [paymentProcessor, setPaymentProcessor] = useState("NMIC");
     const [isKYCed, setIsKYCed] = useState(false);
     const [email, setEmail] = useState(false);
     const [kycConfig, setKycConfig] = useState(false);
+	const [paymentRequest, setPaymentRequest] = useState(false);
+	const [paymentMetadata, setPaymentMetadata] = useState(false);
+	const [paymentFromPr, setPaymentFromPr] = useState(false);
+	const [payment, setPayment] = useState(false);
+	const [purchaseOptions, setPurchaseOptions] = useState(false);
 
-    if (!playerChoiceArray) {
+
+    if (!playerNumbers) {
         passLoadingStatus("PLAYER NUMBERS ARE MISSING");
         history.push("/select");
     }
@@ -277,6 +224,103 @@ const Checkout = ({
     const totalAmount = purchaseTokenAmount + feeAmount;
     const agreeButtonText = "Agree and Continue";
     const purchaseButtonText = "Pay - $10"; 
+
+	// get payment request
+	useEffect(async () => {
+		if (purchaseOptions.ticketQuantity) {
+			console.log("get invoice for qnt", purchaseOptions.ticketQuantity);
+			const res = await fetch("https://lsbx.nmrai.com/v1/invoice", {
+				method: "POST", 
+				headers: new Headers({
+					'Accept': "application/etoken-paymentrequest",
+					'Content-Type': "application/json"}),
+				mode: "cors",
+				signal: AbortSignal.timeout(20000),
+				body: JSON.stringify({quantity: purchaseOptions.ticketQuantity}),
+			});
+			// console.log("res", res);
+			const invoiceRes = await res.arrayBuffer();
+			const invoiceBuf = Buffer.from(invoiceRes);
+			// const invoiceRes = await brq({
+			// 	...lottoApiClient,
+			// 	path: '/v1/invoice',
+			// 	method: 'POST',
+			// 	json: { quantity: purchaseOptions.tokenQantity },
+			// });
+			
+			const pr = PaymentRequest.fromRaw(invoiceBuf);
+			const payment = new Payment({
+				memo: pr.paymentDetails.memo
+			});
+			console.log("pr", pr);
+			setPaymentRequest(pr);
+			setPaymentFromPr(payment);
+		}
+	}, [purchaseOptions])
+
+	// finalize payment with paymentMetadata (payment token)
+	useEffect(async () => {
+		try {
+			if (paymentMetadata && paymentRequest && !ticketIssued) {
+				console.log("finalize payment");
+				// get message to sign
+				const bw = bio.write();
+				const merchantData = paymentRequest.paymentDetails.getData('json');
+				console.log("merchant data", merchantData);
+				const paymentDataBuf = Buffer.from(merchantData.paymentdata, 'hex')
+				bw.writeBytes(paymentDataBuf)
+				const playerNumbersBuf = Buffer.from(playerNumbers, 'hex');
+				bw.writeBytes(playerNumbersBuf);
+				bw.writeBytes(Buffer.from(paymentProcessor, 'utf-8'));
+				bw.writeVarString(paymentMetadata);
+				const msgBuf = bw.render();
+				console.log("msgBuf", msgBuf);
+
+				// get signature
+				const sigBuf = signMessage(wallet.Path1899.fundingWif, msgBuf);
+
+				const newPayment = paymentFromPr;
+				newPayment.setData({
+					buyerpubkey: wallet.Path1899.publicKey,
+					signature: sigBuf.toString('hex'),
+					paymentdata: msgBuf.toString('hex')
+				});
+				console.log("newPayment", newPayment);
+				lottoApiClient.headers = {
+					'Content-Type': `application/${purchaseOptions.type}-payment`
+				};
+				const brqOptions = {
+					...lottoApiClient, 
+					path: '/v1/pay',
+					method: 'POST',
+					body: newPayment.toRaw(),
+				};
+
+				const response = await brq(brqOptions);
+				if (response.statusCode !== 200) {
+					throw new Error(response.text());
+				}
+				console.log("response", response);
+
+				const ack = PaymentACK.fromRaw(response.buffer());
+				console.log(ack.memo);
+				const rawTransactions = ack.payment.transactions;
+				const txs = rawTransactions.map(r => TX.fromRaw(r).toJSON());
+				console.log(txs);
+
+				setTicketIssued(true);
+
+				// put txs in storage
+				await addIssueTxs(txs);
+
+				// advance to backup
+				history.push('/backup');
+			} 
+		} catch (err) {
+			console.error(err);
+		}
+	}, [paymentMetadata, payment])
+
 
     // handlers
     const handleAgree = async (e) => {
@@ -322,57 +366,22 @@ const Checkout = ({
         setIsKYCed(true);
         console.log("setIsKYced to true")
     }
+
     // useEffect(()=> {
     //     if (kycConfig) {
     //         window.HyperKYCModule.launch(kycConfig, handleKYCResult);
     //     }
     // }, [kycConfig])
 
-    // stripe code
-    const [stripeSession, setStripeSession] = useState(false);
-    const [stripeOptions, setStripeOptions] = useState(false);
-    
-    const initPayment = async () => {
-        console.log("initPayment called")
-        const url = "https://dev.cert.cash:4001/stripe";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-        const { paymentIntent } = await response.json();
-        return paymentIntent;
-    }
+	useEffect(async() => {
+		if (hasAgreed) {
+			await forceWalletUpdate();
+		}
+	}, [hasAgreed])
 
     const handlePaymentChange = (e) => {
-        const newPaymentMethod = e.target.value;
-        setPaymentMethod(newPaymentMethod)
-    }
-
-    const handleCheckout = async () => {
-        const purchasedTicket = {
-            block: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5",
-            hash: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
-            maxPayout: "0000000000027100",
-            // playerChoiceBytesString: "34204n67",
-            playerChoiceBytesString: Buffer.from(playerChoiceArray, 'hex').toString('hex'),
-            playerChoiceBytes: Buffer.from(playerChoiceArray, 'hex')
-        }
-        passPurchasedTicket({
-            id: purchasedTicket.hash,
-            playerChoice: playerChoiceArray
-        });
-        // passLoadingStatus("AWAITING PAYMENT");
-        // await sleep(2000);
-        // passLoadingStatus("PROCESSING PAYMENT");
-        // await sleep(2000);
-        // passLoadingStatus("BROADCASTING TICKET");
-        // await sleep(2000);
-        // passLoadingStatus("TRANSACTION COMPLETE");
-        // await sleep(3000);
-        
-        history.push('/backup')
+        const newPaymentProcessor = e.target.value;
+        setPaymentProcessor(newPaymentProcessor)
     }
 
     const handleReturn = () => {
@@ -380,61 +389,14 @@ const Checkout = ({
         history.push(previousPath);
     }
 
-    useEffect(async () => {
-        passLoadingStatus(false);
-        
-        if(!stripeSession) {
-            const stripeSession = await getStripe();
-            setStripeSession(stripeSession);    
-            console.log("stripe session set")
-        }
-
-        if (!stripeOptions) {
-            const stripeOptions = {
-                clientSecret: await initPayment(),
-                appearance: {
-                    theme: 'flat',
-                    variables: {
-                        fontFamily: ' "Gill Sans", sans-serif',
-                        fontLineHeight: '1.5',
-                        borderRadius: '10px',
-                        colorBackground: '#F6F8FA',
-                        accessibleColorOnColorPrimary: '#262626'
-                    },
-                    rules: {
-                        '.Block': {
-                            backgroundColor: 'var(--colorBackground)',
-                            boxShadow: 'none',
-                            padding: '12px'
-                        },
-                        '.Input': {
-                            padding: '12px'
-                        },
-                        '.Input:disabled, .Input--invalid:disabled': {
-                            color: 'lightgray'
-                        },
-                        '.Tab': {
-                            padding: '10px 12px 8px 12px',
-                            border: 'none'
-                        },
-                        '.Tab:hover': {
-                            border: 'none',
-                            boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 7px rgba(18, 42, 66, 0.04)'
-                        },
-                        '.Tab--selected, .Tab--selected:focus, .Tab--selected:hover': {
-                            border: 'none',
-                            backgroundColor: '#fff',
-                            boxShadow: '0 0 0 1.5px var(--colorPrimaryText), 0px 1px 1px rgba(0, 0, 0, 0.03), 0px 3px 7px rgba(18, 42, 66, 0.04)'
-                        },
-                        '.Label': {
-                            fontWeight: '500'
-                        }
-                    }
-                }
-            };
-            setStripeOptions(stripeOptions);            
-        }
-    }, [])
+	const handlePurchaseOptionsSubmit = (e) => {
+		e.preventDefault();
+		const newPurchaseOptions = {
+			ticketQuantity: e.target.ticketQuantity.value,
+			type: e.target.type.value
+		};
+		setPurchaseOptions(newPurchaseOptions);
+	}
 
     const tosTitle = "Purchase Terms";
     const checkoutTitle = "Checkout";
@@ -456,7 +418,7 @@ const Checkout = ({
                                 <LightFooterBackground />
 
                                 <RandomNumbers 
-                                    fixedRandomNumbers={playerChoiceArray}
+                                    fixedRandomNumbers={playerNumbers}
                                 />
                                 <PrimaryButton 
                                     form={"email-form"}
@@ -483,65 +445,90 @@ const Checkout = ({
                 </>      
             ) : (
                 <>
-                    {!tokensSent && isStage1 && ( 
-                        <>
-                            <Header background="#FEFFFE"/>
-                            <NavigationBar 
-                                handleOnClick={handleReturn}
-                                title={checkoutTitle}
-                                merchantTag={true}
-                            />                                      
-                            <Scrollable>
-                                <CustomEnfold animate={isFirstRendering}>     
-                                    <Ticket 
-                                        numbers={playerChoiceArray}
-                                        background={'#EAEAEA'}
-                                    />
-                                    <InfoText>
-                                        To purchase this lottery ticket your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint our potential payout. This game supports the payout.
-                                    </InfoText>
-                                    <PaymentHeader>Payment</PaymentHeader>
-                                    <CustomRadioGroup onChange={handlePaymentChange} value={paymentMethod}>
-                                        <Radio value={"stripe"} >Stripe</Radio>
-                                        <Radio value={"nmi"} >Credit Card</Radio>
-                                        <Radio value={"other"} >Other</Radio>
-                                    </CustomRadioGroup>
-                                    {paymentMethod === "stripe" && (
-                                        <>
-                                            {stripeSession && stripeOptions &&
-                                                <Elements 
-                                                    stripe={stripeSession}
-                                                    options={stripeOptions}
-                                                >                  
-                                                    <StripeCheckoutForm 
-                                                        passLoadingStatus={passLoadingStatus}
-                                                        passPurchasedTicket={passPurchasedTicket}
-                                                        playerChoiceArray={playerChoiceArray}
-                                                    />            
-                                                </Elements>                                        
-                                            }                                                    
-                                        </>
-                                    )}
-                                    {paymentMethod === "nmi" && (
-                                        <NmiCheckoutForm 
-                                            passLoadingStatus={passLoadingStatus}
-                                            passPurchasedTicket={passPurchasedTicket}
-                                            playerChoiceArray={playerChoiceArray}
-                                        />
-                                    )}
-                                </CustomEnfold>
-                            </Scrollable>
-                            <FooterCtn>
-                                <EvenLighterFooterBackground />
+					{!purchaseOptions ? (
+						<>
+		                    <Header background="#FEFFFE" />
+							<NavigationBar 
+								handleOnClick={handleReturn}
+								title={checkoutTitle}
+								merchantTag={true}
+							/>    
+
+							<Scrollable>
+								<div>Purchase Ticket Amount</div>
+								<form id="purchase-options-form" onSubmit={handlePurchaseOptionsSubmit}>
+									<input type="number" name="ticketQuantity" defaultValue={1} readOnly/>
+									<select type="select" name="type">
+										<option value="fiat">Fiat</option>
+										{/* <option value="etoken">eToken</option> */}
+									</select>						
+								</form>
+							</Scrollable>
+
+							<FooterCtn>
+								<EvenLighterFooterBackground />
+
+                                <RandomNumbers 
+                                    fixedRandomNumbers={playerNumbers}
+                                />
                                 <PrimaryButton 
-                                    type="submit"
-                                    form={`${paymentMethod}-form`}
+                                    form={"purchase-options-form"}
                                 >
-                                    {purchaseButtonText}
+                                    {"Confirm"}
                                 </PrimaryButton>
                             </FooterCtn>
-                        </>              
-                    )}          
+
+
+
+						</>
+					) : (
+						<>
+							{!ticketIssued && isStage1 && ( 
+								<>
+									<Header background="#FEFFFE"/>
+									<NavigationBar 
+										handleOnClick={handleReturn}
+										title={checkoutTitle}
+										merchantTag={true}
+									/>                                      
+									<Scrollable>
+										<CustomEnfold animate={isFirstRendering}>     
+											<Ticket 
+												numbers={playerNumbers}
+												background={'#EAEAEA'}
+											/>
+											<InfoText>
+												To purchase this lottery ticket your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint our potential payout. This game supports the payout.
+											</InfoText>
+											<PaymentHeader>Payment</PaymentHeader>
+											<CustomRadioGroup onChange={handlePaymentChange} value={paymentProcessor}>
+												<Radio value={"NMIC"} >Credit Card</Radio>
+												{/* <Radio value={"other"} >Other</Radio> */}
+											</CustomRadioGroup>
+
+											{paymentProcessor === "NMIC" && (
+												<NmiCheckoutForm 
+													passMetadata={setPaymentMetadata}	
+												/>
+											)}
+
+											{/* add new payment methods here */}
+
+										</CustomEnfold>
+									</Scrollable>
+									<FooterCtn>
+										<EvenLighterFooterBackground />
+										<PrimaryButton 
+											type="submit"
+											form={`${paymentProcessor}-form`}
+										>
+											{purchaseButtonText}
+										</PrimaryButton>
+									</FooterCtn>
+								</>              
+							)}    
+						</>
+					)}      
                 </>         
             )}
         </>

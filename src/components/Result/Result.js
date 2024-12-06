@@ -1,6 +1,6 @@
 // node modules
-import React, { useEffect, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Flash } from 'react-ruffle';
 
@@ -29,11 +29,12 @@ const FlashCtn = styled.div`
 	position: relative;
 	display: flex;
 	justify-content:center;
+	overflow: hidden;
 `;
 const StyledFlash = styled(Flash)`
 	position: absolute;
 	bottom: 0;
-`;
+`;	
 const Scrollable = styled.div`
     width: 100%;
     display: flex;
@@ -65,19 +66,22 @@ const ButtonCtn = styled.div`
 
 const Result = ({
     passLoadingStatus,
-    ticket,
 }) => {
     const history = useHistory();
+	const location = useLocation();
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
     const walletState = getWalletState(wallet)
     const { tickets } = walletState;
-    const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
+    const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
+	const [ticket,] = useState(location.state?.ticket || false);
+	console.log("RESULT ticket", ticket?.details?.game)
 
     // manually stop loading screen
-    useEffect(()=>{
-        passLoadingStatus(false);
-    });
+    useEffect(() => {
+		if (ticket)
+	        passLoadingStatus(false);
+    }, [ticket]);
 
     // handlers
     const handlePlayAgain = () => {
@@ -86,54 +90,60 @@ const Result = ({
 
     // DOM variables
     const playButtonText = "Play Again";
+	const displayAmount = ticket?.details?.game?.actualPayoutNum / 100;
 
-	const payoutAmount = 20;
-    const animationName = payoutAmount > 0 ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
+    const animationName = ticket?.details?.game?.actualPayoutNum > 0 ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
     return (
         <>
             <Header />
             <Scrollable>
-					<FlashCtn>                
-						{/* <Background src={ChickenBackgroundPng}/> */}
-						<StyledFlash                
-							src={animationPath}
-							config={{
-								autoplay: "on",
-								unmuteOverlay: "hidden",
-								splashScreen: false,
-								contextMenu: "off",
-								allowScriptAccess: true,
-								scale: "exactFit",
-								wmode: "transparent",
-								preferredRenderer: "canvas"                                      
-							}}
-							id={animationName}
-						>
-								<div>FLASH PLACEHOLDER</div>
-						</StyledFlash> 			
+					<FlashCtn>             
+						{animationLabels && 
+							<StyledFlash                
+								src={animationPath}
+								config={{
+									autoplay: "on",
+									unmuteOverlay: "hidden",
+									splashScreen: false,
+									contextMenu: "off",
+									allowScriptAccess: true,
+									scale: "exactFit",
+									wmode: "transparent",
+									preferredRenderer: "canvas"                                      
+								}}
+								id={animationName}
+							>
+									<div></div>
+							</StyledFlash> 							
+						}   
+		
 					</FlashCtn>
 
                 <Ticket>
-                    <TicketResult 
-                        amount={location.state?.payoutAmount || 20}
-                    />
-                    <RandomNumbers 
-                        fixedRandomNumbers={ticket.numbers || [4,1,13,7]}
-                        background={"#1A1826"}
-                    />                  
+					{ticket && (
+						<>
+							<TicketResult 
+								amount={displayAmount}
+							/>			
+							<RandomNumbers 
+								fixedRandomNumbers={ticket.details.game.resultingNumbers}
+								background={"#1A1826"}
+							/>  						
+						</>
+					)}
                 </Ticket>
                 <ButtonCtn>
                     <WhiteCashoutButton />
-                    <WhiteTicketButton id={ticket.id}/>
+                    <WhiteTicketButton />
                 </ButtonCtn>
             </Scrollable>
             <Footer
                 origin={"/result"}
                 buttonOnClick={handlePlayAgain}
                 buttonText={playButtonText}
-                ticketIndicator={unredeemedTickets.length}
+                ticketIndicator={unredeemedIndicator}
             />
         </>
     )
