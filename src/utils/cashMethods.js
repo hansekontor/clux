@@ -1,6 +1,12 @@
 import { currency } from '@components/Common/Ticker';
 import BigNumber from 'bignumber.js';
 import cashaddr from 'ecashaddrjs';
+import { script, Script, TX } from '@hansekontor/checkout-components';
+const { SLP } = script; 
+import bio from 'bufio';
+
+import { sandboxTokenInfo } from '@utils/token';
+import { calculatePayout, readTicketAuthCode } from './ticket';
 
 export const fromLegacyDecimals = (
     amount,
@@ -135,7 +141,7 @@ export const loadStoredWallet = walletStateFromStorage => {
 
     // Also confirm balance is correct
     // Necessary step in case currency.decimals changed since last startup
-    const balancesRebased = normalizeBalance(slpBalancesAndUtxos);
+    const balancesRebased = 0//;normalizeBalance(slpBalancesAndUtxos);
     liveWalletState.balances = balancesRebased;
     return liveWalletState;
 };
@@ -152,8 +158,18 @@ export const normalizeBalance = slpBalancesAndUtxos => {
 };
 
 export const isValidStoredWallet = walletStateFromStorage => {
-    return (
-        typeof walletStateFromStorage === 'object' &&
+	// console.log("ISVALIDSTOREDWALLET", walletStateFromStorage);
+	// console.log(typeof walletStateFromStorage === 'object');
+	// console.log('state' in walletStateFromStorage);
+	// console.log(typeof walletStateFromStorage.state === 'object');
+	// console.log('balances' in walletStateFromStorage.state);
+	// console.log('utxos' in walletStateFromStorage.state);
+	// console.log('slpBalancesAndUtxos' in walletStateFromStorage.state);
+	// console.log('tokens' in walletStateFromStorage.state);
+	// console.log('tickets' in walletStateFromStorage.state);
+
+	const valid =(
+		typeof walletStateFromStorage === 'object' &&
         'state' in walletStateFromStorage &&
         typeof walletStateFromStorage.state === 'object' &&
         'balances' in walletStateFromStorage.state &&
@@ -162,6 +178,9 @@ export const isValidStoredWallet = walletStateFromStorage => {
         'tokens' in walletStateFromStorage.state &&
         'tickets' in walletStateFromStorage.state
     );
+	// console.log("valid", valid);
+
+	return valid;
 };
 
 export const getWalletState = wallet => {
@@ -176,7 +195,7 @@ export const getWalletState = wallet => {
             tickets: [],
         };
     }
-
+	
     return wallet.state;
 };
 
@@ -294,3 +313,292 @@ export const isLegacyMigrationRequired = wallet => {
 
     return false;
 };
+
+export const getSlpBalancesAndUtxos = (utxos) => {
+	// Prevent app from treating slpUtxos as nonSlpUtxos
+	// Do not classify any utxos that include token information as nonSlpUtxos
+	const nonSlpUtxos = utxos.filter(utxo => 
+		!utxo.slp || (utxo.slp && utxo.slp.value == '0')
+	);
+
+	// To be included in slpUtxos, the utxo must
+	// have utxo.isValid = true
+	// If utxo has a utxo.tokenQty field, i.e. not a minting baton, then utxo.value !== '0'
+	const slpUtxos = utxos.filter(utxo => 
+		utxo.slp && ( utxo.slp.value != '0' || utxo.slp.type == 'MINT')
+	);
+
+	let tokensById = {};
+
+	for (let i = 0; i < slpUtxos.length; i++) {
+		const slpUtxo = slpUtxos[i];
+		let token = tokensById[slpUtxo.slp.tokenId];
+
+		if (token) {
+			// Minting baton does nto have a slpUtxo.tokenQty type
+			token.hasBaton = slpUtxo.slp.type === 'BATON';
+
+			if (!token.hasBaton) {
+				token.balance = new BigNumber(token.balance).plus(
+					new BigNumber(slpUtxo.slp.value)
+				);
+			}
+
+		} else {
+			token = {};
+			token.info = sandboxTokenInfo;
+			token.tokenId = slpUtxo.slp.tokenId;
+			token.hasBaton = slpUtxo.slp.type === 'BATON';
+			if (!token.hasBaton) {
+				token.balance = new BigNumber(slpUtxo.slp.value);
+			} else {
+				token.balance = new BigNumber(0);
+			}
+
+			tokensById[slpUtxo.slp.tokenId] = token;
+		}
+	}
+
+	const tokens = Object.values(tokensById);
+	// console.log(`tokens`, tokens);
+	return {
+		tokens,
+		nonSlpUtxos,
+		slpUtxos,
+	};
+};
+
+export const matchTickets = (previousTickets, txs) => {
+	// take new txs as base and add additional info from previous history
+	const tickets = previousTickets || [];
+
+	// add issueTx / redeemTX
+	const isNewWallet = !previousTickets;
+	const isEmptyWallet = isNewWallet ? true : !previousTickets.length;
+	if (isEmptyWallet) {
+		// no matching required
+
+		for (const txInput of txs) {
+			const tx = TX.isTX(txInput) ? txInput.toJSON() : txInput;
+			console.log("matching tx.hash", tx.hash);
+			const isRedeemTx = tx.slpToken ? true : false;
+			console.log("isRedeemTx", isRedeemTx);
+			// console.log("inspect potential slp output", tx.outputs[2]);
+
+			if (isRedeemTx) {
+				const issueHash = tx.inputs[0].prevout.hash;
+				const redeemed = {
+					issueTx: {
+						hash: issueHash
+					},
+					redeemTx: tx
+				};
+				tickets.push(redeemed);
+			} else {
+				const unredeemed = {
+					issueTx: tx
+				};
+
+				tickets.push(unredeemed);
+			}
+		}
+
+		return tickets;
+	} else {
+		const toAdd = [];
+
+		for (const txInput of txs) {
+			const tx = TX.isTX(txInput) ? txInput.toJSON() : txInput;
+			console.log("tx", tx.hash);
+
+			const opReturn = SLP.fromRaw(Buffer.from(tx.outputs[0].script, 'hex'));
+			const isValidSlp = opReturn.isValidSlp(); 
+			console.log("isValidSlp", isValidSlp);
+			const isUnredeemed = tx.slpToken ? false : true;
+			console.log("isUnredeemed", isUnredeemed);
+
+			if (isUnredeemed) {
+				const newTicket = { issueTx: tx };
+				const index = tickets.findIndex(ticket => ticket.issueTx.hash === tx.hash);
+				const isNewUnredeemed = index === -1;
+				console.log("isNewUnredeemed", isNewUnredeemed);
+				
+				if (isNewUnredeemed) {
+					toAdd.push(newTicket);
+				} else {
+					const oldTicket = tickets[index]
+					tickets[index] = Object.assign(oldTicket, newTicket);
+				}
+			} else {
+				const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === tx.hash);
+				console.log("index", index)
+				const isNewRedeemTx = index === -1;
+				console.log("matchTickets isNewRedeem", isNewRedeemTx);
+				
+				if (isNewRedeemTx) {
+					const issueHash = tx.inputs[0].prevout.hash;
+					const issueIndex = tickets.findIndex(ticket => ticket.issueTx.hash === issueHash);
+					const hasIssueTx = issueIndex !== -1;
+					if (hasIssueTx) {
+						const oldTicket = tickets[issueIndex];
+						tickets[issueIndex] = Object.assign(oldTicket, { redeemTx: tx});
+					} else {
+						const newTicket = {
+							issueTx: {
+								hash: issueHash
+							}, 
+							redeemTx: tx
+						};
+						toAdd.push(newTicket);
+					}
+				} else {							
+					const oldTicket = tickets[index];
+					const wasConfirmed = oldTicket.redeemTx.height === -1 && tx.height !== -1;
+					if (wasConfirmed) {
+						tickets[index] = Object.assign(oldTicket, { redeemTx: tx });
+					}
+				}
+			}
+		}
+
+		const newTickets = tickets.concat(toAdd);
+		const newSortedTickets = newTickets.sort(compareTickets);
+
+		return newTickets;
+	}
+}
+
+const compareTickets = (a,b) => {
+
+	if (!a.redeemTx && !b.redeemTx) {	
+		
+		if (a.issueTx.height === -1)
+			return -1
+
+		if (b.issueTx.height === -1)
+			return 1
+
+		if (a.issueTx?.height > b.issueTx?.height) 
+			return -1
+		
+		if (a.issueTx?.height < b.issueTx?.height) 
+			return 1		
+	} else if (!a.redeemTx) {
+		return -1
+	} else if (!b.redeemTx) {
+		return 1
+	}
+
+	if (a.redeemTx?.height === -1)
+		return -1
+
+	if (b.redeemTx?.height === -1)
+		return 1
+
+	if (a.redeemTx?.height > b.redeemTx?.height)
+		return -1
+
+	if (a.redeemTx?.height < b.redeemTx?.height)
+		return 1
+
+	return 0;
+}
+
+export const parseTickets = async (tickets) => {
+	// get freqently needed data from issue/redeem
+	// playerNumbers, payoutAmount, redeem sig data
+	for (const ticket of tickets) {
+		// console.log("parse", ticket);
+		const details = ticket.details || {};
+		const getTXs = async () => {
+			// console.log("GETTXS");
+			// console.log(ticket.issueTx?.hex);
+			// console.log(ticket.redeemTx?.hex);
+			let issueTx = ticket.issueTx?.hex ? TX.fromRaw(Buffer.from(ticket.issueTx.hex, 'hex')) : false;
+			let redeemTx = ticket.redeemTx?.hex ? TX.fromRaw(Buffer.from(ticket.redeemTx.hex, 'hex')) : false;
+
+			if (!issueTx && redeemTx) {
+				// console.log("conditional")
+				const redeemScript = redeemTx.inputs[0].script;
+				const rawIssueTx = redeemScript.get(5).data;
+				issueTx = TX.fromRaw(Buffer.from(rawIssueTx));
+				const issueTxJson = issueTx.toJSON();
+				// console.log("issueTxJson", issueTxJson);
+
+				ticket.issueTx = issueTxJson;				
+			}
+
+			return { issueTx, redeemTx };
+		}		
+		// use bcash.TX:
+		const { issueTx, redeemTx} = await getTXs();
+		// console.log("issueTx", issueTx);
+		// console.log("redeemTx", redeemTx);
+
+		// parse player numbers from ticket auth code
+		if (!details.playerNumbers || !details.maxPayoutBE && issueTx) {
+			const opReturn = issueTx.outputs[0].script;
+			const ticketAuthCode = opReturn.get(1).data;
+			console.log("ticketAuthCode", ticketAuthCode.toString('hex'))
+			const { minterNumbers, txOutputs } = readTicketAuthCode(ticketAuthCode); 
+
+			const minterNumbersArray = [];
+			const br = bio.read(minterNumbers);
+			for (const byte of minterNumbers) {
+				const minterNumberInt = br.readU8(byte);
+				minterNumbersArray.push(minterNumberInt);
+			}
+			details.playerNumbers = minterNumbersArray;				
+
+			const maxPayoutBufBE = txOutputs[0].script.code[6].data;
+			// console.log("maxPayout", maxPayoutBufBE);
+			details.maxPayoutBE = maxPayoutBufBE;
+		}
+
+		// parse payout amount from redeem tx
+		if (!details.payoutAmount && redeemTx) {
+			// console.log("can I get the slp value from this?", redeemTx.outputs[2]);
+			const payoutAmount = ticket.redeemTx.outputs[2].slp.value;
+			details.payoutAmount = payoutAmount;
+		}
+
+		// add parsed ticket details
+		if (!ticket.details) 
+			ticket.details = details;
+		else 
+			ticket.details = Object.assign(ticket.details, details);
+
+	}
+
+	return tickets;
+}
+
+export const addGameData = (tickets, hash, gameData) => {
+	console.log("addGameData", tickets, hash, gameData);
+	const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === hash);
+
+	console.log("addGameData index", index);
+	tickets[index].details = Object.assign(tickets[index].details, { game: gameData });
+
+	return tickets;
+}
+
+export const addSlpToRedeemTx = (tx) => {
+	// input is a TX
+	const opReturn = tx.outputs[0].script;
+	const slp = new SLP(opReturn);
+	const mintRecords = slp.getMintRecords(tx.hash());
+	const mintRecordsJson = mintRecords.map(record => record.getJSON());
+	const tokenId = slp.getTokenId().toString('hex');
+	
+	let slpTx = tx.toJSON();
+	slpTx.slpToken = { tokenId };
+
+	for (let i = 1; i < tx.outputs.length; i++) {
+		const matchedSlpRecord = mintRecordsJson.find(record => record.vout === i);
+		if (matchedSlpRecord) 
+			slpTx.outputs[i].slp = matchedSlpRecord;
+	}
+
+	return slpTx;
+}

@@ -145,6 +145,7 @@ const WhiteButton = styled.button`
     gap: 12px;
     flex-grow: 1;
     gap: 12px;
+	cursor: pointer;
  `;
 const Text = styled.div`
     font-size: 12px;
@@ -161,7 +162,7 @@ export const WhiteCashoutButton = () => {
     const history = useHistory();
 
     const handleToCashout = () => {
-        history.push({path:'/cashout'})
+        history.push({pathname:'/cashout'})
     }
     
     return (
@@ -182,7 +183,7 @@ export const WhiteTicketButton = ({
     const history = useHistory();
 
     const handleToTicketDetails = () => {
-        history.push({path:'/ticket'});
+        history.push({pathname:'/wallet'});
     }
 
     return (

@@ -10,6 +10,11 @@ import {
     loadStoredWallet,
     isValidStoredWallet,
     isLegacyMigrationRequired,
+	matchTickets,
+	getSlpBalancesAndUtxos,
+	parseTickets,
+	addGameData,
+	addSlpToRedeemTx
 } from '@utils/cashMethods';
 import { isValidCashtabSettings } from '@utils/validation';
 import localforage from 'localforage';
@@ -20,33 +25,39 @@ import cashaddr from 'ecashaddrjs';
 import { 
     Mnemonic,
     HDPrivateKey,
-    KeyRing
+    KeyRing,
+	TX, 
 } from '@hansekontor/checkout-components';
+
 
 const useWallet = () => {
     const [wallet, setWallet] = useState(false);
     const [cashtabSettings, setCashtabSettings] = useState(false);
-    const [fiatPrice, setFiatPrice] = useState(null);
     const [apiError, setApiError] = useState(false);
-    const [checkFiatInterval, setCheckFiatInterval] = useState(null);
     const {
-        getUtxosBcash,
-        getSlpBalancesAndUtxosBcash,
-        getTxHistoryBcash,
-        parseTxData,
-        getTicketHistory
+        getTicketData,
     } = useBCH();
     const [loading, setLoading] = useState(true);
-    const { balances, tokens, utxos, tickets } = isValidStoredWallet(wallet)
+    const { balances, tokens, utxos } = isValidStoredWallet(wallet)
         ? wallet.state
         : {
               balances: {},
               tokens: [],
               utxos: null,
-              tickets: [],
+			//   slpBalancesAndUtxos: {},
+			//   tokenUtxos: [],
+			//   tokenBalance: 0,
+			//   tickets: [],
           };
     const previousBalances = usePrevious(balances);
     const previousTokens = usePrevious(tokens);
+
+	// console.log("useWallet tickets", wallet?.state?.tickets.length);
+
+
+	const sleep = (ms) => {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	};
 
     const normalizeBalance = slpBalancesAndUtxos => {
         const totalBalanceInSatoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
@@ -81,86 +92,72 @@ const useWallet = () => {
         };
     };
 
-    const loadWalletFromStorageOnStartup = async setWallet => {
+	const loadWalletFromStorageOnStartup = async () => {
+		console.log("loadWalletFromStorageOnStartup");
         // get wallet object from localforage
         const wallet = await getWallet();
-        console.log("loadWalletFromStorageOnStartup wallet", wallet)
-        // If wallet object in storage is valid, use it to set state on startup
-        if (isValidStoredWallet(wallet)) {
+		console.log(wallet);
+        // If wallet object in storage is valid, it is set as wallet
+		const isValid = isValidStoredWallet(wallet);
+		console.log("LWFSOS isValid", isValid);
+		if (isValid) {
+			// console.log("isValidStoredWallet", true);
             // Convert all the token balance figures to big numbers
             const liveWalletState = loadStoredWallet(wallet.state);
-            wallet.state = liveWalletState;
+			console.log("livewalletState", liveWalletState)
+			wallet.state = liveWalletState;
 
-            setWallet(wallet);
-            console.log("loadWalletFRomStorageOnStartup setWallet", wallet);
-            return setLoading(false);
-        }
-        // Loading will remain true until API calls populate this legacy wallet
-        setWallet(wallet);
-    };
+            // setWallet(wallet);
+			// console.log("VALID WALLET FROM STORAGE ON STARTUP")
+            return wallet;
+        } else {
+			// console.log("NO/INVALID WALLET FROM STORAGE ON STARTUP")
+			return false;
+		}
+
+	};
 
     const update = async ({ wallet }) => {
         // const ms = new Date().getTime();
         // console.log(`update.${ms}`);
         // console.time(`update.${ms}`);
+		console.log("update()");
         try {
             if (!wallet) {
                 return;
             }
-            const cashAddresses = [
-                wallet.Path245.cashAddress,
-                wallet.Path145.cashAddress,
-                wallet.Path1899.cashAddress,
-            ];
 
-            const utxosBcash = await getUtxosBcash(cashAddresses);
-
-            const utxosHaveChanged = !isEqual(utxosBcash, wallet?.state?.utxos);
-
-            // dev re-add later
-            // If the utxo set has not changed,
-            // if (!utxosHaveChanged) {
-            //     console.log("!UTXOSHAVECHANGED")
-            //     // remove api error here; otherwise it will remain if recovering from a rate
-            //     // limit error with an unchanged utxo set
-            //     setApiError(false);
-            //     // then wallet.state has not changed and does not need to be updated
-            //     // console.log("wallet state not updated")
-            //     // console.timeEnd(`update.${ms}`);
-            //     return;
-            // }
-
-            const slpBalancesAndUtxos = await getSlpBalancesAndUtxosBcash(utxosBcash);
-
-            const txHistory = await getTxHistoryBcash(cashAddresses);
-
-            const parsedWithTokens = parseTxData(wallet, txHistory);
+			const ticketData = await getTicketData(wallet.Path1899.cashAddress);
+			
+			const utxosHaveChanged = !isEqual(ticketData.tokenUtxos, wallet?.state?.utxos)
+			const slpBalancesAndUtxos = getSlpBalancesAndUtxos(ticketData.utxos);
+			const matchedTickets = matchTickets(wallet?.state?.tickets, ticketData.txs);
+			const parsedTickets = await parseTickets(matchedTickets);
 
             if (typeof slpBalancesAndUtxos === 'undefined') {
                 console.log(`slpBalancesAndUtxos is undefined`);
                 throw new Error('slpBalancesAndUtxos is undefined');
             }
-            const { tokens } = slpBalancesAndUtxos;
+			
+			const { tokens } = slpBalancesAndUtxos;
 
-            const recentTickets = await getTicketHistory(cashAddresses);
-            const newState = {
+			const newState = {
                 balances: {},
+				utxos: [],
                 tokens: [],
                 slpBalancesAndUtxos: [],
-                tickets: [],
+				tickets: []
             };
 
-            newState.slpBalancesAndUtxos = slpBalancesAndUtxos;
+			newState.slpBalancesAndUtxos = slpBalancesAndUtxos;
 
             newState.balances = normalizeBalance(slpBalancesAndUtxos);
 
             newState.tokens = tokens;
 
-            newState.parsedTxHistory = parsedWithTokens;
+            newState.tickets = parsedTickets;
 
-            newState.utxos = utxosBcash;
-
-            newState.tickets = recentTickets;
+            newState.utxos = ticketData.utxos; // careful
 
             // Set wallet with new state field
             wallet.state = newState;
@@ -168,7 +165,7 @@ const useWallet = () => {
             setWallet(wallet);
 
             // Write this state to indexedDb using localForage
-            writeWalletState(wallet, newState);
+            await writeWalletState(wallet, newState);
             // If everything executed correctly, remove apiError
             setApiError(false);
         } catch (error) {
@@ -182,6 +179,69 @@ const useWallet = () => {
         // console.timeEnd(`update.${ms}`);
     };
 
+	const addIssueTxs = async (txs) => {
+		try {
+			const matchedTickets = matchTickets(wallet?.state?.tickets, txs);
+			const parsedTickets = await parseTickets(matchedTickets);
+			const newState = Object.assign(wallet.state, { tickets: parsedTickets });
+
+			wallet.state = newState;
+			setWallet(wallet);		
+
+			await writeWalletState(wallet, newState);
+			setApiError(false);	
+		} catch (error) {
+			console.log(`Error in addIssueTx(txs)`);
+            console.log(error);
+            // Set this in state so that transactions are disabled until the issue is resolved
+            setApiError(true);
+            // console.timeEnd(`update.${ms}`);		
+		}
+	}
+	const addMinedTicketToStorage = async (issueHash, minedTicket) => {
+		try {
+			const newTickets = wallet?.state?.tickets;
+			const index = newTickets.findIndex(ticket => ticket.issueTx.hash === issueHash);
+
+			newTickets[index].details.minedTicket = minedTicket;
+			const issueTx = TX.fromRaw(Buffer.from(minedTicket.hex, 'hex'));
+			newTickets[index].issueTx = issueTx.toJSON();
+
+			const newState = Object.assign(wallet.state, { tickets: newTickets})
+			wallet.state = newState;
+
+			setWallet(wallet);
+			await writeWalletState(wallet, newState);		
+			setApiError(false);	
+		} catch(error) {
+			console.log("Error in addMinedTicketToStorage");
+			console.log(error);
+			setApiError(true);
+		}
+	}
+	// todo: integrate with addIssueTxsToStorage 
+	const addRedeemTxToStorage = async (tx, gameData) => {
+		try {
+			// tx comes from self-built redeem hex in WaitingRoom.js and has no slp data, therefore add it
+			const slpTx = addSlpToRedeemTx(tx);
+			console.log("addRedeem slpTx", slpTx);
+			const matchedTickets = matchTickets(wallet?.state?.tickets, [slpTx]);
+			const parsedTickets = await parseTickets(matchedTickets);
+			const ticketsWithGameData = addGameData(parsedTickets, tx.rhash('hex'), gameData);
+			const newState = Object.assign(wallet.state, { tickets: ticketsWithGameData });
+			wallet.state = newState;
+			setWallet(wallet);		
+			writeWalletState(wallet, newState);
+			setApiError(false);	
+		} catch (error) {
+			console.log(`Error in addRedeemTx(txs)`);
+            console.log(error);
+            // Set this in state so that transactions are disabled until the issue is resolved
+            setApiError(true);
+            // console.timeEnd(`update.${ms}`);		
+		}
+	}
+
     const getActiveWalletFromLocalForage = async () => {
         let wallet;
         try {
@@ -193,19 +253,6 @@ const useWallet = () => {
         }
         return wallet;
     };
-
-    /*
-    const getSavedWalletsFromLocalForage = async () => {
-        let savedWallets;
-        try {
-            savedWallets = await localforage.getItem('savedWallets');
-        } catch (err) {
-            console.log(`Error in getSavedWalletsFromLocalForage`, err);
-            savedWallets = null;
-        }
-        return savedWallets;
-    };
-    */
 
     const getWallet = async () => {
         let wallet;
@@ -227,6 +274,7 @@ const useWallet = () => {
                     existingWallet = await migrateLegacyWallet(
                         existingWallet,
                     );
+					console.log("migrated existing wallet", existingWallet);
                 }
             }
 
@@ -256,6 +304,7 @@ const useWallet = () => {
 
         if (existingWallet === null || !existingWallet) {
             wallet = await getWalletDetails(existingWallet);
+			console.log("GET WALLET SET FROM WALLET DETAILS", wallet);
             await localforage.setItem('wallet', wallet);
         } else {
             wallet = existingWallet;
@@ -298,6 +347,7 @@ const useWallet = () => {
     };
 
     const writeWalletState = async (wallet, newState) => {
+		console.log("writeWalletState", wallet?.state, newState);
         // Add new state as an object on the active wallet
         wallet.state = newState;
         try {
@@ -647,26 +697,39 @@ const useWallet = () => {
         const wallet = await getWalletDetails({
             mnemonic: Bip39128BitMnemonic.toString(),
         });
+		// set initial state so that only valid wallets are usually stored
+		const initialState = {
+			balances: {},
+			utxos: [],
+			tokens: [],
+			slpBalancesAndUtxos: [],
+			tickets: [], 
+		};
+		wallet.state = initialState;
+
+		console.log("createWallet() wallet", wallet);
 
         try {
             await localforage.setItem('wallet', wallet);
-            console.log("createWallet() wallet set in localforage")
+            console.log("createWallet() wallet set in localforage", wallet);
         } catch (err) {
             console.log(
                 `Error setting wallet to wallet indexedDb in createWallet()`,
             );
             console.log(err);
         }
-        // Since this function is only called from OnBoarding.js, also add this to the saved wallet
-        try {
-            await localforage.setItem('savedWallets', [wallet]);
-        } catch (err) {
-            console.log(
-                `Error setting wallet to savedWallets indexedDb in createWallet()`,
-            );
-            console.log(err);
-        }
-        return wallet;
+
+		// todo: is this necessary?
+		// try {
+        //     await localforage.setItem('savedWallets', [wallet]);
+        // } catch (err) {
+        //     console.log(
+        //         `Error setting wallet to savedWallets indexedDb in createWallet()`,
+        //     );
+        //     console.log(err);
+        // }
+
+		return wallet;
     };
 
     const validateMnemonic = (mnemonic) => {
@@ -686,10 +749,23 @@ const useWallet = () => {
         }
     };
 
-    const handleUpdateWallet = async setWallet => {
-        console.log("handleUpdateWallet called")
+	const handleLoadWallet = async setWallet => {
         await loadWalletFromStorageOnStartup(setWallet);
     };
+
+    // const handleUpdateWallet = async setWallet => {
+    //     console.log("handleUpdateWallet called")
+    //     const walletFromStorage = await loadWalletFromStorageOnStartup(setWallet);
+	// 	if (!walletFromStorage) {
+	// 		const testMnemonic = "math poverty speak lumber giant yellow crack element drill program crane maid";
+	// 		const newWallet = await createWallet(testMnemonic);
+	// 		newWallet.state = initialWalletState;
+	// 		console.log("created a new Wallet", newWallet);
+	// 		setWallet(newWallet);
+	// 	}
+
+	// 	setLoading(false);
+    // };
 
     const loadCashtabSettings = async () => {
         // get settings object from localforage
@@ -721,25 +797,6 @@ const useWallet = () => {
         return currency.defaultSettings;
     };
 
-    // With different currency selections possible, need unique intervals for price checks
-    // Must be able to end them and set new ones with new currencies
-    const initializeFiatPriceApi = async selectedFiatCurrency => {
-        // Update fiat price and confirm it is set to make sure ap keeps loading state until this is updated
-        await fetchBchPrice(selectedFiatCurrency);
-        // Set interval for updating the price with given currency
-
-        const thisFiatInterval = setInterval(function () {
-            fetchBchPrice(selectedFiatCurrency);
-        }, 60000);
-
-        // set interval in state
-        setCheckFiatInterval(thisFiatInterval);
-    };
-
-    const clearFiatPriceApi = fiatPriceApi => {
-        // Clear fiat price check interval of previously selected currency
-        clearInterval(fiatPriceApi);
-    };
 
     const changeCashtabSettings = async (key, newValue) => {
         // Set loading to true as you do not want to display the fiat price of the last currency
@@ -753,7 +810,7 @@ const useWallet = () => {
         } catch (err) {
             console.log(`Error in changeCashtabSettings`, err);
             // Set fiat price to null, which disables fiat sends throughout the app
-            setFiatPrice(null);
+            // setFiatPrice(null);
             // Unlock the UI
             setLoading(false);
             return;
@@ -769,11 +826,6 @@ const useWallet = () => {
         }
         // Set new settings in state so they are available in context throughout the app
         setCashtabSettings(newSettings);
-        // If this settings change adjusted the fiat currency, update fiat price
-        if (key === 'fiatCurrency') {
-            clearFiatPriceApi(checkFiatInterval);
-            initializeFiatPriceApi(newValue);
-        }
         // Write new settings in localforage
         try {
             await localforage.setItem('settings', newSettings);
@@ -788,176 +840,45 @@ const useWallet = () => {
         setLoading(false);
     };
 
-    // Parse for incoming XEC transactions
-    if (
-        previousBalances &&
-        balances &&
-        'totalBalance' in previousBalances &&
-        'totalBalance' in balances &&
-        new BigNumber(balances.totalBalance)
-            .minus(previousBalances.totalBalance)
-            .gt(0)
-    ) {
-		const delta = parseFLoat(Number(balances.totalBalance - previousBalances.totalBalance,).toFixed(currency.cashDecimals),).toLocaleString();
-		infoNotification(`Received ${delta} XEC`);
-    }
-
-    // Parse for incoming eToken transactions
-    if (
-        tokens &&
-        tokens[0] &&
-        tokens[0].balance &&
-        previousTokens &&
-        previousTokens[0] &&
-        previousTokens[0].balance
-    ) {
-        // If tokens length is greater than previousTokens length, a new token has been received
-        // Note, a user could receive a new token, AND more of existing tokens in between app updates
-        // In this case, the app will only notify about the new token
-        // TODO better handling for all possible cases to cover this
-        // TODO handle with websockets for better response time, less complicated calc
-        if (tokens.length > previousTokens.length) {
-            // Find the new token
-            const tokenIds = tokens.map(({ tokenId }) => tokenId);
-            const previousTokenIds = previousTokens.map(
-                ({ tokenId }) => tokenId,
-            );
-            //console.log(`tokenIds`, tokenIds);
-            //console.log(`previousTokenIds`, previousTokenIds);
-
-            // An array with the new token Id
-            const newTokenIdArr = tokenIds.filter(
-                tokenId => !previousTokenIds.includes(tokenId),
-            );
-            // It's possible that 2 new tokens were received
-            // To do, handle this case
-            const newTokenId = newTokenIdArr[0];
-            //console.log(newTokenId);
-
-            // How much of this tokenId did you get?
-            // would be at
-
-            // Find where the newTokenId is
-            const receivedTokenObjectIndex = tokens.findIndex(
-                x => x.tokenId === newTokenId,
-            );
-            // console.log(`receivedTokenObjectIndex`, receivedTokenObjectIndex);
-            // Calculate amount received
-            // console.log(`receivedTokenObject:`, tokens[receivedTokenObjectIndex]);
-
-            const receivedSlpQty =
-                tokens[receivedTokenObjectIndex].balance
-                .div(tokens[receivedTokenObjectIndex].info.decimals ** 10)
-                .toString();
-            const receivedSlpTicker =
-                tokens[receivedTokenObjectIndex].info.ticker;
-            const receivedSlpName =
-                tokens[receivedTokenObjectIndex].info.name;
-            //console.log(`receivedSlpQty`, receivedSlpQty);
-
-            // Notification if you received SLP
-            if (receivedSlpQty > 0) {
-				// dev todo: limit tokens to supported ones
-				infoNotification(`+${receivedSlpQty.toString()} ${receivedSlpTicker}`);
-            }
-            //
-        } else {
-            // If tokens[i].balance > previousTokens[i].balance, a new SLP tx of an existing token has been received
-            // Note that tokens[i].balance is of type BigNumber
-            for (let i = 0; i < tokens.length; i += 1) {
-                if (tokens[i].balance.gt(previousTokens[i].balance)) {
-                    // Received this token
-                    // console.log(`previousTokenId`, previousTokens[i].tokenId);
-                    // console.log(`currentTokenId`, tokens[i].tokenId);
-
-                    if (previousTokens[i].tokenId !== tokens[i].tokenId) {
-                        console.log(
-                            `TokenIds do not match, breaking from SLP notifications`,
-                        );
-                        // Then don't send the notification
-                        // Also don't 'continue' ; this means you have sent a token, just stop iterating through
-                        break;
-                    }
-                    console.log('tokens[i]', tokens[i]);
-                    const receivedSlpQty = tokens[i].balance.minus(
-                        previousTokens[i].balance,
-                    ).div(10 ** tokens[i].info.decimals);
-
-                    const receivedSlpTicker = tokens[i].info.ticker;
-                    const receivedSlpName = tokens[i].info.name;
-
-                    eTokenReceivedNotification(
-                        currency,
-                        receivedSlpTicker,
-                        receivedSlpQty,
-                        receivedSlpName,
-                    );
-                }
-            }
-        }
-    }
-
     const forceWalletUpdate = async () => {
-        // console.log("forcing wallet update");
         const wallet = await getWallet();
         return await update({ wallet });
     }
 
-    // Update wallet every 10s
+    // Update wallet state every 5s
     useAsyncTimeout(async () => {
-        const wallet = await getWallet();
-        update({
-            wallet,
-        }).finally(() => {
-            setLoading(false);
-        });
-    }, 10000);
+		if (wallet && isValidStoredWallet(wallet)) {
+			const wallet = await getWallet();
+			setWallet(wallet);
+			setLoading(false);		
+		} 		
+    }, 5000);
 
-    const fetchBchPrice = async (
-        fiatCode = cashtabSettings ? cashtabSettings.fiatCurrency : 'usd',
-    ) => {
-        // Split this variable out in case coingecko changes
-        const cryptoId = currency.coingeckoId;
-        // Keep this in the code, because different URLs will have different outputs require different parsing
-        const priceApiUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${cryptoId}&vs_currencies=${fiatCode}&include_last_updated_at=true`;
-        let bchPrice;
-        let bchPriceJson;
-        try {
-            bchPrice = await fetch(priceApiUrl);
-            //console.log(`bchPrice`, bchPrice);
-        } catch (err) {
-            console.log(`Error fetching BCH Price`);
-            console.log(err);
-        }
-        try {
-            bchPriceJson = await bchPrice.json();
-            //console.log(`bchPriceJson`, bchPriceJson);
-            let bchPriceInFiat = bchPriceJson[cryptoId][fiatCode];
 
-            const validEcashPrice = typeof bchPriceInFiat === 'number';
-
-            if (validEcashPrice) {
-                setFiatPrice(bchPriceInFiat);
-            } else {
-                // If API price looks fishy, do not allow app to send using fiat settings
-                setFiatPrice(null);
-            }
-        } catch (err) {
-            console.log(`Error parsing price API response to JSON`);
-            console.log(err);
-        }
-    };
-
+	// load wallet on start up
     useEffect(async () => {
-        console.log("useWallet useEffect called");
-        handleUpdateWallet(setWallet);
-        const initialSettings = await loadCashtabSettings();
-        initializeFiatPriceApi(initialSettings.fiatCurrency);
+		await sleep(3000);
+		console.log("useWallet useEffect");
+		console.log("GET WALLET FROM STORAGE")
+		const walletFromStorage = await loadWalletFromStorageOnStartup();
+		if (walletFromStorage) {
+			console.log("WALLETFROMSTORAGE", walletFromStorage)
+			console.log("useWallet useEffect isValid", isValidStoredWallet(walletFromStorage));
+			setWallet(walletFromStorage);
+		} else {
+			const newWallet = await createWallet();
+			console.log("NEWWALLET", newWallet);
+			console.log("useWallet useEffect isValid", isValidStoredWallet(newWallet));
+            setWallet(newWallet);
+		}
+
+		setLoading(false);	
     }, []);
+
 
     return {
         wallet,
-        fiatPrice,
+        // fiatPrice,
         loading,
         apiError,
         cashtabSettings,
@@ -968,14 +889,20 @@ const useWallet = () => {
         getWalletDetails,
         getSavedWallets,
         migrateLegacyWallet,
-        createWallet: async importMnemonic => {
+        createWallet: async (importMnemonic) => {
             console.log("prototype createWallet called")
             setLoading(true);
             const newWallet = await createWallet(importMnemonic);
             setWallet(newWallet);
-            update({
-                wallet: newWallet,
-            }).finally(() => setLoading(false));
+			// if import wallet was used get existing tickets and balance
+			if (importMnemonic) {
+				update({
+					wallet: newWallet,
+				}).finally(() => setLoading(false));				
+			} else {
+				setLoading(false);
+			}
+
         },
         activateWallet: async walletToActivate => {
             setLoading(true);
@@ -995,6 +922,9 @@ const useWallet = () => {
         addNewSavedWallet,
         renameWallet,
         deleteWallet,
+		addIssueTxs, 
+		addMinedTicketToStorage,
+		addRedeemTxToStorage,
     };
 };
 

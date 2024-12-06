@@ -12,11 +12,7 @@ import {
     convertToEcashPrefix,
 } from '@utils/cashMethods';
 import { postPayment } from '@utils/bip70';
-import { 
-    TXUtil,
-    // authPubKeys,
-    // buildOutScript
-} from '@utils/selfMint';
+import TXUtil from '@utils/txutil';
 import cashaddr from 'ecashaddrjs';
 import { U64 } from 'n64';
 import { 
@@ -32,11 +28,12 @@ import {
     Opcode,
     utils,
     script, 
-    bcrypto
+    bcrypto,
+	b70,
 } from '@hansekontor/checkout-components';
 const { Hash160 } = bcrypto;
 import { read } from 'bufio';
-import { PaymentDetails } from 'b70-checkout';
+import bcurl from 'bcurl';
 
 const { 
     SLP,
@@ -405,67 +402,105 @@ export default function useBCH() {
         };
     };
 
-    const getTicketHistory = async (address, limit = 30) => {
-        // console.log("getTicketHistory called with address", address);
-        const convertedAddress = convertToEcashPrefix(address);
-        const apiTickets = [
-            {
-                id: "361198ada49c1928e107dd93ab7bac53acbef208b0c0e8e65b4e33c3a02a32b6",
-                time: "33.33.33 33:33:33 GMT",
-                playerChoice: [1,2,3,4],
-                maxPayout: "0000000000027100",
-                blockHash: "0000000000000000137234656324a4539f1f986bc0ac72c74e4080d0f150abf5"
-            },
-            {
-                id: "1234567890123456789012345678901234567890123456789012345678901234",
-                time: "22.22.22 22:22:22 GMT",
-                playerChoice: [5,6,7,8],
-                height: 222222,
-                maxPayout: "0000000000027100",
-                blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
-                payout: {
-                    id: "1234567890123456789012345678901234567890123456789012345678901234",
-                    height: 222222,
-                    blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
-                    value: 20,
-                    time: "22.22.22 22:22:22 GMT"
-                }
-            },
-            {
-                id: "2345678901234567890123456789012345678901234567890123456789012345",
-                time: "11.11.11 11:11:11 GMT",
-                height: 333333,
-                playerChoice: [9, 10,11,12],
-                blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
-                payout: {
-                    id: "1234567890123456789012345678901234567890123456789012345678901234",
-                    height: 444444,
-                    blockHash: "1234567890123456789012345678901234567890123456789012345678901234",
-                    value: 10,
-                    time: "11.11.11 11:11:11 GMT"
-                }
-            }
-        ];
-        // console.log("apiTickets", apiTickets);
+    const getTicketData = async (address, limit = 30) => {
+		// test address for development
+		// address = "ecash:qqxlh6q47tmlyg439fxmjsx9gzjkwkp4wgxzd72uda";
+		const response = await fetch(`https://blocklotto.cert.cash/ticket/address/${address}`);
+		const data = await response.json();
+		console.log("response", data);
 
-        const shortifyHash = (hash) => {
-            return String(hash.slice(0,8) + "..." + hash.slice(56,));
-        }
-
-        const formattedTickets = apiTickets.map((ticket, index) => {
-            ticket.displayId = shortifyHash(ticket.id);
-            if (ticket.payout) {
-                ticket.payout.displayId = shortifyHash(ticket.payout.id);
-                ticket.payout.displayBlockHash = shortifyHash(ticket.payout.blockHash);
-            }
-            ticket.key = index;
-
-            return ticket;
-        });
-        
-        return formattedTickets;
-        return fetch(`https://tickets.cert.cash/address/${convertedAddress}?limit=${limit}`)
+		return data;
     };
+
+	const matchTickets = (previousTickets, txs) => {
+		console.log("matchTickets previous", previousTickets);
+		const newWallet = !previousTickets;
+		console.log("matchTickets newWallet", newWallet);
+		const emptyWallet = newWallet ? true : !previousTickets.length;
+		console.log("mtachTickets emptyWallet", emptyWallet);
+		if (emptyWallet) {
+			// parse all txs - no matching required
+			const tickets = [];
+			for (const tx of txs) {
+				const isRedeemTx = tx.slpToken ? true : false;
+				if (isRedeemTx) {
+					const issueHash = tx.inputs[0].prevout.hash;
+
+					const redeemed = {
+						issueTx: {
+							hash: issueHash
+						},
+						redeemTx: tx
+					};
+
+					tickets.push(redeemed);
+				} else {
+					// parse issue tx
+					const unredeemed = {
+						issueTx: tx
+					};
+
+					tickets.push(unredeemed);
+				}
+			}
+			
+			return tickets;
+		} else {
+			const toAdd = [];
+
+			for (const tx of txs) {
+				const opReturn = SLP.fromRaw(Buffer.from(tx.outputs[0].script));
+				const isValidSlp = opReturn.isValidSlp(); 
+				const isUnredeemed = !isValidSlp;
+
+				if (isUnredeemed) {
+					const index = previousTickets.findIndex(ticket => ticket.issueTx.hash === tx.hash);
+					const newTicket = { issueTx: tx}
+					
+					if (index === -1) {
+						toAdd.push(newTicket);
+					} else {
+						const oldTicket = previousTickets[index]
+						tickets[index] = Object.assign(oldTicket, newTicket);
+					}
+				} else {
+					const index = previousTickets.findIndex(ticket => ticket.redeemTx.hash === tx.hash);
+					const newRedeemTx = index === -1;
+					
+					if (newRedeemTx) {
+						const issueHash = tx.inputs[0].prevout.hash;
+						const issueIndex = previousTickets.findIndex(ticket => ticket.issueTx === issueHash);
+						const hasIssueTx = issueIndex !== -1;
+						if (hasIssueTx) {
+							const oldTicket = previousTickets[issueIndex];
+							previousTickets[issueIndex] = Object.assign(oldTicket, { redeemTx: tx});
+						} else {
+							const newTicket = {
+								issueTx: {
+									hash: issueHash
+								}, 
+								redeemTx: tx
+							};
+							toAdd.push(newTicket);
+						}
+					} else {							
+						const oldTicket = previousTickets[index];
+						const wasConfirmed = oldTicket.redeemTx.height === -1 && tx.height !== -1;
+						if (wasConfirmed) {
+							previousTickets[index] = Object.assign(oldTicket, { redeemTx: tx });
+						}
+					}
+
+
+				}
+
+			}
+
+			const newTickets = previousTickets.concat(toAdd);
+
+			return newTickets;
+		}
+	}
 
     const broadcastTx = async (hex) => {
         return fetch(`${getBcashRestUrl()}/broadcast`, {
@@ -1312,7 +1347,7 @@ export default function useBCH() {
         getTxHistoryBcash,
         parseTxData,
         parseTokenInfoForTxHistory,
-        getTicketHistory,
+        getTicketData,
         getBcashRestUrl,
         sendBip70,
         readAuthCode,
@@ -1320,5 +1355,7 @@ export default function useBCH() {
         sendSelfMintV2,
         getMintVaultAddress,
         generateBurnTx,
+		matchTickets,
+		broadcastTx
     };
 }

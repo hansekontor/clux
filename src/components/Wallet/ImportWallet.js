@@ -60,7 +60,6 @@ const ImportWallet = ({
         dirty: true,
         mnemonic: '',
     });
-    const [walletChanged, setWalletChanged] = useState(false);
 
 
     const handleChange = (e) => {

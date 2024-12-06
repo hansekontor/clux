@@ -49,6 +49,13 @@ const Ticket = ({
     numbers, 
     background
 }) => {
+
+	const date = new Date();
+	const day = date.getDate();
+	const month = date.toLocaleString('default', {month: 'short'});
+	const year = date.getFullYear();
+	const displayDate = `${day} ${month} ${year} `;
+
     return (
         <>
             <Details>
@@ -56,7 +63,7 @@ const Ticket = ({
                     <TicketFilledIcon />
                     <DateColumn>
                         <BoldText>Date</BoldText>
-                        <BoldText>15 Oct 2024</BoldText>
+                        <BoldText>{displayDate}</BoldText>
                     </DateColumn>
                 </Row>
                 <PriceColumn>

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Flash } from 'react-ruffle';
+import PropTypes from 'prop-types';
 
 // react components
 import Header from '@components/Common/Header';
@@ -87,13 +88,19 @@ const Select = ({
     // find ticket indicator
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
-    const { tickets } = getWalletState(wallet);
-    const unredeemedTickets = tickets.filter((ticket) => !ticket.payout);
+    const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
+    const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
  
+	// console.log("tickets from wallet state", tickets.length);
+
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     
+	useEffect(() => {
+		passLoadingStatus(false);
+	}, [])
+
     const handleBuyTicket = async () => {
         setFadeOut(true);
         await sleep(300);
@@ -137,15 +144,23 @@ const Select = ({
                         </IdleChicken>                     
                 </ChickenCtn>
             </Scrollable>                
-            <StickyRandomNumbers passRandomNumbers={passRandomNumbers} background={'#1A1826'}/>
+            <StickyRandomNumbers 
+				passRandomNumbers={passRandomNumbers} 
+				background={'#1A1826'}
+			/>
             <Footer
                 origin={"/select"}
                 buttonOnClick={handleBuyTicket}
                 buttonText={playButtonText}    
-                ticketIndicator={unredeemedTickets.length}
+                ticketIndicator={unredeemedIndicator}
             />
         </FadeOut>
     )
+}
+
+Select.propTypes = {
+	passPlayerNumbers: PropTypes.func, 
+	passLoadingStatus: PropTypes.func
 }
 
 export default Select;
