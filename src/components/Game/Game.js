@@ -93,6 +93,14 @@ const Game = ({
     const [fadeOutVersus, setFadeOutVersus] = useState(false);
 	const [ticket, setTicket] = useState(false);
 
+	useEffect(async () => {
+		if (!redeemHash) {
+			passLoadingStatus("NO TICKET SELECTED");
+			await sleep(2000);
+			history.push("/select");
+		}
+	},[])
+
     // load labels and manually stop loading screen
     useEffect(() => {    
 		console.log("GAME useEffect redeem Hash", redeemHash)
