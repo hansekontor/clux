@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { Modal } from 'antd';
 import styled from 'styled-components';
+import { CopyOutlined } from '@ant-design/icons';
 
 // custom react modules
-import { SecondaryButton } from '@components/Common/PrimaryButton';
+import PrimaryButton from '@components/Common/PrimaryButton';
 import { WalletContext } from '@utils/context';
 import { infoNotification } from '@components/Common/Notifications';
 
@@ -41,6 +42,11 @@ const Input = styled.input`
 `;
 const Help = styled.div`
     color: red;
+`;
+const StyledPrimaryButton = styled(PrimaryButton)`
+	font-family: "Helvetica";
+	font-size: 14px;
+	font-weight: 600;
 `;
 
 const sleep = (ms) => {
@@ -118,12 +124,12 @@ const ImportWallet = ({
                     required
                 />              
             </Form>
-            <SecondaryButton
+            <StyledPrimaryButton
                 onClick={handleImportPhrase}
                 disabled={!isValidMnemonic}
             >
                 Import
-            </SecondaryButton>        
+            </StyledPrimaryButton>        
         </ImportWalletCtn>
     )
 }
