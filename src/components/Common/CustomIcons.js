@@ -214,18 +214,19 @@ const SmallGreenCircle = styled(SmallCircle)`
 const SmallYellowCircle = styled(SmallCircle)`
     background-color: #FBEDD2;
 `;
-export const BillIcon = () => {
+export const BillIcon = ({...props}) => {
     return (
-        <SmallGreenCircle>
+        <SmallGreenCircle {...props}>
             <img src={BillSvg}/>
         </SmallGreenCircle>
     )
 }
 export const TicketIcon = ({
-    indicator
+    indicator,
+	...props
 }) => {
     return (
-        <SmallYellowCircle>
+        <SmallYellowCircle {...props}>
             {indicator > 0 && <Alert indicator={indicator} />}
             <img src={TicketSvg} />
         </SmallYellowCircle>
