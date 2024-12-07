@@ -82,7 +82,7 @@ const WaitingRoom = ({
     const [requestFailedInfoModal, requestFailedInfoHolder] = Modal.useModal();
 	const [isRedeemed, setIsRedeemed] = useState(false);
 	const [hasRequested, setHasRequested] = useState(false);
-	const [apiError, setApirError] = useState(false)
+	const [apiError, setApiError] = useState(false)
 
 	const { broadcastTx } = useBCH();
 
@@ -250,7 +250,7 @@ const WaitingRoom = ({
     // handlers
     const handleButtonClick = async () => {
 
-		if (activeTicket) {
+		if (activeTicket && !apiError) {
 			if (isRedeemed) {
 				passLoadingStatus("LOADING GAME");
 				// todo: only push forward if updated ticket from storage is available
@@ -259,7 +259,9 @@ const WaitingRoom = ({
 					pathname: '/game',
 					state: { redeemHash: redeemHash }
 				});						
-			}				
+			} else {
+
+			}
 		} else {
 			history.push('/select');
 		}
@@ -292,7 +294,7 @@ const WaitingRoom = ({
 			<FooterCtn>
 				<RandomNumbers fixedRandomNumbers={activeTicket ? activeTicket.details.playerNumbers : playerNumbers} />
 				<PrimaryButton onClick={handleButtonClick}>
-					{activeTicket ? (
+					{activeTicket && !apiError? (
 						<>
 							{isRedeemed ? "Redeem" : "Wait..."}							
 						</>
