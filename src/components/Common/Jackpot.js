@@ -116,10 +116,10 @@ export const TicketResult = ({
         <ResultCtn>
             <Jackpot>
                 <Text>
-                    Winner 
+                    {amount > 0 ? "Winner" : "Loser"} 
                     <Amount>${amount}</Amount>
                 </Text>
-                <CoinBagIcon src={CoinBagSvg}/>
+                {amount > 0 && <CoinBagIcon src={CoinBagSvg}/> }
             </Jackpot>            
         </ResultCtn>
     )
