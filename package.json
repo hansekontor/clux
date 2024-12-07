@@ -9,7 +9,7 @@
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@hansekontor/checkout-components": "https://github.com/hansekontor/checkout-components.git#v1.0.1",
         "antd": "^5.16.2",
-		"b70-checkout": "^1.0.0",
+        "b70-checkout": "^1.0.0",
         "bcurl": "^0.2.1",
         "bignumber.js": "9.1.2",
         "brq": "^0.2.1",

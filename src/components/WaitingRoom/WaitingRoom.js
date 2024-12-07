@@ -78,17 +78,13 @@ const WaitingRoom = ({
     // states
 	console.log("state from location", location.state);
 	const [activeTicket, setActiveTicket ] = useState(location.state?.ticketToRedeem || false);
-    const [gameEnabled, setGameEnabled] = useState(false);
     const [waitingInfoModal, waitingInfoHolder] = Modal.useModal();
     const [requestFailedInfoModal, requestFailedInfoHolder] = Modal.useModal();
 	const [isRedeemed, setIsRedeemed] = useState(false);
 	const [hasRequested, setHasRequested] = useState(false);
+	const [apiError, setApirError] = useState(false)
 
 	const { broadcastTx } = useBCH();
-
-	// todo: set active ticket from query if not passed along by state
-    useEffect(async () => { 
-    }, []);	
 
 
 	// if active ticket is set: redeem ticket
@@ -223,14 +219,14 @@ const WaitingRoom = ({
 
 			} else {
 				requestFailedInfoModal.info(requestFailedInfoConfig);
-				setActiveTicket(false);
+				setApiError(true);
 			}
-		}
+		} 
 	}, [activeTicket])
-
 
 	useEffect(async () => {
 		await sleep(2000);
+		// handle case when user arrives here after payment 
 		if (!activeTicket && !hasRequested) {
 			passLoadingStatus(false);
 			waitingInfoModal.info(waitingInfoConfig);
@@ -254,22 +250,24 @@ const WaitingRoom = ({
     // handlers
     const handleButtonClick = async () => {
 
-		if (isRedeemed) {
-			passLoadingStatus("LOADING GAME");
-			// todo: only push forward if updated ticket from storage is available
-			const redeemHash = isRedeemed;
-			history.push({
-				pathname: '/game',
-				state: { redeemHash: redeemHash }
-			});			
-		} else if (!activeTicket && playerNumbers) {
+		if (activeTicket) {
+			if (isRedeemed) {
+				passLoadingStatus("LOADING GAME");
+				// todo: only push forward if updated ticket from storage is available
+				const redeemHash = isRedeemed;
+				history.push({
+					pathname: '/game',
+					state: { redeemHash: redeemHash }
+				});						
+			}				
+		} else {
 			history.push('/select');
 		}
     };
 
     return (
         <>  
-            {waitingInfoHolder}
+            {waitingInfoHolder}	
             {requestFailedInfoHolder}
             <Background src={LockerPng} />
             <Header />
@@ -305,7 +303,7 @@ const WaitingRoom = ({
 						
 					)}
 				</PrimaryButton>  
-				<SupportBar returnTo={"/waitingroom"} ticketIndicator={unredeemedIndicator}/>
+				<SupportBar ticketIndicator={unredeemedIndicator}/>
 			</FooterCtn>
         </>
 

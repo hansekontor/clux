@@ -146,6 +146,7 @@ const WhiteButton = styled.button`
     flex-grow: 1;
     gap: 12px;
 	cursor: pointer;
+	width: 100%;
  `;
 const Text = styled.div`
     font-size: 12px;
@@ -190,7 +191,7 @@ export const WhiteTicketButton = ({
         <WhiteButton onClick={handleToTicketDetails}>
             <CustomTicketIcon />
             <Text>
-                Ticket Details
+                Tickets
             </Text>
         </WhiteButton>
     )

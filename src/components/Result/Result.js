@@ -58,11 +58,16 @@ const ButtonCtn = styled.div`
     width: 90%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 12px;
-    padding-bottom:16px;
+    padding-bottom: 16px;
 `;
+
+const sleep = (ms) => {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 const Result = ({
     passLoadingStatus,
@@ -78,9 +83,14 @@ const Result = ({
 	console.log("RESULT ticket", ticket?.details?.game)
 
     // manually stop loading screen
-    useEffect(() => {
+    useEffect(async () => {
 		if (ticket)
 	        passLoadingStatus(false);
+		else {
+			passLoadingStatus("NO TICKET SELECTED");
+			await sleep(2000);
+			history.push("/select")
+		}
     }, [ticket]);
 
     // handlers
