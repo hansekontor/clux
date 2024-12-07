@@ -202,7 +202,7 @@ const Game = ({
 										id={labels.faceoff}
 										style={faceoffAnimationStyle}
 									>
-										<div>FACEOFF PLACEHOLDER</div>   
+										<div></div>   
 									</CustomFlash>
 								</Animation>
 								<Animation hidden={animationStage !== "fight"}>
@@ -221,7 +221,7 @@ const Game = ({
 										id={labels.fight}
 										style={animationStyle}
 									>       
-										<div>FIGHT PLACEHOLDER</div>   
+										<div></div>   
 									</CustomFlash>             
 								</Animation>
 								<Animation hidden={animationStage !== "celebration"}>
@@ -241,7 +241,7 @@ const Game = ({
 										id={labels.celebration}
 										style={animationStyle}
 									>        
-										<div>CELEBRATION PLACEHOLDER</div>   
+										<div></div>   
 									</CustomFlash>            
 								</Animation>                    
 							</>
