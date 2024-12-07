@@ -558,7 +558,7 @@ export const parseTickets = async (tickets) => {
 		// parse payout amount from redeem tx
 		if (!details.payoutAmount && redeemTx) {
 			// console.log("can I get the slp value from this?", redeemTx.outputs[2]);
-			const payoutAmount = ticket.redeemTx.outputs[2].slp.value;
+			const payoutAmount = ticket.redeemTx.outputs[2].slp?.value;
 			details.payoutAmount = payoutAmount;
 		}
 

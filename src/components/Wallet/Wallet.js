@@ -14,7 +14,7 @@ import NavigationBar from '@components/Common/Navigation';
 import FadeInOut from '@components/Backup/FadeInOut';
 import { FooterCtn, SupportBar } from '@components/Common/Footer';
 import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Common/CustomIcons';
-import { SecondaryButton } from '@components/Common/PrimaryButton';
+import PrimaryButton from '@components/Common/PrimaryButton';
 import Email from '@components/Wallet/Email';
 import ImportWallet from '@components/Wallet/ImportWallet';
 
@@ -120,6 +120,14 @@ const SeedPhraseCtn = styled.div`
     justify-content: center;
     align-items: center;
     flex-direction: column;
+`;
+const StyledPrimaryButton = styled(PrimaryButton)`
+	font-family: "Helvetica";
+	font-size: 14px;
+	font-weight: 600;
+`;
+const CopyButton = styled(StyledPrimaryButton)`
+	background-color: #F6F6F6;
 `;
 
 const Wallet = ({    
@@ -311,10 +319,13 @@ const Wallet = ({
                             <SeedPhrase 
                                 phrase={wallet.mnemonic ? wallet.mnemonic : ""}
                             />
-                            <SecondaryButton type="button" onClick={handleCopySeedPhrase}>
-                                <CopyboardIcon src={CopyboardSvg} />
-                                Copy
-                            </SecondaryButton>                    
+                            <StyledPrimaryButton type="button" onClick={() => setSelection(false)}>
+                                I've backed up my wallet
+                            </StyledPrimaryButton>           
+							<CopyButton onClick={handleCopySeedPhrase}>
+								Copy {" "}
+								<CopyOutlined />
+							</CopyButton>         
                         </SeedPhraseCtn>
 
                         }
