@@ -288,7 +288,7 @@ const WaitingRoom = ({
                     }}
                     id={animationName}
                 >
-                        <div>FLASH PLACEHOLDER</div>
+                        <div></div>
                 </Flash>                    
             </FlexGrow>
 			<FooterCtn>

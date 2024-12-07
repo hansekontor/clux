@@ -139,7 +139,7 @@ const Select = ({
                                 }}
                                 id={animationName}
                             >
-                                <div>PLACEHOLDER</div>
+                                <div></div>
                             </Flash>
                         </IdleChicken>                     
                 </ChickenCtn>
