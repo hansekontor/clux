@@ -209,7 +209,7 @@ const Ticket = ({
 
 	const primaryHash = ticket.redeemTx ? ticket.redeemTx?.hash : ticket.issueTx?.hash;
 	const displayPlayerNumbers =  ticket.details?.playerNumbers?.join(", ");
-	const displayPayoutAmount = ticket.details.payoutAmount / 100;
+	const displayPayoutAmount = ticket.details?.payoutAmount / 100;
 	const displayResultingNumbers = ticket.details?.game?.resultingNumbers?.join(", ");
 
     return (
@@ -272,7 +272,7 @@ const Ticket = ({
 									<TicketDataValue>{redeemDisplayTime}</TicketDataValue>
 								</TicketDataItem>								
 							}
-							{ticket.details.payoutAmount && 
+							{ticket.details?.payoutAmount && 
 								<TicketDataItem>
 									<Label>Payout</Label>
 									<TicketDataValue>${displayPayoutAmount}</TicketDataValue>
