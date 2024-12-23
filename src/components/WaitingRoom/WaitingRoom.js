@@ -72,7 +72,7 @@ const WaitingRoom = ({
 		addRedeemTxToStorage
 	} = ContextValue;
     const walletState = getWalletState(wallet)
-    const { tickets } = walletState;
+    const { tickets, slpBalancesAndUtxos } = walletState;
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
 
     // states
@@ -305,7 +305,7 @@ const WaitingRoom = ({
 						
 					)}
 				</PrimaryButton>  
-				<SupportBar ticketIndicator={unredeemedIndicator}/>
+				<SupportBar ticketIndicator={unredeemedIndicator} slpBalances={slpBalancesAndUtxos}/>
 			</FooterCtn>
         </>
 

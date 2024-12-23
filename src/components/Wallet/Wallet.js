@@ -138,7 +138,7 @@ const Wallet = ({
     const ContextValue = useContext(WalletContext);
     const { wallet, loading } = ContextValue;
     const walletState = getWalletState(wallet);
-    const { tickets } = walletState;
+    const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
 	// console.log("Wallet.js walletState", walletState);
 	// console.log("Wallet.js tickets", tickets);
@@ -341,7 +341,7 @@ const Wallet = ({
                     </WalletCtn>                
                 )}
                 <FooterCtn>
-                    <StyledSupportBar />
+                    <StyledSupportBar slpBalances={slpBalancesAndUtxos} />
                 </FooterCtn>
             </StyledFadeInOut>        
         </>

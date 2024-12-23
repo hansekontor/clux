@@ -156,7 +156,7 @@ const useWallet = () => {
 
             newState.tickets = ticketHistory.tickets;
 
-            newState.utxos = ticketData.utxos; // careful
+            newState.utxos = ticketData.utxos;
 
             // Set wallet with new state field
             wallet.state = newState;
