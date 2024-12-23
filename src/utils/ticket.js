@@ -3,13 +3,261 @@ import {
     Outpoint, 
     Output,
     script,
+    TX,
+    MTX,
     bcrypto
 } from '@hansekontor/checkout-components';
 const { SLP } = script;
 const {	Hash256: hash256 } = bcrypto;
 import { U64 } from 'n64';
-import { read } from 'bufio';
+import bio, { read } from 'bufio';
 
+
+export default class TicketHistory {
+    constructor(tickets) {
+        this.tickets = tickets;
+    }   
+    
+    async addTicketsFromNode(txs) {
+        const matchedTickets = this.matchTickets(txs);
+        const sortedTickets = matchedTickets.sort(this.compareTickets);
+        const parsedTickets = await this.parseTickets(sortedTickets);
+
+        this.tickets = parsedTickets;
+    }
+
+    async addTicketsFromIssuance(txs) {
+        const matchedTickets = this.matchTickets(txs);
+        console.log("matchedTickets", matchedTickets)
+        const sortedTickets = matchedTickets.sort(this.compareTickets);
+        console.log("sorted Tickets", sortedTickets);
+        const parsedTickets = await this.parseTickets(sortedTickets);      
+        console.log("parsedTickets", parsedTickets);
+
+        this.tickets = parsedTickets;
+    }
+
+    async addTicketFromRedemption(tx, redeemData) {
+        console.log("addTicketFromRedemption tx", tx, TX.isTX(tx));
+        const matchedTickets = this.matchTickets([tx]);
+        const sortedTickets = matchedTickets.sort(this.compareTickets);
+        const parsedTickets = await this.parseTickets(sortedTickets); 
+
+        // add redeem data to ticket
+        const index = parsedTickets.findIndex(ticket => ticket.redeemTx?.hash === tx.hash);
+        parsedTickets[index].details = Object.assign(parsedTickets[index].details, { redemption: redeemData });
+        
+        this.tickets = parsedTickets;
+    }
+
+    /**
+     * 
+     * @param {array} txs 
+     * @returns 
+     */
+    matchTickets(txs) {
+        // take new txs as base and add additional info from previous history
+        const tickets = this.tickets;
+
+        // add issueTx / redeemTX
+        const isEmptyWallet = this.tickets.length === 0;
+        if (isEmptyWallet) {
+            // if wallet is empty, no matching is required
+
+            for (const txInput of txs) {
+                const tx = TX.isTX(txInput) ? txInput.toJSON() : txInput;
+                console.log("matching tx.hash", tx.hash);
+                const isRedeemTx = tx.slpToken ? true : false;
+                console.log("isRedeemTx", isRedeemTx);
+                // console.log("inspect potential slp output", tx.outputs[2]);
+
+                if (isRedeemTx) {
+                    const issueHash = tx.inputs[0].prevout.hash;
+                    const redeemed = {
+                        issueTx: {
+                            hash: issueHash
+                        },
+                        redeemTx: tx
+                    };
+                    tickets.push(redeemed);
+                } else {
+                    const unredeemed = {
+                        issueTx: tx
+                    };
+
+                    tickets.push(unredeemed);
+                }
+            }
+
+            return tickets;
+        } else {
+            const toAdd = [];
+
+            for (const txInput of txs) {
+                const tx = TX.isTX(txInput) ? txInput.toJSON() : txInput;
+                console.log("tx", tx.hash);
+
+                const opReturn = SLP.fromRaw(Buffer.from(tx.outputs[0].script, 'hex'));
+                const isValidSlp = opReturn.isValidSlp(); 
+                console.log("isValidSlp", isValidSlp);
+                const isUnredeemed = tx.slpToken ? false : true;
+                console.log("isUnredeemed", isUnredeemed);
+
+                if (isUnredeemed) {
+                    const newTicket = { issueTx: tx };
+                    const index = tickets.findIndex(ticket => ticket.issueTx.hash === tx.hash);
+                    const isNewUnredeemed = index === -1;
+                    console.log("isNewUnredeemed", isNewUnredeemed);
+                    
+                    if (isNewUnredeemed) {
+                        toAdd.push(newTicket);
+                    } else {
+                        const oldTicket = tickets[index]
+                        tickets[index] = Object.assign(oldTicket, newTicket);
+                    }
+                } else {
+                    const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === tx.hash);
+                    console.log("index", index)
+                    const isNewRedeemTx = index === -1;
+                    console.log("matchTickets isNewRedeem", isNewRedeemTx);
+                    
+                    if (isNewRedeemTx) {
+                        const issueHash = tx.inputs[0].prevout.hash;
+                        const issueIndex = tickets.findIndex(ticket => ticket.issueTx.hash === issueHash);
+                        const hasIssueTx = issueIndex !== -1;
+                        if (hasIssueTx) {
+                            const oldTicket = tickets[issueIndex];
+                            tickets[issueIndex] = Object.assign(oldTicket, { redeemTx: tx});
+                        } else {
+                            const newTicket = {
+                                issueTx: {
+                                    hash: issueHash
+                                }, 
+                                redeemTx: tx
+                            };
+                            toAdd.push(newTicket);
+                        }
+                    } else {							
+                        const oldTicket = tickets[index];
+                        const wasConfirmed = oldTicket.redeemTx.height === -1 && tx.height !== -1;
+                        if (wasConfirmed) {
+                            tickets[index] = Object.assign(oldTicket, { redeemTx: tx });
+                        }
+                    }
+                }
+            }
+
+            const matchedTickets = tickets.concat(toAdd);
+
+            return matchedTickets;
+        }
+    }
+
+    compareTickets(a,b) {
+
+        if (!a.redeemTx && !b.redeemTx) {	
+            
+            if (a.issueTx.height === -1)
+                return -1
+    
+            if (b.issueTx.height === -1)
+                return 1
+    
+            if (a.issueTx?.height > b.issueTx?.height) 
+                return -1
+            
+            if (a.issueTx?.height < b.issueTx?.height) 
+                return 1		
+        } else if (!a.redeemTx) {
+            return -1
+        } else if (!b.redeemTx) {
+            return 1
+        }
+    
+        if (a.redeemTx?.height === -1)
+            return -1
+    
+        if (b.redeemTx?.height === -1)
+            return 1
+    
+        if (a.redeemTx?.height > b.redeemTx?.height)
+            return -1
+    
+        if (a.redeemTx?.height < b.redeemTx?.height)
+            return 1
+    
+        return 0;
+    }
+
+    async parseTickets(txs) {
+        const tickets = txs;
+        // playerNumbers, payoutAmount, redeem sig data
+        for (const ticket of tickets) {
+            // console.log("parse", ticket);
+            const details = ticket.details || {};
+
+            const getTXs = async () => {
+                // console.log("GETTXS");
+                // console.log(ticket.issueTx?.hex);
+                // console.log(ticket.redeemTx?.hex);
+                let issueTx = ticket.issueTx?.hex ? MTX.fromRaw(Buffer.from(ticket.issueTx.hex, 'hex')) : false;
+                let redeemTx = ticket.redeemTx?.hex ? MTX.fromRaw(Buffer.from(ticket.redeemTx.hex, 'hex')) : false;
+
+                if (!issueTx && redeemTx) {
+                    // console.log("conditional")
+                    const redeemScript = redeemTx.inputs[0].script;
+                    const rawIssueTx = redeemScript.get(5).data;
+                    issueTx = MTX.fromRaw(Buffer.from(rawIssueTx));
+                    const issueTxJson = issueTx.toJSON();
+                    // console.log("issueTxJson", issueTxJson);
+
+                    ticket.issueTx = issueTxJson;				
+                }
+
+                return { issueTx, redeemTx };
+            }		
+            const { issueTx, redeemTx} = await getTXs();
+            console.log("issueTx", issueTx);
+            console.log("redeemTx", redeemTx);
+
+            // parse player numbers from ticket auth code
+            if (!details.playerNumbers || !details.maxPayoutBE && issueTx) {
+                const opReturn = issueTx.outputs[0].script;
+                const ticketAuthCode = opReturn.get(1).data;
+                console.log("ticketAuthCode", ticketAuthCode.toString('hex'))
+                const { minterNumbers, txOutputs } = readTicketAuthCode(ticketAuthCode); 
+
+                const minterNumbersArray = [];
+                const br = bio.read(minterNumbers);
+                for (const byte of minterNumbers) {
+                    const minterNumberInt = br.readU8(byte);
+                    minterNumbersArray.push(minterNumberInt);
+                }
+                details.playerNumbers = minterNumbersArray;				
+
+                const maxPayoutBufBE = txOutputs[0].script.code[6].data;
+                // console.log("maxPayout", maxPayoutBufBE);
+                details.maxPayoutBE = maxPayoutBufBE;
+            }
+
+            // parse payout amount from redeem tx
+            if (!details.payoutAmount && redeemTx) {
+                // console.log("can I get the slp value from this?", redeemTx.outputs[2]);
+                const payoutAmount = ticket.redeemTx.outputs[2].slp?.value;
+                details.payoutAmount = payoutAmount;
+            }
+
+            // add parsed ticket details
+            if (!ticket.details) 
+                ticket.details = details;
+            else 
+                ticket.details = Object.assign(ticket.details, details);
+
+        }
+
+        return tickets;
+    }
+}
 
 export const readAuthCodeMin = (authCode) => {
     const splitCode = authCode.split('-');

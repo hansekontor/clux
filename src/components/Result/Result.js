@@ -80,7 +80,7 @@ const Result = ({
     const { tickets } = walletState;
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
 	const [ticket,] = useState(location.state?.ticket || false);
-	console.log("RESULT ticket", ticket?.details?.game)
+	console.log("RESULT ticket", ticket?.details?.redemption)
 
     // manually stop loading screen
     useEffect(async () => {
@@ -100,9 +100,9 @@ const Result = ({
 
     // DOM variables
     const playButtonText = "Play Again";
-	const displayAmount = ticket?.details?.game?.actualPayoutNum / 100;
+	const displayAmount = ticket?.details?.redemption?.actualPayoutNum / 100;
 
-    const animationName = ticket?.details?.game?.actualPayoutNum > 0 ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
+    const animationName = ticket?.details?.redemption?.actualPayoutNum > 0 ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
     return (
@@ -138,7 +138,7 @@ const Result = ({
 								amount={displayAmount}
 							/>			
 							<RandomNumbers 
-								fixedRandomNumbers={ticket.details.game.resultingNumbers}
+								fixedRandomNumbers={ticket.details.redemption.resultingNumbers}
 								background={"#1A1826"}
 							/>  						
 						</>

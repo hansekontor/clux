@@ -112,14 +112,14 @@ const Game = ({
 				passLoadingStatus("TICKET NOT FOUND");
 				sleep(3000);
 				history.push("/select");
-			} else if (!ticketFromState.details.game) {
+			} else if (!ticketFromState.details.redemption) {
 				// wait and try again
 				console.log("GAME DATA NOT FOUND")
 			} else {
 				console.log("GAME WORKED")
 
-				console.log("GAME resulting Numbers", ticketFromState.details.game.resultingNumbers);
-				const tier = ticketFromState.details.game.tier;
+				console.log("GAME resulting Numbers", ticketFromState.details.redemption.resultingNumbers);
+				const tier = ticketFromState.details.redemption.tier;
 				console.log("GAME tier", tier);
 				const win = tier != 0;
 				const winner = win ? "A" : "B";
@@ -180,7 +180,7 @@ const Game = ({
         <>
             <Background src={RingPng} />
             <Header />
-			{ticket?.details?.game?.resultingNumbers && (
+			{ticket?.details?.redemption?.resultingNumbers && (
 				<>
 					<FlexGrow>    
 						<SlideIn>
@@ -257,7 +257,7 @@ const Game = ({
 					</FlexGrow>
 					<FooterCtn>
 						<ResultingNumbers 
-							numberArray={ticket?.details?.game?.resultingNumbers}
+							numberArray={ticket?.details?.redemption?.resultingNumbers}
 							active={fightStarted}
 						/>                
 						<PrimaryButton onClick={handlePlay} grey={fightStarted} disabled={fightStarted}>

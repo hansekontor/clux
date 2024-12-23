@@ -10,11 +10,9 @@ import {
     loadStoredWallet,
     isValidStoredWallet,
     isLegacyMigrationRequired,
-	matchTickets,
 	getSlpBalancesAndUtxos,
-	parseTickets,
-	addGameData,
-	addSlpToRedeemTx
+	addSlpToRedeemTx,
+	addRedeemUtxos
 } from '@utils/cashMethods';
 import { isValidCashtabSettings } from '@utils/validation';
 import localforage from 'localforage';
@@ -28,6 +26,7 @@ import {
     KeyRing,
 	TX, 
 } from '@hansekontor/checkout-components';
+import TicketHistory from '@utils/ticket';
 
 
 const useWallet = () => {
@@ -131,8 +130,8 @@ const useWallet = () => {
 			
 			const utxosHaveChanged = !isEqual(ticketData.tokenUtxos, wallet?.state?.utxos)
 			const slpBalancesAndUtxos = getSlpBalancesAndUtxos(ticketData.utxos);
-			const matchedTickets = matchTickets(wallet?.state?.tickets, ticketData.txs);
-			const parsedTickets = await parseTickets(matchedTickets);
+            const ticketHistory = new TicketHistory(wallet.state.tickets);
+            await ticketHistory.addTicketsFromNode(ticketData.txs);
 
             if (typeof slpBalancesAndUtxos === 'undefined') {
                 console.log(`slpBalancesAndUtxos is undefined`);
@@ -155,7 +154,7 @@ const useWallet = () => {
 
             newState.tokens = tokens;
 
-            newState.tickets = parsedTickets;
+            newState.tickets = ticketHistory.tickets;
 
             newState.utxos = ticketData.utxos; // careful
 
@@ -181,9 +180,12 @@ const useWallet = () => {
 
 	const addIssueTxs = async (txs) => {
 		try {
-			const matchedTickets = matchTickets(wallet?.state?.tickets, txs);
-			const parsedTickets = await parseTickets(matchedTickets);
-			const newState = Object.assign(wallet.state, { tickets: parsedTickets });
+            console.log("adding unredeemed", txs)
+            const ticketHistory = new TicketHistory(wallet.state.tickets);
+            await ticketHistory.addTicketsFromIssuance(txs);
+            console.log("added to history:", ticketHistory.tickets)
+			const newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets });
+            console.log("newState", newState);
 
 			wallet.state = newState;
 			setWallet(wallet);		
@@ -220,15 +222,15 @@ const useWallet = () => {
 		}
 	}
 	// todo: integrate with addIssueTxsToStorage 
-	const addRedeemTxToStorage = async (tx, gameData) => {
+	const addRedeemTxToStorage = async (tx, redeemData) => {
 		try {
-			// tx comes from self-built redeem hex in WaitingRoom.js and has no slp data, therefore add it
+			// tx comes from self-built redeem hex in WaitingRoom.js and has no slp data, therefore it has to be added
 			const slpTx = addSlpToRedeemTx(tx);
 			console.log("addRedeem slpTx", slpTx);
-			const matchedTickets = matchTickets(wallet?.state?.tickets, [slpTx]);
-			const parsedTickets = await parseTickets(matchedTickets);
-			const ticketsWithGameData = addGameData(parsedTickets, tx.rhash('hex'), gameData);
-			const newState = Object.assign(wallet.state, { tickets: ticketsWithGameData });
+            const ticketHistory = new TicketHistory(wallet.state.tickets);
+            await ticketHistory.addTicketFromRedemption(slpTx, redeemData);
+			const newSlpBalancesAndUtxos = addRedeemUtxos(wallet.state.slpBalancesAndUtxos, wallet.Path1899.cashAddress, slpTx);
+			const newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets, slpBalancesAndUtxos: newSlpBalancesAndUtxos });
 			wallet.state = newState;
 			setWallet(wallet);		
 			writeWalletState(wallet, newState);

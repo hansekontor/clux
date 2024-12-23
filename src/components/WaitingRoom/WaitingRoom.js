@@ -201,13 +201,13 @@ const WaitingRoom = ({
 				if (ptxBroadcast.success) {
 					console.log('ptx id', ptx.txid())
 
-					const gameData = {
+					const redeemData = {
 						actualPayoutNum: U64.fromBE(actualPayoutBE).toNumber(),
 						tier, 
 						opponentNumbers,
 						resultingNumbers
 					}
-					await addRedeemTxToStorage(ptx, gameData);
+					await addRedeemTxToStorage(ptx, redeemData);
 
 					successNotification("You can redeem your ticket now!")
 					setIsRedeemed(ptx.txid());
