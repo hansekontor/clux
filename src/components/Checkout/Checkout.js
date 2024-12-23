@@ -457,7 +457,7 @@ const Checkout = ({
 							<Scrollable>
 								<div>Purchase Ticket Amount</div>
 								<form id="purchase-options-form" onSubmit={handlePurchaseOptionsSubmit}>
-									<input type="number" name="ticketQuantity" defaultValue={1} readOnly/>
+									<input type="number" name="ticketQuantity" defaultValue={1}/>
 									<select type="select" name="type">
 										<option value="fiat">Fiat</option>
 										{/* <option value="etoken">eToken</option> */}
