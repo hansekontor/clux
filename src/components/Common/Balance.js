@@ -28,7 +28,7 @@ const Balance = ({
     useEffect(() => {
         if (slpBalances) {
             console.log("Balance.js slpBalances", slpBalances);
-            if (slpBalances.tokens.length > 0) {
+            if (slpBalances.tokens?.length > 0) {
                 const token = slpBalances.tokens[0];
                 if ("balance" in token) {
                     const balance = new BigNumber({...token.balance, _isBigNumber: true}).toNumber();
