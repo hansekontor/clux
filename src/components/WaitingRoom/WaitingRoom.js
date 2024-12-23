@@ -78,11 +78,10 @@ const WaitingRoom = ({
     // states
 	console.log("state from location", location.state);
 	const [activeTicket, setActiveTicket ] = useState(location.state?.ticketToRedeem || false);
-    const [waitingInfoModal, waitingInfoHolder] = Modal.useModal();
-    const [requestFailedInfoModal, requestFailedInfoHolder] = Modal.useModal();
 	const [isRedeemed, setIsRedeemed] = useState(false);
 	const [hasRequested, setHasRequested] = useState(false);
-	const [apiError, setApiError] = useState(false)
+	const [apiError, setApiError] = useState(false);
+	const [modal, modalHolder] = Modal.useModal();
 
 	const { broadcastTx } = useBCH();
 
@@ -218,7 +217,7 @@ const WaitingRoom = ({
 				}
 
 			} else {
-				requestFailedInfoModal.info(requestFailedInfoConfig);
+				modal.info(requestFailedInfoConfig);
 				setApiError(true);
 			}
 		} 
@@ -229,18 +228,20 @@ const WaitingRoom = ({
 		// handle case when user arrives here after payment 
 		if (!activeTicket && !hasRequested) {
 			passLoadingStatus(false);
-			waitingInfoModal.info(waitingInfoConfig);
+			modal.info(waitingInfoConfig);
 		}
 	}, [activeTicket])
 
     // variables in DOM
     const waitingInfoText = "Your ticket has been broadcasted but its block was not finalized yet. After that, your ticket can be redeemed. Average time between blocks is 10 minutes. You will be notified via email."
     const waitingInfoConfig = {
-        content: <p>{waitingInfoText}</p>
+        content: <p>{waitingInfoText}</p>,
+		key: 0
     }
 	const requestFailedText = "Your ticket has not been broadcasted yet. Please try again later. Average time between blocks is 10 minutes."
 	const requestFailedInfoConfig = {
-        content: <p>{requestFailedText}</p>
+        content: <p>{requestFailedText}</p>,
+		key: 1
     }
 
 
@@ -269,8 +270,7 @@ const WaitingRoom = ({
 
     return (
         <>  
-            {waitingInfoHolder}	
-            {requestFailedInfoHolder}
+			{modalHolder}
             <Background src={LockerPng} />
             <Header />
             <FlexGrow>
