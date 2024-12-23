@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
+import BigNumber from 'bignumber.js';
+
 
 const BalanceCtn = styled.div`
     width: 112px;
@@ -19,26 +20,37 @@ const BalanceCtn = styled.div`
 
 
 const Balance = ({
-    amount
+    slpBalances
 }) => {
 
-    const amountString = String(amount);
-    const digits = amountString.length;
-    const fillupDigitsString = String(0).repeat(6-digits);
-    const displayAmountString = fillupDigitsString.concat(amountString);
+    const [displayAmount, setDisplayAmount] = useState("000000");
+
+    useEffect(() => {
+        if (slpBalances) {
+            console.log("Balance.js slpBalances", slpBalances);
+            if (slpBalances.tokens.length > 0) {
+                const token = slpBalances.tokens[0];
+                if ("balance" in token) {
+                    const balance = new BigNumber({...token.balance, _isBigNumber: true}).toNumber();
+                    const decimals = token.info.decimals;
+                    const formattedBalance = balance / (10** decimals);
+                    const amountString = String(formattedBalance);
+                    const digits = amountString.length;
+                    const fillupDigitsString = String(0).repeat(6-digits);
+                    const displayAmountString = fillupDigitsString.concat(amountString);
+
+                    setDisplayAmount(displayAmountString);                
+                }
+            }             
+        }
+
+    }, [])
+
     return (
         <BalanceCtn>
-            {displayAmountString}
+            {displayAmount}
         </BalanceCtn>
     )
 }
-// demo placeholder
-Balance.defaultProps = {
-    amount: 333,
-}
-Balance.propTypes = {
-    amount: PropTypes.number,
-}
-
 
 export default Balance;

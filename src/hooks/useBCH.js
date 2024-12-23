@@ -1265,7 +1265,6 @@ export default function useBCH() {
         sendSelfMintV2,
         getMintVaultAddress,
         generateBurnTx,
-		matchTickets,
 		broadcastTx
     };
 }

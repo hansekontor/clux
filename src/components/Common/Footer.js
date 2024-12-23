@@ -40,7 +40,8 @@ const SupportBarCtn = styled.div`
 
 export const SupportBar = ({
     returnTo,
-    ticketIndicator
+    ticketIndicator,
+	slpBalances
 }) => {
     
     const handleCnmiRedirect = () => {
@@ -51,7 +52,7 @@ export const SupportBar = ({
         <SupportBarCtn>
             <WalletButton returnTo={returnTo} indicator={ticketIndicator}/>
             <HelpButton />                
-            <Balance />
+            <Balance slpBalances={slpBalances}/>
             <CashoutButton returnTo={returnTo}/>
             <CnmiIcon onClick={() => handleCnmiRedirect()}/>
         </SupportBarCtn>
@@ -63,7 +64,8 @@ const Footer = ({
     randomNumbers, 
     buttonOnClick,
     buttonText,
-    ticketIndicator
+    ticketIndicator,
+	slpBalances
 }) => {
     return (
         <FooterCtn>
@@ -77,7 +79,7 @@ const Footer = ({
                     </PrimaryButton>  
                 </> 
             }
-            <SupportBar returnTo={origin} ticketIndicator={ticketIndicator}/>
+            <SupportBar returnTo={origin} ticketIndicator={ticketIndicator} slpBalances={slpBalances}/>
         </FooterCtn>
     )
 }

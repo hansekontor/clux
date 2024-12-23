@@ -154,6 +154,7 @@ const Select = ({
                 buttonOnClick={handleBuyTicket}
                 buttonText={playButtonText}    
                 ticketIndicator={unredeemedIndicator}
+				slpBalances={slpBalancesAndUtxos}
             />
         </FadeOut>
     )

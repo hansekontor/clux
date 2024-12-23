@@ -77,7 +77,7 @@ const Result = ({
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
     const walletState = getWalletState(wallet)
-    const { tickets } = walletState;
+    const { tickets, slpBalancesAndUtxos } = walletState;
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
 	const [ticket,] = useState(location.state?.ticket || false);
 	console.log("RESULT ticket", ticket?.details?.redemption)
@@ -154,6 +154,7 @@ const Result = ({
                 buttonOnClick={handlePlayAgain}
                 buttonText={playButtonText}
                 ticketIndicator={unredeemedIndicator}
+                slpBalances={slpBalancesAndUtxos}
             />
         </>
     )
