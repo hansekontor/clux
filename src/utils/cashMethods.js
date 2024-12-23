@@ -416,19 +416,19 @@ export const addRedeemUtxos = (slpBalancesAndUtxos, address, tx) => {
 	newSlpBalancesAndUtxos.slpUtxos.push(slpUtxos);
 
 	const hasToken = slpBalancesAndUtxos.tokens.length > 0 ? true : false;
-	const token = hasToken ? slpBalancesAndUtxos.tokens[0] : {info: sandboxTokenInfo};
+	const token = hasToken ? slpBalancesAndUtxos?.tokens[0] : {info: sandboxTokenInfo};
 	const previousBalance = token.balance ? new BigNumber({...token.balance, _isBigNumber:true }) : BigNumber(0);
 	console.log("previousBalance", previousBalance);
 	let updatedBalance = previousBalance;
 
 	for (const utxo of slpUtxos) {
 		updatedBalance = new BigNumber(updatedBalance).plus(new BigNumber(utxo.slp.value));
-		// console.log("altertanative calc 1", (new BigNumber(updatedBalance)).plus(new BigNumber(utxo.slp.value)) )
-		// console.log("altertanative calc 2", updatedBalance.plus(new BigNumber(utxo.slp.value)) )
+        token.balance = updatedBalance;
 	}
 	console.log("updatedBalance", updatedBalance);
 
-	newSlpBalancesAndUtxos.tokens[0].balance = updatedBalance;
+
+	newSlpBalancesAndUtxos.tokens = [ token ];
 	
 	return newSlpBalancesAndUtxos;
 }
