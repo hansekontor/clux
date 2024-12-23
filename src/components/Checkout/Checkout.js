@@ -223,7 +223,7 @@ const Checkout = ({
     const feeAmount = 0.3;
     const totalAmount = purchaseTokenAmount + feeAmount;
     const agreeButtonText = "Agree and Continue";
-    const purchaseButtonText = "Pay - $10"; 
+    const purchaseButtonText = `Pay - $${10*purchaseOptions.ticketQuantity} - DEMO`; 
 
 	// get payment request
 	useEffect(async () => {

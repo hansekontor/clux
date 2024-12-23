@@ -109,7 +109,8 @@ const Select = ({
     }
     
     // DOM contents
-    const playButtonText = "Play Now - $10";
+	// const playButtonText = "Play Now - $10";
+	const playButtonText = "Play Now - $10 - DEMO";
     const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
