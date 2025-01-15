@@ -79,12 +79,16 @@ export const LabelCtn = styled.div`
     gap: 12px;
     padding-left: 12px;
 `;
-const Value = styled.div`
+const Link = styled.a`
+    text-decoration: none;
+`;
+const Value = styled.span`
     font-size: 12px;
     color: #98999c;
     flex-grow: 1;
     text-align: right;
     padding-right: 10px;
+    display: block;
 `;
 export const Label = styled.div`
     font-weight: 600;
@@ -169,10 +173,6 @@ const Wallet = ({
     const handleToTickets = () => {
         setSelection("Tickets");        
     }
-    const handleCopyAddress = (address) => {
-        navigator.clipboard.writeText(address);
-        successNotification("Copied to Clipboard!");
-    }
     const handleShowPhrase = () => {
         setSelection("Seed Phrase");
     };
@@ -253,15 +253,17 @@ const Wallet = ({
                                     </LabelCtn>
                                 <Button src={RightArrowSvg}/>
                                 </Item>
-                                <Item onClick={() => handleCopyAddress(wallet.Path1899.cashAddress)}>
+                                <Item>
                                     <LabelCtn>
                                         <LightWalletIcon />
                                         <Label>Wallet Address</Label>                            
                                     </LabelCtn>
-                                    <Value>
-                                        ecash:qzrw...jd93
-                                    </Value>
-                                    <StyledCopyOutlined />                            
+                                    <Link href={`https://explorer.e.cash/address/${wallet.Path1899.cashAddress}`} rel="noopener noreferrer" target="_blank">
+                                        <Value>
+                                            {wallet.Path1899.cashAddress.slice(0,10) + "..." + wallet.Path1899.cashAddress.slice(-4)}
+                                        </Value>                                        
+                                    </Link>
+
                                 </Item>
                                 <Item onClick={handleChangeEmail}>
                                     <LabelCtn>
