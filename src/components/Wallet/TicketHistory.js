@@ -5,9 +5,11 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { CopyOutlined } from '@ant-design/icons';
 
-// 
-import { TertiaryButton } from '@components/Common/PrimaryButton'
+// custom modules
+import PrimaryButton from '@components/Common/PrimaryButton';
 import { successNotification } from '@components/Common/Notifications';
+
+import useWallet from '@hooks/useWallet';
 
 // assets
 import TicketSvg from '@assets/ticket_filled.svg';
@@ -134,6 +136,11 @@ const Collapsible = styled.div`
 	transition: height 0.5s ease-in-out;
 	width: 95%;
 `;
+const StyledPrimaryButton = styled(PrimaryButton)`
+	font-family: "Helvetica";
+	font-size: 14px;
+	font-weight: 600;
+`;
 
 const shortifyHash = (hash, length) => {
 	return String(hash.slice(0,length) + "..." + hash.slice(64-length,));
@@ -174,16 +181,17 @@ const Ticket = ({
 		});
 	}
 
-	// const TableRows = data.playerChoice.map((choice, index) => {
-	// 	return (
-	// 		<TableRow>
-	// 			<Element>{choice}</Element>
-	// 			<Element>{1}</Element>
-	// 			<Element>{3}</Element>
-	// 			<Element>{4}</Element>
-	// 		</TableRow>			
-	// 	)
-	// });                       
+	console.log("ticket", ticket);
+	const TableRows = ticket.details.playerNumbers.map((choice, index) => {
+		return (
+			<TableRow>
+				<Element>{choice}</Element>
+				<Element>{ticket.details.redemption?.opponentNumbers[index]}</Element>
+				<Element>{3}</Element>
+				<Element>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
+			</TableRow>			
+		)
+	});                       
 
 	// get redeem utc string
 	let displayTime = false;
@@ -293,16 +301,37 @@ const Ticket = ({
 							
 							<Divider />
 							
-							{/* <TableHeader>Ticket Calculations</TableHeader>
-							<Table>
-								<TableRow>
-									<Element>You</Element>
-									<Element>Block</Element>
-									<Element>Sum</Element>
-									<Element>Modulo</Element>
-								</TableRow>
-								{TableRows}
-							</Table> */}
+							{ticket.details?.playerNumbers && ticket.details?.redemption?.opponentNumbers && ticket.details?.redemption?.resultingNumbers &&
+								<>
+									<TableHeader>Ticket Calculations</TableHeader>
+									<Table>
+										<TableRow>
+											<Element>You</Element>
+											<Element>Block</Element>
+											<Element>Sum</Element>
+											<Element>Modulo</Element>
+										</TableRow>
+										{ticket.details.playerNumbers.map((choice, index) => {
+											return (
+												<TableRow>
+													<Element>{choice}</Element>
+													<Element>{ticket.details?.redemption?.opponentNumbers[index]}</Element>
+													<Element>{3}</Element>
+													<Element>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
+												</TableRow>			
+											)
+										})}
+										<TableRow>
+											<Element></Element>
+											<Element></Element>
+											<Element></Element>
+											<Element><b>{ticket.details?.redemption?.resultingNumbers?.reduce((acc, number) => acc+number, 0)}</b></Element>
+										</TableRow>
+
+									</Table>							
+								</>
+							}
+
 						</>
 					)}
 
@@ -318,28 +347,24 @@ const Ticket = ({
 Ticket.propTypes = {
     ticket: PropTypes.object
 }
-// Ticket.defaultProps = {
-//     data: {
-// 		results: [
-// 			{ player: 3, block: 24, sum: 442, modulo: 2 },
-// 			{ player: 100, block: 122, sum: 35, modulo: 6 },
-// 			{ player: 70, block: 89, sum: 75, modulo: 15 },
-// 			{ player: 33, block: 4, sum: 576, modulo: 8 },
-// 		]
-// 	}
-// }
+
 
 const TicketHistoryCtn = styled.div`
 	overflow-y: scroll;
 	gap: 12px;
 	display: flex;
 	flex-direction: column;
+	align-items: center;
 `;
 
 const TicketHistory = ({
 	passLoadingStatus,
     tickets
 }) => {
+	const { forceWalletUpdate } = useWallet();
+
+	const [walletSynced, setWalletSynced] = useState(false);
+
 	console.log("# of Tickets in History", tickets.length)
 	const ticketList = tickets.map((ticket, index) => {
 		return (
@@ -351,9 +376,22 @@ const TicketHistory = ({
 		)
 	});
 
+	const handleSyncWallet = async () => {
+		passLoadingStatus("LOADING WALLET");
+		await forceWalletUpdate();
+		setWalletSynced(true);
+		passLoadingStatus(false);
+	}
+
     return (
 		<div>
+
 			<TicketHistoryCtn>
+				{tickets.length > 2 && !walletSynced &&
+					<StyledPrimaryButton onClick={handleSyncWallet}>
+						Sync Wallet
+					</StyledPrimaryButton>			
+				}
 				{ticketList}
 			</TicketHistoryCtn>
 		</div>
