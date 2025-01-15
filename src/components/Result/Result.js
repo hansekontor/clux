@@ -78,15 +78,21 @@ const Result = ({
     const { wallet } = ContextValue;
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;
-    const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
+    const redeemableTickets = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);
 	const [ticket,] = useState(location.state?.ticket || false);
+    console.log("ticket from state", ticket);
+    const [nextTicket, setNextTicket] = useState(false);
 	console.log("RESULT ticket", ticket?.details?.redemption)
 
     // manually stop loading screen
     useEffect(async () => {
-		if (ticket)
+		if (ticket) {
 	        passLoadingStatus(false);
-		else {
+            if (redeemableTickets.length > 0) {
+                const nextTicket = redeemableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
+                setNextTicket(nextTicket);
+            }
+		} else {
 			passLoadingStatus("NO TICKET SELECTED");
 			await sleep(2000);
 			history.push("/select")
@@ -94,12 +100,21 @@ const Result = ({
     }, [ticket]);
 
     // handlers
-    const handlePlayAgain = () => {
-        history.push('/select');
+    const handleButtonClick = () => {
+        if (nextTicket) {
+            history.push({
+                pathname: '/waitingroom', 
+                state: {
+                    ticketToRedeem: nextTicket
+                }
+            });
+        } else {
+            history.push('/select');
+        }
     }
 
     // DOM variables
-    const playButtonText = "Play Again";
+    const buttonText = nextTicket ? "Redeem Next Ticket" : "Play Again";
 	const displayAmount = ticket?.details?.redemption?.actualPayoutNum / 100;
 
     const animationName = ticket?.details?.redemption?.actualPayoutNum > 0 ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
@@ -151,9 +166,9 @@ const Result = ({
             </Scrollable>
             <Footer
                 origin={"/result"}
-                buttonOnClick={handlePlayAgain}
-                buttonText={playButtonText}
-                ticketIndicator={unredeemedIndicator}
+                buttonOnClick={handleButtonClick}
+                buttonText={buttonText}
+                ticketIndicator={redeemableTickets.length}
                 slpBalances={slpBalancesAndUtxos}
             />
         </>
