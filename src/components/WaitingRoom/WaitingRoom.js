@@ -73,7 +73,8 @@ const WaitingRoom = ({
 	} = ContextValue;
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;
-    const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
+	// otherwise the indicator is showing the number of unconfirmed issuetx, this is an exception, showing only redeemable tx
+    const unredeemedIndicator = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx).length;
 
     // states
 	console.log("state from location", location.state);
@@ -82,6 +83,7 @@ const WaitingRoom = ({
 	const [hasRequested, setHasRequested] = useState(false);
 	const [apiError, setApiError] = useState(false);
 	const [modal, modalHolder] = Modal.useModal();
+	const [isAlternativeTicket, setIsAlternativeTicket] = useState(false);
 
 	const { broadcastTx } = useBCH();
 
@@ -229,13 +231,23 @@ const WaitingRoom = ({
 		if (!activeTicket && !hasRequested) {
 			passLoadingStatus(false);
 			modal.info(waitingInfoConfig);
+
+			if (unredeemedIndicator > 0) {
+				const unredeemedTicket = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);
+				setActiveTicket(unredeemedTicket); 
+				setIsAlternativeTicket(true);
+			}
 		}
 	}, [activeTicket])
 
     // variables in DOM
-    const waitingInfoText = "Your ticket has been broadcasted but its block was not finalized yet. After that, your ticket can be redeemed. Average time between blocks is 10 minutes. You will be notified via email."
+	const waitingTime = `Broadcast Time: ${new Date().toLocaleDateString()}, Estimated Wait: 10 minutes `;
     const waitingInfoConfig = {
-        content: <p>{waitingInfoText}</p>,
+        content: <div>
+					<p>Your ticket has been broadcast. Your ticket may be redeemed after its block is finalized.</p>
+					<p>{waitingTime}</p>
+					<p>You will be notified	via email.</p>
+				</div>,
 		key: 0
     }
 	const requestFailedText = "Your ticket has not been broadcasted yet. Please try again later. Average time between blocks is 10 minutes."
@@ -247,6 +259,8 @@ const WaitingRoom = ({
 
     const animationName = animationLabels.CLUX.IDLE.SHADOWBOX;
     const animationPath = animationLabels.PUBLICPATH + animationName;
+	
+	const redeemButtonText = isAlternativeTicket ? "Redeem Previous Ticket" : "Redeem Ticket";
 
     // handlers
     const handleButtonClick = async () => {
@@ -295,14 +309,13 @@ const WaitingRoom = ({
 				<RandomNumbers fixedRandomNumbers={activeTicket ? activeTicket.details.playerNumbers : playerNumbers} />
 				<PrimaryButton onClick={handleButtonClick}>
 					{activeTicket && !apiError? (
-						<>
-							{isRedeemed ? "Redeem" : "Wait..."}							
+						<>	
+							{isRedeemed ? redeemButtonText : "Wait..."}							
 						</>
 					) : (
-						<>
+						<> 
 							{"Back To Home"}	
 						</>
-						
 					)}
 				</PrimaryButton>  
 				<SupportBar ticketIndicator={unredeemedIndicator} slpBalances={slpBalancesAndUtxos}/>
