@@ -83,23 +83,27 @@ const Select = ({
 }) => {
     const history = useHistory();
 
-    const [fadeOut, setFadeOut] = useState(false);
-
-    // find ticket indicator
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
+
+    const [fadeOut, setFadeOut] = useState(false);
+
+    // find ticket indicator
+
  
 	// console.log("tickets from wallet state", tickets.length);
 
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
-	useEffect(() => {
-		passLoadingStatus(false);
-	}, [])
+
+    // manually turn off loading after error redirects...
+    // check if this interferes with initial wallet loading 
+    useEffect(async () => {
+        passLoadingStatus(false);
+    });
 
     const handleBuyTicket = async () => {
         setFadeOut(true);
