@@ -1,5 +1,6 @@
 // node modules
 import React from "react";
+import { useHistory } from 'react-router-dom';
 import styled from "styled-components";
 
 // assets
@@ -15,13 +16,20 @@ const HeaderCtn = styled.div`
 const HeaderIcon = styled.img`
     height: 90%;
     width: auto;
+    cursor: pointer;
 `;
 
 
 const Header = ({...props}) => {
+
+    const history = useHistory();
+
+    const handleOnClick = () => {
+        return history.push("/select");
+    }
     return (
         <HeaderCtn {...props}>
-            <HeaderIcon src={CluxLogo} />
+            <HeaderIcon src={CluxLogo} onClick={handleOnClick}/>
         </HeaderCtn>
     )
 }
