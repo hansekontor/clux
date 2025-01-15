@@ -23,10 +23,9 @@ const Result = lazy(() => import('./Result/Result'));
 const Wallet = lazy(() => import('./Wallet/Wallet'));
 const Cashout = lazy(() => import('./Cashout/Cashout'));
 const NotFound = lazy(() => import('./NotFound'));
+const OnBoarding = lazy(() => import('./OnBoarding/OnBoarding'))
 import { LoadingAnimation } from '@components/Common/CustomLoader';
 import { CashLoadingIcon, LoadingBlock } from '@components/Common/CustomIcons';
-import PrimaryButton from '@components/Common/PrimaryButton';
-import { bcrypto } from '@hansekontor/checkout-components';
 
 import useWallet from '@hooks/useWallet';
 
@@ -124,21 +123,6 @@ export const WalletCtn = styled.div`
     }
 `;
 
-const Input = styled.input`
-    border-radius: 12px;
-    background-color: #F6F6F6;
-    color: #00000;
-    font-family: "Inter-Semibold", Helvetica;
-    font-size: 16px;
-    font-weight: 500;
-    height: 52px;
-    cursor: pointer;
-    width: 90%;
-    border: ${props => props.error ? "1px solid red" : "none"};
-	text-indent: 12px;
-    margin-bottom: 24px;
-`;
-
 const sleep = (ms) => {
 	return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -154,7 +138,7 @@ const App = () => {
     const [playerNumbers, setPlayerNumbers] = useState(false);
     const [activeTicket, setActiveTicket] = useState(false);
     const [payout, setPayout] = useState(false);
-    const [isProtected, setIsProtected] = useState(true);
+    const [isProtected, setIsProtected] = useState(false);
 
 
 	// console.log("App.js wallet state", wallet.state);
@@ -191,18 +175,6 @@ const App = () => {
         }
     }, []);
 
-    const handlePasswordSubmit = (e) => {
-        e.preventDefault();
-        const password = e.target.password.value;
-        const passwordBuf = Buffer.from(password, 'utf-8');
-        const hashedPassword = bcrypto.SHA256.digest(passwordBuf).toString('hex');
-        
-        const expectedHash = "615da616fc5a5bcd93bc21237807c08eeacbe120ca60e0c3e228712be644596d";
-
-        const verified = hashedPassword === expectedHash;
-        console.log("pw verified", verified);
-        setIsProtected(!verified);
-    }
 
     return (
         <>
@@ -211,85 +183,84 @@ const App = () => {
                     <CustomApp>
                         <WalletBody>
                             <WalletCtn>
-                                {isProtected ?
-                                    <form onSubmit={(e) => handlePasswordSubmit(e)}>
-                                        <Input 
-                                            name="password"
-                                            type="text"
-                                            placeholder="Password"
-                                            required={true}
-                                        />               
-                                        <PrimaryButton type="submit">Log In</PrimaryButton>                         
-                                    </form>
-                                : 
-                                    <Suspense fallback={codeSplitLoader}>
-                                        {loader && 
-                                            <>
-                                                <LoadingAnimation loadingStatus={loadingStatus}/>
-                                            </>
-                                        }
-                                        {wallet && isValidStoredWallet(wallet) ? (
-                                            <Switch>
-                                                <Route path="/select">
-                                                    <Select
-                                                        passRandomNumbers={setPlayerNumbers}
-                                                        passLoadingStatus={setLoadingStatus}
-                                                    />
-                                                </Route>
-                                                <Route path="/checkout">
-                                                    <Checkout 
-                                                        passLoadingStatus={setLoadingStatus}
-                                                        playerNumbers={playerNumbers}
-                                                        passPurchasedTicket={setActiveTicket}
-                                                    />
-                                                </Route>
-                                                <Route path="/backup">
-                                                    <Backup 
-                                                        purchasedTicket={activeTicket}
-                                                        passLoadingStatus={setLoadingStatus}
-                                                    />
-                                                </Route>
-                                                <Route path="/game">
-                                                    <Game 
-                                                        passLoadingStatus={setLoadingStatus}
-                                                        ticket={activeTicket}
-                                                    />
-                                                </Route>
-                                                <Route path="/result">
-                                                    <Result 
-                                                        passLoadingStatus={setLoadingStatus}
-                                                        payout={payout}
-                                                        ticket={activeTicket}
-                                                    />
-                                                </Route>
-                                                <Route path="/waitingroom">
-                                                    <WaitingRoom 
-                                                        passLoadingStatus={setLoadingStatus}
-                                                        activeTicket={activeTicket}
-                                                        playerNumbers={playerNumbers}
-                                                    />
-                                                </Route>
-                                                <Route path="/wallet">
-                                                    <Wallet 
-                                                        passLoadingStatus={setLoadingStatus} 
-                                                    />
-                                                </Route>
-                                                <Route path="/cashout">
-                                                    <Cashout 
-                                                        passLoadingStatus={setLoadingStatus}
-                                                    />
-                                                </Route>
-                                                <Redirect exact from="/" to="/select" />
-                                                <Route component={NotFound} />
-                                            </Switch>
-                                        ) : (
-                                            <>
-                                                <LoadingAnimation loadingStatus={"LOADING WALLET"}/>
-                                            </>
-                                        )}
+                                <Suspense fallback={codeSplitLoader}>
+                                    {isProtected ?
+                                        <OnBoarding 
+                                            passIsProtected={setIsProtected}
+                                        />
+                                    : 
+                                        <>
+                                            {loader && 
+                                                <>
+                                                    <LoadingAnimation loadingStatus={loadingStatus}/>
+                                                </>
+                                            }
 
-                                    </Suspense> 
-                                }
+                                            {wallet && isValidStoredWallet(wallet) ? (
+                                                <>
+                                                    <Switch>
+                                                        <Route path="/select">
+                                                            <Select
+                                                                passRandomNumbers={setPlayerNumbers}
+                                                                passLoadingStatus={setLoadingStatus}
+                                                            />
+                                                        </Route>
+                                                        <Route path="/checkout">
+                                                            <Checkout 
+                                                                passLoadingStatus={setLoadingStatus}
+                                                                playerNumbers={playerNumbers}
+                                                                passPurchasedTicket={setActiveTicket}
+                                                            />
+                                                        </Route>
+                                                        <Route path="/backup">
+                                                            <Backup 
+                                                                purchasedTicket={activeTicket}
+                                                                passLoadingStatus={setLoadingStatus}
+                                                            />
+                                                        </Route>
+                                                        <Route path="/game">
+                                                            <Game 
+                                                                passLoadingStatus={setLoadingStatus}
+                                                                ticket={activeTicket}
+                                                            />
+                                                        </Route>
+                                                        <Route path="/result">
+                                                            <Result 
+                                                                passLoadingStatus={setLoadingStatus}
+                                                                payout={payout}
+                                                                ticket={activeTicket}
+                                                            />
+                                                        </Route>
+                                                        <Route path="/waitingroom">
+                                                            <WaitingRoom 
+                                                                passLoadingStatus={setLoadingStatus}
+                                                                activeTicket={activeTicket}
+                                                                playerNumbers={playerNumbers}
+                                                            />
+                                                        </Route>
+                                                        <Route path="/wallet">
+                                                            <Wallet 
+                                                                passLoadingStatus={setLoadingStatus} 
+                                                            />
+                                                        </Route>
+                                                        <Route path="/cashout">
+                                                            <Cashout 
+                                                                passLoadingStatus={setLoadingStatus}
+                                                            />
+                                                        </Route>
+                                                        <Redirect exact from="/" to="/select" />
+                                                        <Route component={NotFound} />
+                                                    </Switch>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <LoadingAnimation loadingStatus={"LOADING WALLET"}/>
+                                                </>
+                                            )}      
+
+                                        </> 
+                                    }
+                                </Suspense> 
                             </WalletCtn>
                         </WalletBody>
                     </CustomApp>
