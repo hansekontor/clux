@@ -432,3 +432,62 @@ export const addRedeemUtxos = (slpBalancesAndUtxos, address, tx) => {
 	
 	return newSlpBalancesAndUtxos;
 }
+
+export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
+    const slpUtxos = slpBalancesAndUtxos.slpUtxos;
+    const nonSlpUtxos = slpBalancesAndUtxos.nonSlpUtxos;   
+    for (const coin of coinsUsed) {
+        const slpCoinIndex = slpUtxos.findIndex(utxo => utxo.hash === coin.hash);
+        console.log("slpCoinIndex", slpCoinIndex);
+        if (slpCoinIndex >= 0) {
+            slpUtxos.splice(slpCoinIndex, 1);
+        } else {
+            const nonSlpCoinIndex = nonSlpUtxos.findIndex(utxo => utxo.hash === coin.hash);
+            console.log("nonSlpCoinIndex", nonSlpCoinIndex);
+            if (nonSlpCoinIndex >=0) {
+                nonSlpUtxos.splice(nonSlpCoinIndex, 1);
+            }
+        }
+    }
+
+    let tokensById = {};
+
+	for (let i = 0; i < slpUtxos.length; i++) {
+		const slpUtxo = slpUtxos[i];
+		let token = tokensById[slpUtxo.slp.tokenId];
+
+		if (token) {
+			// Minting baton does nto have a slpUtxo.tokenQty type
+			token.hasBaton = slpUtxo.slp.type === 'BATON';
+
+			if (!token.hasBaton) {
+                console.log("token.balance prior", token.balance);
+				token.balance = new BigNumber({...token.balance, _isBigNumber:true}).plus(
+					new BigNumber(slpUtxo.slp.value)
+				);
+                console.log("token.balance post", token.balance);
+			}
+
+		} else {
+			token = {};
+			token.info = sandboxTokenInfo;
+			token.tokenId = slpUtxo.slp.tokenId;
+			token.hasBaton = slpUtxo.slp.type === 'BATON';
+			if (!token.hasBaton) {
+				token.balance = new BigNumber(slpUtxo.slp.value);
+			} else {
+				token.balance = new BigNumber(0);
+			}
+
+			tokensById[slpUtxo.slp.tokenId] = token;
+		}
+	}
+
+	const tokens = Object.values(tokensById);
+	// console.log(`tokens`, tokens);
+	return {
+		tokens,
+		nonSlpUtxos,
+		slpUtxos,
+	};
+}
