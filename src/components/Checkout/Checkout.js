@@ -9,7 +9,14 @@ import bio from 'bufio';
 import {
 	KeyRing, 
 	TX, 
+    MTX,
+    bcrypto,
+    Script,
+    Coin
 } from '@hansekontor/checkout-components';
+const { SHA256 } = bcrypto;
+import { U64 } from 'n64';
+import { stringify as uuidStringify } from 'uuid';
 
 import {
 	Payment, 
@@ -191,7 +198,7 @@ const Checkout = ({
     // find ticket indicator
     const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
-    const { tickets } = getWalletState(wallet);
+    const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
 	const { forceWalletUpdate, addIssueTxs } = useWallet();
 
     // states
@@ -201,12 +208,9 @@ const Checkout = ({
     const [isStage1, setState1] = useState(true);
     const [paymentProcessor, setPaymentProcessor] = useState("NMIC");
     const [isKYCed, setIsKYCed] = useState(false);
-    const [email, setEmail] = useState(false);
     const [kycConfig, setKycConfig] = useState(false);
 	const [paymentRequest, setPaymentRequest] = useState(false);
 	const [paymentMetadata, setPaymentMetadata] = useState(false);
-	const [paymentFromPr, setPaymentFromPr] = useState(false);
-	const [payment, setPayment] = useState(false);
 	const [purchaseOptions, setPurchaseOptions] = useState(false);
 
 
@@ -225,7 +229,7 @@ const Checkout = ({
     const agreeButtonText = "Agree and Continue";
     const purchaseButtonText = `Pay - $${10*purchaseOptions.ticketQuantity} - DEMO`; 
 
-	// get payment request
+	// initialize payment request
 	useEffect(async () => {
 		if (purchaseOptions.ticketQuantity) {
 			console.log("get invoice for qnt", purchaseOptions.ticketQuantity);
@@ -241,20 +245,11 @@ const Checkout = ({
 			// console.log("res", res);
 			const invoiceRes = await res.arrayBuffer();
 			const invoiceBuf = Buffer.from(invoiceRes);
-			// const invoiceRes = await brq({
-			// 	...lottoApiClient,
-			// 	path: '/v1/invoice',
-			// 	method: 'POST',
-			// 	json: { quantity: purchaseOptions.tokenQantity },
-			// });
-			
+	
 			const pr = PaymentRequest.fromRaw(invoiceBuf);
-			const payment = new Payment({
-				memo: pr.paymentDetails.memo
-			});
+
 			console.log("pr", pr);
 			setPaymentRequest(pr);
-			setPaymentFromPr(payment);
 		}
 	}, [purchaseOptions])
 
@@ -262,30 +257,100 @@ const Checkout = ({
 	useEffect(async () => {
 		try {
 			if (paymentMetadata && paymentRequest && !ticketIssued) {
-				console.log("finalize payment");
+				console.log("finalize payment");			
+                const payment = new Payment({
+                    memo: paymentRequest.paymentDetails.memo
+                });
+                console.log("payment", payment);
+
 				// get message to sign
 				const bw = bio.write();
 				const merchantData = paymentRequest.paymentDetails.getData('json');
 				console.log("merchant data", merchantData);
-				const paymentDataBuf = Buffer.from(merchantData.paymentdata, 'hex')
+				const paymentDataBuf = Buffer.from(merchantData.paymentdata, 'hex');
+                const br = bio.read(paymentDataBuf);
+                const id = uuidStringify(br.readBytes(16));
+                const amount = br.readU32() / 100;
+                console.log({id, amount});
+
 				bw.writeBytes(paymentDataBuf)
 				const playerNumbersBuf = Buffer.from(playerNumbers, 'hex');
 				bw.writeBytes(playerNumbersBuf);
-				bw.writeBytes(Buffer.from(paymentProcessor, 'utf-8'));
-				bw.writeVarString(paymentMetadata);
+                
+                const coinsUsed = [];
+
+                if (purchaseOptions.type === "fiat") {
+                    bw.writeBytes(Buffer.from(paymentProcessor, 'utf-8'));
+                    bw.writeVarString(paymentMetadata);                    
+                } else {
+                    // get token coins
+                    const sortedTokenUtxos = slpBalancesAndUtxos.slpUtxos.filter(u => u.slp?.tokenId && ['MINT', 'SEND'].includes(u.slp.type))
+                        .sort((a, b) => parseInt(a.slp.value) - parseInt(b.slp.value));
+                    console.log("sortedTokenUtxos", sortedTokenUtxos);
+
+                    // construct tx
+                    const tx = new MTX();
+                    const prOutputs = paymentRequest.paymentDetails.outputs;
+                    for (let i = 0; i < prOutputs.length; i++) {
+                        tx.addOutput(Script.fromRaw(prOutputs[i].script), prOutputs[i].value);
+                    }
+                    console.log("tx.outputs", tx.outputs);
+
+                    let baseAmount = amount * 100;
+                    console.log("baseAmount", baseAmount);
+                    for (let i = 0; i < sortedTokenUtxos.length; i++) {
+                        const utxo = sortedTokenUtxos[i];
+                        tx.addCoin(Coin.fromJSON(utxo));
+                        coinsUsed.push(utxo);
+                        baseAmount -= parseInt(utxo.slp.value);
+                        if (baseAmount <= 0)
+                            break;
+                    }
+
+                    // this error should never happen
+                    if (baseAmount > 0)
+                        throw new Error('Insufficient token funds in address');
+
+                    const baseChange = parseInt(baseAmount * -1);
+                    console.log("baseChange", baseChange);
+                    if (baseChange > 0) {
+                        prOutputs[0] = Buffer.concat(
+                            prOutputs[0],
+                            U64.fromInt(baseChange).toBE(Buffer)
+                        )
+                        tx.addOutput(wallet.Path1899.cashAddress);
+                        console.log("added change to outputs", tx.outputs);
+                    }
+
+                    // sign tx
+                    const hashTypes = Script.hashType;
+                    const sighashType = hashTypes.ALL | hashTypes.ANYONECANPAY | hashTypes.SIGHASH_FORKID;
+                    
+                    const buyerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+                    
+                    tx.sign(buyerKeyring, sighashType);
+                    const additionalSatsNeeded = tx.getMinFee() - tx.getFee();
+                    console.log("addtionalStatsNeeded", additionalSatsNeeded);
+                    console.log(tx);
+                    payment.transactions.push(tx.toRaw());
+                    payment.refundTo.push({
+                        value: 546,
+                        script: Script.fromAddress(wallet.Path1899.cashAddress).toRaw()
+                    });
+                }
+
 				const msgBuf = bw.render();
 				console.log("msgBuf", msgBuf);
 
 				// get signature
 				const sigBuf = signMessage(wallet.Path1899.fundingWif, msgBuf);
 
-				const newPayment = paymentFromPr;
-				newPayment.setData({
+				payment.setData({
 					buyerpubkey: wallet.Path1899.publicKey,
 					signature: sigBuf.toString('hex'),
 					paymentdata: msgBuf.toString('hex')
 				});
-				console.log("newPayment", newPayment);
+				console.log("payment", payment);
 				lottoApiClient.headers = {
 					'Content-Type': `application/${purchaseOptions.type}-payment`
 				};
@@ -293,7 +358,7 @@ const Checkout = ({
 					...lottoApiClient, 
 					path: '/v1/pay',
 					method: 'POST',
-					body: newPayment.toRaw(),
+					body: payment.toRaw(),
 				};
 
 				const response = await brq(brqOptions);
@@ -311,15 +376,20 @@ const Checkout = ({
 				setTicketIssued(true);
 
 				// put txs in storage
-				await addIssueTxs(txs);
+				await addIssueTxs(txs, coinsUsed);
 
-				// advance to backup
-				history.push('/backup');
+				// advance to backup/waiting room
+                const isFirstTicket = tickets.length === 0;
+                if (isFirstTicket) {
+                    history.push('/backup');
+                } else { 
+                    history.push('/waitingroom');
+                }
 			} 
 		} catch (err) {
 			console.error(err);
 		}
-	}, [paymentMetadata, payment])
+	}, [paymentMetadata, paymentRequest])
 
 
     // handlers
@@ -350,7 +420,20 @@ const Checkout = ({
     }
     const handleEmailAndKYC = async (e) => {
         e.preventDefault();
-        const email = e.target.email.value;
+        // const email = e.target.email.value;
+        // const emailBuf = Buffer.from(email, 'utf-8');
+        // const pubkey = wallet.Path1899.publicKey;
+        // const playerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+        // const signature = playerKeyring.sign(SHA256.digest(emailBuf));
+        // const lottoApiClient = bcurl.client({
+        //     url: "https://lsbx.nmrai.com", 
+        //     timeout: 20000
+        // });
+        // const res = await lottoApiClient.post('/v1/user', {
+        //     email, 
+        //     pubkey,
+        //     signature
+        // }); 
         // check if KYC necessary
         // if yes: create kyc config            
         // const accessToken = "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6InhjYjlmbiIsImhhc2giOiJiZDZkMDM2OWQwYWI1MjE3YzJjNzE0ZTVhN2U4ZjIxOGM5YTliNzMyY2QwZjY4Y2RlNWZmYTYwNTRkNjA3NDNjIiwiaWF0IjoxNzIzNTM3MTcwLCJleHAiOjE3MjM2MjM1NzAsImp0aSI6ImYxYjczYjg4LTA3NTQtNGQ4OC05NGZkLTMzNGVhOTI1OThlYiJ9.P2QYdyjmxe1MpaxAD8AUk_21ZrVJWKUeWeoWf1Ia_tC8XN5l2k38o7-fLnxI-pxIyRatjS7BmYsh2g15v39qJQw4uHOMq5W3m5VyB1rmmYLCoPftfKjtpvdRhGExgsaKRk9t5hT-YiCiBBkxYIFuBA6XEzb33GUGQNvkAWhV8c4";
@@ -365,6 +448,10 @@ const Checkout = ({
         // setKycConfig(config);   
         setIsKYCed(true);
         console.log("setIsKYced to true")
+    }
+    const handleEtokenPayment = (e) => {
+        e.preventDefault();
+        setPaymentMetadata(true);
     }
 
     // useEffect(()=> {
@@ -436,8 +523,14 @@ const Checkout = ({
                                     <Input 
                                         placeholder="Enter your Email"
                                         name="email"
+                                        type="text"
+                                        readOnly={true}
                                     />
+                                    <p>
+                                        <b>Your email is required</b> and is only used to announce results and maintenance updates. <b>We do not send marketing emails.</b>
+                                    </p>                                
                                 </EmailForm>
+
                                 <PrimaryButton form="email-form">Continue</PrimaryButton>
                             </FlexGrow>
                         </>  
@@ -460,7 +553,7 @@ const Checkout = ({
 									<input type="number" name="ticketQuantity" defaultValue={1}/>
 									<select type="select" name="type">
 										<option value="fiat">Fiat</option>
-										{/* <option value="etoken">eToken</option> */}
+										<option value="etoken">eToken</option>
 									</select>						
 								</form>
 							</Scrollable>
@@ -477,9 +570,6 @@ const Checkout = ({
                                     {"Confirm"}
                                 </PrimaryButton>
                             </FooterCtn>
-
-
-
 						</>
 					) : (
 						<>
@@ -501,10 +591,15 @@ const Checkout = ({
 												To purchase this lottery ticket your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint our potential payout. This game supports the payout.
 											</InfoText>
 											<PaymentHeader>Payment</PaymentHeader>
-											<CustomRadioGroup onChange={handlePaymentChange} value={paymentProcessor}>
-												<Radio value={"NMIC"} >Credit Card</Radio>
-												{/* <Radio value={"other"} >Other</Radio> */}
-											</CustomRadioGroup>
+                                            {purchaseOptions.type === "fiat" ? 
+                                                <CustomRadioGroup onChange={handlePaymentChange} value={paymentProcessor}>
+                                                    <Radio value={"NMIC"} >Credit Card</Radio>
+                                                    {/* <Radio value={"other"} >Other</Radio> */}
+                                                </CustomRadioGroup>        
+                                            : 
+                                                <p>You are paying with eToken.</p>
+                                            }
+
 
 											{paymentProcessor === "NMIC" && (
 												<NmiCheckoutForm 
@@ -518,12 +613,18 @@ const Checkout = ({
 									</Scrollable>
 									<FooterCtn>
 										<EvenLighterFooterBackground />
-										<PrimaryButton 
-											type="submit"
-											form={`${paymentProcessor}-form`}
-										>
-											{purchaseButtonText}
-										</PrimaryButton>
+                                        {purchaseOptions.type === "fiat" ? 
+                                            <PrimaryButton 
+                                                type="submit"
+                                                form={`${paymentProcessor}-form`}
+                                            >
+                                                {purchaseButtonText}
+                                            </PrimaryButton>         
+                                        : 
+                                            <PrimaryButton onClick={handleEtokenPayment}>
+                                                Pay with eToken
+                                            </PrimaryButton>                               
+                                        }
 									</FooterCtn>
 								</>              
 							)}    

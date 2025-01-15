@@ -12,7 +12,8 @@ import {
     isLegacyMigrationRequired,
 	getSlpBalancesAndUtxos,
 	addSlpToRedeemTx,
-	addRedeemUtxos
+	addRedeemUtxos,
+    removeUsedCoins
 } from '@utils/cashMethods';
 import { isValidCashtabSettings } from '@utils/validation';
 import localforage from 'localforage';
@@ -178,13 +179,21 @@ const useWallet = () => {
         // console.timeEnd(`update.${ms}`);
     };
 
-	const addIssueTxs = async (txs) => {
+	const addIssueTxs = async (txs, coinsUsed) => {
 		try {
             console.log("adding unredeemed", txs)
             const ticketHistory = new TicketHistory(wallet.state.tickets);
             await ticketHistory.addTicketsFromIssuance(txs);
-            console.log("added to history:", ticketHistory.tickets)
-			const newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets });
+            console.log("added to history:", ticketHistory.tickets);
+
+            let newState;
+            if (coinsUsed.length > 0) {
+                const newSlpBalancesAndUtxos = removeUsedCoins(wallet.state.slpBalancesAndUtxos, coinsUsed);
+                newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets, slpBalancesAndUtxos: newSlpBalancesAndUtxos });
+            } else {
+                newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets });
+            }
+
             console.log("newState", newState);
 
 			wallet.state = newState;
