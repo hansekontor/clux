@@ -102,7 +102,7 @@ const Game = ({
 	},[])
 
     // load labels and manually stop loading screen
-    useEffect(() => {    
+    useEffect(async () => {    
 		console.log("GAME useEffect redeem Hash", redeemHash)
         if (redeemHash) {
 			console.log("redeemHash", redeemHash);
@@ -131,6 +131,7 @@ const Game = ({
 					celebration: win ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION    
 				})
 
+				await sleep(1000);
 				passLoadingStatus(false);
 			}
 
