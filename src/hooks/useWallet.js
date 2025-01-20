@@ -12,7 +12,8 @@ import {
     isLegacyMigrationRequired,
 	getSlpBalancesAndUtxos,
 	addSlpToRedeemTx,
-	addRedeemUtxos,
+    addSlpToSendTx,
+	addUtxos,
     removeUsedCoins
 } from '@utils/cashMethods';
 import { isValidCashtabSettings } from '@utils/validation';
@@ -128,7 +129,6 @@ const useWallet = () => {
             }
 
 			const ticketData = await getTicketData(wallet.Path1899.cashAddress);
-			
 			const utxosHaveChanged = !isEqual(ticketData.tokenUtxos, wallet?.state?.utxos)
 			const slpBalancesAndUtxos = getSlpBalancesAndUtxos(ticketData.utxos);
             const ticketHistory = new TicketHistory(wallet.state.tickets);
@@ -238,7 +238,7 @@ const useWallet = () => {
 			console.log("addRedeem slpTx", slpTx);
             const ticketHistory = new TicketHistory(wallet.state.tickets);
             await ticketHistory.addTicketFromRedemption(slpTx, redeemData);
-			const newSlpBalancesAndUtxos = addRedeemUtxos(wallet.state.slpBalancesAndUtxos, wallet.Path1899.cashAddress, slpTx);
+			const newSlpBalancesAndUtxos = addUtxos(wallet.state.slpBalancesAndUtxos, wallet.Path1899.cashAddress, [slpTx]);
 			const newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets, slpBalancesAndUtxos: newSlpBalancesAndUtxos });
 			wallet.state = newState;
 			setWallet(wallet);		
@@ -252,6 +252,28 @@ const useWallet = () => {
             // console.timeEnd(`update.${ms}`);		
 		}
 	}
+    const addCashout = async (txs, coinsBurned) => {
+        try {
+            const reducedSlpBalancesAndUtxos = removeUsedCoins(wallet.state.slpBalancesAndUtxos, coinsBurned);
+            const slpTxs = txs.map(tx => addSlpToSendTx(tx));
+            const newSlpBalancesAndUtxos = addUtxos(reducedSlpBalancesAndUtxos, wallet.Path1899.cashAddress, slpTxs);
+
+            const newState = Object.assign(wallet.state, { slpBalancesAndUtxos: newSlpBalancesAndUtxos });
+            console.log("newState", newState);
+
+			wallet.state = newState;
+			setWallet(wallet);		
+
+			await writeWalletState(wallet, newState);
+			setApiError(false);	
+		} catch (error) {
+			console.log(`Error in addCashout(txs)`);
+            console.log(error);
+            // Set this in state so that transactions are disabled until the issue is resolved
+            setApiError(true);
+            // console.timeEnd(`update.${ms}`);		
+		}
+    }
 
     const getActiveWalletFromLocalForage = async () => {
         let wallet;
@@ -936,6 +958,7 @@ const useWallet = () => {
 		addIssueTxs, 
 		addMinedTicketToStorage,
 		addRedeemTxToStorage,
+        addCashout
     };
 };
 
