@@ -7,7 +7,7 @@ import { CopyOutlined } from '@ant-design/icons';
 // custom react modules
 import PrimaryButton from '@components/Common/PrimaryButton';
 import { WalletContext } from '@utils/context';
-import { infoNotification } from '@components/Common/Notifications';
+import { successNotification } from '@components/Common/Notifications';
 
 // styled css modules
 const ImportWalletCtn = styled.div`
@@ -94,7 +94,7 @@ const ImportWallet = ({
         passLoadingStatus("IMPORT WALLET");
         createWallet(formData.mnemonic);
         passLoadingStatus(false);
-        infoNotification("Imported Wallet");
+        successNotification("Imported Wallet");
     }
 
     console.log("dirty", formData.dirty, "isvalidmnemonic", isValidMnemonic);
