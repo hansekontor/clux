@@ -136,7 +136,7 @@ const Collapsible = styled.div`
 	transition: height 0.5s ease-in-out;
 	width: 95%;
 `;
-const StyledPrimaryButton = styled(PrimaryButton)`
+const SyncButton = styled(PrimaryButton)`
 	font-family: "Helvetica";
 	font-size: 14px;
 	font-weight: 600;
@@ -151,12 +151,14 @@ const shortifyHash = (hash, length) => {
 
 const Ticket = ({
 	passLoadingStatus,
-	ticket
+	ticket, 
+	...props
 }) => {
 	const history = useHistory();
 
     const [collapsed, setCollapsed] = useState(false);
 	const [height, setHeight] = useState(collapsed ? 0 : undefined);
+	const [combinedNumbers, setCombinedNumbers] = useState(false);
 
 	const ref = useRef(null);
 
@@ -184,14 +186,13 @@ const Ticket = ({
 		});
 	}
 
-	console.log("ticket", ticket);
 	const TableRows = ticket.details.playerNumbers.map((choice, index) => {
 		return (
-			<TableRow>
-				<Element>{choice}</Element>
-				<Element>{ticket.details.redemption?.opponentNumbers[index]}</Element>
-				<Element>{3}</Element>
-				<Element>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
+			<TableRow key={index}>
+				<Element key={0}>{choice}</Element>
+				<Element key={1}>{ticket.details.redemption?.opponentNumbers[index]}</Element>
+				<Element key={2}>{3}</Element>
+				<Element key={3}>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
 			</TableRow>			
 		)
 	});                       
@@ -223,8 +224,20 @@ const Ticket = ({
 	const displayPayoutAmount = ticket.details?.payoutAmount / 100;
 	const displayResultingNumbers = ticket.details?.game?.resultingNumbers?.join(", ");
 
+	if (ticket.details?.redemption?.opponentNumbers && ticket.details?.playerNumbers && !combinedNumbers) {
+		const combined = [];
+		for (let i = 0; i < 4;i++) {
+			const buf = Buffer.alloc(2);
+			buf.writeUInt8(ticket.details.redemption.opponentNumbers[i], 0);
+			buf.writeUInt8(ticket.details.playerNumbers[i], 1);
+			const combinedNum = buf.readInt16LE();	
+			combined.push(combinedNum);
+		}
+		setCombinedNumbers(combined);
+	}
+
     return (
-        <TicketCtn>
+        <TicketCtn {...props}>
             <Item onClick={handleTicketOnClick}>
                 <LeftCtn>
                     <StyledCircle>
@@ -304,37 +317,39 @@ const Ticket = ({
 							
 							<Divider />
 							
-							{ticket.details?.playerNumbers && ticket.details?.redemption?.opponentNumbers && ticket.details?.redemption?.resultingNumbers &&
+							{combinedNumbers && ticket.details?.redemption?.resultingNumbers &&
 								<>
 									<TableHeader>Ticket Calculations</TableHeader>
 									<Table>
-										<TableRow>
-											<Element>You</Element>
-											<Element>Block</Element>
-											<Element>Sum</Element>
-											<Element>Modulo</Element>
-										</TableRow>
-										{ticket.details.playerNumbers.map((choice, index) => {
-											return (
-												<TableRow>
-													<Element>{choice}</Element>
-													<Element>{ticket.details?.redemption?.opponentNumbers[index]}</Element>
-													<Element>{3}</Element>
-													<Element>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
-												</TableRow>			
-											)
-										})}
-										<TableRow>
-											<Element></Element>
-											<Element></Element>
-											<Element></Element>
-											<Element><b>{ticket.details?.redemption?.resultingNumbers?.reduce((acc, number) => acc+number, 0)}</b></Element>
-										</TableRow>
-
+										<thead>
+											<TableRow>
+												<Element key={0}	>You</Element>
+												<Element key={1}>Block</Element>
+												<Element key={2}>Combination</Element>
+												<Element key={3}>Modulo</Element>
+											</TableRow>											
+										</thead>
+										<tbody>
+											{ticket.details.playerNumbers.map((choice, index) => {
+												return (
+													<TableRow key={index}>
+														<Element>{choice}</Element>
+														<Element>{ticket.details?.redemption?.opponentNumbers[index]}</Element>
+														<Element>{combinedNumbers[index]}</Element>
+														<Element>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
+													</TableRow>			
+												)
+											})}
+											<TableRow key={"summary"}>
+												<Element key={0}></Element>
+												<Element key={1}></Element>
+												<Element key={2}></Element>
+												<Element key={3}><b>{ticket.details?.redemption?.resultingNumbers?.reduce((acc, number) => acc+number, 0)}</b></Element>
+											</TableRow>
+										</tbody>
 									</Table>							
 								</>
 							}
-
 						</>
 					)}
 
@@ -416,7 +431,7 @@ const TicketHistory = ({
 			<TicketHistoryCtn>
 				{tickets.length > 2 && !walletSynced &&
 						<SyncButton onClick={handleSyncWallet}>
-						Sync Wallet
+							Sync Wallet
 						</SyncButton>	
 				}
 				{tickets.find(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0) &&

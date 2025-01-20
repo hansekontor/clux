@@ -219,6 +219,7 @@ const Wallet = ({
                     <WalletCtn>
                         {!selection && (
                             <>
+                                {slpBalancesAndUtxos?.tokens?.length > 0 &&
                                 <Item onClick={handleToCashout}>
                                     <LabelCtn>
                                         <BillIcon />
@@ -226,6 +227,8 @@ const Wallet = ({
                                     </LabelCtn>
                                 <Button src={RightArrowSvg}/>
                                 </Item>
+                                }
+
 								{tickets.length > 0 && (
 									<Item onClick={handleToTickets}>
 										<LabelCtn>
