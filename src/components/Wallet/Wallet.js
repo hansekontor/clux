@@ -136,6 +136,7 @@ const CopyButton = styled(StyledPrimaryButton)`
 
 const Wallet = ({    
     passLoadingStatus,
+    passRedeemAll
 }) => {
     const history = useHistory();
     const location = useLocation();
@@ -314,6 +315,7 @@ const Wallet = ({
                             <TicketHistory 
                                 tickets={tickets}
 								passLoadingStatus={passLoadingStatus}
+                                passRedeemAll={passRedeemAll}
 							/>
                         }
                         {selection === "Seed Phrase" &&
