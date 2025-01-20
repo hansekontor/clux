@@ -47,7 +47,8 @@ const Price = styled.div`
 
 const Ticket = ({
     numbers, 
-    background
+    background,
+    quantity
 }) => {
 
 	const date = new Date();
@@ -68,7 +69,7 @@ const Ticket = ({
                 </Row>
                 <PriceColumn>
                     <BoldText>Ticket Cost</BoldText>
-                    <Price>$10</Price>
+                    <Price>${10*quantity}</Price>
                 </PriceColumn>
             </Details>
             <RandomNumbers 
