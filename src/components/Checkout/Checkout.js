@@ -314,10 +314,7 @@ const Checkout = ({
                     const baseChange = parseInt(baseAmount * -1);
                     console.log("baseChange", baseChange);
                     if (baseChange > 0) {
-                        prOutputs[0] = Buffer.concat(
-                            prOutputs[0],
-                            U64.fromInt(baseChange).toBE(Buffer)
-                        )
+                        tx.outputs[0].script.pushData(U64.fromInt(baseChange).toBE(Buffer)).compile();
                         tx.addOutput(wallet.Path1899.cashAddress);
                         console.log("added change to outputs", tx.outputs);
                     }
@@ -330,7 +327,7 @@ const Checkout = ({
                     
                     tx.sign(buyerKeyring, sighashType);
                     const additionalSatsNeeded = tx.getMinFee() - tx.getFee();
-                    console.log("addtionalStatsNeeded", additionalSatsNeeded);
+                    console.log("addtionalSatsNeeded", additionalSatsNeeded);
                     console.log(tx);
                     payment.transactions.push(tx.toRaw());
                     payment.refundTo.push({
@@ -379,15 +376,13 @@ const Checkout = ({
 				await addIssueTxs(txs, coinsUsed);
 
 				// advance to backup/waiting room
-                const isFirstTicket = tickets.length === 0;
-                if (isFirstTicket) {
-                    history.push('/backup');
-                } else { 
-                    history.push('/waitingroom');
-                }
+
 			} 
 		} catch (err) {
 			console.error(err);
+            passLoadingStatus("AN ERROR OCCURED");
+            await sleep(3000);
+            history.push("/select");
 		}
 	}, [paymentMetadata, paymentRequest])
 
@@ -447,7 +442,13 @@ const Checkout = ({
         // })
         // setKycConfig(config);   
         setIsKYCed(true);
-        console.log("setIsKYced to true")
+        
+        const isFirstTicket = tickets.length === 0;
+        if (isFirstTicket) {
+            history.push('/backup');
+        } else { 
+            history.push('/waitingroom');
+        }
     }
     const handleEtokenPayment = (e) => {
         e.preventDefault();
@@ -491,146 +492,145 @@ const Checkout = ({
 
     return (
         <>  
-            {!(hasAgreed && isKYCed) ? (
+            <Header background="#FEFFFE" />
+            {!hasAgreed ? (
                 <>
-                    <Header background="#FEFFFE" />
-                    {!hasAgreed ? (
-                        <>
-                            <NavigationBar 
-                                handleOnClick={handleReturn}
-                                title={tosTitle}
-                            />
-                            <Tos />
-                            <FooterCtn>
-                                <LightFooterBackground />
+                    <NavigationBar 
+                        handleOnClick={handleReturn}
+                        title={tosTitle}
+                    />
+                    <Tos />
+                    <FooterCtn>
+                        <LightFooterBackground />
 
-                                <RandomNumbers 
-                                    fixedRandomNumbers={playerNumbers}
-                                />
-                                <PrimaryButton 
-                                    form={"email-form"}
-                                    onClick={handleAgree}
-                                >
-                                    {agreeButtonText}
-                                </PrimaryButton>
-                            </FooterCtn>
-                        </>
-                    ) : (
-                        <>
-                            <FlexGrow>
-                                <KycInfo />                       
-                                <EmailForm id='email-form' onSubmit={handleEmailAndKYC}>
-                                    <Input 
-                                        placeholder="Enter your Email"
-                                        name="email"
-                                        type="text"
-                                        readOnly={true}
-                                    />
-                                    <p>
-                                        <b>Your email is required</b> and is only used to announce results and maintenance updates. <b>We do not send marketing emails.</b>
-                                    </p>                                
-                                </EmailForm>
-
-                                <PrimaryButton form="email-form">Continue</PrimaryButton>
-                            </FlexGrow>
-                        </>  
-                    )}
-                </>      
+                        <RandomNumbers 
+                            fixedRandomNumbers={playerNumbers}
+                        />
+                        <PrimaryButton 
+                            // form={"email-form"}
+                            onClick={handleAgree}
+                        >
+                            {agreeButtonText}
+                        </PrimaryButton>
+                    </FooterCtn>
+                </>
             ) : (
                 <>
-					{!purchaseOptions ? (
-						<>
-		                    <Header background="#FEFFFE" />
-							<NavigationBar 
-								handleOnClick={handleReturn}
-								title={checkoutTitle}
-								merchantTag={true}
-							/>    
+                    {!ticketIssued ? (
+                        <>
+                            {!purchaseOptions ? (
+                                <>
+                                    {/* <Header background="#FEFFFE" /> */}
+                                    <NavigationBar 
+                                        handleOnClick={handleReturn}
+                                        title={checkoutTitle}
+                                        merchantTag={true}
+                                    />    
 
-							<Scrollable>
-								<div>Purchase Ticket Amount</div>
-								<form id="purchase-options-form" onSubmit={handlePurchaseOptionsSubmit}>
-									<input type="number" name="ticketQuantity" defaultValue={1}/>
-									<select type="select" name="type">
-										<option value="fiat">Fiat</option>
-										<option value="etoken">eToken</option>
-									</select>						
-								</form>
-							</Scrollable>
+                                    <Scrollable>
+                                        <div>Purchase Ticket Amount</div>
+                                        <form id="purchase-options-form" onSubmit={handlePurchaseOptionsSubmit}>
+                                            <input type="number" name="ticketQuantity" defaultValue={1}/>
+                                            <select type="select" name="type">
+                                                <option value="fiat">Fiat</option>
+                                                <option value="etoken">eToken</option>
+                                            </select>						
+                                        </form>
+                                    </Scrollable>
 
-							<FooterCtn>
-								<EvenLighterFooterBackground />
+                                    <FooterCtn>
+                                        <EvenLighterFooterBackground />
 
-                                <RandomNumbers 
-                                    fixedRandomNumbers={playerNumbers}
+                                        <RandomNumbers 
+                                            fixedRandomNumbers={playerNumbers}
+                                        />
+                                        <PrimaryButton 
+                                            form={"purchase-options-form"}
+                                        >
+                                            {"Confirm"}
+                                        </PrimaryButton>
+                                    </FooterCtn>
+                                </>
+                            ) : (
+                                <>
+                                    {isStage1 && ( 
+                                        <>
+                                            {/* <Header background="#FEFFFE"/> */}
+                                            <NavigationBar 
+                                                handleOnClick={handleReturn}
+                                                title={checkoutTitle}
+                                                merchantTag={true}
+                                            />                                      
+                                            <Scrollable>
+                                                <CustomEnfold animate={isFirstRendering}>     
+                                                    <Ticket 
+                                                        numbers={playerNumbers}
+                                                        background={'#EAEAEA'}
+                                                        quantity={purchaseOptions.ticketQuantity}
+                                                    />
+                                                    <InfoText>
+                                                        To purchase this lottery ticket your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint our potential payout. This game supports the payout.
+                                                    </InfoText>
+                                                    <PaymentHeader>Payment</PaymentHeader>
+                                                    {purchaseOptions.type === "fiat" ? 
+                                                        <CustomRadioGroup onChange={handlePaymentChange} value={paymentProcessor}>
+                                                            <Radio value={"NMIC"} >Credit Card</Radio>
+                                                            {/* <Radio value={"other"} >Other</Radio> */}
+                                                        </CustomRadioGroup>        
+                                                    : 
+                                                        <p>You are paying with eToken.</p>
+                                                    }
+
+
+                                                    {paymentProcessor === "NMIC" && (
+                                                        <NmiCheckoutForm 
+                                                            passMetadata={setPaymentMetadata}	
+                                                        />
+                                                    )}
+
+                                                    {/* add new payment methods here */}
+
+                                                </CustomEnfold>
+                                            </Scrollable>
+                                            <FooterCtn>
+                                                <EvenLighterFooterBackground />
+                                                {purchaseOptions.type === "fiat" ? 
+                                                    <PrimaryButton 
+                                                        type="submit"
+                                                        form={`${paymentProcessor}-form`}
+                                                    >
+                                                        {purchaseButtonText}
+                                                    </PrimaryButton>         
+                                                : 
+                                                    <PrimaryButton onClick={handleEtokenPayment}>
+                                                        Pay with eToken
+                                                    </PrimaryButton>                               
+                                                }
+                                            </FooterCtn>
+                                        </>              
+                                    )}    
+                                </>
+                            )}      
+                        </>  
+                    ) : (
+                        <FlexGrow>
+                            <KycInfo />                       
+                            <EmailForm id='email-form' onSubmit={handleEmailAndKYC}>
+                                <Input 
+                                    placeholder="Enter your Email"
+                                    name="email"
+                                    type="text"
+                                    readOnly={true}
                                 />
-                                <PrimaryButton 
-                                    form={"purchase-options-form"}
-                                >
-                                    {"Confirm"}
-                                </PrimaryButton>
-                            </FooterCtn>
-						</>
-					) : (
-						<>
-							{!ticketIssued && isStage1 && ( 
-								<>
-									<Header background="#FEFFFE"/>
-									<NavigationBar 
-										handleOnClick={handleReturn}
-										title={checkoutTitle}
-										merchantTag={true}
-									/>                                      
-									<Scrollable>
-										<CustomEnfold animate={isFirstRendering}>     
-											<Ticket 
-												numbers={playerNumbers}
-												background={'#EAEAEA'}
-											/>
-											<InfoText>
-												To purchase this lottery ticket your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint our potential payout. This game supports the payout.
-											</InfoText>
-											<PaymentHeader>Payment</PaymentHeader>
-                                            {purchaseOptions.type === "fiat" ? 
-                                                <CustomRadioGroup onChange={handlePaymentChange} value={paymentProcessor}>
-                                                    <Radio value={"NMIC"} >Credit Card</Radio>
-                                                    {/* <Radio value={"other"} >Other</Radio> */}
-                                                </CustomRadioGroup>        
-                                            : 
-                                                <p>You are paying with eToken.</p>
-                                            }
+                                <p>
+                                    <b>Your email is required</b> and is only used to announce results and maintenance updates. <b>We do not send marketing emails.</b>
+                                </p>                                
+                            </EmailForm>
 
-
-											{paymentProcessor === "NMIC" && (
-												<NmiCheckoutForm 
-													passMetadata={setPaymentMetadata}	
-												/>
-											)}
-
-											{/* add new payment methods here */}
-
-										</CustomEnfold>
-									</Scrollable>
-									<FooterCtn>
-										<EvenLighterFooterBackground />
-                                        {purchaseOptions.type === "fiat" ? 
-                                            <PrimaryButton 
-                                                type="submit"
-                                                form={`${paymentProcessor}-form`}
-                                            >
-                                                {purchaseButtonText}
-                                            </PrimaryButton>         
-                                        : 
-                                            <PrimaryButton onClick={handleEtokenPayment}>
-                                                Pay with eToken
-                                            </PrimaryButton>                               
-                                        }
-									</FooterCtn>
-								</>              
-							)}    
-						</>
-					)}      
-                </>         
+                            <PrimaryButton form="email-form">Continue</PrimaryButton>
+                        </FlexGrow>
+                    )}
+                </>  
             )}
         </>
     );
