@@ -87,6 +87,13 @@ const WaitingRoom = ({
 
 	const { broadcastTx } = useBCH();
 
+	useEffect(async () => {
+		if (apiError) {
+			passLoadingStatus("AN ERROR OCCURRED");
+			await sleep(3000);
+			history.push("/wallet");
+		}
+	}, [apiError])
 
 	// if active ticket is set: redeem ticket
 	useEffect(async () => {
@@ -107,6 +114,8 @@ const WaitingRoom = ({
 					mode: "cors",
 					signal: AbortSignal.timeout(20000),
 				});
+				if (ticketRes.status !== 200) 
+					setApiError(true);
 				minedTicket = await ticketRes.json();		
 				setHasRequested(true);
 				// if signed, store before attempting redeem tx
@@ -196,47 +205,55 @@ const WaitingRoom = ({
 		
 				console.log('verify', ptx.verify())
 		
-				const ptxBroadcast = await broadcastTx(ptxHex)
-				console.log('ptxBroadcast', ptxBroadcast)
+				try {
+					const ptxBroadcast = await broadcastTx(ptxHex)
+					console.log('ptxBroadcast', ptxBroadcast)					
 
-				if (ptxBroadcast.success) {
-					console.log('ptx id', ptx.txid())
+					if (ptxBroadcast.success) {
+						console.log('ptx id', ptx.txid())
 
-					const redeemData = {
-						actualPayoutNum: U64.fromBE(actualPayoutBE).toNumber(),
-						tier, 
-						opponentNumbers,
-						resultingNumbers
+						const redeemData = {
+							actualPayoutNum: U64.fromBE(actualPayoutBE).toNumber(),
+							tier, 
+							opponentNumbers,
+							resultingNumbers
+						}
+						await addRedeemTxToStorage(ptx, redeemData);
+
+						successNotification("You can redeem your ticket now!")
+						setIsRedeemed(ptx.txid());
+					} else {
+						// todo: try again
+						passLoadingStatus("API ERROR. TRY AGAIN");
+						await sleep(3000);
+						history.push("/wallet");			
 					}
-					await addRedeemTxToStorage(ptx, redeemData);
-
-					successNotification("You can redeem your ticket now!")
-					setIsRedeemed(ptx.txid());
-				} else {
-					// todo try again?
-					passLoadingStatus("API ERROR. TRY AGAIN");
-					history.push("/wallet")			
+				} catch(err) {
+					console.error(err);
+					passLoadingStatus("FAILED TO BROADCAST");
+					await sleep(3000);
+					history.push("/select");
 				}
 
 			} else {
 				modal.info(requestFailedInfoConfig);
-				setApiError(true);
+				setActiveTicket(false);
 			}
 		} 
 	}, [activeTicket])
 
+	// handle case when user arrives here after payment 
 	useEffect(async () => {
 		await sleep(2000);
-		// handle case when user arrives here after payment 
 		if (!activeTicket && !hasRequested) {
 			passLoadingStatus(false);
 			modal.info(waitingInfoConfig);
 
-			if (unredeemedIndicator > 0) {
-				const unredeemedTicket = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);
-				setActiveTicket(unredeemedTicket); 
-				setIsAlternativeTicket(true);
-			}
+			// if (unredeemedIndicator > 0) {
+			// 	const unredeemedTicket = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);
+			// 	setActiveTicket(unredeemedTicket); 
+			// 	setIsAlternativeTicket(true);
+			// }
 		}
 	}, [activeTicket])
 
@@ -308,7 +325,7 @@ const WaitingRoom = ({
 			<FooterCtn>
 				<RandomNumbers fixedRandomNumbers={activeTicket ? activeTicket.details.playerNumbers : playerNumbers} />
 				<PrimaryButton onClick={handleButtonClick}>
-					{activeTicket && !apiError? (
+					{activeTicket ? (
 						<>	
 							{isRedeemed ? redeemButtonText : "Wait..."}							
 						</>
