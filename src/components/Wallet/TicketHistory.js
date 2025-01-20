@@ -141,6 +141,9 @@ const StyledPrimaryButton = styled(PrimaryButton)`
 	font-size: 14px;
 	font-weight: 600;
 `;
+const RedeemButton = styled(SyncButton)`
+	background-color: #52595f;
+`;
 
 const shortifyHash = (hash, length) => {
 	return String(hash.slice(0,length) + "..." + hash.slice(64-length,));
@@ -359,9 +362,14 @@ const TicketHistoryCtn = styled.div`
 
 const TicketHistory = ({
 	passLoadingStatus,
-    tickets
+    tickets,
+	passRedeemAll
 }) => {
 	const { forceWalletUpdate } = useWallet();
+	const history = useHistory();
+
+	const unredeemed = tickets.filter(ticket => !ticket.redeemTx);
+	const confirmedUnredeemed = unredeemed.filter(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0);
 
 	const [walletSynced, setWalletSynced] = useState(false);
 
@@ -376,11 +384,30 @@ const TicketHistory = ({
 		)
 	});
 
+	// turn off redeem all if it was still enabled from an earlier redemption
+	useEffect(() => {
+		passRedeemAll(false);
+	}, [])
+
 	const handleSyncWallet = async () => {
 		passLoadingStatus("LOADING WALLET");
 		await forceWalletUpdate();
 		setWalletSynced(true);
 		passLoadingStatus(false);
+	}
+	const handleRedeemAll = () => {
+		passRedeemAll(true);
+		passLoadingStatus("LOADING TICKET");
+		const confirmedUnredeemedTx = confirmedUnredeemed[0];
+		const unconfirmedUnredeemedTx = unredeemed[0];
+		const ticketToRedeem = confirmedUnredeemedTx || unconfirmedUnredeemedTx;
+
+		if (ticketToRedeem) {
+			history.push({
+				pathname: "/waitingroom",
+				state: { ticketToRedeem }
+			})			
+		}
 	}
 
     return (
@@ -388,9 +415,14 @@ const TicketHistory = ({
 
 			<TicketHistoryCtn>
 				{tickets.length > 2 && !walletSynced &&
-					<StyledPrimaryButton onClick={handleSyncWallet}>
+						<SyncButton onClick={handleSyncWallet}>
 						Sync Wallet
-					</StyledPrimaryButton>			
+						</SyncButton>	
+				}
+				{tickets.find(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0) &&
+					<RedeemButton onClick={handleRedeemAll}>
+						Redeem All
+					</RedeemButton>							
 				}
 				{ticketList}
 			</TicketHistoryCtn>

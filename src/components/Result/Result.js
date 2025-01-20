@@ -71,6 +71,7 @@ const sleep = (ms) => {
 
 const Result = ({
     passLoadingStatus,
+    redeemAll
 }) => {
     const history = useHistory();
 	const location = useLocation();
@@ -78,19 +79,27 @@ const Result = ({
     const { wallet } = ContextValue;
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;
+    const unredeemedTickets = tickets.filter(ticket => !ticket.redeemTx);
+    const unredeemedIndicator = unredeemedTickets.length;
     const redeemableTickets = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);
+    const availableTickets = tickets.filter(ticket => !ticket.redeemTx);
 	const [ticket,] = useState(location.state?.ticket || false);
-    console.log("ticket from state", ticket);
     const [nextTicket, setNextTicket] = useState(false);
-	console.log("RESULT ticket", ticket?.details?.redemption)
 
     // manually stop loading screen
     useEffect(async () => {
 		if (ticket) {
 	        passLoadingStatus(false);
-            if (redeemableTickets.length > 0) {
-                const nextTicket = redeemableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
-                setNextTicket(nextTicket);
+            if (redeemAll) {
+                let nextTicket;
+                if (redeemableTickets.length > 0) {
+                    nextTicket = redeemableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
+                } else if (availableTickets.length > 0) {
+                    nextTicket = availableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
+                }
+                
+                if (nextTicket)     
+                    setNextTicket(nextTicket);
             }
 		} else {
 			passLoadingStatus("NO TICKET SELECTED");
@@ -168,7 +177,7 @@ const Result = ({
                 origin={"/result"}
                 buttonOnClick={handleButtonClick}
                 buttonText={buttonText}
-                ticketIndicator={redeemableTickets.length}
+                ticketIndicator={unredeemedIndicator}
                 slpBalances={slpBalancesAndUtxos}
             />
         </>

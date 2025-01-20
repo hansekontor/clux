@@ -139,6 +139,7 @@ const App = () => {
     const [activeTicket, setActiveTicket] = useState(false);
     const [payout, setPayout] = useState(false);
     const [isProtected, setIsProtected] = useState(false);
+    const [redeemAll, setRedeemAll] = useState(false);
 
 
 	// console.log("App.js wallet state", wallet.state);
@@ -229,6 +230,7 @@ const App = () => {
                                                                 passLoadingStatus={setLoadingStatus}
                                                                 payout={payout}
                                                                 ticket={activeTicket}
+                                                                redeemAll={redeemAll}
                                                             />
                                                         </Route>
                                                         <Route path="/waitingroom">
@@ -241,6 +243,7 @@ const App = () => {
                                                         <Route path="/wallet">
                                                             <Wallet 
                                                                 passLoadingStatus={setLoadingStatus} 
+                                                                passRedeemAll={setRedeemAll}
                                                             />
                                                         </Route>
                                                         <Route path="/cashout">
