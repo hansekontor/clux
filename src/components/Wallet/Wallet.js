@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect }  from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { CopyOutlined } from '@ant-design/icons';
+import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
 
 // react components 
 import { successNotification, errorNotification } from '@components/Common/Notifications';
@@ -145,9 +145,8 @@ const Wallet = ({
     const walletState = getWalletState(wallet);
     const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
-	// console.log("Wallet.js walletState", walletState);
-	// console.log("Wallet.js tickets", tickets);
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
+    console.log("slpBalances", slpBalancesAndUtxos);
 
 	const { forceWalletUpdate } = useWallet();
 	
@@ -201,7 +200,6 @@ const Wallet = ({
 		successNotification("Copied to Clipboard!");
     }
 
-
     const title = "Wallet, Settings and Legal";
     const previousPath = location.state?.returnTo || "/select";
 
@@ -220,13 +218,13 @@ const Wallet = ({
                         {!selection && (
                             <>
                                 {slpBalancesAndUtxos?.tokens?.length > 0 &&
-                                <Item onClick={handleToCashout}>
-                                    <LabelCtn>
-                                        <BillIcon />
-                                        <Label>Cash Out</Label>                            
-                                    </LabelCtn>
-                                <Button src={RightArrowSvg}/>
-                                </Item>
+                                    <Item onClick={handleToCashout}>
+                                        <LabelCtn>
+                                            <BillIcon />
+                                            <Label>Cash Out</Label>                            
+                                        </LabelCtn>
+                                    <Button src={RightArrowSvg}/>
+                                    </Item>
                                 }
 
 								{tickets.length > 0 && (
@@ -265,9 +263,8 @@ const Wallet = ({
                                     <Link href={`https://explorer.e.cash/address/${wallet.Path1899.cashAddress}`} rel="noopener noreferrer" target="_blank">
                                         <Value>
                                             {wallet.Path1899.cashAddress.slice(0,10) + "..." + wallet.Path1899.cashAddress.slice(-4)}
-                                        </Value>                                        
-                                    </Link>
-
+                                        </Value>                         
+                                    </Link>                                        
                                 </Item>
                                 <Item onClick={handleChangeEmail}>
                                     <LabelCtn>
