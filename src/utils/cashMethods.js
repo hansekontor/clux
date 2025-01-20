@@ -397,20 +397,49 @@ export const addSlpToRedeemTx = (tx) => {
 
 	return slpTx;
 }
-export const addRedeemUtxos = (slpBalancesAndUtxos, address, tx) => {
-	const newSlpBalancesAndUtxos = slpBalancesAndUtxos;
-	console.log("tx.outputs", tx.outputs);
-	const utxos = tx.outputs.filter(outputs => outputs.address === address);
-	console.log("utxos", utxos);
+export const addSlpToSendTx = (tx) => {
+	// input is a TX
+	const opReturn = tx.outputs[0].script;
+	const slp = new SLP(opReturn);
+	const sendRecords = slp.getSendRecords(tx.hash());
+	const sendRecordsJson = sendRecords.map(record => record.getJSON());
+	const tokenId = slp.getTokenId().toString('hex');
 	
-	const nonSlpUtxos = utxos.filter(utxo => 
-		!utxo.slp || (utxo.slp && utxo.slp.value == '0')
-	);
-	console.log("nonSlpUtxos", nonSlpUtxos);
-	const slpUtxos = utxos.filter(utxo => 
-		utxo.slp && ( utxo.slp.value != '0' || utxo.slp.type == 'MINT')
-	);
-	console.log("slpUtxos", slpUtxos);
+	let slpTx = tx.toJSON();
+    console.log("slpTx", slpTx);
+	slpTx.slpToken = { tokenId };
+
+	for (let i = 1; i < tx.outputs.length; i++) {
+		const matchedSlpRecord = sendRecordsJson.find(record => record.vout === i);
+		if (matchedSlpRecord) {
+            console.log("matchedSlpRecord", matchedSlpRecord);
+			slpTx.outputs[i].slp = matchedSlpRecord;
+        }
+	}
+
+	return slpTx;
+}
+export const addUtxos = (slpBalancesAndUtxos, address, txs) => {
+	const newSlpBalancesAndUtxos = slpBalancesAndUtxos;
+    const slpUtxos = [];
+    const nonSlpUtxos = [];
+
+    for (const tx of txs) {
+        const utxosFromTx = tx.outputs.filter(outputs => outputs.address === address);
+        console.log("utxosFromTx", utxosFromTx);
+
+        const nonSlpUtxosFromTx = utxosFromTx.filter(utxo => 
+            !utxo.slp || (utxo.slp && utxo.slp.value == '0')
+        );
+        nonSlpUtxos.push(...nonSlpUtxosFromTx);
+
+        const slpUtxosFromTx = utxosFromTx.filter(utxo => 
+            utxo.slp && ( utxo.slp?.value != '0' || utxo.slp?.type == 'MINT') && ( utxo.slp?.value != '0' || utxo.slp?.type == 'SEND')
+        );
+        slpUtxos.push(...slpUtxosFromTx);
+    }
+
+    console.log("added slpUtxos", slpUtxos);
 
 	newSlpBalancesAndUtxos.nonSlpUtxos.push(nonSlpUtxos);
 	newSlpBalancesAndUtxos.slpUtxos.push(slpUtxos);
@@ -418,14 +447,14 @@ export const addRedeemUtxos = (slpBalancesAndUtxos, address, tx) => {
 	const hasToken = slpBalancesAndUtxos.tokens.length > 0 ? true : false;
 	const token = hasToken ? slpBalancesAndUtxos?.tokens[0] : {info: sandboxTokenInfo};
 	const previousBalance = token.balance ? new BigNumber({...token.balance, _isBigNumber:true }) : BigNumber(0);
-	console.log("previousBalance", previousBalance);
+	// console.log("previousBalance", previousBalance);
 	let updatedBalance = previousBalance;
 
 	for (const utxo of slpUtxos) {
 		updatedBalance = new BigNumber(updatedBalance).plus(new BigNumber(utxo.slp.value));
         token.balance = updatedBalance;
 	}
-	console.log("updatedBalance", updatedBalance);
+	// console.log("updatedBalance", updatedBalance);
 
 
 	newSlpBalancesAndUtxos.tokens = [ token ];
@@ -434,16 +463,17 @@ export const addRedeemUtxos = (slpBalancesAndUtxos, address, tx) => {
 }
 
 export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
+    console.log("removed coins:", coinsUsed);
     const slpUtxos = slpBalancesAndUtxos.slpUtxos;
     const nonSlpUtxos = slpBalancesAndUtxos.nonSlpUtxos;   
     for (const coin of coinsUsed) {
         const slpCoinIndex = slpUtxos.findIndex(utxo => utxo.hash === coin.hash);
-        console.log("slpCoinIndex", slpCoinIndex);
+        // console.log("slpCoinIndex", slpCoinIndex);
         if (slpCoinIndex >= 0) {
             slpUtxos.splice(slpCoinIndex, 1);
         } else {
             const nonSlpCoinIndex = nonSlpUtxos.findIndex(utxo => utxo.hash === coin.hash);
-            console.log("nonSlpCoinIndex", nonSlpCoinIndex);
+            // console.log("nonSlpCoinIndex", nonSlpCoinIndex);
             if (nonSlpCoinIndex >=0) {
                 nonSlpUtxos.splice(nonSlpCoinIndex, 1);
             }
@@ -461,11 +491,11 @@ export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
 			token.hasBaton = slpUtxo.slp.type === 'BATON';
 
 			if (!token.hasBaton) {
-                console.log("token.balance prior", token.balance);
+                // console.log("token.balance prior", token.balance);
 				token.balance = new BigNumber({...token.balance, _isBigNumber:true}).plus(
 					new BigNumber(slpUtxo.slp.value)
 				);
-                console.log("token.balance post", token.balance);
+                // console.log("token.balance post", token.balance);
 			}
 
 		} else {

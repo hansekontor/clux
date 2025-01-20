@@ -1,8 +1,17 @@
 // node modules
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+import BigNumber from 'bignumber.js';
 import Select from 'react-select';
+import RangeSlider from 'react-range-slider-input';
+import 'react-range-slider-input/dist/style.css';
+import { PaymentRequest, Payment, PaymentACK } from  'b70-checkout';
+import bio from 'bufio';
+import { stringify as uuidStringify } from 'uuid';
+import { U64 } from 'n64';
+import { TX, MTX, Coin, Script, KeyRing } from '@hansekontor/checkout-components';
+import { Modal } from 'antd';
 
 // react components
 import { FooterCtn } from '@components/Common/Footer';
@@ -10,8 +19,20 @@ import PrimaryButton from '@components/Common/PrimaryButton';
 import NavigationBar from '@components/Common/Navigation';
 import Header from '@components/Common/Header';
 
+import useWallet from '@hooks/useWallet';
+
 // util
-import { getTilloOptions, getTilloBrands, getTilloGiftcard } from '@utils/cashout';
+import { WalletContext } from '@utils/context';
+import { getWalletState } from '@utils/cashMethods'
+
+import brq from 'brq';
+import bcurl from 'bcurl';
+const lottoApiClient = bcurl.client({
+    url: "https://lsbx.nmrai.com",
+    timeout: 20000,
+    headers: { 'Content-Type': 'application/etoken-paymentrequest' },
+})
+
 
 // css styled components
 const Input = styled.input`
@@ -40,6 +61,9 @@ const Form = styled.form`
     flex-grow: 1;
     width: 90%;
     margin-top: 18px;
+    gap: 24px;
+    display: flex;
+    flex-direction: column;
 `;
 const Row = styled.div`
     width: 100%;
@@ -53,206 +77,411 @@ const Link = styled.a`
     text-decoration: undelined;
     margin-top: 36px;
 `;
+const StyledRangeSlider = styled(RangeSlider)`
+    .range-slider__thumb[data-lower] {
+        width: 0;
+    }
+    .range-slider__range {
+        border-radius: 6px;
+    }
+`;
+const Button = styled.button`
+    background-color: #44405B;
+    border-radius: 100px;
+    padding: 7px;
+    color: #FFFFFF
+    font-weight: 600;
+    height: 25px;
+    display: flex; 
+    align-items: center;
+	border-style: none;
+	cursor: pointer;
+`;
+const Amount = styled.div``;
+
+const countryOptions = [{value: "US", label: "United States"}];
+const currencyOptions = [{value: "USD", label:"USD"}];
+
+
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
 
 
 const Cashout = ({
     passLoadingStatus
 }) => {
-    const [stage, setStage] = useState("amount");
-    const [amount, setAmount] = useState(false);
-    const [currency, setCurrency] = useState(false);
-    const [country, setCountry] = useState(false);
+    const ContextValue = useContext(WalletContext);
+    const { wallet } = ContextValue;
+    const { slpBalancesAndUtxos } = getWalletState(wallet);
+    // console.log("slpBalancesAndUtxos", slpBalancesAndUtxos);
+    const token = slpBalancesAndUtxos.tokens?.length > 0 ? slpBalancesAndUtxos.tokens[0] : false;
+    // console.log("token", token);
+    const balance = token ? new BigNumber({...token.balance, _isBigNumber: true}).toNumber() / 100 : 0;
+    // console.log("balance", balance);
+    const { forceWalletUpdate, addCashout } = useWallet();
+
+
+    const [stage, setStage] = useState("filter");
     const [tilloOptions, setTilloOptions] = useState(false);
-    const [brandArray, setBrandArray] = useState(false);
-    const [brandData, setBrandData] = useState(false);
+    const [tilloSelection, setTilloSelection] = useState(false);
     const [link, setLink] = useState(false);
-
-    // content for react-select options
-    const [currencyOptions, setCurrencyOptions] = useState(false);
-    const [countryOptions, setCountryOptions] = useState(false);
-    const [brandOptions, setBrandOptions] = useState(false);
-
-    // dev todo: replace with sandbox token balance
-    const balance = 333;
+    const [brandData, setBrandData] = useState(false);
+    const [cardAmount, setCardAmount] = useState(10);
+    const [modal, modalHolder] = Modal.useModal();
+    
 
     const history = useHistory();
 
     // DOM variables
     const title = "Cashout";
     const previousPath = location.state?.returnTo || "/select";    
-    
 
+    // force wallet update on cashout
+    useEffect(async () => {
+        passLoadingStatus("LOADING WALLET");
+        await forceWalletUpdate();
+        await sleep(3000);
+        passLoadingStatus(false);
+    }, []);
 
-    // fetch country list
+    // redirect if insufficent token amount
+    useEffect(async () => {
+        if (balance < 10) {
+            passLoadingStatus("INSUFFICIENT TOKENS IN WALLET");
+            await sleep(3000);
+            history.push("/select");
+        }
+    }, [balance])
+
+    // fetch tillo options
     useEffect(async () => {
         if (!tilloOptions) {
-            const fetchedTilloOptions = await getTilloOptions();
-            const fetchedCurrencyOptions = fetchedTilloOptions.map(option => {
-                return {
-                    label: option.currency,
-                    value: option.currency
-                }
+            const response = await fetch("https://lsbx.nmrai.com/v1/cards", {
+                method: "GET",
+                headers: new Headers({
+                    'Content-Type': "application/etoken-paymentrequest"
+                }),
+                mode: "cors",
+                signal: AbortSignal.timeout(20000)
             });
 
-            setTilloOptions(fetchedTilloOptions);
-            setCurrencyOptions(fetchedCurrencyOptions);
+            const availableBrands = await response.json();
+            // console.log("availableBrands", availableBrands);
+
+            const possibleBrands = availableBrands.filter(function(brand) {
+                const lowerLimit = brand.limits?.lower;
+                if (!lowerLimit)
+                    return true;
+                if (lowerLimit < balance)
+                    return true;
+            });
+
+            const formattedBrands = possibleBrands.map(brand => {
+                brand.label = brand.name;
+                brand.value = brand.brand;
+
+                return brand;
+            });
+
+            const formattedBrandsWithoutCreditCards = formattedBrands.filter(brand => {
+                if (brand.label === "Reward Pass USD")
+                    return false;
+                else 
+                    return true;
+            });
+
+            setTilloOptions(formattedBrandsWithoutCreditCards);
+            setTilloSelection(formattedBrandsWithoutCreditCards );
         }
     }, [tilloOptions]);
 
     // handlers
     const handleReturn = () => {
-        history.push(previousPath);
+        if (link)
+            return handleGiftcardConfirmation()
+        else
+            history.push(previousPath);
     }    
-    const handleAmountSubmit = (e) => {
-        e.preventDefault();
-        const inputAmount = e.target.amount.value;
-        // todo: later add cashout provider conditional here
+    // const handleAmountSubmit = (e) => {
+    //     e.preventDefault();
+    //     const inputAmount = e.target.amount.value;
+    //     // todo: later add cashout provider conditional here
 
-        setAmount(inputAmount);
-        setStage("currency");
-    }
-    const handleCurrencyChange = (e) => {
-        const selectedCurrency = e.value;
-        console.log("selectedCurrency", selectedCurrency);
-        const countryOptionsForCurrency = tilloOptions.find(item => item.currency === selectedCurrency)
-            .countries
-            .map(country => {
-                // dev later add country names for labels
-                return {
-                    label: country,
-                    value: country
-                }
-            });
+    //     setAmount(inputAmount);
+    //     setStage("currency");
+    // }
 
-        setCountryOptions(countryOptionsForCurrency);
-        setCurrency(selectedCurrency);
-        setStage("country");
-    }
-    const handleCountryChange = async (e) => {
-        const selectedCountry = e.value;
-        const fetchedBrands = await getTilloBrands(selectedCountry, currency, amount);
-        const fetchedBrandOptions = fetchedBrands.map(brand => {
-            return {
-                value: brand.slug,
-                label: brand.name
-            }
-        });
-
-        setBrandArray(fetchedBrands);
-        setBrandOptions(fetchedBrandOptions)
-        setCountry(selectedCountry);
-        setStage("brand");
-    }
     const handleBrandChange = (e) => {
         const selectedBrand = e.value;
-        const selectedBrandData = brandArray.find(item => item.slug === selectedBrand);
+        const selectedBrandData = tilloSelection.find(item => item.slug === selectedBrand);
 
         setBrandData(selectedBrandData);
     }
-    const handleBrandSubmit = async (e) => {
+    const handleSubmitFilters = (e) => {
         e.preventDefault();
-        const giftcardLink = await getTilloGiftcard(brandData.slug, currency, amount);
+        const country = e.target.country.value;
+        const currency = e.target.currency.value;
+        // console.log("cardAmount", cardAmount, "country", country, "currency", currency);
 
-        setLink(giftcardLink);
+        // console.log("tillooptions", tilloOptions);
+        const newTilloSelection = tilloOptions.filter(brand => brand.countries.includes(country))
+            .filter(brand => brand.currency === currency)
+            .filter(function(brand) {
+                if (!brand.limits) {
+                    return true;
+                } else {
+                    const lowerLimit = brand.limits.lower;
+                    const upperLimit = brand.limits.upper;
+                    const isInRange = cardAmount >= lowerLimit && cardAmount <= upperLimit;
+                    if (isInRange) 
+                        return true;
+                    else 
+                        return false;
+                }
+            });
+
+            setTilloSelection(newTilloSelection);
+        setStage("brand");
     }
 
+    const handleBrandSubmit = async (e) => {
+        try {
+            e.preventDefault();
+            
+            const brand = e.target.brand.value;
+            const json = {
+                value: String(cardAmount),
+                brand, 
+            };
+            // console.log("cardOptions", json);
 
-    return (
-        <FlexGrow>
-            <Header />
-            <NavigationBar 
-                handleOnClick={handleReturn}
-                title={title}                              
-            />
+            const invoiceRes = await fetch("https://lsbx.nmrai.com/v1/cardreq", {
+                method: "POST", 
+                mode: "cors",
+                body: JSON.stringify(json),
+                headers: new Headers({
+                    'Content-Type': "application/etoken-paymentrequest"
+                }),
+                signal: AbortSignal.timeout(20000),
+            });
+            // console.log("invoiceRes", invoiceRes);
 
-                {stage === "amount" && (
-                    <>
-                        <Form id="amount-form" onSubmit={handleAmountSubmit}>
-                            <Input
-                                name="amount"
-                                required
-                                placeholder={"Cashout Amount"}
-                                type="number"
-                            />                            
-                        </Form>
+            const invoiceArrayBuffer = await invoiceRes.arrayBuffer();
+            const invoiceBuf = Buffer.from(invoiceArrayBuffer);
+            
+            const pr = PaymentRequest.fromRaw(invoiceBuf);
+            const prOutputs = pr.paymentDetails.outputs;
+            console.log("pr", pr);
+
+            const merchantData = pr.paymentDetails.getData('json');
+            // console.log("merchantData", merchantData);
+            const paymentDataBuf = Buffer.from(merchantData.paymentdata, 'hex')
+            const br = bio.read(paymentDataBuf)
+            const id = uuidStringify(br.readBytes(16))
+            const amount = br.readU32() / 100
+            // console.log({id, amount})
         
-                        <FooterCtn>
-                            <PrimaryButton type="submit" form="amount-form">
-                                Confirm Amount
-                            </PrimaryButton>
-                        </FooterCtn>                      
-                    </>
-                )}         
+            const payment = new Payment({
+                memo: pr.paymentDetails.memo
+            })
+        
+            // Get token coins
+            const sortedTokenUtxos = slpBalancesAndUtxos.slpUtxos.filter(u => u.slp?.tokenId && ['MINT', 'SEND'].includes(u.slp.type))
+            .sort((a, b) => parseInt(a.slp.value) - parseInt(b.slp.value));
+        
+            const tx = new MTX()
+            // Add outputs
+            for (let i = 0; i < prOutputs.length; i++) {
+                tx.addOutput(Script.fromRaw(prOutputs[i].script), prOutputs[i].value)
+            }   
 
-                {stage === "currency" && (
-                    <>
-                        <div>Cashout Amount: {amount}</div>
-                        <Form id="currency-form">
+            // Calculate needed coins
+            const coinsBurned = []
+            let baseAmount = amount * 100
+            for (let i = 0; i < sortedTokenUtxos.length; i++) {
+                const utxo = sortedTokenUtxos[i]
+                tx.addCoin(Coin.fromJSON(utxo))
+                coinsBurned.push(utxo);
+                baseAmount -= parseInt(utxo.slp.value)
+                if (baseAmount <= 0)
+                        break
+            }
+
+            console.log("baseAmount", baseAmount);
+        
+            if (baseAmount > 0)
+                throw new Error('Insufficient token funds in address')
+
+            const buyerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+        
+            // Add a change output to script if necessary
+            const baseChange = parseInt(baseAmount * -1);
+            if (baseChange > 0) {
+                tx.outputs[0].script.pushData(U64.fromInt(baseChange).toBE(Buffer)).compile();
+                tx.addOutput(buyerKeyring.getAddress(), 546)
+            }
+
+            // Sign tx
+            const hashTypes = Script.hashType;
+            const sighashType = hashTypes.ALL | hashTypes.ANYONECANPAY | hashTypes.SIGHASH_FORKID;
+            tx.sign(buyerKeyring, sighashType)
+            
+            payment.transactions.push(tx.toRaw())
+            payment.refundTo.push({
+                value: 546,
+                script: Script.fromAddress(buyerKeyring.getAddress('string')).toRaw()
+            })
+        
+            const sig = buyerKeyring.sign(paymentDataBuf)
+        
+            payment.setData({
+                ...merchantData,
+                buyerpubkey: buyerKeyring.getPublicKey('hex'),
+                signature: sig.toString('hex')
+            })
+        
+            lottoApiClient.headers = { 'Content-Type': `application/etoken-payment` };
+            // console.log("lottoApiClient.headers", lottoApiClient.headers);
+            const paymentBrqOptions = {
+                ...lottoApiClient,
+                path: '/v1/cardpay',
+                method: 'POST',
+                body: payment.toRaw(),
+            };
+
+            const response = await brq(paymentBrqOptions);
+            // console.log("response", response);
+            
+            if (response.statusCode !== 200)
+                throw new Error(response.text())
+        
+            const ack = PaymentACK.fromRaw(response.buffer());
+        
+            // console.log("ack.payment", ack.payment.getData('json'))
+            // console.log("ack.memo", ack.memo)
+        
+            const rawTransactions = ack.payment.transactions
+            const txs = rawTransactions.map(r => TX.fromRaw(r))
+            // console.log(txs)
+
+            // remove utxos locally
+            await addCashout(txs, coinsBurned);
+
+            setLink(ack.payment.getData('json').payout.result.url);
+            setStage("giftcard");
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    const minAmount = 10;
+    const maxAmount = balance - (balance % 10);
+
+    console.log("min", minAmount, "max", maxAmount);
+
+    const handleCardAmountChange = (range) => {
+        const newCardAmount = range[1];
+        setCardAmount(newCardAmount);
+    } 
+    const handleGiftcardConfirmation = (e) => {
+        if (e)
+            e.preventDefault();
+        // add modal asking for confirmation
+        const modalConfig = {
+            title: "Confirm",
+            content: "Have you claimed your giftcard?",
+            okText: "Yes",
+            cancelText: "No",
+            onOk: () => handleBackToHome(),
+        };
+        modal.confirm(modalConfig);
+    }
+    const handleBackToHome = () => {
+        history.push("/select");
+    }
+
+    return (            
+        <>
+            {modalHolder}
+            <FlexGrow>
+                <Header />
+                <NavigationBar 
+                    handleOnClick={handleReturn}
+                    title={title}                              
+                />
+                    {stage === "filter" && 
+                        <Form id={`${stage}-form`} onSubmit={handleSubmitFilters}>
+                            <Amount>{cardAmount} Tokens</Amount>
+                            <StyledRangeSlider
+                                min={minAmount}
+                                max={maxAmount}
+                                step={10}
+                                defaultValue={[0, 10]}
+                                className={"single-thumb"}
+                                thumbsDisabled={[true, false]}
+                                rangeSlideDisabled={true}
+                                onInput={(range) => handleCardAmountChange(range)}
+                                required
+                            />                 
                             <Select 
                                 options={currencyOptions} 
-                                onChange={handleCurrencyChange}
                                 label="Currency"
-                            />
-                        </Form>
-                        <FooterCtn>
-                            <PrimaryButton>
-                                Choose a Currency
-                            </PrimaryButton>
-                        </FooterCtn>
-                    </>
-                )} 
-
-                {stage === "country" && (
-                    <>
-                        <div>Cashout Amount: {amount}</div>
-                        <div>Cashout Currency: {currency}</div>
-                        <Form id="country-form">
+                                name="currency"
+                                required
+                            />                            
                             <Select 
                                 options={countryOptions} 
-                                onChange={handleCountryChange}    
+                                label="Country"
+                                name="country"
+                                required
                             />
                         </Form>
-                        <FooterCtn>
-                            <PrimaryButton>
-                                Choose a Country
-                            </PrimaryButton>
-                        </FooterCtn>
-                    </>
-                )}
+                    }         
 
-                {stage === "brand" && (
-                    <>
-                        <div>Cashout Amount: {amount}</div>
-                        <div>Currency: {currency}</div>
-                        <div>Country: {country}</div>
-                        <Form id="brand-form" onSubmit={handleBrandSubmit}>
+                    {stage === "brand" && 
+                        <Form id={`${stage}-form`}
+                            onSubmit={handleBrandSubmit}
+                        >
                             <Select 
-                                options={brandOptions}
+                                options={tilloSelection}
                                 onChange={handleBrandChange}
+                                name="brand"
                             />                        
                         
                             {brandData && (
-                                <div>
+                                <p>
                                     {brandData.description}
-                                </div>
+                                </p>
                             )}
 
-                            {link && ( 
-                                <Link href={link} target="_blank">
-                                    "Claim your Giftcard"
-                                </Link>
-                            )}
+
                         </Form>
+                    }
 
-                        <FooterCtn>
-                            <PrimaryButton type="submit" form="brand-form">
-                                Confirm your Brand
-                            </PrimaryButton>
-                        </FooterCtn>
-                    </>
-                )}
+                    {stage === "giftcard" &&
+                        <Form id={`${stage}-form`} onSubmit={handleGiftcardConfirmation}>
+                            <Link href={link} target="_blank">
+                                "Claim your Giftcard"
+                            </Link>
+                        </Form>
+                    }
 
-        </FlexGrow>       
+                    <FooterCtn>
+                        <PrimaryButton type="submit" form={`${stage}-form`}>
+                            {stage === "filter" && 
+                                <>Go to Brands</>
+                            }
+                            {stage === "brand" && 
+                                <>Get Giftcard</>
+                            }
+                            {stage === "giftcard" &&
+                                <>Back to Home</>
+                            }
+                        </PrimaryButton>
+                    </FooterCtn>    
+            </FlexGrow>           
+        </>
     )
 }
 
