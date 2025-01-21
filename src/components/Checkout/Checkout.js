@@ -23,6 +23,8 @@ import {
 	PaymentRequest, 
 	PaymentACK
 } from 'b70-checkout';
+import CreatableSelect from 'react-select/creatable';
+import BigNumber from 'bignumber.js';
 
 // custom react components
 import Header from '@components/Common/Header';
@@ -42,11 +44,6 @@ import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 
 // styled css components
-const CustomForm = styled.form`
-    width: 85%;
-    margin-top: 30px;
-    margin-bottom: 30px;
-`;
 const CustomEnfold = styled(Enfold)`
     flex-grow: 1;
 `;
@@ -68,7 +65,7 @@ const EvenLighterFooterBackground = styled(LightFooterBackground)`
 `;
 const InfoText = styled.p`
     width: 90%;
-    font-size: 11px;
+    font-size: 13px;
     line-height: 150%;
     color: #1A1826;
     text-align: justify;
@@ -108,6 +105,22 @@ const Input = styled.input`
     text-color: #ABCDEF;
 	text-indent: 12px;
 `;
+const CustomCreatableSelect = styled(CreatableSelect)`
+	border-color: ${props => props.error ? "#e74c3c" : "#000000"};
+	width: 100%;
+`;
+const Form = styled.form`
+	width: 80%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-top: 30px;
+	margin-bottom: 30px;
+`;
+const ErrorMessage = styled.div`
+	color: red;
+`
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -176,9 +189,9 @@ const NmiCheckoutForm = ({
 	}
 	
     return (
-        <CustomForm onSubmit={handleSubmit} id="NMIC-form">
+        <Form onSubmit={handleSubmit} id="NMIC-form">
             <CardIconBox />
-        </CustomForm>
+        </Form>
     )
 }
 
@@ -200,6 +213,13 @@ const Checkout = ({
     const { wallet } = ContextValue;
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
 	const { forceWalletUpdate, addIssueTxs } = useWallet();
+	const token = slpBalancesAndUtxos.tokens[0];
+	let maxEtokenTicketQuantity = 0; 
+	if (token) {
+		const balance = (new BigNumber({...token.balance, _isBigNumber: true}).toNumber()) / 100;
+		maxEtokenTicketQuantity = +( (balance / 10).toFixed(0) );
+	}
+	console.log("max etoken qtty", maxEtokenTicketQuantity);
 
     // states
     const [isFirstRendering, setFirstRendering] = useState(true);
@@ -212,6 +232,7 @@ const Checkout = ({
 	const [paymentRequest, setPaymentRequest] = useState(false);
 	const [paymentMetadata, setPaymentMetadata] = useState(false);
 	const [purchaseOptions, setPurchaseOptions] = useState(false);
+	const [ticketQtyError, setTicketQtyError] = useState(false);
 
 
     if (!playerNumbers) {
@@ -479,16 +500,37 @@ const Checkout = ({
 
 	const handlePurchaseOptionsSubmit = (e) => {
 		e.preventDefault();
+		const type = e.target.type.value;
+		const isEtoken = type === "etoken";
+		const quantity = e.target.ticketQuantity.value;
+		const isNumberInput = /[0-9]/.test(quantity);	
+		if (!isNumberInput) {
+			setTicketQtyError("Quantity must be a number");
+			return;
+		} 				
+
+		const sufficientBalance = Number(quantity) <= maxEtokenTicketQuantity;
+		if (isEtoken && !sufficientBalance) {
+			setTicketQtyError(`You can only afford ${maxEtokenTicketQuantity} Tickets with eToken`);
+			return;
+		} 
+
+		setTicketQtyError(false);
 		const newPurchaseOptions = {
-			ticketQuantity: e.target.ticketQuantity.value,
-			type: e.target.type.value
+			ticketQuantity: quantity,
+			type: type
 		};
 		setPurchaseOptions(newPurchaseOptions);
 	}
 
     const tosTitle = "Purchase Terms";
     const checkoutTitle = "Checkout";
-
+	const quantityOptions = ["1", "2", "5", "10"].map(option => {
+		return {
+			label: option,
+			value: option
+		};
+	});
 
     return (
         <>  
@@ -528,14 +570,33 @@ const Checkout = ({
                                     />    
 
                                     <Scrollable>
-                                        <div>Purchase Ticket Amount</div>
-                                        <form id="purchase-options-form" onSubmit={handlePurchaseOptionsSubmit}>
-                                            <input type="number" name="ticketQuantity" defaultValue={1}/>
+                                        <Form id="purchase-options-form" onSubmit={handlePurchaseOptionsSubmit}>
+											<PaymentHeader>How  many tickets?</PaymentHeader>
+											{ticketQtyError && <ErrorMessage>{ticketQtyError}</ErrorMessage>}
+												<CustomCreatableSelect 
+													isClearable
+													name="ticketQuantity" 
+													label="Quantity"
+													required
+													options={quantityOptions}
+													defaultValue={"5"}
+													formatCreateLabel={(input) => {
+														const isNumberInput = /[0-9]/.test(input);
+														if (isNumberInput) 
+															return `Purchase ${input} Tickets`
+													}}
+												/>											
+											<InfoText>
+												Each ticket result is random and unique, including entry in each of the Jackpots.											
+												<a>Learn More</a>
+											</InfoText>
+
+											<PaymentHeader>Choose your Payment Option</PaymentHeader>
                                             <select type="select" name="type">
                                                 <option value="fiat">Fiat</option>
                                                 <option value="etoken">eToken</option>
                                             </select>						
-                                        </form>
+                                        </Form>
                                     </Scrollable>
 
                                     <FooterCtn>
