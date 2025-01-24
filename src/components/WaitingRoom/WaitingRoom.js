@@ -285,6 +285,7 @@ const WaitingRoom = ({
 		if (activeTicket && !apiError) {
 			if (isRedeemed) {
 				passLoadingStatus("LOADING GAME");
+				await sleep(500);
 				// todo: only push forward if updated ticket from storage is available
 				const redeemHash = isRedeemed;
 				history.push({
