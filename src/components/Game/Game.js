@@ -39,6 +39,7 @@ const FlexGrow = styled.div`
     align-items: center;
     width: 100%;
     position: relative;
+	min-height: 60%;
 `;
 const Animation = styled.div`
     width: inherit;
@@ -101,7 +102,7 @@ const Game = ({
 		}
 	},[])
 
-    // load labels and manually stop loading screen
+    // load labels
     useEffect(async () => {    
 		console.log("GAME useEffect redeem Hash", redeemHash)
         if (redeemHash) {
@@ -130,11 +131,9 @@ const Game = ({
 					fight: animationLabels.CLUX.NORRIS[winner].FIGHT,
 					celebration: win ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION    
 				})
-
-				await sleep(1000);
+				
 				passLoadingStatus(false);
 			}
-
         }
     }, [redeemHash]);
 
