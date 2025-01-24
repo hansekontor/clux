@@ -174,7 +174,8 @@ const Result = ({
                 </ButtonCtn>
             </Scrollable>
             <Footer
-                origin={"/result"}
+				// directly go to select from result because result can not displayed correctly afterwards
+                origin={"/select"}
                 buttonOnClick={handleButtonClick}
                 buttonText={buttonText}
                 ticketIndicator={unredeemedIndicator}
