@@ -217,7 +217,7 @@ const Checkout = ({
 	let maxEtokenTicketQuantity = 0; 
 	if (token) {
 		const balance = (new BigNumber({...token.balance, _isBigNumber: true}).toNumber()) / 100;
-		maxEtokenTicketQuantity = +( (balance / 10).toFixed(0) );
+		maxEtokenTicketQuantity = Math.floor(balance / 10);
 	}
 	console.log("max etoken qtty", maxEtokenTicketQuantity);
 
@@ -233,6 +233,7 @@ const Checkout = ({
 	const [paymentMetadata, setPaymentMetadata] = useState(false);
 	const [purchaseOptions, setPurchaseOptions] = useState(false);
 	const [ticketQtyError, setTicketQtyError] = useState(false);
+	const [kycAccessToken, setKycAccessToken] = useState(false);
 
 
     if (!playerNumbers) {
@@ -261,7 +262,9 @@ const Checkout = ({
 					'Content-Type': "application/json"}),
 				mode: "cors",
 				signal: AbortSignal.timeout(20000),
-				body: JSON.stringify({quantity: purchaseOptions.ticketQuantity}),
+				body: JSON.stringify({
+					quantity: purchaseOptions.ticketQuantity
+				}),
 			});
 			// console.log("res", res);
 			const invoiceRes = await res.arrayBuffer();
@@ -279,13 +282,9 @@ const Checkout = ({
 		try {
 			if (paymentMetadata && paymentRequest && !ticketIssued) {
 				console.log("finalize payment");			
-                const payment = new Payment({
-                    memo: paymentRequest.paymentDetails.memo
-                });
-                console.log("payment", payment);
+
 
 				// get message to sign
-				const bw = bio.write();
 				const merchantData = paymentRequest.paymentDetails.getData('json');
 				console.log("merchant data", merchantData);
 				const paymentDataBuf = Buffer.from(merchantData.paymentdata, 'hex');
@@ -294,10 +293,18 @@ const Checkout = ({
                 const amount = br.readU32() / 100;
                 console.log({id, amount});
 
+				setKycAccessToken(merchantData.kyctoken);
+
+				const bw = bio.write();
 				bw.writeBytes(paymentDataBuf)
 				const playerNumbersBuf = Buffer.from(playerNumbers, 'hex');
 				bw.writeBytes(playerNumbersBuf);
-                
+
+				const payment = new Payment({
+                    memo: paymentRequest.paymentDetails.memo
+                });
+                console.log("payment", payment);   
+
                 const coinsUsed = [];
 
                 if (purchaseOptions.type === "fiat") {
@@ -305,6 +312,7 @@ const Checkout = ({
                     bw.writeVarString(paymentMetadata);                    
                 } else {
                     // get token coins
+					console.log("slpUtxos available in Checkout.js", slpBalancesAndUtxos.slpUtxos);
                     const sortedTokenUtxos = slpBalancesAndUtxos.slpUtxos.filter(u => u.slp?.tokenId && ['MINT', 'SEND'].includes(u.slp.type))
                         .sort((a, b) => parseInt(a.slp.value) - parseInt(b.slp.value));
                     console.log("sortedTokenUtxos", sortedTokenUtxos);
@@ -312,6 +320,7 @@ const Checkout = ({
                     // construct tx
                     const tx = new MTX();
                     const prOutputs = paymentRequest.paymentDetails.outputs;
+					console.log("constructing prOutputs", prOutputs);
                     for (let i = 0; i < prOutputs.length; i++) {
                         tx.addOutput(Script.fromRaw(prOutputs[i].script), prOutputs[i].value);
                     }
@@ -328,7 +337,7 @@ const Checkout = ({
                             break;
                     }
 
-                    // this error should never happen
+					// error will lead to general loading screen
                     if (baseAmount > 0)
                         throw new Error('Insufficient token funds in address');
 
@@ -336,7 +345,7 @@ const Checkout = ({
                     console.log("baseChange", baseChange);
                     if (baseChange > 0) {
                         tx.outputs[0].script.pushData(U64.fromInt(baseChange).toBE(Buffer)).compile();
-                        tx.addOutput(wallet.Path1899.cashAddress);
+                        tx.addOutput(wallet.Path1899.cashAddress, 546);
                         console.log("added change to outputs", tx.outputs);
                     }
 
@@ -345,6 +354,8 @@ const Checkout = ({
                     const sighashType = hashTypes.ALL | hashTypes.ANYONECANPAY | hashTypes.SIGHASH_FORKID;
                     
                     const buyerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+					const hex = tx.toRaw().toString('hex')
+					console.log("hex", hex);
                     
                     tx.sign(buyerKeyring, sighashType);
                     const additionalSatsNeeded = tx.getMinFee() - tx.getFee();
@@ -383,20 +394,19 @@ const Checkout = ({
 				if (response.statusCode !== 200) {
 					throw new Error(response.text());
 				}
-				console.log("response", response);
+				console.log("response", response);	
 
 				const ack = PaymentACK.fromRaw(response.buffer());
 				console.log(ack.memo);
 				const rawTransactions = ack.payment.transactions;
-				const txs = rawTransactions.map(r => TX.fromRaw(r).toJSON());
-				console.log(txs);
+				const ticketTxs = rawTransactions.map(r => TX.fromRaw(r));
+				console.log(ticketTxs.map(tx => tx.toJSON()));
 
 				setTicketIssued(true);
 
 				// put txs in storage
-				await addIssueTxs(txs, coinsUsed);
-
-				// advance to backup/waiting room
+				const paymentTxs = payment.transactions.map(raw => TX.fromRaw(raw));
+				await addIssueTxs(ticketTxs, coinsUsed, paymentTxs);
 
 			} 
 		} catch (err) {
@@ -452,17 +462,15 @@ const Checkout = ({
         // }); 
         // check if KYC necessary
         // if yes: create kyc config            
-        // const accessToken = "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6InhjYjlmbiIsImhhc2giOiJiZDZkMDM2OWQwYWI1MjE3YzJjNzE0ZTVhN2U4ZjIxOGM5YTliNzMyY2QwZjY4Y2RlNWZmYTYwNTRkNjA3NDNjIiwiaWF0IjoxNzIzNTM3MTcwLCJleHAiOjE3MjM2MjM1NzAsImp0aSI6ImYxYjczYjg4LTA3NTQtNGQ4OC05NGZkLTMzNGVhOTI1OThlYiJ9.P2QYdyjmxe1MpaxAD8AUk_21ZrVJWKUeWeoWf1Ia_tC8XN5l2k38o7-fLnxI-pxIyRatjS7BmYsh2g15v39qJQw4uHOMq5W3m5VyB1rmmYLCoPftfKjtpvdRhGExgsaKRk9t5hT-YiCiBBkxYIFuBA6XEzb33GUGQNvkAWhV8c4";
-        // // AML workflow id
-        // // const workflowId = "workflow_UCfjDcF";
-        // const workflowId = "workflow_a93TCBh";
-        // const transactionId = "ecash:1234567";
-        // const config = new window.HyperKycConfig(accessToken, workflowId, transactionId); 
+        // AML workflow id
+        const workflowId = "workflow_a93TCBh";
+        const transactionId = wallet.Path1899.publicKey;
+		console.log("transactionId", transactionId);
+        const config = new window.HyperKycConfig(kycAccessToken, workflowId, transactionId); 
         // config.setInputs({
         //     email: email
         // })
-        // setKycConfig(config);   
-        setIsKYCed(true);
+        setKycConfig(config);   
         
         const isFirstTicket = tickets.length === 0;
         if (isFirstTicket) {
@@ -476,11 +484,11 @@ const Checkout = ({
         setPaymentMetadata(true);
     }
 
-    // useEffect(()=> {
-    //     if (kycConfig) {
-    //         window.HyperKYCModule.launch(kycConfig, handleKYCResult);
-    //     }
-    // }, [kycConfig])
+    useEffect(()=> {
+        if (kycConfig) {
+            window.HyperKYCModule.launch(kycConfig, handleKYCResult);
+        }
+    }, [kycConfig])
 
 	useEffect(async() => {
 		if (hasAgreed) {
@@ -511,7 +519,10 @@ const Checkout = ({
 
 		const sufficientBalance = Number(quantity) <= maxEtokenTicketQuantity;
 		if (isEtoken && !sufficientBalance) {
-			setTicketQtyError(`You can only afford ${maxEtokenTicketQuantity} Tickets with eToken`);
+			if (maxEtokenTicketQuantity === 1)
+				setTicketQtyError(`You can only afford ${maxEtokenTicketQuantity} Ticket with eToken`);
+			else 
+				setTicketQtyError(`You can only afford ${maxEtokenTicketQuantity} Tickets with eToken`);
 			return;
 		} 
 
@@ -594,7 +605,9 @@ const Checkout = ({
 											<PaymentHeader>Choose your Payment Option</PaymentHeader>
                                             <select type="select" name="type">
                                                 <option value="fiat">Fiat</option>
-                                                <option value="etoken">eToken</option>
+												{maxEtokenTicketQuantity > 0 && 
+	                                                <option value="etoken">eToken</option>
+												}
                                             </select>						
                                         </Form>
                                     </Scrollable>

@@ -179,7 +179,7 @@ const useWallet = () => {
         // console.timeEnd(`update.${ms}`);
     };
 
-	const addIssueTxs = async (txs, coinsUsed) => {
+	const addIssueTxs = async (txs, coinsUsed, paymentTxs) => {
 		try {
             console.log("adding unredeemed", txs)
             const ticketHistory = new TicketHistory(wallet.state.tickets);
@@ -188,7 +188,15 @@ const useWallet = () => {
 
             let newState;
             if (coinsUsed.length > 0) {
-                const newSlpBalancesAndUtxos = removeUsedCoins(wallet.state.slpBalancesAndUtxos, coinsUsed);
+				// remove utxos that have been used for payment tx
+                let  newSlpBalancesAndUtxos = removeUsedCoins(wallet.state.slpBalancesAndUtxos, coinsUsed);
+				
+				if (paymentTxs) {
+					const slpTxs = paymentTxs.map(tx => addSlpToSendTx(tx));
+					// add utxos that came back as change
+					newSlpBalancesAndUtxos = addUtxos(newSlpBalancesAndUtxos, wallet.Path1899.cashAddress, slpTxs);
+				}
+
                 newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets, slpBalancesAndUtxos: newSlpBalancesAndUtxos });
             } else {
                 newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets });
