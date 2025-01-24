@@ -71,7 +71,7 @@ const Notification = ({
     }
 
     useEffect(async () => {
-        await sleep(currency.notificationDurationLong * 1000);
+        await sleep(currency.notificationDurationShort * 1000);
         setIsClosing(true);
     }, []);
 
