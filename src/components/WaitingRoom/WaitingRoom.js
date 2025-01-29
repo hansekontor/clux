@@ -53,10 +53,6 @@ const FlexGrow = styled.div`
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-const lottoApiClient = bcurl.client({
-    url: "https://lsbx.nmrai.com",
-    timeout: 20000
-});
 
 const WaitingRoom = ({
     passLoadingStatus, 
@@ -105,7 +101,6 @@ const WaitingRoom = ({
 			let minedTicket = activeTicket.details.minedTicket;
 			console.log("minedTicket pre", minedTicket);
 			if (!minedTicket) {
-				// const minedTicket = await lottoApiClient.get(`v1/ticket/${activeTicket.issueTx.id}`);
 				const ticketRes = await fetch(`https://lsbx.nmrai.com/v1/ticket/${activeTicket.issueTx.hash}`, {
 					method: "GET", 
 					headers: new Headers({
