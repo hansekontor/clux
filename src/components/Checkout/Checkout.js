@@ -3,8 +3,6 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Modal, Radio } from 'antd';
-import bcurl from 'bcurl';
-import brq from 'brq';
 import bio from 'bufio';
 import {
 	KeyRing, 
@@ -380,23 +378,26 @@ const Checkout = ({
 					paymentdata: msgBuf.toString('hex')
 				});
 				console.log("payment", payment);
-				lottoApiClient.headers = {
-					'Content-Type': `application/${purchaseOptions.type}-payment`
-				};
-				const brqOptions = {
-					...lottoApiClient, 
-					path: '/v1/pay',
-					method: 'POST',
-					body: payment.toRaw(),
-				};
 
-				const response = await brq(brqOptions);
-				if (response.statusCode !== 200) {
+				const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
+					method: "POST",
+					headers: new Headers({
+					'Content-Type': `application/${purchaseOptions.type}-payment`
+					}),
+					signal: AbortSignal.timeout(20000),
+					body: payment.toRaw()
+				})
+
+				if (rawPaymentRes.status !== 200) {
 					throw new Error(response.text());
 				}
+
+				const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
+				const response = Buffer.from(paymentResArrayBuf);
+
 				console.log("response", response);	
 
-				const ack = PaymentACK.fromRaw(response.buffer());
+				const ack = PaymentACK.fromRaw(response);
 				console.log(ack.memo);
 				const rawTransactions = ack.payment.transactions;
 				const ticketTxs = rawTransactions.map(r => TX.fromRaw(r));

@@ -25,14 +25,6 @@ import useWallet from '@hooks/useWallet';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 
-import brq from 'brq';
-import bcurl from 'bcurl';
-const lottoApiClient = bcurl.client({
-    url: "https://lsbx.nmrai.com",
-    timeout: 20000,
-    headers: { 'Content-Type': 'application/etoken-paymentrequest' },
-})
-
 
 // css styled components
 const Input = styled.input`
@@ -341,22 +333,22 @@ const Cashout = ({
                 signature: sig.toString('hex')
             })
         
-            lottoApiClient.headers = { 'Content-Type': `application/etoken-payment` };
-            // console.log("lottoApiClient.headers", lottoApiClient.headers);
-            const paymentBrqOptions = {
-                ...lottoApiClient,
-                path: '/v1/cardpay',
-                method: 'POST',
-                body: payment.toRaw(),
-            };
+			const rawPaymentRes = await fetch("https://lsbx.nmrai.com/", {
+				method: "POST",
+				signal: AbortSignal.timeout(20000),
+				headers: new Headers({
+					'Content-Type': `application/etoken-payment`
+				}),
+				body: payment.toRaw()
+			})
+			console.log("rawPaymentRes", rawPaymentRes);
+            if (rawPaymentRes.status !== 200)
+                throw new Error(rawPaymentRes.statusText)
 
-            const response = await brq(paymentBrqOptions);
-            // console.log("response", response);
-            
-            if (response.statusCode !== 200)
-                throw new Error(response.text())
-        
-            const ack = PaymentACK.fromRaw(response.buffer());
+			const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
+            const response = Buffer.from(paymentResArrayBuf);
+                    
+            const ack = PaymentACK.fromRaw(response);
         
             // console.log("ack.payment", ack.payment.getData('json'))
             // console.log("ack.memo", ack.memo)
