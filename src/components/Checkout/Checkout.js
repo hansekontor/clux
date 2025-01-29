@@ -116,9 +116,12 @@ const Form = styled.form`
 	margin-top: 30px;
 	margin-bottom: 30px;
 `;
+const PaymentForm = styled(Form)`
+	gap: 12px;
+`;
 const ErrorMessage = styled.div`
 	color: red;
-`
+`;
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -138,8 +141,8 @@ const signMessage = (secret, msg) => {
 const NmiCheckoutForm = ({
 	passMetadata
 }) => {
-    const history = useHistory();
 
+	const [inputError, setInputError] = useState(false);
     useEffect(() => {
         window.CollectJS.configure({
             variant: 'lightbox',
@@ -174,6 +177,7 @@ const NmiCheckoutForm = ({
     const handleSubmit = (e) => {
 		console.log("handleSubmit()")
         e.preventDefault();
+
         if (window.CollectJS) {
             window.CollectJS.startPaymentRequest();
         } else 
@@ -187,21 +191,35 @@ const NmiCheckoutForm = ({
 	}
 	
     return (
-        <Form onSubmit={handleSubmit} id="NMIC-form">
+        <PaymentForm onSubmit={handleSubmit} id="NMIC-form">
             <CardIconBox />
-        </Form>
+			{/* {inputError && <ErrorMessage>{inputError}</ErrorMessage>} */}
+			<Input 
+				type="text"
+				name="firstname"
+				placeholder="First Name	"
+				required
+			/>
+			<Input 
+				type="text"
+				name="lastname"
+				placeholder="Last Name"
+				required
+			/>
+			<Input 
+				type="text"
+				name="zip"
+				placeholder="ZIP"
+				required
+			/>
+        </PaymentForm>
     )
 }
-
-const lottoApiClient = bcurl.client({
-    url: "https://lsbx.nmrai.com",
-    timeout: 20000,
-    headers: { 'Content-Type': 'application/etoken-paymentrequest' },
-});
 
 const Checkout = ({
     passLoadingStatus,
     playerNumbers,
+	user
 }) => {
     const history = useHistory(); 
 	// const { addTxsToHistory } = useWallet();
@@ -211,7 +229,7 @@ const Checkout = ({
     const { wallet } = ContextValue;
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
 	const { forceWalletUpdate, addIssueTxs } = useWallet();
-	const token = slpBalancesAndUtxos.tokens[0];
+	const token = slpBalancesAndUtxos.tokens ? slpBalancesAndUtxos.tokens[0] : false;
 	let maxEtokenTicketQuantity = 0; 
 	if (token) {
 		const balance = (new BigNumber({...token.balance, _isBigNumber: true}).toNumber()) / 100;
@@ -232,6 +250,8 @@ const Checkout = ({
 	const [purchaseOptions, setPurchaseOptions] = useState(false);
 	const [ticketQtyError, setTicketQtyError] = useState(false);
 	const [kycAccessToken, setKycAccessToken] = useState(false);
+	const [emailError, setEmailError] = useState(false);
+	const [hasEmail, setHasEmail] = useState(false);
 
 
     if (!playerNumbers) {
@@ -248,6 +268,22 @@ const Checkout = ({
     const totalAmount = purchaseTokenAmount + feeAmount;
     const agreeButtonText = "Agree and Continue";
     const purchaseButtonText = `Pay - $${10*purchaseOptions.ticketQuantity} - DEMO`; 
+
+	useEffect(async () => {
+		if (user.ipGeo.ticketPurchase) {
+			passLoadingStatus("ACCESS DENIED");
+			await sleep(2000);
+			history.push("/select");
+		}
+	}, [user])
+
+
+	// skip email prompt if email already available
+	useEffect(() => {
+		if (user.email) 
+			setHasEmail(true);
+
+	}, [user])
 
 	// initialize payment request
 	useEffect(async () => {
@@ -310,7 +346,6 @@ const Checkout = ({
                     bw.writeVarString(paymentMetadata);                    
                 } else {
                     // get token coins
-					console.log("slpUtxos available in Checkout.js", slpBalancesAndUtxos.slpUtxos);
                     const sortedTokenUtxos = slpBalancesAndUtxos.slpUtxos.filter(u => u.slp?.tokenId && ['MINT', 'SEND'].includes(u.slp.type))
                         .sort((a, b) => parseInt(a.slp.value) - parseInt(b.slp.value));
                     console.log("sortedTokenUtxos", sortedTokenUtxos);
@@ -318,7 +353,6 @@ const Checkout = ({
                     // construct tx
                     const tx = new MTX();
                     const prOutputs = paymentRequest.paymentDetails.outputs;
-					console.log("constructing prOutputs", prOutputs);
                     for (let i = 0; i < prOutputs.length; i++) {
                         tx.addOutput(Script.fromRaw(prOutputs[i].script), prOutputs[i].value);
                     }
@@ -382,7 +416,7 @@ const Checkout = ({
 				const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
 					method: "POST",
 					headers: new Headers({
-					'Content-Type': `application/${purchaseOptions.type}-payment`
+						'Content-Type': `application/${purchaseOptions.type}-payment`
 					}),
 					signal: AbortSignal.timeout(20000),
 					body: payment.toRaw()
@@ -438,47 +472,31 @@ const Checkout = ({
         
             // ----Complete workflow-----
             case "auto_approved":
-                break;
+				history.push('/backup');
             case "auto_declined":
+				passLoadingStatus("Your KYC has been declined.");
+				await sleep(5000);
+				history.push({
+					pathname: "/",
+					state: {
+						kycDeclined: true
+					}
+				})
                 break;
             case "needs_review":
                 break;
             }
     }
-    const handleEmailAndKYC = async (e) => {
+    const handleKYC = async (e) => {
         e.preventDefault();
-        // const email = e.target.email.value;
-        // const emailBuf = Buffer.from(email, 'utf-8');
-        // const pubkey = wallet.Path1899.publicKey;
-        // const playerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
-        // const signature = playerKeyring.sign(SHA256.digest(emailBuf));
-        // const lottoApiClient = bcurl.client({
-        //     url: "https://lsbx.nmrai.com", 
-        //     timeout: 20000
-        // });
-        // const res = await lottoApiClient.post('/v1/user', {
-        //     email, 
-        //     pubkey,
-        //     signature
-        // }); 
-        // check if KYC necessary
-        // if yes: create kyc config            
-        // AML workflow id
+
         const workflowId = "workflow_a93TCBh";
         const transactionId = wallet.Path1899.publicKey;
-		console.log("transactionId", transactionId);
         const config = new window.HyperKycConfig(kycAccessToken, workflowId, transactionId); 
-        // config.setInputs({
-        //     email: email
-        // })
+
         setKycConfig(config);   
         
-        const isFirstTicket = tickets.length === 0;
-        if (isFirstTicket) {
-            history.push('/backup');
-        } else { 
-            history.push('/waitingroom');
-        }
+
     }
     const handleEtokenPayment = (e) => {
         e.preventDefault();
@@ -534,6 +552,46 @@ const Checkout = ({
 		};
 		setPurchaseOptions(newPurchaseOptions);
 	}
+	const handleSubmitEmail = async (e) => {
+		e.preventDefault();
+
+		const emailInput = e.target.email.value;
+		const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput);
+		if (!isValid) {
+			setEmailError(true);
+			return;
+		}
+		const buyerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+
+		console.log("email", emailInput);
+		console.log("user.access", user.access);
+		const msg = Buffer.from(emailInput, 'utf-8');
+		const sig = buyerKeyring.sign(SHA256.digest(msg));
+
+		console.log("msg", msg);
+		console.log("sig", sig);
+		const json = {
+			email: emailInput, 
+			pubkey: wallet.Path1899.publicKey,
+			signature: sig.toString('hex'),			
+		};
+		console.log("json", json);
+		const userRes = await fetch("https://lsbx.nmrai.com/v1/user", {
+			method: "POST", 
+			mode: "cors",
+			headers: new Headers({
+				"Content-Type": "application/json"
+			}),
+			signal: AbortSignal.timeout(20000),
+			body: JSON.stringify(json)
+		});
+		console.log("userRes", userRes);
+		// forward based on response
+		const userResJson = await userRes.json();
+		console.log("userResJson", userResJson);
+		if (userRes.status === 200)
+			setHasEmail(true);
+	}
 
     const tosTitle = "Purchase Terms";
     const checkoutTitle = "Checkout";
@@ -543,38 +601,74 @@ const Checkout = ({
 			value: option
 		};
 	});
+	const emailButtonText = "Confirm Email";
+	const emailTitle = "Email";
 
     return (
-        <>  
-            <Header background="#FEFFFE" />
-            {!hasAgreed ? (
-                <>
-                    <NavigationBar 
-                        handleOnClick={handleReturn}
-                        title={tosTitle}
-                    />
-                    <Tos />
-                    <FooterCtn>
-                        <LightFooterBackground />
+        <>  							
+			<Header background="#FEFFFE" />
+            {(!hasAgreed || !hasEmail) ? (
+                <> 
+					{!hasAgreed ? (
+						<>            
+							<NavigationBar 
+								handleOnClick={handleReturn}
+								title={tosTitle}
+							/>
+							<Tos />
+							<FooterCtn>
+								<LightFooterBackground />
 
-                        <RandomNumbers 
-                            fixedRandomNumbers={playerNumbers}
-                        />
-                        <PrimaryButton 
-                            // form={"email-form"}
-                            onClick={handleAgree}
-                        >
-                            {agreeButtonText}
-                        </PrimaryButton>
-                    </FooterCtn>
-                </>
+								<RandomNumbers 
+									fixedRandomNumbers={playerNumbers}
+								/>
+								<PrimaryButton 
+									onClick={handleAgree}
+								>
+									{agreeButtonText}
+								</PrimaryButton>
+							</FooterCtn>
+						</>						
+					) : (
+						<>
+							<NavigationBar
+								handleOnClick={handleReturn}
+								title={emailTitle}
+							/>
+							<FlexGrow>
+								<EmailForm id='email-form' onSubmit={(e) => handleSubmitEmail(e)}>
+									{emailError && <ErrorMessage>{emailError}</ErrorMessage>}
+									<Input 
+										placeholder="Enter your Email"
+										name="email"
+										type="text"
+									/>
+									<p>
+										<b>Your email is required</b> and is only used to announce results and maintenance updates. <b>We do not send marketing emails.</b>
+									</p>                                
+								</EmailForm>
+							</FlexGrow>
+							<FooterCtn>
+								<LightFooterBackground />
+
+								<RandomNumbers 
+									fixedRandomNumbers={playerNumbers}
+								/>
+								<PrimaryButton 
+									form={"email-form"}
+								>
+									{emailButtonText}
+								</PrimaryButton>
+							</FooterCtn>
+						</>
+					)}
+				</>
             ) : (
                 <>
                     {!ticketIssued ? (
                         <>
                             {!purchaseOptions ? (
                                 <>
-                                    {/* <Header background="#FEFFFE" /> */}
                                     <NavigationBar 
                                         handleOnClick={handleReturn}
                                         title={checkoutTitle}
@@ -630,7 +724,6 @@ const Checkout = ({
                                 <>
                                     {isStage1 && ( 
                                         <>
-                                            {/* <Header background="#FEFFFE"/> */}
                                             <NavigationBar 
                                                 handleOnClick={handleReturn}
                                                 title={checkoutTitle}
@@ -690,19 +783,7 @@ const Checkout = ({
                     ) : (
                         <FlexGrow>
                             <KycInfo />                       
-                            <EmailForm id='email-form' onSubmit={handleEmailAndKYC}>
-                                <Input 
-                                    placeholder="Enter your Email"
-                                    name="email"
-                                    type="text"
-                                    readOnly={true}
-                                />
-                                <p>
-                                    <b>Your email is required</b> and is only used to announce results and maintenance updates. <b>We do not send marketing emails.</b>
-                                </p>                                
-                            </EmailForm>
-
-                            <PrimaryButton form="email-form">Continue</PrimaryButton>
+                            <PrimaryButton onClick={handleKYC}>Continue</PrimaryButton>
                         </FlexGrow>
                     )}
                 </>  

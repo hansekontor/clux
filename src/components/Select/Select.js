@@ -80,6 +80,7 @@ const FadeOut = styled(WalletCtn)`
 const Select = ({
     passRandomNumbers,
     passLoadingStatus,
+	user
 }) => {
     const history = useHistory();
 
@@ -90,14 +91,18 @@ const Select = ({
 
     const [fadeOut, setFadeOut] = useState(false);
 
-    // find ticket indicator
-
- 
-	// console.log("tickets from wallet state", tickets.length);
+	console.log("wif", wallet.Path1899.fundingWif);
 
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+	const handleButtonClick = () => {
+		if (user.ipGeo.ticketPurchase)
+			return handleBuyTicket();
+		else 
+			console.log("Affiliate Placeholder")
+	}
 
     // manually turn off loading after error redirects...
     // check if this interferes with initial wallet loading 
@@ -114,7 +119,7 @@ const Select = ({
     
     // DOM contents
 	// const playButtonText = "Play Now - $10";
-	const playButtonText = "Play Now - $10 - DEMO";
+	const playButtonText = user.ipGeo.ticketPurchase ? "Play Now - $10 - DEMO" : "Affiliate Something";
     const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
@@ -148,14 +153,16 @@ const Select = ({
                             </Flash>
                         </IdleChicken>                     
                 </ChickenCtn>
-            </Scrollable>                
-            <StickyRandomNumbers 
-				passRandomNumbers={passRandomNumbers} 
-				background={'#1A1826'}
-			/>
+            </Scrollable>       
+			{user.ipGeo.ticketPurchase && (
+				<StickyRandomNumbers 
+					passRandomNumbers={passRandomNumbers} 
+					background={'#1A1826'}
+				/>				
+			)}         
             <Footer
                 origin={"/select"}
-                buttonOnClick={handleBuyTicket}
+                buttonOnClick={handleButtonClick}
                 buttonText={playButtonText}    
                 ticketIndicator={unredeemedIndicator}
 				slpBalances={slpBalancesAndUtxos}
