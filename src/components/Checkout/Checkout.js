@@ -270,7 +270,8 @@ const Checkout = ({
     const purchaseButtonText = `Pay - $${10*purchaseOptions.ticketQuantity} - DEMO`; 
 
 	useEffect(async () => {
-		if (user.ipGeo.ticketPurchase) {
+		console.log("CHECKOUT user", user);
+		if (user && !user.ipGeo.ticketPurchase) {
 			passLoadingStatus("ACCESS DENIED");
 			await sleep(2000);
 			history.push("/select");
