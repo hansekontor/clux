@@ -202,7 +202,6 @@ const App = () => {
 												<OnBoarding 
 													passIsProtected={setIsProtected}
 													passUser={setUser}
-													pubkey={wallet.Path1899.publicKey}
 												/>
 											: 
 												<>
