@@ -145,6 +145,10 @@ const RedeemButton = styled(SyncButton)`
 	background-color: #52595f;
 `;
 
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 const shortifyHash = (hash, length) => {
 	return String(hash.slice(0,length) + "..." + hash.slice(64-length,));
 }
@@ -407,6 +411,7 @@ const TicketHistory = ({
 	const handleSyncWallet = async () => {
 		passLoadingStatus("LOADING WALLET");
 		await forceWalletUpdate();
+		await sleep(3000);
 		setWalletSynced(true);
 		passLoadingStatus(false);
 	}

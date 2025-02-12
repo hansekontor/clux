@@ -143,7 +143,9 @@ const Cashout = ({
             passLoadingStatus("INSUFFICIENT TOKENS IN WALLET");
             await sleep(3000);
             history.push("/select");
-        }
+        } else {
+			passLoadingStatus(false);
+		}
     }, [balance])
 
     // fetch tillo options
@@ -241,6 +243,8 @@ const Cashout = ({
         try {
             e.preventDefault();
             
+			passLoadingStatus("REQUESTING GIFTCARD");
+
             const brand = e.target.brand.value;
             const json = {
                 value: String(cardAmount),
@@ -259,12 +263,16 @@ const Cashout = ({
             });
             // console.log("invoiceRes", invoiceRes);
 
+			// add api error handling
+
             const invoiceArrayBuffer = await invoiceRes.arrayBuffer();
             const invoiceBuf = Buffer.from(invoiceArrayBuffer);
             
             const pr = PaymentRequest.fromRaw(invoiceBuf);
             const prOutputs = pr.paymentDetails.outputs;
             console.log("pr", pr);
+
+			passLoadingStatus("BUILDING TRANSACTION");
 
             const merchantData = pr.paymentDetails.getData('json');
             // console.log("merchantData", merchantData);
@@ -353,8 +361,8 @@ const Cashout = ({
             // console.log("ack.payment", ack.payment.getData('json'))
             // console.log("ack.memo", ack.memo)
         
-            const rawTransactions = ack.payment.transactions
-            const txs = rawTransactions.map(r => TX.fromRaw(r))
+            const rawTransactions = ack.payment.transactions;
+            const txs = rawTransactions.map(r => TX.fromRaw(r));
             // console.log(txs)
 
             // remove utxos locally
@@ -362,6 +370,7 @@ const Cashout = ({
 
             setLink(ack.payment.getData('json').payout.result.url);
             setStage("giftcard");
+			passLoadingStatus(false);
         } catch(err) {
             console.error(err);
         }
