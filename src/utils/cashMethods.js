@@ -369,10 +369,10 @@ export const getSlpBalancesAndUtxos = (utxos) => {
 };
 
 export const addredeemData = (tickets, hash, redeemData) => {
-	console.log("addredeemData", tickets, hash, redeemData);
+	// console.log("addredeemData", tickets, hash, redeemData);
 	const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === hash);
 
-	console.log("addredeemData index", index);
+	// console.log("addredeemData index", index);
 	tickets[index].details = Object.assign(tickets[index].details, { game: redeemData });
 
 	return tickets;
@@ -406,13 +406,13 @@ export const addSlpToSendTx = (tx) => {
 	const tokenId = slp.getTokenId().toString('hex');
 	
 	let slpTx = tx.toJSON();
-    console.log("slpTx", slpTx);
+    // console.log("slpTx", slpTx);
 	slpTx.slpToken = { tokenId };
 
 	for (let i = 1; i < tx.outputs.length; i++) {
 		const matchedSlpRecord = sendRecordsJson.find(record => record.vout === i);
 		if (matchedSlpRecord) {
-            console.log("matchedSlpRecord", matchedSlpRecord);
+            // console.log("matchedSlpRecord", matchedSlpRecord);
 			slpTx.outputs[i].slp = matchedSlpRecord;
         }
 	}
@@ -426,7 +426,7 @@ export const addUtxos = (slpBalancesAndUtxos, address, txs) => {
 
     for (const tx of txs) {
         const utxosFromTx = tx.outputs.filter(outputs => outputs.address === address);
-        console.log("utxosFromTx", utxosFromTx);
+        // console.log("utxosFromTx", utxosFromTx);
 
         const nonSlpUtxosFromTx = utxosFromTx.filter(utxo => 
             !utxo.slp || (utxo.slp && utxo.slp.value == '0')
@@ -439,7 +439,7 @@ export const addUtxos = (slpBalancesAndUtxos, address, txs) => {
         slpUtxos.push(...slpUtxosFromTx);
     }
 
-    console.log("added slpUtxos", slpUtxos);
+    // console.log("added slpUtxos", slpUtxos);
 
 	newSlpBalancesAndUtxos.nonSlpUtxos.push(nonSlpUtxos);
 	newSlpBalancesAndUtxos.slpUtxos.push(slpUtxos);
@@ -463,7 +463,7 @@ export const addUtxos = (slpBalancesAndUtxos, address, txs) => {
 }
 
 export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
-    console.log("removed coins:", coinsUsed);
+    // console.log("removed coins:", coinsUsed);
     const slpUtxos = slpBalancesAndUtxos.slpUtxos;
     const nonSlpUtxos = slpBalancesAndUtxos.nonSlpUtxos;   
     for (const coin of coinsUsed) {

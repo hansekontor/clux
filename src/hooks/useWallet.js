@@ -94,18 +94,18 @@ const useWallet = () => {
     };
 
 	const loadWalletFromStorageOnStartup = async () => {
-		console.log("loadWalletFromStorageOnStartup");
+		// console.log("loadWalletFromStorageOnStartup");
         // get wallet object from localforage
         const wallet = await getWallet();
-		console.log(wallet);
+		// console.log(wallet);
         // If wallet object in storage is valid, it is set as wallet
 		const isValid = isValidStoredWallet(wallet);
-		console.log("LWFSOS isValid", isValid);
+		// console.log("LWFSOS isValid", isValid);
 		if (isValid) {
 			// console.log("isValidStoredWallet", true);
             // Convert all the token balance figures to big numbers
             const liveWalletState = loadStoredWallet(wallet.state);
-			console.log("livewalletState", liveWalletState)
+			// console.log("livewalletState", liveWalletState)
 			wallet.state = liveWalletState;
 
             // setWallet(wallet);
@@ -135,7 +135,6 @@ const useWallet = () => {
             await ticketHistory.addTicketsFromNode(ticketData.txs);
 
             if (typeof slpBalancesAndUtxos === 'undefined') {
-                console.log(`slpBalancesAndUtxos is undefined`);
                 throw new Error('slpBalancesAndUtxos is undefined');
             }
 			
@@ -181,10 +180,10 @@ const useWallet = () => {
 
 	const addIssueTxs = async (txs, coinsUsed, paymentTxs) => {
 		try {
-            console.log("adding unredeemed", txs)
+            // console.log("adding unredeemed", txs)
             const ticketHistory = new TicketHistory(wallet.state.tickets);
             await ticketHistory.addTicketsFromIssuance(txs);
-            console.log("added to history:", ticketHistory.tickets);
+            // console.log("added to history:", ticketHistory.tickets);
 
             let newState;
             if (coinsUsed.length > 0) {
@@ -202,7 +201,7 @@ const useWallet = () => {
                 newState = Object.assign(wallet.state, { tickets: ticketHistory.tickets });
             }
 
-            console.log("newState", newState);
+            // console.log("newState", newState);
 
 			wallet.state = newState;
 			setWallet(wallet);		
@@ -243,7 +242,7 @@ const useWallet = () => {
 		try {
 			// tx comes from self-built redeem hex in WaitingRoom.js and has no slp data, therefore it has to be added
 			const slpTx = addSlpToRedeemTx(tx);
-			console.log("addRedeem slpTx", slpTx);
+			// console.log("addRedeem slpTx", slpTx);
             const ticketHistory = new TicketHistory(wallet.state.tickets);
             await ticketHistory.addTicketFromRedemption(slpTx, redeemData);
 			const newSlpBalancesAndUtxos = addUtxos(wallet.state.slpBalancesAndUtxos, wallet.Path1899.cashAddress, [slpTx]);
@@ -267,7 +266,7 @@ const useWallet = () => {
             const newSlpBalancesAndUtxos = addUtxos(reducedSlpBalancesAndUtxos, wallet.Path1899.cashAddress, slpTxs);
 
             const newState = Object.assign(wallet.state, { slpBalancesAndUtxos: newSlpBalancesAndUtxos });
-            console.log("newState", newState);
+            // console.log("newState", newState);
 
 			wallet.state = newState;
 			setWallet(wallet);		
@@ -345,7 +344,7 @@ const useWallet = () => {
 
         if (existingWallet === null || !existingWallet) {
             wallet = await getWalletDetails(existingWallet);
-			console.log("GET WALLET SET FROM WALLET DETAILS", wallet);
+			// console.log("GET WALLET SET FROM WALLET DETAILS", wallet);
             await localforage.setItem('wallet', wallet);
         } else {
             wallet = existingWallet;
@@ -388,7 +387,7 @@ const useWallet = () => {
     };
 
     const writeWalletState = async (wallet, newState) => {
-		console.log("writeWalletState", wallet?.state, newState);
+		// console.log("writeWalletState", wallet?.state, newState);
         // Add new state as an object on the active wallet
         wallet.state = newState;
         try {
@@ -542,7 +541,7 @@ const useWallet = () => {
         }
 
         if (!walletInSavedWallets) {
-            console.log(`Wallet is not in saved Wallets, adding`);
+            // console.log(`Wallet is not in saved Wallets, adding`);
             savedWallets.push(currentlyActiveWallet);
             // resave savedWallets
             try {
@@ -748,7 +747,7 @@ const useWallet = () => {
 		};
 		wallet.state = initialState;
 
-		console.log("createWallet() wallet", wallet);
+		// console.log("createWallet() wallet", wallet);
 
         try {
             await localforage.setItem('wallet', wallet);
@@ -899,17 +898,17 @@ const useWallet = () => {
 	// load wallet on start up
     useEffect(async () => {
 		await sleep(3000);
-		console.log("useWallet useEffect");
-		console.log("GET WALLET FROM STORAGE")
+		// console.log("useWallet useEffect");
+		// console.log("GET WALLET FROM STORAGE")
 		const walletFromStorage = await loadWalletFromStorageOnStartup();
 		if (walletFromStorage) {
-			console.log("WALLETFROMSTORAGE", walletFromStorage)
-			console.log("useWallet useEffect isValid", isValidStoredWallet(walletFromStorage));
+			// console.log("WALLETFROMSTORAGE", walletFromStorage)
+			// console.log("useWallet useEffect isValid", isValidStoredWallet(walletFromStorage));
 			setWallet(walletFromStorage);
 		} else {
 			const newWallet = await createWallet();
-			console.log("NEWWALLET", newWallet);
-			console.log("useWallet useEffect isValid", isValidStoredWallet(newWallet));
+			// console.log("NEWWALLET", newWallet);
+			// console.log("useWallet useEffect isValid", isValidStoredWallet(newWallet));
             setWallet(newWallet);
 		}
 
@@ -931,7 +930,7 @@ const useWallet = () => {
         getSavedWallets,
         migrateLegacyWallet,
         createWallet: async (importMnemonic) => {
-            console.log("prototype createWallet called")
+            // console.log("prototype createWallet called")
             setLoading(true);
             const newWallet = await createWallet(importMnemonic);
             setWallet(newWallet);
