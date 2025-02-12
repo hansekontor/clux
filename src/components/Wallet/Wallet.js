@@ -168,7 +168,9 @@ const Wallet = ({
         else 
             history.push(previousPath);
     }
-    const handleToCashout = () => {
+    const handleToCashout = async () => {
+		passLoadingStatus("LOADING WALLET");
+		await sleep(2000);
         history.push("/cashout");
     }
     const handleToTickets = () => {
