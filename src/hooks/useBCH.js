@@ -407,7 +407,7 @@ export default function useBCH() {
 		// address = "ecash:qqxlh6q47tmlyg439fxmjsx9gzjkwkp4wgxzd72uda";
 		const response = await fetch(`https://blocklotto.cert.cash/ticket/address/${address}`);
 		const data = await response.json();
-		console.log("response", data);
+		console.log("ticket data response", data);
 
 		return data;
     };
@@ -981,7 +981,7 @@ export default function useBCH() {
 
     const getMintVaultAddress = (isSandbox = false) => {
         const outscriptHex = getOutscriptHexV2(isSandbox);
-        console.log('outscriptHex', outscriptHex);
+        // console.log('outscriptHex', outscriptHex);
         const outScriptHash = Hash160.digest(Buffer.from(outscriptHex, 'hex'));
         const p2shPubKeyScript = Script.fromScripthash(outScriptHash);
         return p2shPubKeyScript.getAddress();

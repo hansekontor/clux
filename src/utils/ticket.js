@@ -28,17 +28,17 @@ export default class TicketHistory {
 
     async addTicketsFromIssuance(txs) {
         const matchedTickets = this.matchTickets(txs);
-        console.log("matchedTickets", matchedTickets)
+        // console.log("matchedTickets", matchedTickets)
         const sortedTickets = matchedTickets.sort(this.compareTickets);
-        console.log("sorted Tickets", sortedTickets);
+        // console.log("sorted Tickets", sortedTickets);
         const parsedTickets = await this.parseTickets(sortedTickets);      
-        console.log("parsedTickets", parsedTickets);
+        // console.log("parsedTickets", parsedTickets);
 
         this.tickets = parsedTickets;
     }
 
     async addTicketFromRedemption(tx, redeemData) {
-        console.log("addTicketFromRedemption tx", tx, TX.isTX(tx));
+        // console.log("addTicketFromRedemption tx", tx, TX.isTX(tx));
         const matchedTickets = this.matchTickets([tx]);
         const sortedTickets = matchedTickets.sort(this.compareTickets);
         const parsedTickets = await this.parseTickets(sortedTickets); 
@@ -66,9 +66,9 @@ export default class TicketHistory {
 
             for (const txInput of txs) {
                 const tx = TX.isTX(txInput) ? txInput.toJSON() : txInput;
-                console.log("matching tx.hash", tx.hash);
+                // console.log("matching tx.hash", tx.hash);
                 const isRedeemTx = tx.slpToken ? true : false;
-                console.log("isRedeemTx", isRedeemTx);
+                // console.log("isRedeemTx", isRedeemTx);
                 // console.log("inspect potential slp output", tx.outputs[2]);
 
                 if (isRedeemTx) {
@@ -95,19 +95,19 @@ export default class TicketHistory {
 
             for (const txInput of txs) {
                 const tx = TX.isTX(txInput) ? txInput.toJSON() : txInput;
-                console.log("tx", tx.hash);
+                // console.log("tx", tx.hash);
 
                 const opReturn = SLP.fromRaw(Buffer.from(tx.outputs[0].script, 'hex'));
                 const isValidSlp = opReturn.isValidSlp(); 
-                console.log("isValidSlp", isValidSlp);
+                // console.log("isValidSlp", isValidSlp);
                 const isUnredeemed = tx.slpToken ? false : true;
-                console.log("isUnredeemed", isUnredeemed);
+                // console.log("isUnredeemed", isUnredeemed);
 
                 if (isUnredeemed) {
                     const newTicket = { issueTx: tx };
                     const index = tickets.findIndex(ticket => ticket.issueTx.hash === tx.hash);
                     const isNewUnredeemed = index === -1;
-                    console.log("isNewUnredeemed", isNewUnredeemed);
+                    // console.log("isNewUnredeemed", isNewUnredeemed);
                     
                     if (isNewUnredeemed) {
                         toAdd.push(newTicket);
@@ -117,9 +117,9 @@ export default class TicketHistory {
                     }
                 } else {
                     const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === tx.hash);
-                    console.log("index", index)
+                    // console.log("index", index)
                     const isNewRedeemTx = index === -1;
-                    console.log("matchTickets isNewRedeem", isNewRedeemTx);
+                    // console.log("matchTickets isNewRedeem", isNewRedeemTx);
                     
                     if (isNewRedeemTx) {
                         const issueHash = tx.inputs[0].prevout.hash;
@@ -217,14 +217,14 @@ export default class TicketHistory {
                 return { issueTx, redeemTx };
             }		
             const { issueTx, redeemTx} = await getTXs();
-            console.log("issueTx", issueTx);
-            console.log("redeemTx", redeemTx);
+            // console.log("issueTx", issueTx);
+            // console.log("redeemTx", redeemTx);
 
             // parse player numbers from ticket auth code
             if (!details.playerNumbers || !details.maxPayoutBE && issueTx) {
                 const opReturn = issueTx.outputs[0].script;
                 const ticketAuthCode = opReturn.get(1).data;
-                console.log("ticketAuthCode", ticketAuthCode.toString('hex'))
+                // console.log("ticketAuthCode", ticketAuthCode.toString('hex'))
                 const { minterNumbers, txOutputs } = readTicketAuthCode(ticketAuthCode); 
 
                 const minterNumbersArray = [];
