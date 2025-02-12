@@ -194,19 +194,19 @@ const NmiCheckoutForm = ({
         <PaymentForm onSubmit={handleSubmit} id="NMIC-form">
             <CardIconBox />
 			{/* {inputError && <ErrorMessage>{inputError}</ErrorMessage>} */}
-			<Input 
+			<PaymentInput 
 				type="text"
 				name="firstname"
 				placeholder="First Name	"
 				required
 			/>
-			<Input 
+			<PaymentInput 
 				type="text"
 				name="lastname"
 				placeholder="Last Name"
 				required
 			/>
-			<Input 
+			<PaymentInput 
 				type="text"
 				name="zip"
 				placeholder="ZIP"
