@@ -141,14 +141,17 @@ const App = () => {
     const [playerNumbers, setPlayerNumbers] = useState(false);
     const [activeTicket, setActiveTicket] = useState(false);
     const [payout, setPayout] = useState(false);
-    const [isProtected, setIsProtected] = useState(true);
+    const [protection, setProtection] = useState(true);
     const [redeemAll, setRedeemAll] = useState(false);
 	const [user, setUser] = useState(false);
+	const [repeatOnboarding, setRepeatOnboarding] = useState(false);
 
 	
 	useEffect(() => {
-		if (location.state?.kycDeclined)
-			setIsProtected(true);
+		if (repeatOnboarding) {
+			setProtection(true);
+			setRepeatOnboarding(false);
+		}
 	}, [location.state])
 
     // activates the loading screen on change of loadingStatus for loading within routes
@@ -198,9 +201,9 @@ const App = () => {
 
 									{wallet && isValidStoredWallet(wallet) ? (
 										<>
-											{isProtected ?
+											{protection ?
 												<OnBoarding 
-													passIsProtected={setIsProtected}
+													passProtection={setProtection}
 													passUser={setUser}
 												/>
 											: 
@@ -226,6 +229,7 @@ const App = () => {
 																passLoadingStatus={setLoadingStatus}
 																activeTicket={activeTicket}
 																playerNumbers={playerNumbers}
+																user={user}
 															/>
 														</Route>
 														<Route path="/game">
@@ -253,6 +257,7 @@ const App = () => {
 															<Wallet 
 																passLoadingStatus={setLoadingStatus} 
 																passRedeemAll={setRedeemAll}
+																user={user}
 															/>
 														</Route>
 														<Route path="/cashout">
