@@ -333,7 +333,7 @@ const Cashout = ({
                 signature: sig.toString('hex')
             })
         
-			const rawPaymentRes = await fetch("https://lsbx.nmrai.com/", {
+			const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/cardpay", {
 				method: "POST",
 				signal: AbortSignal.timeout(20000),
 				headers: new Headers({
