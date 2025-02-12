@@ -56,7 +56,8 @@ const sleep = (ms) => {
 
 const WaitingRoom = ({
     passLoadingStatus, 
-	playerNumbers
+	playerNumbers,
+	user
 }) => {
 
     const history = useHistory();
@@ -291,7 +292,14 @@ const WaitingRoom = ({
 
 			}
 		} else {
-			history.push('/select');
+			if (user.kyc_token === null) {
+				history.push({
+					pathname: '/select',
+					state: { repeatOnboarding: true }
+				});
+			} else {
+				history.push("/select");
+			}
 		}
     };
 
