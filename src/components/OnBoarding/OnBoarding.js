@@ -26,10 +26,8 @@ const Input = styled.input`
 `;
 
 const PasswordProtection = ({
-    passIsProtected
+    passProtection
 }) => {
-
-
 
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
@@ -41,7 +39,7 @@ const PasswordProtection = ({
 
         const verified = hashedPassword === expectedHash;
         console.log("pw verified", verified);
-        passIsProtected(!verified);
+        passProtection(!verified);
     }
 
     return (
@@ -61,10 +59,9 @@ const PasswordProtection = ({
 const Background = styled.img`
     z-index: -1;
 `;
-const Text = styled.p``;
 const Form = styled.form`
-position: absolute;
-top: 40%;
+	position: absolute;
+	top: 40%;
     width: 95%;
     background-color: #ffffff;
     gap: 12px;
@@ -77,86 +74,29 @@ top: 40%;
 
 `;
 
-const GeoPrompt = ({
-    passIsProtected
-}) => {
-
-    const handleOnSubmit = (e) => {
-        e.preventDefault();
-        const residency = e.target.residency.value;
-        const nationality = e.target.nationality.value;
-        const age = e.target.age.value;
-
-        console.log("chosen residency, nationality, age", residency, nationality, age);
-
-        passIsProtected(false);
-    }
-
-    return (
-        <>
-            <Background src={BeachPng} />
-
-            <Form onSubmit={(e) => handleOnSubmit(e)}>            
-                <Text>
-                    Please keep your Passport at hand.
-                </Text>
-                <Select 
-                    name="residency"
-                    placeholder="Country of residence"
-                    options={residencyOptions}
-                />
-                <Select
-                    name="nationality"
-                    placeholder="Nationality"
-                    options={nationalityOptions}
-                />
-                <input 
-                    name="age"
-                    placeholder="Age"
-                    type="number"
-                />
-                <PrimaryButton type="submit">
-                    Confirm
-                </PrimaryButton>
-            </Form>        
-        </>
-
-    )
-}
-
 
 const OnBoarding = ({
-    passIsProtected,
+    passProtection,
 	passUser
 }) => {
 	const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
 	
-    const [isPasswordProtected, setIsPasswordProtected] = useState(true);
-    const [isGeoProtected, setIsGeoProtected] = useState(true);
-    const [modal, modalHolder] = Modal.useModal();
+    const [passwordProtection, setPasswordProtection] = useState(true);
+    const [geoProtection, setGeoProtection] = useState(true);
+	const [kycProtection, setKycProtection] = useState(true);
 	const [checksDone, setChecksDone] = useState(false);
+    const [modal, modalHolder] = Modal.useModal();
 
-	// const [geoblock, setGeoblock] = useState(true);
-	// useEffect(async () => {
-	// 	const ipRes = await fetch({
-	// 		mode: "cors",
-	// 		signal: AbortSignal(20000),
-	// 		url: "https://lsbx.nmrai.com/v1"
-	// 	});
+	useEffect(() => {
+		// remove protections if access allowed
+		console.log("test", passwordProtection, kycProtection, geoProtection)
+		if (!passwordProtection && !kycProtection && !geoProtection) {
+			console.log("allow access")
+			passProtection(false);
+		}   		
 
-	// 	const ipOptions = await ipRes.json();
-	// 	const allowTickets = ipOptions.ipGeo.ticketPurchase;
-	// 	const allowAffiliate = ipOptions.ipGeo.affiliate;			
-	// })
-
-    useEffect(async () => {
-		console.log("called turn off protection effect", isGeoProtected, isPasswordProtected)
-        if (!isGeoProtected && !isPasswordProtected) {
-            console.log("SET PROTECTION OFF FOR APP")
-            passIsProtected(false);
-        }            
-    }, [isGeoProtected, isPasswordProtected]);
+	}, [checksDone, passwordProtection, geoProtection])
 
 	useEffect(async () => {
 		if (!wallet.loading && !checksDone) {
@@ -186,31 +126,67 @@ const OnBoarding = ({
 			})
 			const user = await userRes.json();
 			console.log("user", user);
-
-			if (!user.ipGeo) {
-				const geoRes = await fetch(`https://lsbx.nmrai.com/v1`, {
-					signal: AbortSignal.timeout(20000)
-				});
-				const geoData = await geoRes.json();
-				console.log("geodata", geoData);
 			
-				user.ipGeo = geoData.ipGeo;
-				passUser(user);
+			// evaluate access based on kyc
+			let accessDenied = false;
+			if (user.kyc_status === "auto_declined") {
+				console.log("kyc declined")
+				accessDenied = true;
+				// nothing is allowed
+				// show  info modal
+				const modalConfig = {
+					title: "Access denied",
+					content: "Your KYC has been declined.",
+				};
+				modal.info(modalConfig);
+			} else if (user.kyc_status === "needs_review") {
+				console.log("kyc needs review");
+				accessDenied = false;
+				// user has to wait until email notification
+				// show info modal
+				const modalConfig = {
+					title: "Your KYC Needs Review",
+					content: "You will receive an email when this issue is resolved.",
+				};
+				modal.info(modalConfig);
+			} else {
+				console.log("kyc approved or outstanding")
+				// user is either approved or not yet kyced
+				setKycProtection(false);
+			}
 
-				if (geoData.ipGeo.ticketPurchase) {
+			// evaluate access based on ip
+			if (!accessDenied) {
+				// get ip data if missing
+				if (!user.ipGeo) {
+					const geoRes = await fetch(`https://lsbx.nmrai.com/v1`, {
+						signal: AbortSignal.timeout(20000)
+					});
+					const geoData = await geoRes.json();
+					console.log("geodata", geoData);
+				
+					user.ipGeo = geoData.ipGeo;
+				}
+
+				// evaluate ip access
+				if (user.ipGeo.ticketPurchase) {
+					console.log("allow ticket purchase")
 					// everything is allowed
-					setIsGeoProtected(false); 
-				} else if (geoData.ipGeo.affiliate) {
+					setGeoProtection(false); 
+				} else if (user.ipGeo.affiliate) {
+					console.log("allow affiliate")
 					// show info screen for affiliates
 					const modalConfig = {
 						title: "Access restricted",
 						content: "You can not purchase tickets, but you can be an affiliate",
 						onOk: () => {
-							setIsGeoProtected(false);
+							setGeoProtection(false);
 						},
 					};
 					modal.info(modalConfig);					
 				} else {
+					console.log("allow nothing")
+					accessDenied = true;
 					// nothing is allowed
 					// show  info modal
 					const modalConfig = {
@@ -218,12 +194,11 @@ const OnBoarding = ({
 						content: "You can not access this site from your location.",
 					};
 					modal.info(modalConfig);
-
 				}
-			} else {
-				passUser(user);
 			}
 
+			// pass user data 
+			passUser(user);
 			setChecksDone(true);
 		}
 	}, [wallet]);
@@ -232,9 +207,9 @@ const OnBoarding = ({
         <>
 			{modalHolder}			            
 			<Background src={BeachPng} />
-            {isPasswordProtected &&
+            {passwordProtection &&
 				<PasswordProtection 
-					passIsProtected={setIsPasswordProtected}
+					passProtection={setPasswordProtection}
 				/>	
 			}
         </>
