@@ -136,7 +136,8 @@ const CopyButton = styled(StyledPrimaryButton)`
 
 const Wallet = ({    
     passLoadingStatus,
-    passRedeemAll
+    passRedeemAll,
+	user
 }) => {
     const history = useHistory();
     const location = useLocation();
@@ -266,14 +267,16 @@ const Wallet = ({
                                         </Value>                         
                                     </Link>                                        
                                 </Item>
-                                <Item onClick={handleChangeEmail}>
-                                    <LabelCtn>
-                                        <EnvelopeIcon />
-                                        <Label>Email</Label>                            
-                                    </LabelCtn>                            
-                                    <Value>youraddress@email.com</Value>
-                                    <Button src={PencilIconSvg}/>                            
-                                </Item>
+								{user.email &&
+									<Item onClick={handleChangeEmail}>
+										<LabelCtn>
+											<EnvelopeIcon />
+											<Label>Email</Label>                            
+										</LabelCtn>                            
+										<Value>{user.email}</Value>
+										<Button src={PencilIconSvg}/>                            
+									</Item>
+								}
 
                                 <SmallItem onClick={handleImportWallet}>
                                     <Label>
