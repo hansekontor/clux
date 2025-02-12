@@ -38,10 +38,47 @@ const Email = ({
 }) => {
     const [emailChanged, setEmailChanged] = useState(false);
 
-    const handleChangeEmail = (e) => {
+    const handleChangeEmail = async (e) => {
         e.preventDefault();
-        // change email placeholder
-        infoNotification("Email Changed")
+		const emailInput = e.target.email.value;
+		const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput);
+		if (!isValid) {
+			setEmailError(true);
+			return;
+		}
+
+		const keyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+		const msg = Buffer.from(emailInput, 'utf-8');
+		const sig = keyring.sign(SHA256.digest(msg));
+
+		const json = {
+			email: emailInput, 
+			pubkey: wallet.Path1899.publicKey,
+			signature: sig.toString('hex'),			
+		};
+		console.log("json", json);
+		const userRes = await fetch("https://lsbx.nmrai.com/v1/user", {
+			method: "POST", 
+			mode: "cors",
+			headers: new Headers({
+				"Content-Type": "application/json"
+			}),
+			signal: AbortSignal.timeout(20000),
+			body: JSON.stringify(json)
+		});
+		console.log("userRes", userRes);
+		// forward based on response
+		const userResJson = await userRes.json();
+		console.log("userResJson", userResJson);
+		if (userRes.status === 200) {
+			successNotification("Email has been changed");
+			history.pushState({
+				pathname: "/",
+				state: {
+					repeatOnboarding: true
+				}
+			})
+		}
     }
 
 
@@ -60,7 +97,6 @@ const Email = ({
                 </SecondaryButton>
             </EmailCtn>        
         </>
-
     )
 }
 
