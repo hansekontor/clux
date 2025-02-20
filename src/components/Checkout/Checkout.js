@@ -579,6 +579,8 @@ const Checkout = ({
             // ----Complete workflow-----
             case "auto_approved":
 				if (purchaseOptions.type === "fiat" && !isKYCed) {
+					passLoadingStatus("CAPTURE PAYMENT");
+					await sleep(3000);
 					return handleCapturePayment();
 				} else {
 					setShowKyc(false);
