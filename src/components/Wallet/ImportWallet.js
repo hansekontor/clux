@@ -1,5 +1,6 @@
 // node modules
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Modal } from 'antd';
 import styled from 'styled-components';
 import { CopyOutlined } from '@ant-design/icons';
@@ -57,6 +58,7 @@ const ImportWallet = ({
     currentAddress,
     passLoadingStatus
 }) => {
+    const history = useHistory();
     const ContextValue = React.useContext(WalletContext);
     const { createWallet, validateMnemonic } = ContextValue;
 
@@ -77,7 +79,8 @@ const ImportWallet = ({
     }
 
 
-    const handleImportPhrase = async () => {
+    const handleImportPhrase = async (e) => {
+        e.preventDefault();
 
         setFormData({
             ...formData,
@@ -93,8 +96,13 @@ const ImportWallet = ({
         // Event('ImportWallet .js', 'Create Wallet', 'Imported');
         passLoadingStatus("IMPORT WALLET");
         createWallet(formData.mnemonic);
-        passLoadingStatus(false);
         successNotification("Imported Wallet");
+        passLoadingStatus("LOAD USER");
+        await sleep(3000);
+        history.push({
+            pathname: "/",
+            state: { repeatOnboarding: true }
+        });
     }
 
     console.log("dirty", formData.dirty, "isvalidmnemonic", isValidMnemonic);
@@ -107,12 +115,14 @@ const ImportWallet = ({
                 {currentAddress}
             </Address>
             <Form
+                id='import-form'
                 validateStatus={!formData.dirty && !formData.mnemonic ? "error" : ""}
                 help={
                     !formData.mnemonic || !isValidMnemonic
                         ? 'Valid mnemonic seed phrase required'
                         : ''
                 }
+                onSubmit={e => handleImportPhrase(e)}
             >
                 <Input
                     type="text"
@@ -125,7 +135,8 @@ const ImportWallet = ({
                 />              
             </Form>
             <StyledPrimaryButton
-                onClick={handleImportPhrase}
+                type="submit"
+                form="import-form"
                 disabled={!isValidMnemonic}
             >
                 Import
