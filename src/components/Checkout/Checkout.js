@@ -258,8 +258,6 @@ const Checkout = ({
 	const [showKyc, setShowKyc] = useState(false);
 	const [authPayment, setAuthPayment] = useState(false);
 
-
-
     if (!playerNumbers) {
         passLoadingStatus("PLAYER NUMBERS ARE MISSING");
         history.push("/select");
@@ -439,18 +437,19 @@ const Checkout = ({
 		return { payment, kycToken, coinsUsed };
 	}
 
-	// only for debugging auth & capture
+	// only for debugging auth & capture without calling kyc
 	// useEffect(async () => {
 	// 	if (authPayment)
 	// 		return handleCapturePayment();
 	// }, [authPayment])
 
 	// finalize payment with paymentMetadata (payment token)
-	useEffect(async () => {
+	useEffect(async () => {	
 		try {
 			if (paymentMetadata && paymentRequest && !ticketIssued) {
 				const type = purchaseOptions.type;
 				const authonly = type === "fiat" && !isKYCed;
+				// const authonly = true;
 				console.log("authonly", authonly);
 				const { payment, kycToken, coinsUsed } = await buildPayment(
 					type, 
@@ -459,7 +458,6 @@ const Checkout = ({
 				console.log("init payment", payment.toRaw().toString("hex"))
 				setKycAccessToken(kycToken);
 				passLoadingStatus(false);
-
 				const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
 					method: "POST",
 					headers: new Headers({
@@ -467,13 +465,13 @@ const Checkout = ({
 					}),
 					signal: AbortSignal.timeout(20000),
 					body: payment.toRaw()
-				})
+				});
 
 				if (rawPaymentRes.status !== 200) {
 					throw new Error(response.text());
 				}
 
-				if (type === "fiat" && !isKYCed) {
+				if (type === "fiat" && authonly) {
 					const response = await rawPaymentRes.json();
 					console.log("auth res", response);
 					setAuthPayment({
@@ -481,7 +479,6 @@ const Checkout = ({
 						coinsUsed
 					});
 					setShowKyc(true);		
-				
 				} else {
 					const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
 					const response = Buffer.from(paymentResArrayBuf);
@@ -512,21 +509,31 @@ const Checkout = ({
 
 	const handleCapturePayment = async () => {
 		try {
-			const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
-				method: "POST",
-				headers: new Headers({
-					'Content-Type': `application/fiat-payment`
-				}),
-				signal: AbortSignal.timeout(20000),
-				body: authPayment.rawPayment
-			})
+			let response;
+			for (let retries = 0; retries < 3; retries++) {
+				console.log("capture payment, attempt", retries)
+				const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
+					method: "POST",
+					headers: new Headers({
+						'Content-Type': `application/fiat-payment`
+					}),
+					signal: AbortSignal.timeout(20000),
+					body: authPayment.rawPayment
+				});
 
-			if (rawPaymentRes.status !== 200) {
-				throw new Error(rawPaymentRes.text());
+				if (rawPaymentRes.status !== 200 && retries !== 2) {
+					// in case approved kyc result was unavailable yet for payment server: try again
+					console.log(rawPaymentRes.text());
+					await sleep(1000);
+					continue;
+				} else if (rawPaymentRes.status !== 200 && retries == 2) {
+					throw new Error(rawPaymentRes.text());
+				} else {
+					const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
+					response = Buffer.from(paymentResArrayBuf);						
+					break;
+				}
 			}
-
-			const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
-			const response = Buffer.from(paymentResArrayBuf);
 
 			console.log("response", response);	
 
@@ -543,10 +550,14 @@ const Checkout = ({
 			const paymentTxs = capturedPayment.transactions.map(raw => TX.fromRaw(raw));
 			await addIssueTxs(ticketTxs, authPayment.coinsUsed, paymentTxs);
 
+			passLoadingStatus(false);
 			history.push('/backup');
 
 		} catch(err) {
 			console.error(err);
+			passLoadingStatus("AN ERROR OCCURED");
+			await sleep(2000);
+			history.push("/select");
 		}
 	}
     // handle user agreement with terms of service
@@ -557,8 +568,7 @@ const Checkout = ({
         setFirstRendering(false);
     }
     const handleKYCResult = async (result) => {
-        console.log("KYC", result);
-
+        console.log("KYC", result.status);
         switch (result.status) {
             // ----Incomplete workflow-----
             case "user_cancelled":
@@ -575,7 +585,7 @@ const Checkout = ({
 				}
             case "auto_declined":
 				passLoadingStatus("Your KYC has been declined.");
-				await sleep(5000);
+				await sleep(3000);
 				history.push({
 					pathname: "/",
 					state: {
@@ -724,6 +734,7 @@ const Checkout = ({
 	const isStage1 = !(hasAgreed && hasEmail && purchaseOptions);
 	const fiatPurchaseButtonText = "Pay";
 	const etokenPurchaseButtonText = "Pay with eToken";
+
 
     return (
         <>  							
