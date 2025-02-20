@@ -144,13 +144,12 @@ const App = () => {
     const [protection, setProtection] = useState(true);
     const [redeemAll, setRedeemAll] = useState(false);
 	const [user, setUser] = useState(false);
-	const [repeatOnboarding, setRepeatOnboarding] = useState(false);
 
 	
 	useEffect(() => {
-		if (repeatOnboarding) {
+		if (location.state?.repeatOnboarding) {
 			setProtection(true);
-			setRepeatOnboarding(false);
+            window.history.replaceState({}, '')
 		}
 	}, [location.state])
 
@@ -205,6 +204,7 @@ const App = () => {
 												<OnBoarding 
 													passProtection={setProtection}
 													passUser={setUser}
+                                                    passLoadingStatus={setLoadingStatus}
 												/>
 											: 
 												<>

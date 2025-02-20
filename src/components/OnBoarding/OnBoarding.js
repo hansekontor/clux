@@ -77,7 +77,8 @@ const Form = styled.form`
 
 const OnBoarding = ({
     passProtection,
-	passUser
+	passUser,
+	passLoadingStatus
 }) => {
 	const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
@@ -90,11 +91,12 @@ const OnBoarding = ({
 
 	useEffect(() => {
 		// remove protections if access allowed
-		console.log("test", passwordProtection, kycProtection, geoProtection)
 		if (!passwordProtection && !kycProtection && !geoProtection) {
 			console.log("allow access")
 			passProtection(false);
-		}   		
+		} else if (checksDone) {
+			passLoadingStatus(false);
+		}
 
 	}, [checksDone, passwordProtection, geoProtection])
 
@@ -123,7 +125,7 @@ const OnBoarding = ({
 					pubkey: wallet.Path1899.publicKey,
 					signature: sig.toString('hex')
 				}),
-			})
+			});
 			const user = await userRes.json();
 			console.log("user", user);
 			
