@@ -288,7 +288,7 @@ const Checkout = ({
 		if (user.email) 
 			setHasEmail(true);
 
-		if (user.kyc_status === "auto_approved") {
+		if (user.kyc_status?.includes("approved")) {
 			setIsKYCed(true);
 		} else if (user.kyc_status === "needs_review") {
 			passLoadingStatus("KYC NEEDS REVIEW")
@@ -468,7 +468,8 @@ const Checkout = ({
 				});
 
 				if (rawPaymentRes.status !== 200) {
-					throw new Error(response.text());
+					const errorMsg = await rawPaymentRes.text();
+					throw new Error(errorMsg);
 				}
 
 				if (type === "fiat" && authonly) {
@@ -509,6 +510,8 @@ const Checkout = ({
 
 	const handleCapturePayment = async () => {
 		try {
+			passLoadingStatus("CAPTURE PAYMENT");
+			await sleep(3000);
 			let response;
 			for (let retries = 0; retries < 3; retries++) {
 				console.log("capture payment, attempt", retries)
@@ -524,7 +527,7 @@ const Checkout = ({
 				if (rawPaymentRes.status !== 200 && retries !== 2) {
 					// in case approved kyc result was unavailable yet for payment server: try again
 					console.log(rawPaymentRes.text());
-					await sleep(1000);
+					await sleep(2000);
 					continue;
 				} else if (rawPaymentRes.status !== 200 && retries == 2) {
 					throw new Error(rawPaymentRes.text());
@@ -572,22 +575,36 @@ const Checkout = ({
         switch (result.status) {
             // ----Incomplete workflow-----
             case "user_cancelled":
+				 passLoadingStatus("Invalid KYC");
+				 await sleep(2000);
+				 history.push({
+					 pathname: "/",
+					 state: {
+						 repeatOnboarding: true
+					 }
+				 })				 
                 break;
             case "error":
+				passLoadingStatus("Please try again later")
+				await sleep(2000);
+				history.push({
+					pathname: "/",
+					state: {
+						repeatOnboarding: true
+					}
+				});
                 break;
         
             // ----Complete workflow-----
             case "auto_approved":
 				if (purchaseOptions.type === "fiat" && !isKYCed) {
-					passLoadingStatus("CAPTURE PAYMENT");
-					await sleep(3000);
 					return handleCapturePayment();
 				} else {
 					setShowKyc(false);
 				}
             case "auto_declined":
 				passLoadingStatus("Your KYC has been declined.");
-				await sleep(3000);
+				await sleep(2000);
 				history.push({
 					pathname: "/",
 					state: {
@@ -596,6 +613,14 @@ const Checkout = ({
 				})
                 break;
             case "needs_review":
+				passLoadingStatus("KYC NEEDS REVIEW")
+				await sleep(2000);
+				history.push({
+					pathname: "/",
+					state: {
+						repeatOnboarding: true
+					}
+				})
                 break;
             }
     }
@@ -603,10 +628,7 @@ const Checkout = ({
         e.preventDefault();
 
         const workflowId = "workflow_a93TCBh";
-		console.log("KYC workflow id", workflowId);
         const transactionId = wallet.Path1899.publicKey;
-		console.log("KYC transaction id", transactionId);
-		console.log("KYC access token", kycAccessToken);
         const config = new window.HyperKycConfig(kycAccessToken, workflowId, transactionId); 
 
         setKycConfig(config);   
