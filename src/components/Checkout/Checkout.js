@@ -511,7 +511,7 @@ const Checkout = ({
 	const handleCapturePayment = async () => {
 		try {
 			passLoadingStatus("CAPTURE PAYMENT");
-			await sleep(3000);
+			await sleep(5000);
 			let response;
 			for (let retries = 0; retries < 3; retries++) {
 				console.log("capture payment, attempt", retries)
@@ -525,9 +525,9 @@ const Checkout = ({
 				});
 
 				if (rawPaymentRes.status !== 200 && retries !== 2) {
-					// in case approved kyc result was unavailable yet for payment server: try again
+					// in case approved kyc result was yet unavailable for payment server: try again
 					console.log(rawPaymentRes.text());
-					await sleep(2000);
+					await sleep(3000);
 					continue;
 				} else if (rawPaymentRes.status !== 200 && retries == 2) {
 					throw new Error(rawPaymentRes.text());
