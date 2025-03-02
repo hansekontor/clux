@@ -576,7 +576,7 @@ const Checkout = ({
             // ----Incomplete workflow-----
             case "user_cancelled":
 				 passLoadingStatus("Invalid KYC");
-				 await sleep(2000);
+				 await sleep(7000);
 				 history.push({
 					 pathname: "/",
 					 state: {
@@ -586,7 +586,7 @@ const Checkout = ({
                 break;
             case "error":
 				passLoadingStatus("Please try again later")
-				await sleep(2000);
+				await sleep(3000);
 				history.push({
 					pathname: "/",
 					state: {
@@ -604,7 +604,7 @@ const Checkout = ({
 				}
             case "auto_declined":
 				passLoadingStatus("Your KYC has been declined.");
-				await sleep(2000);
+				await sleep(7000);
 				history.push({
 					pathname: "/",
 					state: {
@@ -614,7 +614,7 @@ const Checkout = ({
                 break;
             case "needs_review":
 				passLoadingStatus("KYC NEEDS REVIEW")
-				await sleep(2000);
+				await sleep(7000);
 				history.push({
 					pathname: "/",
 					state: {
