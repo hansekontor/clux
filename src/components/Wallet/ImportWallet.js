@@ -94,8 +94,10 @@ const ImportWallet = ({
         // Event("Category", "Action", "Label")
         // Track number of created wallets from onboarding
         // Event('ImportWallet .js', 'Create Wallet', 'Imported');
+        
+        createWallet(formData.mnemonic);        
         passLoadingStatus("IMPORT WALLET");
-        createWallet(formData.mnemonic);
+        await sleep(1000);
         successNotification("Imported Wallet");
         passLoadingStatus("LOAD USER");
         await sleep(3000);
