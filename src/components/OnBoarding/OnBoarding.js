@@ -131,7 +131,7 @@ const OnBoarding = ({
 			
 			// evaluate access based on kyc
 			let accessDenied = false;
-			if (user.kyc_status === "auto_declined") {
+			if (user.kyc_status?.includes("declined") || user.kyc_status?.includes("error")) {
 				console.log("kyc declined")
 				accessDenied = true;
 				// nothing is allowed

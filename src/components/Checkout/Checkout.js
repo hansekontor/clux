@@ -35,6 +35,7 @@ import NavigationBar from '@components/Common/Navigation';
 import { FooterCtn, LightFooterBackground } from '@components/Common/Footer';
 import RandomNumbers from '@components/Common/RandomNumbers';
 import { CardIconBox } from '@components/Common/CustomIcons';
+import { successNotification, errorNotification } from '@components/Common/Notifications';
 
 // utils & hooks
 import useWallet from '@hooks/useWallet';
@@ -288,25 +289,15 @@ const Checkout = ({
 		if (user.email) 
 			setHasEmail(true);
 
-		if (user.kyc_status?.includes("approved")) {
+		if (user.kyc_status?.includes("approved") || tickets.length > 0) {
 			setIsKYCed(true);
 		} else if (user.kyc_status === "needs_review") {
 			passLoadingStatus("KYC NEEDS REVIEW")
-			history.push({
-				pathname: "/",
-				state: {
-					repeatOnboarding: true
-				}
-			})
-		} else if (user.kyc_status === "auto_declined") {
+			return repeatOnboarding();
+		} else if (user.kyc_status?.includes("declined")) {
 			// user usually should not get here in this case
 			passLoadingStatus("ACCESS DENIED")
-			history.push({
-				pathname: "/",
-				state: {
-					repeatOnboarding: true
-				}
-			})
+			return repeatOnboarding();
 		}
 
 	}, [user])
@@ -337,6 +328,15 @@ const Checkout = ({
 		}
 	}, [purchaseOptions])
 
+
+	const repeatOnboarding = () => {
+		return history.push({
+			pathname: "/",
+			state: {
+				repeatOnboarding: true
+			}
+		})
+	};
 
 	const buildPayment = async (
 		type,
@@ -449,7 +449,6 @@ const Checkout = ({
 			if (paymentMetadata && paymentRequest && !ticketIssued) {
 				const type = purchaseOptions.type;
 				const authonly = type === "fiat" && !isKYCed;
-				// const authonly = true;
 				console.log("authonly", authonly);
 				const { payment, kycToken, coinsUsed } = await buildPayment(
 					type, 
@@ -468,8 +467,8 @@ const Checkout = ({
 				});
 
 				if (rawPaymentRes.status !== 200) {
-					const errorMsg = await rawPaymentRes.text();
-					throw new Error(errorMsg);
+					const message = await rawPaymentRes.text();
+					throw new Error(message);
 				}
 
 				if (type === "fiat" && authonly) {
@@ -510,8 +509,7 @@ const Checkout = ({
 
 	const handleCapturePayment = async () => {
 		try {
-			passLoadingStatus("CAPTURE PAYMENT");
-			await sleep(5000);
+			await sleep(8000);
 			let response;
 			for (let retries = 0; retries < 3; retries++) {
 				console.log("capture payment, attempt", retries)
@@ -524,17 +522,28 @@ const Checkout = ({
 					body: authPayment.rawPayment
 				});
 
-				if (rawPaymentRes.status !== 200 && retries !== 2) {
-					// in case approved kyc result was yet unavailable for payment server: try again
-					console.log(rawPaymentRes.text());
-					await sleep(3000);
-					continue;
-				} else if (rawPaymentRes.status !== 200 && retries == 2) {
-					throw new Error(rawPaymentRes.text());
+				if (rawPaymentRes.status !== 200) {
+					const msg = await rawPaymentRes.text();
+					console.log("msg", msg);			
+					console.log("rawPaymentRes", rawPaymentRes)
+
+					// status 400 and db confirmation: repeat onboarding
+					if (msg?.includes("Invalid") || msg?.includes("review"))
+						return repeatOnboarding();		
+
+					if (retries < 2) {
+						// status 400 without db confirmation: retry
+						await sleep(3000)
+						continue;
+					} else {
+						// too many retries
+						throw new Error(msg);
+					}
 				} else {
+					// status 200: successful payment
 					const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
 					response = Buffer.from(paymentResArrayBuf);						
-					break;
+					break;					
 				}
 			}
 
@@ -547,6 +556,7 @@ const Checkout = ({
 			console.log(ticketTxs.map(tx => tx.toJSON()));
 
 			setTicketIssued(true);
+			successNotification("Successful Purchase");
 
 			// put txs in storage
 			const capturedPayment = Payment.fromRaw(authPayment.rawPayment);
@@ -560,7 +570,7 @@ const Checkout = ({
 			console.error(err);
 			passLoadingStatus("AN ERROR OCCURED");
 			await sleep(2000);
-			history.push("/select");
+			return repeatOnboarding();			
 		}
 	}
     // handle user agreement with terms of service
@@ -572,57 +582,35 @@ const Checkout = ({
     }
     const handleKYCResult = async (result) => {
         console.log("KYC", result.status);
+		const isFiat = purchaseOptions.type === "fiat";
         switch (result.status) {
+
             // ----Incomplete workflow-----
             case "user_cancelled":
-				 passLoadingStatus("Invalid KYC");
-				 await sleep(7000);
-				 history.push({
-					 pathname: "/",
-					 state: {
-						 repeatOnboarding: true
-					 }
-				 })				 
-                break;
+				errorNotification("KYC was cancelled, try again");
+				break;
             case "error":
-				passLoadingStatus("Please try again later")
-				await sleep(3000);
-				history.push({
-					pathname: "/",
-					state: {
-						repeatOnboarding: true
-					}
-				});
-                break;
-        
+				passLoadingStatus("A KYC ERROR OCCURED");
+				return handleCapturePayment();
+
             // ----Complete workflow-----
             case "auto_approved":
-				if (purchaseOptions.type === "fiat" && !isKYCed) {
+				if (isFiat) {
+					passLoadingStatus("CAPTURE PAYMENT")
 					return handleCapturePayment();
 				} else {
 					setShowKyc(false);
 				}
             case "auto_declined":
-				passLoadingStatus("Your KYC has been declined.");
-				await sleep(7000);
-				history.push({
-					pathname: "/",
-					state: {
-						repeatOnboarding: true
-					}
-				})
-                break;
+				passLoadingStatus("INVALID KYC");
+				if (isFiat) 
+					return handleCapturePayment();
+				else 
+					return repeatOnboarding();
             case "needs_review":
 				passLoadingStatus("KYC NEEDS REVIEW")
-				await sleep(7000);
-				history.push({
-					pathname: "/",
-					state: {
-						repeatOnboarding: true
-					}
-				})
-                break;
-            }
+				return handleCapturePayment();
+        }
     }
     const handleKYC = async (e) => {
         e.preventDefault();
@@ -631,7 +619,7 @@ const Checkout = ({
         const transactionId = wallet.Path1899.publicKey;
         const config = new window.HyperKycConfig(kycAccessToken, workflowId, transactionId); 
 
-        setKycConfig(config);   
+        setKycConfig(config);
     }
 
     const handleEtokenPayment = (e) => {
