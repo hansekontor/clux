@@ -258,6 +258,7 @@ const Checkout = ({
 	const [hasEmail, setHasEmail] = useState(false);
 	const [showKyc, setShowKyc] = useState(false);
 	const [authPayment, setAuthPayment] = useState(false);
+	const [kycCancelCount, setKycCancelCount] = useState(0);
 
     if (!playerNumbers) {
         passLoadingStatus("PLAYER NUMBERS ARE MISSING");
@@ -531,6 +532,11 @@ const Checkout = ({
 					if (msg?.includes("Invalid") || msg?.includes("review"))
 						return repeatOnboarding();		
 
+					if (msg?.includes("cancelled")) {
+						passLoadingStatus(false);
+						return;
+					}
+
 					if (retries < 2) {
 						// status 400 without db confirmation: retry
 						await sleep(3000)
@@ -587,8 +593,16 @@ const Checkout = ({
 
             // ----Incomplete workflow-----
             case "user_cancelled":
-				errorNotification("KYC was cancelled, try again");
-				break;
+				if (kycCancelCount == 0 && !user.kyc_status.includes("cancelled")) {
+					errorNotification("KYC was cancelled, try again");					
+					passLoadingStatus("RENEW KYC");
+					setKycCancelCount(1);
+					return handleCapturePayment();
+				} else {
+					passLoadingStatus("KYC WAS CANCELLED AGAIN");
+					await sleep(2000);
+					history.push("/select");
+				}
             case "error":
 				passLoadingStatus("A KYC ERROR OCCURED");
 				return handleCapturePayment();
