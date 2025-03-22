@@ -1,7 +1,6 @@
 // node modules
 import React from "react";
 import styled from 'styled-components';
-import { Collapse } from 'antd';
 
 // styled css components
 const SeedPhraseCtn = styled.div`

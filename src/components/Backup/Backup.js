@@ -10,29 +10,16 @@ import { WalletContext } from '@utils/context';
 import { FadeInAnimation } from '@components/Common/CssAnimations';
 import FadeInOut from './FadeInOut'
 import { successNotification } from '@components/Common/Notifications';
+import { LargeHeading } from '@components/Common/Text';
+import { Paragraph } from '@components/Common/Text';
 
 // assets
 import CopyboardSvg from '@assets/copyboard.svg';
 
 // styled components
-const Title = styled.div`
-    color: #000000;
-    z-index: 1;
-    font-size: 30px;
-    font-weight: 600;
-`;
-const Text = styled.p`
-    color: #000000;
-    font-size: 16px;
-    line-height: 140%;
-    font-size: "Inter-Semibold", Helvetica;
-    margin-block-start: 0px;
-    margin-block-end: 0px;
-    width: 90%;
-`;
 const Modal = styled.div`
     width: 95%;
-    background-color: #ffffff;
+    background-color: #FEFFFE;
     gap: 12px;
     display: flex;
     flex-direction: column;
@@ -40,6 +27,9 @@ const Modal = styled.div`
     align-items: center;
     padding: 24px 0;
     border-radius: 20px;
+    div, p {
+        text-align: center;
+    }
 `;
 
 const ModalCtn = styled.div`
@@ -90,8 +80,8 @@ const Backup = ({
             <FadeInOut show={!fadeOut} duration={300}>
                 <ModalCtn>
                     <Modal >
-                        <Title>Backup Account</Title>
-                        <Text>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Text>
+                        <LargeHeading>Backup Account</LargeHeading>
+                        <Paragraph>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Paragraph>
                         <SeedPhrase 
                             phrase={wallet.mnemonic ? wallet.mnemonic : ""}
                         />            

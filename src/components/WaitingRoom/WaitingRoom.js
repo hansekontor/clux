@@ -26,29 +26,13 @@ import TXUtil from '@utils/txutil';
 import useBCH from '@hooks/useBCH';
 import useWallet from '@hooks/useWallet';
 
+import * as S from './Styled';
 
 // util
 import animationLabels from '@utils/animations';
 
 // assets
 import LockerPng from '@assets/locker.png';
-
-// styled css components 
-const Background = styled.img`
-    position: absolute;
-    top: 0;
-    margin-left: auto;
-    margin-right: auto;
-    height: 85vh;
-    z-index: -4;
-    object-fit: cover;
-`;
-const FlexGrow = styled.div`
-    flex-grow: 1;
-    display: flex; 
-    flex-direction: column;
-    justify-content: flex-end;
-`;
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -306,9 +290,9 @@ const WaitingRoom = ({
     return (
         <>  
 			{modalHolder}
-            <Background src={LockerPng} />
+            <S.Background src={LockerPng} />
             <Header />
-            <FlexGrow>
+            <S.FlexGrow>
                 <Flash                
                     src={animationPath}
                     config={{
@@ -325,7 +309,7 @@ const WaitingRoom = ({
                 >
                         <div></div>
                 </Flash>                    
-            </FlexGrow>
+            </S.FlexGrow>
 			<FooterCtn>
 				<RandomNumbers fixedRandomNumbers={activeTicket ? activeTicket.details.playerNumbers : playerNumbers} />
 				<PrimaryButton onClick={handleButtonClick}>

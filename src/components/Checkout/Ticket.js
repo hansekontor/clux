@@ -2,14 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 
 import RandomNumbers from '@components/Common/RandomNumbers';
-import { TicketFilledIcon } from '@components/Common/CustomIcons';
+import { TicketFilledIcon } from '@components/Common/Icons';
+import { BoldText } from '@components/Common/Text';
 
 
-const BoldText = styled.div`
-    font-weight: 600;
-    font-family: Helvetica;
-    font-size: 14px;
-`;
 const Details = styled.div`
     background-color: #f2bc57;
     height: 95px;
@@ -36,6 +32,7 @@ const Column = styled(Row)`
 `;
 const DateColumn = styled(Column)`
     align-items: baseline;
+    gap: 0px;
 `;
 const PriceColumn = styled(Column)`
     align-items: end;

@@ -1,9 +1,14 @@
 // node modules
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
-import { Radio } from 'antd';
 import bio from 'bufio';
+import { U64 } from 'n64';
+import { stringify as uuidStringify } from 'uuid';
+import {
+	Payment, 
+	PaymentRequest, 
+	PaymentACK
+} from 'b70-checkout';
 import {
 	KeyRing, 
 	TX, 
@@ -13,119 +18,34 @@ import {
     Coin
 } from '@hansekontor/checkout-components';
 const { SHA256 } = bcrypto;
-import { U64 } from 'n64';
-import { stringify as uuidStringify } from 'uuid';
-
-import {
-	Payment, 
-	PaymentRequest, 
-	PaymentACK
-} from 'b70-checkout';
-import CreatableSelect from 'react-select/creatable';
 import BigNumber from 'bignumber.js';
 
 // custom react components
+
 import Header from '@components/Common/Header';
+import NavigationBar from '@components/Common/Navigation';
 import Tos from '@components/Checkout/Tos'
 import KycInfo from '@components/Checkout/KycInfo';
 import Ticket from '@components/Checkout/Ticket';
-import { Enfold } from '@components/Common/CssAnimations';
-import PrimaryButton from '@components/Common/PrimaryButton';
-import NavigationBar from '@components/Common/Navigation';
-import { FooterCtn, LightFooterBackground } from '@components/Common/Footer';
 import RandomNumbers from '@components/Common/RandomNumbers';
-import { CardIconBox } from '@components/Common/CustomIcons';
+import { FooterCtn } from '@components/Common/Footer';
+import PrimaryButton from '@components/Common/PrimaryButton';
+import { CardIconBox } from '@components/Common/Icons';
 import { successNotification, errorNotification } from '@components/Common/Notifications';
+import { NmiCheckoutForm, WidgetBody } from './Processors';
+import { Input, QuantityInput, QuantitySuggestions } from '@components/Common/Inputs';
+import { Paragraph, LargeHeading } from '@components/Common/Text';
+import { Column, Overlay } from '@components/Common/Container';
+import { RollUp } from '@components/Common/CssAnimations';
+import * as S from './Styled';
 
 // utils & hooks
 import useWallet from '@hooks/useWallet';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 
-// styled css components
-const CustomEnfold = styled(Enfold)`
-    flex-grow: 1;
-`;
-const Scrollable = styled.div`
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex;
-    height: 80%;
-    width: 100%;
-    background-color: #EAEAEA;
-`;
-const CustomRadioGroup = styled(Radio.Group)`
-    margin-top: 8px;
-`;
-const EvenLighterFooterBackground = styled(LightFooterBackground)`
-    background-color: #EAEAEA;
-`;
-const InfoText = styled.p`
-    width: 90%;
-    font-size: 13px;
-    line-height: 150%;
-    color: #1A1826;
-    text-align: justify;
-    hyphens: auto;
-    text-align-last: none;
-`;
-const PaymentHeader = styled.div`
-    font-size: 20px;
-    font-weight: 600;
-    margin: 12px 0;
-    width: 90%;
-    text-align: left;
-`;
-const FlexGrow = styled.div`
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #FEFFFE;
-    flex-direction: column;
-    width: 100%;
-`;
-const EmailForm = styled.form`
-    width: 90%;
-    padding-bottom: 12px;
-`;
-const Input = styled.input`
-    border-radius: 12px;
-    background-color: #F6F6F6;
-    font-family: "Inter-Semibold", Helvetica;
-    font-size: 16px;
-    font-weight: 500;
-    height: 52px;
-    cursor: pointer;
-    width: 100%;
-    border-style: none;
-    text-color: #ABCDEF;
-	text-indent: 12px;
-`;
-const PaymentInput = styled(Input)`
-	background-color: #FEFFFE;
-`;
-const CustomCreatableSelect = styled(CreatableSelect)`
-	border-color: ${props => props.error ? "#e74c3c" : "#000000"};
-	width: 100%;
-`;
-const Form = styled.form`
-	width: 80%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	margin-top: 30px;
-	margin-bottom: 30px;
-`;
-const PaymentForm = styled(Form)`
-	gap: 12px;
-`;
-const ErrorMessage = styled.div`
-	color: red;
-`;
+const allowedCountries = ["AllowedCountry"];
+const ticketPrice = 10;
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -138,97 +58,12 @@ const signMessage = (secret, msg) => {
 }
 
 
-
-/**
- * Component structure explanation placeholder
- * 
- */
-
-const NmiCheckoutForm = ({
-	passMetadata
-}) => {
-
-	const [inputError, setInputError] = useState(false);
-    useEffect(() => {
-        window.CollectJS.configure({
-            variant: 'lightbox',
-            styleSniffer: false,
-            callback: (token) => {
-                console.log("token", token);
-                handleResult(token);
-            },
-            fields: {
-                ccnumber: {
-                    placeholder: "1234 1234 1234 1234",
-                    selector: "#ccnumber"
-                },
-                ccexp: {
-                    placeholder: "MM / YY",
-                    selector: "#ccexp"
-                },
-                cvv: {
-                    placeholder: "CVV",
-                    selector: "#cvv"
-                }
-            },
-            customCss: {
-                "border-radius": "12px",
-                "height": "44px",
-                "border-style": "none"
-            }
-        })
-    }, []);
-
-
-    const handleSubmit = (e) => {
-		console.log("handleSubmit()")
-        e.preventDefault();
-
-        if (window.CollectJS) {
-            window.CollectJS.startPaymentRequest();
-        } else 
-            console.log("CollectJS unavailable")
-    }
-    const handleResult = async (result) => {
-        console.log("payment token", result.token);
-		const paymentMetadata = result.token; 
-
-		passMetadata(paymentMetadata);
-	}
-	
-    return (
-        <PaymentForm onSubmit={handleSubmit} id="NMIC-form">
-            <CardIconBox />
-			{/* {inputError && <ErrorMessage>{inputError}</ErrorMessage>} */}
-			<PaymentInput 
-				type="text"
-				name="firstname"
-				placeholder="First Name	"
-				required
-			/>
-			<PaymentInput 
-				type="text"
-				name="lastname"
-				placeholder="Last Name"
-				required
-			/>
-			<PaymentInput 
-				type="text"
-				name="zip"
-				placeholder="ZIP"
-				required
-			/>
-        </PaymentForm>
-    )
-}
-
 const Checkout = ({
     passLoadingStatus,
     playerNumbers,
 	user
 }) => {
     const history = useHistory(); 
-	// const { addTxsToHistory } = useWallet();
 
     // find ticket indicator
     const ContextValue = useContext(WalletContext);
@@ -239,7 +74,7 @@ const Checkout = ({
 	let maxEtokenTicketQuantity = 0; 
 	if (token) {
 		const balance = (new BigNumber({...token.balance, _isBigNumber: true}).toNumber()) / 100;
-		maxEtokenTicketQuantity = Math.floor(balance / 10);
+		maxEtokenTicketQuantity = Math.floor(balance / ticketPrice);
 	}
 
     // states
@@ -251,10 +86,12 @@ const Checkout = ({
     const [kycConfig, setKycConfig] = useState(false);
 	const [paymentRequest, setPaymentRequest] = useState(false);
 	const [paymentMetadata, setPaymentMetadata] = useState(false);
-	const [purchaseOptions, setPurchaseOptions] = useState(false);
+	const [ticketQuantity, setTicketQuantity] = useState(1);
+	const [showPaymentForm, setShowPaymentForm] = useState(false);
 	const [ticketQtyError, setTicketQtyError] = useState(false);
 	const [kycAccessToken, setKycAccessToken] = useState(false);
 	const [emailError, setEmailError] = useState(false);
+	const [countryError, setCountryError] = useState(false);
 	const [hasEmail, setHasEmail] = useState(false);
 	const [showKyc, setShowKyc] = useState(false);
 	const [authPayment, setAuthPayment] = useState(false);
@@ -264,16 +101,6 @@ const Checkout = ({
         passLoadingStatus("PLAYER NUMBERS ARE MISSING");
         history.push("/select");
     }
-    
-    // variables DOM
-    const offer_name = "Lottery Ticket";
-    const merchant_name = "MRC";
-    const purchaseTokenAmount = 3.33;
-    const displayTicker = "CLUX";
-    const feeAmount = 0.3;
-    const totalAmount = purchaseTokenAmount + feeAmount;
-    const agreeButtonText = "Agree and Continue";
-    const purchaseButtonText = `Pay - $${10*purchaseOptions.ticketQuantity} - DEMO`; 
 
 	useEffect(async () => {
 		console.log("CHECKOUT user", user);
@@ -283,7 +110,6 @@ const Checkout = ({
 			history.push("/select");
 		}
 	}, [user])
-
 
 	// skip email/kyc prompt if email already available
 	useEffect(async () => {
@@ -303,32 +129,105 @@ const Checkout = ({
 
 	}, [user])
 
-	// initialize payment request
-	useEffect(async () => {
-		if (purchaseOptions.ticketQuantity) {
-			console.log("get invoice for qnt", purchaseOptions.ticketQuantity);
-			const res = await fetch("https://lsbx.nmrai.com/v1/invoice", {
-				method: "POST", 
-				headers: new Headers({
-					'Accept': "application/etoken-paymentrequest",
-					'Content-Type': "application/json"}),
-				mode: "cors",
-				signal: AbortSignal.timeout(20000),
-				body: JSON.stringify({
-					quantity: purchaseOptions.ticketQuantity
-				}),
-			});
-			// console.log("res", res);
-			const invoiceRes = await res.arrayBuffer();
-			const invoiceBuf = Buffer.from(invoiceRes);
+	// finalize payment with paymentMetadata (payment token)
+	useEffect(async () => {	
+		try {
+			if (paymentMetadata && paymentRequest && !ticketIssued) {
+				passLoadingStatus("PROCESSING");
+				const type = paymentProcessor === "etoken" ? paymentProcessor : "fiat";
+				const authonly = type === "fiat" && !isKYCed;
+				console.log("authonly", authonly);
+				const { payment, kycToken, coinsUsed } = await buildPayment(
+					type, 
+					authonly
+				);
+				console.log("init payment", payment.toRaw().toString("hex"))
+				setKycAccessToken(kycToken);
+				// passLoadingStatus(false);
+				const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
+					method: "POST",
+					headers: new Headers({
+						'Content-Type': `application/${type}-payment`
+					}),
+					signal: AbortSignal.timeout(20000),
+					body: payment.toRaw()
+				});
+
+				if (rawPaymentRes.status !== 200) {
+					const message = await rawPaymentRes.text();
+					throw new Error(message);
+				}
+
+				if (type === "fiat" && authonly) {
+					const response = await rawPaymentRes.json();
+					console.log("auth res", response);
+					setAuthPayment({
+						rawPayment: payment.toRaw(),
+						coinsUsed
+					});
+					setShowKyc(true);		
+					passLoadingStatus(false);
+				} else {
+					const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
+					const response = Buffer.from(paymentResArrayBuf);
+					
+					const ack = PaymentACK.fromRaw(response);
+					console.log(ack.memo);
+					const rawTransactions = ack.payment.transactions;
+					const ticketTxs = rawTransactions.map(r => TX.fromRaw(r));
+					console.log(ticketTxs.map(tx => tx.toJSON()));
 	
-			const pr = PaymentRequest.fromRaw(invoiceBuf);
+					setTicketIssued(true);
+	
+					// put txs in storage
+					const paymentTxs = payment.transactions.map(raw => TX.fromRaw(raw));
+					await addIssueTxs(ticketTxs, coinsUsed, paymentTxs);
 
-			console.log("pr", pr);
-			setPaymentRequest(pr);
+					history.push("/waitingroom");
+				}		
+			} 
+		} catch (err) {
+			console.error(err);
+            passLoadingStatus("AN ERROR OCCURED");
+            await sleep(3000);
+            history.push("/select");
 		}
-	}, [purchaseOptions])
+	}, [paymentMetadata, paymentRequest])
 
+    useEffect(()=> {
+        if (kycConfig) {
+            window.HyperKYCModule.launch(kycConfig, handleKYCResult);
+        }
+    }, [kycConfig])
+
+	useEffect(async() => {
+		if (hasAgreed) {
+			await forceWalletUpdate();
+		}
+	}, [hasAgreed])
+	// initialize payment request
+	const getPaymentRequest = async () => {
+		console.log("get invoice for qnt", ticketQuantity);
+		const res = await fetch("https://lsbx.nmrai.com/v1/invoice", {
+			method: "POST", 
+			headers: new Headers({
+				'Accept': "application/etoken-paymentrequest",
+				'Content-Type': "application/json"}),
+			mode: "cors",
+			signal: AbortSignal.timeout(20000),
+			body: JSON.stringify({
+				quantity: ticketQuantity
+			}),
+		});
+		// console.log("res", res);
+		const invoiceRes = await res.arrayBuffer();
+		const invoiceBuf = Buffer.from(invoiceRes);
+
+		const pr = PaymentRequest.fromRaw(invoiceBuf);
+
+		console.log("pr", pr);
+		setPaymentRequest(pr);		
+	};
 
 	const repeatOnboarding = () => {
 		return history.push({
@@ -437,108 +336,38 @@ const Checkout = ({
 
 		return { payment, kycToken, coinsUsed };
 	}
+	const sendPayment = async (rawPayment) => {
+		const rawResponse = await fetch("https://lsbx.nmrai.com/v1/pay", {
+			method: "POST",
+			headers: new Headers({
+				'Content-Type': `application/fiat-payment`
+			}),
+			signal: AbortSignal.timeout(20000),
+			body: rawPayment
+		});
 
-	// only for debugging auth & capture without calling kyc
-	// useEffect(async () => {
-	// 	if (authPayment)
-	// 		return handleCapturePayment();
-	// }, [authPayment])
-
-	// finalize payment with paymentMetadata (payment token)
-	useEffect(async () => {	
-		try {
-			if (paymentMetadata && paymentRequest && !ticketIssued) {
-				const type = purchaseOptions.type;
-				const authonly = type === "fiat" && !isKYCed;
-				console.log("authonly", authonly);
-				const { payment, kycToken, coinsUsed } = await buildPayment(
-					type, 
-					authonly
-				);
-				console.log("init payment", payment.toRaw().toString("hex"))
-				setKycAccessToken(kycToken);
-				passLoadingStatus(false);
-				const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
-					method: "POST",
-					headers: new Headers({
-						'Content-Type': `application/${purchaseOptions.type}-payment`
-					}),
-					signal: AbortSignal.timeout(20000),
-					body: payment.toRaw()
-				});
-
-				if (rawPaymentRes.status !== 200) {
-					const message = await rawPaymentRes.text();
-					throw new Error(message);
-				}
-
-				if (type === "fiat" && authonly) {
-					const response = await rawPaymentRes.json();
-					console.log("auth res", response);
-					setAuthPayment({
-						rawPayment: payment.toRaw(),
-						coinsUsed
-					});
-					setShowKyc(true);		
-				} else {
-					const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
-					const response = Buffer.from(paymentResArrayBuf);
-					
-					const ack = PaymentACK.fromRaw(response);
-					console.log(ack.memo);
-					const rawTransactions = ack.payment.transactions;
-					const ticketTxs = rawTransactions.map(r => TX.fromRaw(r));
-					console.log(ticketTxs.map(tx => tx.toJSON()));
-	
-					setTicketIssued(true);
-	
-					// put txs in storage
-					const paymentTxs = payment.transactions.map(raw => TX.fromRaw(raw));
-					await addIssueTxs(ticketTxs, coinsUsed, paymentTxs);
-
-					history.push("/waitingroom");
-				}		
-			} 
-		} catch (err) {
-			console.error(err);
-            passLoadingStatus("AN ERROR OCCURED");
-            await sleep(3000);
-            history.push("/select");
-		}
-	}, [paymentMetadata, paymentRequest])
-
-
-	const handleCapturePayment = async () => {
-		try {
+		return rawResponse;
+	}
+	const capturePayment = async () => {
+		try {		
 			await sleep(8000);
+
 			let response;
 			for (let retries = 0; retries < 3; retries++) {
-				console.log("capture payment, attempt", retries)
-				const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
-					method: "POST",
-					headers: new Headers({
-						'Content-Type': `application/fiat-payment`
-					}),
-					signal: AbortSignal.timeout(20000),
-					body: authPayment.rawPayment
-				});
+				console.log("capture payment attempt", retries);
+				const rawPaymentRes = await sendPayment(authPayment.rawPayment);
 
-				if (rawPaymentRes.status !== 200) {
+				if (rawPaymentRes.status == 200) {
+					const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
+					response = Buffer.from(paymentResArrayBuf);			
+					break;			
+				} else if (rawPaymentRes.status == 400) {
 					const msg = await rawPaymentRes.text();
 					console.log("msg", msg);			
-					console.log("rawPaymentRes", rawPaymentRes)
-
-					// status 400 and db confirmation: repeat onboarding
-					if (msg?.includes("Invalid") || msg?.includes("review"))
-						return repeatOnboarding();		
-
-					if (msg?.includes("cancelled")) {
-						passLoadingStatus(false);
-						return;
-					}
+					console.log("rawPaymentRes", rawPaymentRes);
 
 					if (retries < 2) {
-						// status 400 without db confirmation: retry
+						// retry 3 times in total
 						await sleep(3000)
 						continue;
 					} else {
@@ -546,13 +375,10 @@ const Checkout = ({
 						throw new Error(msg);
 					}
 				} else {
-					// status 200: successful payment
-					const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
-					response = Buffer.from(paymentResArrayBuf);						
-					break;					
+					throw new Error(msg);
 				}
-			}
-
+			}		
+			
 			console.log("response", response);	
 
 			const ack = PaymentACK.fromRaw(response);
@@ -569,14 +395,49 @@ const Checkout = ({
 			const paymentTxs = capturedPayment.transactions.map(raw => TX.fromRaw(raw));
 			await addIssueTxs(ticketTxs, authPayment.coinsUsed, paymentTxs);
 
-			passLoadingStatus(false);
 			history.push('/backup');
 
 		} catch(err) {
 			console.error(err);
 			passLoadingStatus("AN ERROR OCCURED");
 			await sleep(2000);
-			return repeatOnboarding();			
+			return repeatOnboarding();	
+		}
+	}
+	const setKycResult = async () => {
+		try {
+			await sleep(8000);
+			for (let retries = 0; retries < 2; retries++) {
+				console.log("set kyc result, attempt", retries)
+				const rawPaymentRes = await sendPayment(authPayment.rawPayment);
+
+				if (rawPaymentRes.status == 400) {
+					const msg = await rawPaymentRes.text();
+					console.log("msg", msg);			
+
+					// status 400 and db confirmation: repeat onboarding
+					if (msg?.includes("Invalid") || msg?.includes("review") || msg?.includes("error"));
+						return repeatOnboarding();		
+
+					if (msg?.includes("cancelled")) {
+						passLoadingStatus(false);
+						return;
+					}
+
+					if (retries < 1) {
+						await sleep(3000)
+						continue;
+					} else {
+						// too many retries
+						throw new Error(msg);
+					}
+				}
+			}
+		} catch(err) {
+			console.error(err);
+			passLoadingStatus("AN ERROR OCCURED");
+			await sleep(2000);
+			return repeatOnboarding();	
 		}
 	}
     // handle user agreement with terms of service
@@ -588,16 +449,17 @@ const Checkout = ({
     }
     const handleKYCResult = async (result) => {
         console.log("KYC", result.status);
-		const isFiat = purchaseOptions.type === "fiat";
+		const isFiat = paymentProcessor !== "etoken";
+		console.log("isFiat", isFiat);
         switch (result.status) {
 
             // ----Incomplete workflow-----
             case "user_cancelled":
-				if (kycCancelCount == 0 && !user.kyc_status.includes("cancelled")) {
+				if (kycCancelCount == 0 && !user.kyc_status?.includes("cancelled")) {
+					console.log("increase counter")
 					errorNotification("KYC was cancelled, try again");					
-					passLoadingStatus("RENEW KYC");
 					setKycCancelCount(1);
-					return handleCapturePayment();
+					break;
 				} else {
 					passLoadingStatus("KYC WAS CANCELLED AGAIN");
 					await sleep(2000);
@@ -605,25 +467,26 @@ const Checkout = ({
 				}
             case "error":
 				passLoadingStatus("A KYC ERROR OCCURED");
-				return handleCapturePayment();
+				return setKycResult();
 
             // ----Complete workflow-----
             case "auto_approved":
 				if (isFiat) {
 					passLoadingStatus("CAPTURE PAYMENT")
-					return handleCapturePayment();
+					return capturePayment();
 				} else {
 					setShowKyc(false);
+					break;
 				}
             case "auto_declined":
 				passLoadingStatus("INVALID KYC");
 				if (isFiat) 
-					return handleCapturePayment();
+					return setKycResult();
 				else 
 					return repeatOnboarding();
             case "needs_review":
 				passLoadingStatus("KYC NEEDS REVIEW")
-				return handleCapturePayment();
+				return setKycResult();
         }
     }
     const handleKYC = async (e) => {
@@ -635,53 +498,29 @@ const Checkout = ({
 
         setKycConfig(config);
     }
-
-    const handleEtokenPayment = (e) => {
+    const handleEtokenPayment = async (e) => {
 		if (e)
 	        e.preventDefault();
+		passLoadingStatus("BUILDING TRANSACTION");
+		await sleep(1000);
         setPaymentMetadata(true);
     }
-
-    useEffect(()=> {
-        if (kycConfig) {
-            window.HyperKYCModule.launch(kycConfig, handleKYCResult);
-        }
-    }, [kycConfig])
-
-	useEffect(async() => {
-		if (hasAgreed) {
-			await forceWalletUpdate();
-		}
-	}, [hasAgreed])
-
-	// handle changes between fiat payment processors
-    const handlePaymentChange = (e) => {
-        const newPaymentProcessor = e.target.value;
-        setPaymentProcessor(newPaymentProcessor)
-    }
-
     const handleReturn = () => {
         const previousPath = "/select";
         history.push(previousPath);
     }
 
-	// handle user choice: payment type and ticket quantity
-	const handlePurchaseOptions = (e) => {
-		e.preventDefault();
-
-		const type = e.target.type.value;
-		const quantity = e.target.ticketQuantity.value;
-
+	const handleConfirmation = async () => {
 		// verify quantity input
-		const isNumberInput = /[0-9]/.test(quantity);	
+		const isNumberInput = /[0-9]/.test(ticketQuantity);	
 		if (!isNumberInput) {
 			setTicketQtyError("Quantity must be a number");
 			return;
-		} 				
+		} 		
 
 		// verify sufficient balance
-		const isEtoken = type === "etoken";
-		const sufficientBalance = Number(quantity) <= maxEtokenTicketQuantity;		
+		const isEtoken = paymentProcessor === "etoken";
+		const sufficientBalance = Number(ticketQuantity) <= maxEtokenTicketQuantity;		
 		if (isEtoken && !sufficientBalance) {
 			if (maxEtokenTicketQuantity === 1)
 				setTicketQtyError(`You can only afford ${maxEtokenTicketQuantity} Ticket with eToken`);
@@ -691,30 +530,39 @@ const Checkout = ({
 		} 
 		setTicketQtyError(false);
 
-		// set purchase options
-		const newPurchaseOptions = {
-			ticketQuantity: quantity,
-			type: type
-		};
-		setPurchaseOptions(newPurchaseOptions);
+		await getPaymentRequest();
+
+		if (!isEtoken)
+			setShowPaymentForm(true);
 
 		// kyc the user if first payment is with etoken
-		if (type === "etoken" && !isKYCed) {
+		if (isEtoken && !isKYCed) {
 			passLoadingStatus("LOADING KYC");
 			setShowKyc(true);
-			return handleEtokenPayment();
-		}
+			// return handleEtokenPayment();
+		} else if (isEtoken)
+			return handleEtokenPayment();	
 	}
 
 	const handleSubmitEmail = async (e) => {
+		console.log("handleSubmitEmail called");
 		e.preventDefault();
 
 		const emailInput = e.target.email.value;
-		const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput);
-		if (!isValid) {
-			setEmailError(true);
-			return;
+		const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput);
+		if (!isValidEmail) {
+			setEmailError("Invalid Email");
+		}		
+		
+		const countryInput = e.target.country.value;
+		const isValidCountry = allowedCountries.includes(countryInput);
+		if (!isValidCountry) {
+			setCountryError(`Clux is unavailable in ${countryInput}`);
 		}
+
+		if (!isValidEmail || !isValidCountry)
+			return; 
+
 		const buyerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
 
 		console.log("email", emailInput);
@@ -747,35 +595,40 @@ const Checkout = ({
 			setHasEmail(true);
 	}
 
+	const handlePaymentMethod = (method) => {
+		setPaymentProcessor(method);
+	}
+
+	// dom variables
     const tosTitle = "Purchase Terms";
     const checkoutTitle = "Checkout";
-	const quantityOptions = ["1", "2", "5", "10"].map(option => {
+	const emailButtonText = "Continue";
+	const accountTitle = "Create Account";
+	const isStage1 = !(hasAgreed && hasEmail);
+	const fiatPurchaseButtonText = "Pay";
+	const countryOptions = ["AllowedCountry", "ForbiddenCountry"].map(option => {
 		return {
 			label: option,
 			value: option
 		};
 	});
-	const emailButtonText = "Confirm Email";
-	const emailTitle = "Email";
-	const isStage1 = !(hasAgreed && hasEmail && purchaseOptions);
-	const fiatPurchaseButtonText = "Pay";
-	const etokenPurchaseButtonText = "Pay with eToken";
+    const agreeButtonText = "Agree and Continue";
 
 
     return (
         <>  							
-			<Header background="#FEFFFE" />
             {isStage1 ? (
                 <> 
 					{!hasAgreed ? (
 						<>            
+							<Header background="#FEFFFE" />
 							<NavigationBar 
 								handleOnClick={handleReturn}
 								title={tosTitle}
 							/>
 							<Tos />
 							<FooterCtn>
-								<LightFooterBackground />
+								<S.PrimaryFooterBackground />
 
 								<RandomNumbers 
 									fixedRandomNumbers={playerNumbers}
@@ -789,104 +642,91 @@ const Checkout = ({
 						</>						
 					) : (
 						<>
-							{!hasEmail ? (
-								<>
-									<NavigationBar
-										handleOnClick={handleReturn}
-										title={emailTitle}
-									/>
-									<FlexGrow>
-										<EmailForm id='email-form' onSubmit={(e) => handleSubmitEmail(e)}>
-											{emailError && <ErrorMessage>{emailError}</ErrorMessage>}
-											<Input 
-												placeholder="Enter your Email"
-												name="email"
-												type="text"
-											/>
-											<p>
-												<b>Your email is required</b> and is only used to announce results and maintenance updates. <b>We do not send marketing emails.</b>
-											</p>                                
-										</EmailForm>
-									</FlexGrow>
-									<FooterCtn>
-										<LightFooterBackground />
-
-										<RandomNumbers 
-											fixedRandomNumbers={playerNumbers}
+							<Header background="#FEFFFE" />
+							<NavigationBar
+								handleOnClick={handleReturn}
+								title={accountTitle}
+							/>
+							<S.PrimaryFlexGrow>
+								<S.AccountForm id='email-form' onSubmit={(e) => handleSubmitEmail(e)}>
+									
+									<S.FormSection>
+										<S.Item>
+											<LargeHeading>Create Your Account</LargeHeading>
+										</S.Item>
+										<S.Item>
+											<Paragraph>
+												Please enter your details to create an account.
+											</Paragraph>
+										</S.Item>
+									</S.FormSection>
+									
+									<S.FormSection>
+										<S.Label>Email</S.Label>
+										<Input 
+											placeholder="your@email.com"
+											name="email"
+											type="text"
+											required
 										/>
-										<PrimaryButton 
-											form={"email-form"}
-										>
-											{emailButtonText}
-										</PrimaryButton>
-									</FooterCtn>
-								</>								
-							) : (
-								<>
-									<NavigationBar 
-										handleOnClick={handleReturn}
-										title={checkoutTitle}
-										merchantTag={true}
-									/>    
+										{emailError && <S.ErrorMessage>{emailError}</S.ErrorMessage>}
+										<S.Item>
+											<Paragraph>Your email is required and is only used to announce results. No marketing emails.</Paragraph>
+										</S.Item>										
+									</S.FormSection>
+									<S.FormSection>
+										<S.Label>Country</S.Label>
+										<S.Item>
+											<Paragraph>Select the country of your government-issued ID.</Paragraph>
+										</S.Item>
+										<S.WideCreatableSelect 
+											isClearable
+											name="country" 
+											required
+											options={countryOptions}
+											placeholder={"Select your country"}
+											styles={S.selectStyle}
+										/>	
+										{countryError && <S.ErrorMessage>{countryError}</S.ErrorMessage>}
+									</S.FormSection>
 
-									<Scrollable>
-										<Form id="purchase-options-form" onSubmit={handlePurchaseOptions}>
-											<PaymentHeader>How  many tickets?</PaymentHeader>
-											{ticketQtyError && <ErrorMessage>{ticketQtyError}</ErrorMessage>}
-												<CustomCreatableSelect 
-													isClearable
-													name="ticketQuantity" 
-													label="Quantity"
-													required
-													options={quantityOptions}
-													defaultValue={"5"}
-													placeholder={"Tap Here"}
-													formatCreateLabel={(input) => {
-														const isNumberInput = /[0-9]/.test(input);
-														if (isNumberInput) 
-															return `Purchase ${input} Tickets`
-													}}
-												/>											
-											<InfoText>
-												Each ticket result is random and unique, including entry in each of the Jackpots.											
-												<a>Learn More</a>
-											</InfoText>
+									<S.Divider />
+									
+									<S.CheckboxItem>
+										<S.CustomCheckbox required />
+										<S.CheckboxText>I confirm that I am at least 18 years old</S.CheckboxText>
+									</S.CheckboxItem>
+									<S.CheckboxItem>
+										<S.CustomCheckbox required />
+										<S.CheckboxText>I understand a government ID will be required for purchase and I will be verified during KYC</S.CheckboxText>
+									</S.CheckboxItem>
+									<S.CheckboxItem>
+										<S.CustomCheckbox required />
+										<S.CheckboxText>I agree to the Purchase Terms, Privacy Policy and Terms of Service</S.CheckboxText>
+									</S.CheckboxItem>										
 
-											<PaymentHeader>Choose your Payment Option</PaymentHeader>
-											<select type="select" name="type">
-												<option value="fiat">Fiat</option>
-												{maxEtokenTicketQuantity > 0 && 
-													<option value="etoken">eToken</option>
-												}
-											</select>						
-										</Form>
-									</Scrollable>
-
-									<FooterCtn>
-										<EvenLighterFooterBackground />
-
-										<RandomNumbers 
-											fixedRandomNumbers={playerNumbers}
-										/>
-										<PrimaryButton 
-											form={"purchase-options-form"}
-										>
-											{"Confirm"}
-										</PrimaryButton>
-									</FooterCtn>
-								</>								
-							)}
-						</>
+								</S.AccountForm>
+							</S.PrimaryFlexGrow>
+							<FooterCtn>
+								<S.PrimaryFooterBackground />
+								<PrimaryButton 
+									form={"email-form"}
+								>
+									{emailButtonText}
+								</PrimaryButton>
+							</FooterCtn>
+						</>								
 					)}
 				</>
             ) : (
                 <>
 					{showKyc ? (
 						<>
-							<FlexGrow>
+							<Header background="#FEFFFE" />
+							<S.SecondaryFlexGrow>
 								<KycInfo />                       
 								<PrimaryButton onClick={handleKYC}>Continue</PrimaryButton>
-							</FlexGrow>		
+							</S.SecondaryFlexGrow>		
 						</>
 					) : (
 						<>
@@ -894,56 +734,85 @@ const Checkout = ({
 								handleOnClick={handleReturn}
 								title={checkoutTitle}
 								merchantTag={true}
-							/>                                      
-							<Scrollable>
-								<CustomEnfold animate={isFirstRendering}>     
-									<Ticket 
-										numbers={playerNumbers}
-										background={'#EAEAEA'}
-										quantity={purchaseOptions.ticketQuantity}
+							/>    
+
+							<S.PrimaryFlexGrow>
+								<Ticket 
+									numbers={playerNumbers}
+									background={'#EAEAEA'}
+									quantity={ticketQuantity}
+								/>								
+									
+								<S.AccountForm id="purchase-options-form">
+									<S.Item>
+										<LargeHeading>How  many tickets?</LargeHeading>
+									</S.Item>
+									<S.Item>
+										<Paragraph>
+											Each ticket result is random and unique, including entry in each of the Jackpots.											
+										</Paragraph>											
+									</S.Item>
+
+									<QuantityInput
+										quantity={ticketQuantity}
+										passQuantity={setTicketQuantity}
 									/>
-									<InfoText>
-										To purchase this lottery ticket your numbers and wallet address will be encrypted in the finalized block with all required data to self-mint our potential payout. This game supports the payout.
-									</InfoText>
-									<PaymentHeader>Payment</PaymentHeader>
+									<QuantitySuggestions
+										passQuantity={setTicketQuantity}
+									/>
+									{ticketQtyError && <S.ErrorMessage>{ticketQtyError}</S.ErrorMessage>}
 
-									{purchaseOptions.type === "fiat" ? (
-										<>
-											<CustomRadioGroup onChange={handlePaymentChange} value={paymentProcessor}>
-												<Radio value={"NMIC"} >Credit Card</Radio>
-												{/* <Radio value={"other"} >Other</Radio> */}
-											</CustomRadioGroup>        
+									<Column>
+										<S.Item>
+											<LargeHeading>Payment Method</LargeHeading>
+											<CardIconBox />
+										</S.Item>
+										<S.PaymentMethod 
+											onClick={() => handlePaymentMethod("NMIC")}
+											$active={paymentProcessor === "NMIC"}	
+										>Credit Card</S.PaymentMethod>
+										{maxEtokenTicketQuantity >= ticketQuantity &&
+											<S.PaymentMethod 
+												onClick={() => handlePaymentMethod("etoken")}
+												$active={paymentProcessor === "etoken"}
+											>eToken</S.PaymentMethod>
+										}	
+										<S.Item>
+											<LargeHeading>Total</LargeHeading>
+											<S.Price>${ticketQuantity * ticketPrice}</S.Price>
+										</S.Item>									
+									</Column>
+								</S.AccountForm>
+							</S.PrimaryFlexGrow>
 
-											{paymentProcessor === "NMIC" && (
-												<NmiCheckoutForm 
-													passMetadata={setPaymentMetadata}	
-												/>
-											)}			
-
-											{/* add new payment methods here */}									
-										</>
-									) : ( 
-										<p>You are paying with eToken.</p>
-									)}
-								</CustomEnfold>
-							</Scrollable>
 							<FooterCtn>
-								<EvenLighterFooterBackground />
-								{purchaseOptions.type === "fiat" ? (
-									<PrimaryButton 
-										type="submit"
-										form={`${paymentProcessor}-form`}
-									>
-										{fiatPurchaseButtonText}
-									</PrimaryButton>         
-								) : ( 
-									<PrimaryButton onClick={handleEtokenPayment}>
-										{etokenPurchaseButtonText}
-									</PrimaryButton>                               
-								)}
-							</FooterCtn>		
-						</>								
+								<S.SecondaryFooterBackground />
+								<PrimaryButton onClick={handleConfirmation}>
+									Pay
+								</PrimaryButton>
+							</FooterCtn>								
+							
+							{showPaymentForm && (
+								<Overlay onClick={() => setShowPaymentForm(false)}>
+									<RollUp onClick={(e) => e.stopPropagation()} $animate={showPaymentForm}>
+										<WidgetBody>
+											<NmiCheckoutForm 
+												passMetadata={setPaymentMetadata}	
+												amount={ticketPrice * ticketQuantity}
+											/>				
+											<PrimaryButton 
+												type="submit"
+												form={`${paymentProcessor}-form`}
+											>
+												{fiatPurchaseButtonText}
+											</PrimaryButton>						
+										</WidgetBody>										
+									</RollUp>
+								</Overlay>
+							)}	
+						</>
 					)}
+
 				</>              
 			)}    
         </>

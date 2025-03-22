@@ -1,10 +1,8 @@
 // node modules
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import Select from 'react-select';
-import RangeSlider from 'react-range-slider-input';
 import 'react-range-slider-input/dist/style.css';
 import { PaymentRequest, Payment, PaymentACK } from  'b70-checkout';
 import bio from 'bufio';
@@ -18,6 +16,7 @@ import { FooterCtn } from '@components/Common/Footer';
 import PrimaryButton from '@components/Common/PrimaryButton';
 import NavigationBar from '@components/Common/Navigation';
 import Header from '@components/Common/Header';
+import * as S from './Styled';
 
 import useWallet from '@hooks/useWallet';
 
@@ -26,70 +25,6 @@ import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 
 
-// css styled components
-const Input = styled.input`
-    border-radius: 12px;
-    background-color: #F6F6F6;
-    color: #00000;
-    font-family: "Inter-Semibold", Helvetica;
-    font-size: 16px;
-    font-weight: 500;
-    height: 52px;
-    cursor: pointer;
-    width: 100%;
-    border: ${props => props.error ? "1px solid red" : "none"};
-	text-indent: 12px;
-`;
-const FlexGrow = styled.div`
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #FEFFFE;
-    flex-direction: column;
-    width: 100%;
-`;
-const Form = styled.form`
-    flex-grow: 1;
-    width: 90%;
-    margin-top: 18px;
-    gap: 24px;
-    display: flex;
-    flex-direction: column;
-`;
-const Row = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-`;
-const Link = styled.a`
-    text-decoration: undelined;
-    margin-top: 36px;
-`;
-const StyledRangeSlider = styled(RangeSlider)`
-    .range-slider__thumb[data-lower] {
-        width: 0;
-    }
-    .range-slider__range {
-        border-radius: 6px;
-    }
-`;
-const Button = styled.button`
-    background-color: #44405B;
-    border-radius: 100px;
-    padding: 7px;
-    color: #FFFFFF
-    font-weight: 600;
-    height: 25px;
-    display: flex; 
-    align-items: center;
-	border-style: none;
-	cursor: pointer;
-`;
-const Amount = styled.div``;
 
 const countryOptions = [{value: "US", label: "United States"}];
 const currencyOptions = [{value: "USD", label:"USD"}];
@@ -146,7 +81,7 @@ const Cashout = ({
         } else {
 			passLoadingStatus(false);
 		}
-    }, [balance])
+    }, [balance]);
 
     // fetch tillo options
     useEffect(async () => {
@@ -405,16 +340,16 @@ const Cashout = ({
     return (            
         <>
             {modalHolder}
-            <FlexGrow>
+            <S.FlexGrow>
                 <Header />
                 <NavigationBar 
                     handleOnClick={handleReturn}
                     title={title}                              
                 />
                     {stage === "filter" && 
-                        <Form id={`${stage}-form`} onSubmit={handleSubmitFilters}>
-                            <Amount>{cardAmount} Tokens</Amount>
-                            <StyledRangeSlider
+                        <S.Form id={`${stage}-form`} onSubmit={handleSubmitFilters}>
+                            <S.Amount>{cardAmount} Tokens</S.Amount>
+                            <S.StyledRangeSlider
                                 min={minAmount}
                                 max={maxAmount}
                                 step={10}
@@ -437,11 +372,11 @@ const Cashout = ({
                                 name="country"
                                 required
                             />
-                        </Form>
+                        </S.Form>
                     }         
 
                     {stage === "brand" && 
-                        <Form id={`${stage}-form`}
+                        <S.Form id={`${stage}-form`}
                             onSubmit={handleBrandSubmit}
                         >
                             <Select 
@@ -457,15 +392,15 @@ const Cashout = ({
                             )}
 
 
-                        </Form>
+                        </S.Form>
                     }
 
                     {stage === "giftcard" &&
-                        <Form id={`${stage}-form`} onSubmit={handleGiftcardConfirmation}>
-                            <Link href={link} target="_blank">
+                        <S.Form id={`${stage}-form`} onSubmit={handleGiftcardConfirmation}>
+                            <S.Link href={link} target="_blank">
                                 "Claim your Giftcard"
-                            </Link>
-                        </Form>
+                            </S.Link>
+                        </S.Form>
                     }
 
                     <FooterCtn>
@@ -481,7 +416,7 @@ const Cashout = ({
                             }
                         </PrimaryButton>
                     </FooterCtn>    
-            </FlexGrow>           
+            </S.FlexGrow>           
         </>
     )
 }

@@ -2,137 +2,30 @@
 import React, { useState, useContext, useEffect }  from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
 import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
 
 // react components 
-import { successNotification, errorNotification } from '@components/Common/Notifications';
+import { successNotification } from '@components/Common/Notifications';
 import SeedPhrase from '@components/Common/SeedPhrase';
 import TicketHistory from './TicketHistory';
 import Header from '@components/Common/Header'; 
 import NavigationBar from '@components/Common/Navigation';
-import FadeInOut from '@components/Backup/FadeInOut';
 import { FooterCtn, SupportBar } from '@components/Common/Footer';
-import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Common/CustomIcons';
-import PrimaryButton from '@components/Common/PrimaryButton';
+import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Common/Icons';
 import Email from '@components/Wallet/Email';
 import ImportWallet from '@components/Wallet/ImportWallet';
-
+import * as S from './Styled';
+import { Paragraph, LargeHeading } from '@components/Common/Text';
 import useWallet from '@hooks/useWallet';
 
 // util
 import { WalletContext } from '@utils/context';
-import { isValidStoredWallet } from '@utils/cashMethods';
 import { getWalletState } from '@utils/cashMethods';
 
 // assets 
 import RightArrowSvg from '@assets/arrow_right.svg';
 import PencilIconSvg from '@assets/pencil_icon.svg';
-import CopyboardSvg from '@assets/copyboard.svg';
 
-// styled css components
-const StyledFadeInOut = styled(FadeInOut)`
-    width: 100%;
-    height: 100%;
-    background-color: #fefffe;
-    display: flex; 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-`;
-const WalletCtn = styled.div`
-    overflow-y: auto;
-    width: 90%;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 12px;
-    padding-top: 10px;
-`;
-export const Item = styled.div`
-    border-radius: 7px;
-    background-color: #f6f6f6;
-    width: 100%;
-    min-height: 60px;
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    cursor: pointer;
-`;
-const Circle = styled.div`
-    position: relative;
-    background-color: #D0CED8;
-    border-radius: 20px;
-    height: 35px;
-    width: 35px;
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-export const LabelCtn = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    padding-left: 12px;
-`;
-const Link = styled.a`
-    text-decoration: none;
-`;
-const Value = styled.span`
-    font-size: 12px;
-    color: #98999c;
-    flex-grow: 1;
-    text-align: right;
-    padding-right: 10px;
-    display: block;
-`;
-export const Label = styled.div`
-    font-weight: 600;
-    line-height: 30px;
-`;
-// dev change color
-const SmallItem = styled.div`
-    width: 100%;
-    font-weight: 600;
-    border-bottom: 1px solid #EAEAEA;
-    display: flex;
-    justify-content: space-between;
-    height: 38px;
-    align-items: center;
-    cursor: pointer;
-`;
-const Button = styled.img`
-    padding-right: 10px;
-`;
-const StyledCopyOutlined = styled(CopyOutlined)`
-    padding-right: 10px;
-`;
-const StyledSupportBar = styled(SupportBar)`
-    padding: 0px;;
-`;
-const CopyboardIcon = styled.img`
-    position: relative;
-    top: 3px;
-    margin-right: 5px;
-`;
-const SeedPhraseCtn = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-`;
-const StyledPrimaryButton = styled(PrimaryButton)`
-	font-family: "Helvetica";
-	font-size: 14px;
-	font-weight: 600;
-`;
-const CopyButton = styled(StyledPrimaryButton)`
-	background-color: #F6F6F6;
-`;
 
 const Wallet = ({    
     passLoadingStatus,
@@ -208,7 +101,7 @@ const Wallet = ({
 
     return (
         <>
-            <StyledFadeInOut duration={300} show={true}>
+            <S.StyledFadeInOut duration={300} show={true}>
                 <Header />
                 <NavigationBar 
                     handleOnClick={handleReturn}
@@ -217,103 +110,104 @@ const Wallet = ({
                 />
 
                 {!loading && (
-                    <WalletCtn>
+                    <S.WalletCtn>
                         {!selection && (
                             <>
                                 {slpBalancesAndUtxos?.tokens?.length > 0 &&
-                                    <Item onClick={handleToCashout}>
-                                        <LabelCtn>
+                                    <S.Item onClick={handleToCashout}>
+                                        <S.LabelCtn>
                                             <BillIcon />
-                                            <Label>Cash Out</Label>                            
-                                        </LabelCtn>
-                                    <Button src={RightArrowSvg}/>
-                                    </Item>
+                                            <S.Label>Cash Out</S.Label>                            
+                                        </S.LabelCtn>
+                                    <S.ImgButton src={RightArrowSvg}/>
+                                    </S.Item>
                                 }
 
 								{tickets.length > 0 && (
-									<Item onClick={handleToTickets}>
-										<LabelCtn>
+									<S.Item onClick={handleToTickets}>
+										<S.LabelCtn>
 											<TicketIcon indicator={unredeemedIndicator}/>
-											<Label>Your Tickets</Label>                            
-										</LabelCtn>
-									<Button src={RightArrowSvg}/>
-									</Item>
+											<S.Label>Your Tickets</S.Label>                            
+										</S.LabelCtn>
+									<S.ImgButton src={RightArrowSvg}/>
+									</S.Item>
 								)}
-                                <Item>
-                                    <LabelCtn>
+                                <S.Item>
+                                    <S.LabelCtn>
                                         <ContactIcon />
-                                        <Label>Contact Us</Label>                            
-                                    </LabelCtn>
-                                <Button src={RightArrowSvg}/>
-                                </Item>
+                                        <S.Label>Contact Us</S.Label>                            
+                                    </S.LabelCtn>
+                                <S.ImgButton src={RightArrowSvg}/>
+                                </S.Item>
 
-                                <SmallItem>
+                                <S.SmallItem>
                                     Your Wallet
-                                </SmallItem>
+                                </S.SmallItem>
 
-                                <Item onClick={handleShowPhrase}>
-                                    <LabelCtn>
+                                <S.Item onClick={handleShowPhrase}>
+                                    <S.LabelCtn>
                                         <KeyIcon />
-                                        <Label>Show Seed Phrase</Label>                            
-                                    </LabelCtn>
-                                <Button src={RightArrowSvg}/>
-                                </Item>
-                                <Item>
-                                    <LabelCtn>
+                                        <S.Label>Show Seed Phrase</S.Label>                            
+                                    </S.LabelCtn>
+                                <S.ImgButton src={RightArrowSvg}/>
+                                </S.Item>
+                                <S.Item>
+                                    <S.LabelCtn>
                                         <LightWalletIcon />
-                                        <Label>Wallet Address</Label>                            
-                                    </LabelCtn>
-                                    <Link href={`https://explorer.e.cash/address/${wallet.Path1899.cashAddress}`} rel="noopener noreferrer" target="_blank">
-                                        <Value>
+                                        <S.Label>Wallet Address</S.Label>                            
+                                    </S.LabelCtn>
+                                    <S.Link href={`https://explorer.e.cash/address/${wallet.Path1899.cashAddress}`} rel="noopener noreferrer" target="_blank">
+                                        <S.Value>
                                             {wallet.Path1899.cashAddress.slice(0,10) + "..." + wallet.Path1899.cashAddress.slice(-4)}
-                                        </Value>                         
-                                    </Link>                                        
-                                </Item>
+                                        </S.Value>                         
+                                        <LinkOutlined />
+                                    </S.Link>                                        
+                                </S.Item>
 								{user.email &&
-									<Item onClick={handleChangeEmail}>
-										<LabelCtn>
+									<S.Item onClick={handleChangeEmail}>
+										<S.LabelCtn>
 											<EnvelopeIcon />
-											<Label>Email</Label>                            
-										</LabelCtn>                            
-										<Value>{user.email}</Value>
-										<Button src={PencilIconSvg}/>                            
-									</Item>
+											<S.Label>Email</S.Label>                            
+										</S.LabelCtn>                            
+										<S.Value>{user.email}</S.Value>
+										<S.ImgButton src={PencilIconSvg}/>                            
+									</S.Item>
 								}
 
-                                <SmallItem onClick={handleImportWallet}>
-                                    <Label>
+                                <S.SmallItem onClick={handleImportWallet}>
+                                    <S.Label>
                                         Import Wallet
-                                    </Label>
-                                <Button src={RightArrowSvg}/>
+                                    </S.Label>
+                                <S.ImgButton src={RightArrowSvg}/>
 
-                                </SmallItem>
-                                <SmallItem onClick={handleToTos}>
-                                    <Label>
+                                </S.SmallItem>
+                                <S.SmallItem onClick={handleToTos}>
+                                    <S.Label>
                                         Terms of Use
-                                    </Label>
-                                <Button src={RightArrowSvg}/>
+                                    </S.Label>
+                                <S.ImgButton src={RightArrowSvg}/>
 
-                                </SmallItem>
-                                <SmallItem onClick={handleToPrivacyPolicy}>
-                                    <Label>
+                                </S.SmallItem>
+                                <S.SmallItem onClick={handleToPrivacyPolicy}>
+                                    <S.Label>
                                         Privacy Policy
-                                    </Label>
-                                <Button src={RightArrowSvg}/>
+                                    </S.Label>
+                                <S.ImgButton src={RightArrowSvg}/>
 
-                                </SmallItem>
-                                <SmallItem onClick={handleToRegulation}>
-                                    <Label>
+                                </S.SmallItem>
+                                <S.SmallItem onClick={handleToRegulation}>
+                                    <S.Label>
                                         Regulatory Information
-                                    </Label>
-                                <Button src={RightArrowSvg}/>
+                                    </S.Label>
+                                <S.ImgButton src={RightArrowSvg}/>
 
-                                </SmallItem>
-                                <SmallItem onClick={handleToResponsibleGaming}>
-                                    <Label>
+                                </S.SmallItem>
+                                <S.SmallItem onClick={handleToResponsibleGaming}>
+                                    <S.Label>
                                         Responsible Gaming Policy
-                                    </Label>
-                                <Button src={RightArrowSvg}/>
-                                </SmallItem>                        
+                                    </S.Label>
+                                <S.ImgButton src={RightArrowSvg}/>
+                                </S.SmallItem>                        
                             </>
                         )}
                         {selection === "Tickets" &&
@@ -324,18 +218,21 @@ const Wallet = ({
 							/>
                         }
                         {selection === "Seed Phrase" &&
-                        <SeedPhraseCtn>
+                        <S.SeedPhraseCtn>
+                            <KeyIcon />
+                            <LargeHeading>Backup Wallet</LargeHeading>
+                            <Paragraph>Please write down this 12 word mnemonic seed phrase. Store this in a safe place. It's the only way to recover your account if you get locked out or move to a new device.</Paragraph>
                             <SeedPhrase 
                                 phrase={wallet.mnemonic ? wallet.mnemonic : ""}
                             />
-                            <StyledPrimaryButton type="button" onClick={() => setSelection(false)}>
+                            <S.StyledPrimaryButton type="button" onClick={() => setSelection(false)}>
                                 I've backed up my wallet
-                            </StyledPrimaryButton>           
-							<CopyButton onClick={handleCopySeedPhrase}>
+                            </S.StyledPrimaryButton>           
+							<S.CopyButton onClick={handleCopySeedPhrase}>
 								Copy {" "}
 								<CopyOutlined />
-							</CopyButton>         
-                        </SeedPhraseCtn>
+							</S.CopyButton>         
+                        </S.SeedPhraseCtn>
 
                         }
                         {selection === "Email" &&
@@ -347,12 +244,12 @@ const Wallet = ({
                                 passLoadingStatus={passLoadingStatus}
                             />
                         }
-                    </WalletCtn>                
+                    </S.WalletCtn>                
                 )}
                 <FooterCtn>
-                    <StyledSupportBar slpBalances={slpBalancesAndUtxos} />
+                    <SupportBar slpBalances={slpBalancesAndUtxos} />
                 </FooterCtn>
-            </StyledFadeInOut>        
+            </S.StyledFadeInOut>        
         </>
 
     );

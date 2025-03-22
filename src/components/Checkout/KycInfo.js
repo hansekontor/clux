@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { VideoIcon, PicturesIcon, SmartphoneIcon } from '@components/Common/CustomIcons';
+import { VideoIcon, PicturesIcon, SmartphoneIcon } from '@components/Common/Icons';
+import { Text, BoldText } from '@components/Common/Text';
 
 
 const Container = styled.div`
@@ -45,15 +46,6 @@ const Content = styled.div`
 const Subscript = styled.div`
     font-size: 12px;
     padding: 12px 0;
-`;
-const BoldText = styled(Header)`
-    font-weight: 600;
-    font-family: Helvetica;
-    font-size: 14px;
-    padding: 0px;
-`;
-const Text = styled(BoldText)`
-    font-weight: 500;
 `;
 
 const KycInfo = () => {

@@ -6,12 +6,12 @@ import styled from 'styled-components';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
 // custom react modules
-import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@components/Common/CustomIcons';
+import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@components/Common/Icons';
 
 // styled css modules
 const PrimaryButton = styled.button`
     color: #000000;
-    background-color: ${props => props.grey ? "b9b9b9" : "#f2bc57"};
+    background-color: ${props => props.$inactive ? "dfdfdf" : "#f2bc57"};
     height: 52px;
     border-style: none;
     border-radius: 12px;

@@ -891,7 +891,7 @@ const useWallet = () => {
 			const wallet = await getWallet();
 			setWallet(wallet);
 			setLoading(false);		
-		} 		
+        }		
     }, 5000);
 
 
@@ -931,7 +931,7 @@ const useWallet = () => {
         migrateLegacyWallet,
         createWallet: async (importMnemonic) => {
             // console.log("prototype createWallet called")
-            setLoading(true);
+            // setLoading(true);
             const newWallet = await createWallet(importMnemonic);
             setWallet(newWallet);
 			// if import wallet was used get existing tickets and balance
@@ -940,7 +940,7 @@ const useWallet = () => {
 					wallet: newWallet,
 				}).finally(() => setLoading(false));				
 			} else {
-				setLoading(false);
+				// setLoading(false);
 			}
 
         },

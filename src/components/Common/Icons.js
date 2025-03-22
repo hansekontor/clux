@@ -91,7 +91,7 @@ const AlertCtn = styled.div`
     width: 12px;
     display: flex; 
     justify-content: center;
-    align-items: center;
+    align-items: center;    
 `;
 const Indicator = styled.div`
     font-size: 9px;
