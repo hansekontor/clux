@@ -4,16 +4,12 @@ import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { FadeInAnimation, FadeOutAnimationShort } from '@components/Common/CssAnimations';
+import { Background } from '@components/Common/Container';
 
 // styled css components
-const Background = styled.div`
+const LoaderBackground = styled(Background)`
     z-index: 332;
     background: #000000;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
 
     ${FadeInAnimation}
     ${FadeOutAnimationShort}
@@ -55,7 +51,7 @@ export const LoadingAnimation = ({
 
     return (
         <>
-            <Background />
+            <LoaderBackground />
             <LoadingCtn >
                 <LoadingCircle indicator={<CustomLoadingIcon spin />}/>
                 <Status>{loadingStatus}</Status>

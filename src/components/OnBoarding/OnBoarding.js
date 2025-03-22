@@ -3,27 +3,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { WalletContext } from '@utils/context';
 import PrimaryButton from '@components/Common/PrimaryButton';
 import { nationalityOptions, residencyOptions } from '@utils/geoblock';
-import styled from 'styled-components';
-import Select from 'react-select';
 import BeachPng from '@assets/ResultBackground.png';
 import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
 import { Modal } from 'antd';
 const { SHA256 } = bcrypto;
+import * as S from './Styled';
 
-const Input = styled.input`
-    border-radius: 12px;
-    background-color: #F6F6F6;
-    color: #00000;
-    font-family: "Inter-Semibold", Helvetica;
-    font-size: 16px;
-    font-weight: 500;
-    height: 52px;
-    cursor: pointer;
-    width: 90%;
-    border: ${props => props.error ? "1px solid red" : "none"};
-	text-indent: 12px;
-    margin-bottom: 24px;
-`;
 
 const PasswordProtection = ({
     passProtection
@@ -43,42 +28,21 @@ const PasswordProtection = ({
     }
 
     return (
-        <Form onSubmit={(e) => handlePasswordSubmit(e)}>
-            <Input 
+        <S.Form onSubmit={(e) => handlePasswordSubmit(e)}>
+            <S.Input 
                 name="password"
                 type="text"
                 placeholder="Password"
                 required={true}
             />               
             <PrimaryButton type="submit">Log In</PrimaryButton>                         
-        </Form>
+        </S.Form>
     )
 }
-
-
-const Background = styled.img`
-    z-index: -1;
-`;
-const Form = styled.form`
-	position: absolute;
-	top: 40%;
-    width: 95%;
-    background-color: #ffffff;
-    gap: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 24px 0;
-    border-radius: 20px;
-
-`;
-
-
 const OnBoarding = ({
     passProtection,
 	passUser,
-	passLoadingStatus
+	passLoadingStatus,
 }) => {
 	const ContextValue = useContext(WalletContext);
     const { wallet } = ContextValue;
@@ -97,7 +61,6 @@ const OnBoarding = ({
 		} else if (checksDone) {
 			passLoadingStatus(false);
 		}
-
 	}, [checksDone, passwordProtection, geoProtection])
 
 	useEffect(async () => {
@@ -208,7 +171,7 @@ const OnBoarding = ({
 	return (
         <>
 			{modalHolder}			            
-			<Background src={BeachPng} />
+			<S.Background src={BeachPng} />
             {passwordProtection &&
 				<PasswordProtection 
 					passProtection={setPasswordProtection}

@@ -39,11 +39,9 @@ const Jackpot = styled.div`
     justify-content: space-between;
     align-items: center;
 `;
-const Text = styled.div`
+import { Text } from '@components/Common/Text';
+const JackpotText = styled(Text)`
     padding-left: 30px;
-    text-align: left;
-    padding-top: 15px;
-    font-family: Helvetica;
 `;
 const Amount = styled.div`
     font-family: 'Sequel 100 Wide 95';
@@ -70,31 +68,31 @@ const JackpotCarousel = ({
         <StyledCarousel effect="fade" autoplay>
             <DailyJackpotSlide>
                 <Jackpot>
-                    <Text>
+                    <JackpotText>
                         Daily Jackpot
                         {/* <Amount>$2,000</Amount>                     */}
                         <Amount>Coming Soon</Amount>                    
-                    </Text>
+                    </JackpotText>
                     <CoinBagIcon src={CoinBagSvg}/>
                 </Jackpot>
             </DailyJackpotSlide>
             <WeeklyJackpotSlide>
                 <Jackpot>
-                    <Text>
+                    <JackpotText>
                         Weekly Jackpot
                         {/* <Amount>$12,000</Amount>                         */}
 						<Amount>Coming Soon</Amount>
-                    </Text>
+                    </JackpotText>
                     <CoinBagIcon src={CoinBagSvg}/>
                 </Jackpot>
             </WeeklyJackpotSlide>
             <MonthlyJackpotSlide>
                 <Jackpot>
-                    <Text>
+                    <JackpotText>
                         Monthly Jackpot
                         {/* <Amount>$50,000</Amount>                     */}
 						<Amount>Coming Soon</Amount>
-                    </Text>
+                    </JackpotText>
                     <CoinBagIcon src={CoinBagSvg}/>
                 </Jackpot>
             </MonthlyJackpotSlide>
@@ -115,10 +113,10 @@ export const TicketResult = ({
     return (
         <ResultCtn>
             <Jackpot>
-                <Text>
+                <JackpotText>
                     {amount > 0 ? "Winner" : "Loser"} 
                     <Amount>${amount}</Amount>
-                </Text>
+                </JackpotText>
                 {amount > 0 && <CoinBagIcon src={CoinBagSvg}/> }
             </Jackpot>            
         </ResultCtn>

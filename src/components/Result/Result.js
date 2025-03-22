@@ -10,59 +10,13 @@ import Footer from '@components/Common/Footer'
 import { TicketResult } from '@components/Common/Jackpot';
 import RandomNumbers from '@components/Common/RandomNumbers';
 import { WhiteCashoutButton, WhiteTicketButton } from '@components/Common/PrimaryButton';
+import * as S from './Styled';
 
 // util
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 import animationLabels from '@utils/animations';
 
-// assets
-import ChickenBackgroundPng from '@assets/ResultBackground.png';
-
-// styled css components
-const FlashCtn = styled.div`
-    border-radius: 12px;
-    width: 90%;
-    height: 40%;
-    flex-grow: 1;
-	background-image: url(${ChickenBackgroundPng});
-	position: relative;
-	display: flex;
-	justify-content:center;
-	overflow: hidden;
-`;
-const StyledFlash = styled(Flash)`
-	position: absolute;
-	bottom: 0;
-`;	
-const Scrollable = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    overflow-y: scroll;
-    z-index: 1;
-    flex-grow: 1;
-    gap: 16px;
-    height: 70%;
-`;
-const Ticket = styled.div`
-    width: 100%;
-    display: flex; 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-`;
-const ButtonCtn = styled.div`
-    width: 90%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    padding-bottom: 16px;
-`;
 
 const sleep = (ms) => {
 	return new Promise(resolve => setTimeout(resolve, ms));
@@ -132,10 +86,10 @@ const Result = ({
     return (
         <>
             <Header />
-            <Scrollable>
-					<FlashCtn>             
+            <S.Scrollable>
+					<S.FlashCtn>             
 						{animationLabels && 
-							<StyledFlash                
+							<S.StyledFlash                
 								src={animationPath}
 								config={{
 									autoplay: "on",
@@ -150,12 +104,12 @@ const Result = ({
 								id={animationName}
 							>
 									<div></div>
-							</StyledFlash> 							
+							</S.StyledFlash> 							
 						}   
 		
-					</FlashCtn>
+					</S.FlashCtn>
 
-                <Ticket>
+                <S.Ticket>
 					{ticket && (
 						<>
 							<TicketResult 
@@ -167,12 +121,12 @@ const Result = ({
 							/>  						
 						</>
 					)}
-                </Ticket>
-                <ButtonCtn>
+                </S.Ticket>
+                <S.ButtonCtn>
                     <WhiteCashoutButton />
                     <WhiteTicketButton />
-                </ButtonCtn>
-            </Scrollable>
+                </S.ButtonCtn>
+            </S.Scrollable>
             <Footer
 				// directly go to select from result because result can not displayed correctly afterwards
                 origin={"/select"}

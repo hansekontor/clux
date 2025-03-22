@@ -18,6 +18,7 @@ const AgreeHeader = styled.div`
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #b9b9b9;
+    margin-top: 0px;
 `;
 const Title = styled.div`
     font-family:  Helvetica;

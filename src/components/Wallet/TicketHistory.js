@@ -17,7 +17,7 @@ import WinningTicketSvg from '@assets/ticket_filled_green.svg';
 import RightArrowSvg from '@assets/arrow_right_white.svg';
 
 // styled css components
-import { Item } from './Wallet.js';
+import { Item } from './Styled';
 const LeftCtn = styled.div`
     display: flex;
     gap: 12px;    
@@ -140,10 +140,9 @@ const SyncButton = styled(PrimaryButton)`
 	font-family: "Helvetica";
 	font-size: 14px;
 	font-weight: 600;
+	width: 100%;
 `;
-const RedeemButton = styled(SyncButton)`
-	background-color: #52595f;
-`;
+const RedeemButton = styled(SyncButton)``;
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -371,6 +370,9 @@ Ticket.propTypes = {
 }
 
 
+const VarHeightCtn = styled.div`
+	width: 90%;
+`;
 const TicketHistoryCtn = styled.div`
 	overflow-y: scroll;
 	gap: 12px;
@@ -431,8 +433,7 @@ const TicketHistory = ({
 	}
 
     return (
-		<div>
-
+		<VarHeightCtn>
 			<TicketHistoryCtn>
 				{tickets.length > 2 && !walletSynced &&
 						<SyncButton onClick={handleSyncWallet}>
@@ -446,7 +447,7 @@ const TicketHistory = ({
 				}
 				{ticketList}
 			</TicketHistoryCtn>
-		</div>
+		</VarHeightCtn>
     )
 }
 

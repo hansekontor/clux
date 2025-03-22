@@ -7,18 +7,9 @@ import PropTypes from 'prop-types';
 import PrimaryButton, { WalletButton, HelpButton, CashoutButton } from '@components/Common/PrimaryButton';
 import Balance from '@components/Common/Balance';
 import RandomNumbers, { ResultingNumbers } from '@components/Common/RandomNumbers';
-import { CnmiIcon } from '@components/Common/CustomIcons';
+import { CnmiIcon } from '@components/Common/Icons';
 
 // styled css components
-export const LightFooterBackground = styled.div`
-    z-index: -1;
-    position: absolute;
-    top: 0;
-    left: 0; 
-    width: 100%;
-    height: 100%;
-    background-color: #FEFFFE;
-`;
 export const FooterCtn = styled.div`
     background-color: #48445c;
     align-items: center;

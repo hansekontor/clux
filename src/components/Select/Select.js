@@ -1,17 +1,14 @@
 // node modules
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
 import { Flash } from 'react-ruffle';
 import PropTypes from 'prop-types';
 
 // react components
 import Header from '@components/Common/Header';
 import JackpotCarousel from '@components/Common/Jackpot';
-import RandomNumbers from '@components/Common/RandomNumbers';
 import Footer from '@components/Common/Footer';
-import { FadeOutAnimationShort } from '@components/Common/CssAnimations';
-import { WalletCtn } from '@components/App';
+import { Scrollable } from '@components/Common/Container';
 
 // util
 import animationLabels from '@utils/animations.js';
@@ -21,60 +18,7 @@ import { getWalletState } from '@utils/cashMethods'
 // assets
 import RingPng from '@assets/ring_on_beach.png';
 
-// styled css components
-const ChickenCtn = styled.div`
-    background-color: #fefffe;
-    border-radius: 24px;
-    border-style: none;
-    width: 90%;
-    margin-top: 9px;
-    margin-bottom: 9px;
-    height: 60%;
-    overflow: hidden;
-    position: relative;
-    min-height: 300px;
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-const OuterBackgroundCtn = styled.div`
-    position: relative;
-    bottom: 40%;
-`;
-const Background = styled.img`
-    position: relative;
-    left: 40px;
-`;
-const IdleChicken = styled.div`
-    z-index: 100;
-    position: absolute;
-    overflow: visible;
-    top: 10%;
-    width: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-const Scrollable = styled.div`
-    width: 100%;
-    height: 55%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    overflow-y: scroll;
-    z-index: 1;
-    flex-grow: 1;
-`;
-const StickyRandomNumbers = styled(RandomNumbers)`
-    z-index: 1;
-`;
-const FadeOut = styled(WalletCtn)`
-    box-shadow: none;
-    animate: fade-out 1s ease-out both;
-    ${FadeOutAnimationShort}    
-`;
+import * as Styled from "@components/Select/styles";
 
 
 const Select = ({
@@ -125,15 +69,15 @@ const Select = ({
 
 
     return (
-        <FadeOut fadeOut={fadeOut}>
+        <Styled.FadeOut fadeOut={fadeOut}>
             <Header />
             <Scrollable>
                 <JackpotCarousel />
-                <ChickenCtn>
-                    <OuterBackgroundCtn>
-                        <Background src={RingPng} />
-                    </OuterBackgroundCtn>
-                        <IdleChicken> 
+                <Styled.AnimationCtn>
+                    <Styled.BackgroundCtn>
+                        <Styled.Background src={RingPng} />
+                    </Styled.BackgroundCtn>
+                        <Styled.FlashCtn> 
                             <Flash 
                                 src={animationPath}
                                 config={{
@@ -151,11 +95,11 @@ const Select = ({
                             >
                                 <div></div>
                             </Flash>
-                        </IdleChicken>                     
-                </ChickenCtn>
+                        </Styled.FlashCtn>                     
+                </Styled.AnimationCtn>
             </Scrollable>       
 			{user.ipGeo.ticketPurchase && (
-				<StickyRandomNumbers 
+				<Styled.StickyRandomNumbers 
 					passRandomNumbers={passRandomNumbers} 
 					background={'#1A1826'}
 				/>				
@@ -167,7 +111,7 @@ const Select = ({
                 ticketIndicator={unredeemedIndicator}
 				slpBalances={slpBalancesAndUtxos}
             />
-        </FadeOut>
+        </Styled.FadeOut>
     )
 }
 

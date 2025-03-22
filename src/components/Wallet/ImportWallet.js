@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal } from 'antd';
 import styled from 'styled-components';
-import { CopyOutlined } from '@ant-design/icons';
 
 // custom react modules
 import PrimaryButton from '@components/Common/PrimaryButton';
