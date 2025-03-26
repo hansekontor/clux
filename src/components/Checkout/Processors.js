@@ -7,7 +7,7 @@ const Input = styled('input').withConfig({shouldForwardProp: (prop) => prop != '
     min-width: 50px;
     background-color: #F6F6F6;
     border-radius: 8px;
-    border: ${props => props.error ? 'solid 0.5px red' : 'none'};
+    border: ${props => props.$error ? 'solid 0.5px red' : 'none'};
     text-indent: 12px;
 
     &:focus {

@@ -14,8 +14,8 @@ const RandomNumbersCtn = styled.div`
     width: 90%;
     height: 56px;
     border-radius: 0px 0px 16px 16px;
-    background: #fefffe;
-    color: #000000;
+    background: ${props => props.theme.numbers.background};
+    color: ${props => props.theme.text.color};
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,7 +26,7 @@ const VerticalDivider = styled.div`
     width: 1px;
     height: 56px;
     border-left: 1px dashed;
-    background-color: #c6c6c6;
+    background-color: ${props => props.theme.numbers.divider};
 `;
 const End = styled.div`
     width: 10%;
@@ -49,16 +49,16 @@ const Number = styled.div`
     text-align: center;    
     font-size: 24px;
     font-weight: 400;
-    font-family: "Sequel 100 Wide 95", Helvetica;
-    color: ${props => props.blurred ? "transparent" : "#000000"};
+    font-family: '${props => props.theme.text.font}', Helvetica;
+    color: ${props => props.$blurred ? "transparent" : "#000000"};
     width: 20%;
-    text-shadow: ${props => props.blurred ? "0 0 20px black" : "none"};
+    text-shadow: ${props => props.$blurred ? "0 0 20px black" : "none"};
 `;
 const CutOut = styled.div`
     position: absolute;
     top: -26px;
     border-radius: 24px;
-    background-color: ${props => props.color ? props.color : '#48445c'};
+    background-color: ${props => props.$color ? props.color : '#48445c'};
     width: 24px;
     height: 24px;
 `;
@@ -113,12 +113,12 @@ const RandomNumbers = ({
                 <>
                     {!fixedRandomNumbers ? (
                         <LeftEnd onClick={() => handleNewNumbers()}>
-                            <LeftCutOut color={background}/>
+                            <LeftCutOut $color={background}/>
                             <ArrowIcon src={LeftArrowSvg} />
                         </LeftEnd>
                     ) : (
                         <LeftEnd>
-                            <LeftCutOut color={background}/>                            
+                            <LeftCutOut $color={background}/>                            
                             <ArrowIcon src={WhiteLeftArrowSvg} />
                         </LeftEnd>
                     )}
@@ -133,12 +133,12 @@ const RandomNumbers = ({
                     <VerticalDivider />            
                     {!fixedRandomNumbers ? (
                         <RightEnd onClick={() => handleNewNumbers()}>
-                            <RightCutOut color={background}/>
+                            <RightCutOut $color={background}/>
                             <ArrowIcon src={RightArrowSvg} />
                         </RightEnd>
                     ) : (
                         <RightEnd>
-                            <RightCutOut color={background}/>
+                            <RightCutOut $color={background}/>
                             <ArrowIcon src={WhiteRightArrowSvg} />
                         </RightEnd>
                     )}
@@ -246,20 +246,20 @@ export const ResultingNumbers = ({
 			}
 			<RandomNumbersCtn>        
 					<LeftEnd>
-						<LeftCutOut color={background}/>                            
+						<LeftCutOut $color={background}/>                            
 						<ArrowIcon src={WhiteLeftArrowSvg} />
 					</LeftEnd>
 					<VerticalDivider />
-					<Number blurred={!showFirstNumber}>{numberArray[0]}</Number>
+					<Number $blurred={!showFirstNumber}>{numberArray[0]}</Number>
 					<VerticalDivider />
-					<Number blurred={!showSecondNumber}>{numberArray[1]}</Number>
+					<Number $blurred={!showSecondNumber}>{numberArray[1]}</Number>
 					<VerticalDivider />
-					<Number blurred={!showThirdNumber}>{numberArray[2]}</Number>
+					<Number $blurred={!showThirdNumber}>{numberArray[2]}</Number>
 					<VerticalDivider />
-					<Number blurred={!showFourthNumber}>{numberArray[3]}</Number>            
+					<Number $blurred={!showFourthNumber}>{numberArray[3]}</Number>            
 					<VerticalDivider />            
 					<RightEnd>
-						<RightCutOut color={background}/>
+						<RightCutOut $color={background}/>
 						<ArrowIcon src={WhiteRightArrowSvg} />
 					</RightEnd>
 			</RandomNumbersCtn>		

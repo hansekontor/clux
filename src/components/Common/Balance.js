@@ -7,8 +7,8 @@ const BalanceCtn = styled.div`
     width: 112px;
     height: 40px;
     border-radius: 12px;
-    background: #1A2131;
-    color: #ffffff;
+    background: ${props => props.theme.balance.background};
+    color: ${props => props.theme.balance.color};
     display: flex;
     justify-content: center;
     align-items: center;

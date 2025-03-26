@@ -9,14 +9,14 @@ import { Background } from '@components/Common/Container';
 // styled css components
 const LoaderBackground = styled(Background)`
     z-index: 332;
-    background: #000000;
+    background: ${props => props.theme.loader.background};
 
     ${FadeInAnimation}
     ${FadeOutAnimationShort}
 `;
 const LoadingCtn = styled.div`
     z-index: 333;
-    background-color: #ffffff;
+    background-color: ${props => props.theme.loader.container};
     gap: 12px;
     display: flex;
     flex-direction: column;
@@ -31,7 +31,7 @@ const LoadingCtn = styled.div`
     ${FadeOutAnimationShort}
 `;
 const LoadingCircle = styled(Spin)`
-    color: #32C770;
+    color: ${props => props.theme.loader.circle};
 `;
 const CustomLoadingIcon = styled(LoadingOutlined)`
     width: 64px;

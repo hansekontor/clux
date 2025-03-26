@@ -16,7 +16,7 @@ const Row = styled.div`
     justify-content: space-evenly;
 `;
 const WordBox = styled.div`
-    background-color: #F6F6F6;
+    background-color: ${props => props.theme.app.background};
     display: flex;
     justify-content: space-between;
     padding-left: 7px;
@@ -30,7 +30,7 @@ const Count = styled.div`
     color: #B0B0B0;
 `;
 const Word = styled.div`
-    color: #000000;
+    color: ${props => props.theme.text.color};
     font-family: Inter-Medium, Helvetica;
 `;
 

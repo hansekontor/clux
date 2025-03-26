@@ -18,12 +18,12 @@ export const Enfold = styled.div`
     flex-direction: column;
     justify-content: flex-start;
     width: inherit;
-    animation: ${props => props.animate ? 'enfold .4s cubic-bezier(0.39, 0.5, 0.5, 1) both' : 'none'};
+    animation: ${props => props.$animate ? 'enfold .4s cubic-bezier(0.39, 0.5, 0.5, 1) both' : 'none'};
     ${EnfoldAnimation}
 }`;
 
 export const RollupAnimation = css`
-    animation: ${props => props.animate ? 'rollup .3s cubic-bezier(0.39, 0.5, 0.5, 1) both' : 'none'};
+    animation: ${props => props.$animate ? 'rollup .3s cubic-bezier(0.39, 0.5, 0.5, 1) both' : 'none'};
 
     @keyframes rollup {
             0% {
@@ -51,14 +51,14 @@ export const SlideInAnimation = css`
 `;
 
 export const FadeOutAnimationLong = css`
-    visibility: ${props => props.fadeOut ? "hidden" : "visible"};
-    opacity: ${props => props.fadeOut ? 0 : 1};
-    transition: ${props => props.fadeOut ? "visibility 0s 2s, opacity 2s linear" : "none"};
+    visibility: ${props => props.$fadeOut ? "hidden" : "visible"};
+    opacity: ${props => props.$fadeOut ? 0 : 1};
+    transition: ${props => props.$fadeOut ? "visibility 0s 2s, opacity 2s linear" : "none"};
 `;
 export const FadeOutAnimationShort = css`
-    visibility: ${props => props.fadeOut ? "hidden" : "visible"};
-    opacity: ${props => props.fadeOut ? 0 : 1};
-    transition: ${props => props.fadeOut ? "visibility 0s 0.5s, opacity 0.3s linear" : "none"};
+    visibility: ${props => props.$fadeOut ? "hidden" : "visible"};
+    opacity: ${props => props.$fadeOut ? 0 : 1};
+    transition: ${props => props.$fadeOut ? "visibility 0s 0.5s, opacity 0.3s linear" : "none"};
 `;
 export const FadeInAnimation = css`
     animation: fade-in 1s cubic-bezier(0.4, 0.6, 0.6, 1) both;

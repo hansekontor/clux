@@ -1,28 +1,96 @@
 import styled, { createGlobalStyle } from 'styled-components';
-import { theme } from '../assets/styles/theme';
 
+const theme = { 
+    app: {
+        background: '#F6F6F6',
+    },
+    buttons: {
+        primary: {
+            background: '#F2BC57', 
+            color: '#000000',
+            font: 'Sequel 100 Wide 95',
+            inactive: {
+                background: '#DFDFDF', 
+            }
+        },
+        secondary: {
+            background: '#FEFFFE', 
+            color: '#000000',
+            font: 'Sequel 100 Wide 95',
+        },
+        tertiary: {
+            background: '#44405B', 
+            color: '#FEFFFE',
+            font: 'Helvetica',
+        },
+    }, 
+    text: {
+        color: '#000000',
+        font: 'Sequel 100 Wide 95'
+    },
+    footer: {
+        background: '#48445C'
+    },
+    select: {
+        background: '#1A1826',
+    },
+    checkout: {
+        background: '#FEFFFE',
+        text: '#1A1826',
+        payment: {
+            background: '#EAEAEA',
+        },
+        methods: {
+            active: {
+                background: '#131312',
+                color: '#FEFFFE'
+            },
+            inactive: {
+                background: '#EAEAEA',
+                color: '#131312,'
+            },
+            border: '#B9B9B9'
+        },
+        navigation: {
+            background: '#FEFFFE'
+        },
+        divider: {
+            color: '#E1E0E0'
+        }
+    },
+    error: {
+        background: '#FB918E',
+        color: '#002152'
+    },
+    success: {
+        background: '#38A368',
+        color: '#FEFFFE'
+    },
+    info: {
+        background: '#FEFFFE',
+        color: '#002152'
+    },
+    numbers: {
+        background: '#FEFFFE',
+        divider: '#C6C6C6',
+        font: 'Sequel 100 Wide 95'
+    },
+    loader: { 
+        background: '#000000',
+        container: '#FEFFFE',
+        circle: '#32C770',
+    },
+    input: {
+        background: '#FEFFFE',
+        color: '#ABCDEF'
+    },
+    balance: {
+        background: '#1A2131',
+        color: '#FEFFFE'
+    }
+};
 
-const GlobalStyle = createGlobalStyle`    
-    .ant-modal-wrap > div > div.ant-modal-content > div > div > div.ant-modal-confirm-btns > button, .ant-modal > button, .ant-modal-confirm-btns > button, .ant-modal-footer > button, #cropControlsConfirm {
-        border-radius: 8px;
-        background-color: ${props => props.theme.modals.buttons.background};
-        color: ${props => props.theme.wallet.text.primary};
-        font-weight: bold;
-    }    
-    
-    .ant-modal-wrap > div > div.ant-modal-content > div > div > div.ant-modal-confirm-btns > button:hover,.ant-modal-confirm-btns > button:hover, .ant-modal-footer > button:hover, #cropControlsConfirm:hover {
-        color: ${props => props.theme.primary};
-        transition: color 0.3s;
-        background-color: ${props => props.theme.modals.buttons.background};
-    }
-    
-    .ant-spin-text {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: bold;
-        margin-top: 40px;
-        font-size: 16px;
-        color: ${props => props.theme.wallet.text.secondary};
-    }
+const GlobalStyle = createGlobalStyle`        
     .cashLoadingIcon {
         color: #000000 !important;
         font-size: 48px !important;
@@ -70,7 +138,7 @@ const AppBody = styled.div`
 const AppCtn = styled.div`
     width: 480px;
     height: 100%;
-    background-color: #1A1826;
+    background-color: ${props => props.theme.select.background};
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -92,6 +160,7 @@ const AppCtn = styled.div`
 `;
 
 export {
+    theme,
     GlobalStyle, 
     App, 
     AppBody, 

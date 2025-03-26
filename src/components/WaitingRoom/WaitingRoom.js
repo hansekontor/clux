@@ -291,7 +291,7 @@ const WaitingRoom = ({
         <>  
 			{modalHolder}
             <S.Background src={LockerPng} />
-            <Header />
+            <Header $transparent={true} />
             <S.FlexGrow>
                 <Flash                
                     src={animationPath}

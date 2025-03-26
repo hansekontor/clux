@@ -35,7 +35,7 @@ const Input = styled.input`
     height: 52px;
     cursor: pointer;
     width: 90%;
-    border: ${props => props.error ? "1px solid red" : "none"};
+    border: ${props => props.$error ? "1px solid red" : "none"};
     margin-top: 12px;
     margin-bottom: 12px;
 	text-indent: 12px;
@@ -131,7 +131,7 @@ const ImportWallet = ({
                     name="mnemonic"
                     autoComplete="off"
                     onChange={e => handleChange(e)}
-                    error={!formData.dirty && !formData.mnemonic}
+                    $error={!formData.dirty && !formData.mnemonic}
                     required
                 />              
             </Form>

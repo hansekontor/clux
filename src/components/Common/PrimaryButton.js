@@ -10,27 +10,29 @@ import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@compon
 
 // styled css modules
 const PrimaryButton = styled.button`
-    color: #000000;
-    background-color: ${props => props.$inactive ? "dfdfdf" : "#f2bc57"};
+    color: ${props => props.theme.buttons.primary.color};
+    background-color: ${props => props.$inactive ? props.theme.buttons.primary.inactive.background : props.theme.buttons.primary.background};
     height: 52px;
     border-style: none;
     border-radius: 12px;
-    font-family: "Sequel 100 Wide 95";
+    font-family: '${props => props.theme.buttons.primary.font}';
     font-size: 20px;
     cursor: pointer;
     width: 90%;
     letter-spacing: 1px;
 `;
 export const SecondaryButton = styled(PrimaryButton)`
-    background-color: #ffffff;
+    background-color ${props => props.theme.buttons.secondary.background};
+    font-family: '${props => props.theme.buttons.secondary.font}';
     border: 1px solid #000000;
 `;
 export const TertiaryButton = styled.button`
-    background-color: #44405B;
+    background-color: ${props => props.theme.buttons.tertiary.background};
     border-radius: 70px;
     padding: 7px;
-    color: #FFFFFF;
+    color: ${props => props.theme.buttons.tertiary.color};
     font-weight: 600;
+    font-family: '${props => props.theme.buttons.tertiary.font}';
 `;
 const AlertCtn = styled.div`
     background-color: red;

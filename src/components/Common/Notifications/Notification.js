@@ -5,7 +5,7 @@ import { notification } from 'antd';
 import styled from 'styled-components';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { SlideInAnimation } from '@components/Common/CssAnimations';
-
+import { theme } from '@components/styles';
 
 const AnimationCtn = styled.div`
 	max-width: 480px;
@@ -16,11 +16,11 @@ const AnimationCtn = styled.div`
     ${SlideInAnimation}	
 
 	overflow: hidden;
-    visibility: ${props => props.fadeOut ? "hidden" : "visible"};
-    opacity: ${props => props.fadeOut ? 0 : 1};
-    transition: ${props => props.fadeOut ? "visibility 0.5s linear, opacity 0.5s linear, max-height 1s 0.5s ease-out, margin-bottom 1s 0.5s" : "none"};
-	max-height: ${props => props.fadeOut ? "0px" : "50px"};
-	margin-bottom: ${props => props.fadeOut ? "0px" : "12px"};
+    visibility: ${props => props.$fadeOut ? "hidden" : "visible"};
+    opacity: ${props => props.$fadeOut ? 0 : 1};
+    transition: ${props => props.$fadeOut ? "visibility 0.5s linear, opacity 0.5s linear, max-height 1s 0.5s ease-out, margin-bottom 1s 0.5s" : "none"};
+	max-height: ${props => props.$fadeOut ? "0px" : "50px"};
+	margin-bottom: ${props => props.$fadeOut ? "0px" : "12px"};
 `;
 const NotificationCtn =  styled.div`    
 	height: 50px;    
@@ -31,7 +31,7 @@ const NotificationCtn =  styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background: ${props => props.color ? props.color : '#FFFFFF'};
+    background: ${props => props.$color ? props.color : '#FFFFFF'};
 `;
 const CheckIcon = styled(CheckCircleOutlined)`
     color: #FFFFFF;
@@ -43,19 +43,19 @@ const InfoIcon = styled(ExclamationCircleOutlined)`
     color: #002152;
 `;
 const Text = styled. div`
-    color: ${props => props.color ? props.color : '#002152'};
+    color: ${props => props.$color ? props.color : '#002152'};
     font-size: 18px;
     font-weight: 600;
 `;
 const backgroundColor = {
-    info: '#FFFFFF',
-    success: '#38A368',
-    error: '#FB918E'
+    info: theme.info.background,
+    success: theme.success.background,
+    error: theme.error.background
 };
 const textColor = {
-    info: '#002152',
-    success: '#FFFFFF',
-    error: '#002152'
+    info: theme.info.color,
+    success: theme.success.color,
+    error: theme.error.color
 };
 
 
@@ -87,12 +87,12 @@ const Notification = ({
     }
 
     return (
-		<AnimationCtn animate={true} fadeOut={isClosing}>
-			<NotificationCtn color={backgroundColor[type]}>
+		<AnimationCtn $animate={true} fadeOut={isClosing}>
+			<NotificationCtn $color={backgroundColor[type]}>
 				{type === "success" && <CheckIcon />}
 				{type === "error" && <ErrorIcon />}                
 				{type === "info" && <InfoIcon />}
-				<Text color={textColor[type]}>{message}</Text>
+				<Text $color={textColor[type]}>{message}</Text>
 			</NotificationCtn>s
 		</AnimationCtn>
 

@@ -58,7 +58,7 @@ const RoundButton = styled(Button)`
     width: 25px;
     padding-right: 10px;
 	transition: transform 0.5s;
-	transform: ${props => props.rotateDown ? "rotate(90deg)" : "none"};
+	transform: ${props => props.$rotateDown ? "rotate(90deg)" : "none"};
 	position: relative;
 `;
 const LabelCtn = styled.div`
@@ -264,7 +264,7 @@ const Ticket = ({
 							{ticket.issueTx?.height > 0 ? "Redeem" : "Request Redemption"}
 						</Button>
 					}
-                    <RoundButton rotateDown={collapsed}>
+                    <RoundButton $rotateDown={collapsed}>
                         <RightArrow src={RightArrowSvg} />
                     </RoundButton>                   
                 </RightCtn>

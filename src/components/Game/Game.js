@@ -132,13 +132,13 @@ const Game = ({
     return (
         <>
             <S.Background src={RingPng} />
-            <Header />
+            <Header $transparent={true} />
 			{ticket?.details?.redemption?.resultingNumbers && (
 				<>
 					<S.FlexGrow>    
 						<S.SlideIn>
 							{versus && 
-								<S.FadeOut fadeOut={fadeOutVersus}>
+								<S.FadeOut $fadeOut={fadeOutVersus}>
 									<S.Versus src={VersusPng}/>
 								</S.FadeOut>                    
 							}
@@ -146,7 +146,7 @@ const Game = ({
 						</S.SlideIn>
 						{labels && (
 							<>
-								<S.Animation hidden={animationStage !== "faceoff"}>
+								<S.Animation $hidden={animationStage !== "faceoff"}>
 									<S.CustomFlash 
 										src={folder + labels.faceoff}
 										config={{

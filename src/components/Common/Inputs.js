@@ -5,22 +5,22 @@ import { ScaleOut } from '@components/Common/CssAnimations';
 
 export const Input = styled.input`
     ${textItem}
-    background-color: #FEFFFE;            
-    text-color: #ABCDEF;
+    background-color: ${props => props.theme.input.background};            
+    text-color: ${props => props.theme.input.color};
     border: ${props => props.$error ? "1px solid red" : "none"};
 `;
 
 const QuantityInputCtn = styled.div`
 	width: 100%;
 	display: flex;
-	background-color: #FEFFFE;
+	background-color: ${props => props.theme.input.background};
 	border-radius: 12px;
 `;
 const QuantityChange = styled.input`
 	height: 52px;
 	width: 52px;
 	max-height: 52px;
-	background-color: #FEFFFE;
+	background-color: ${props => props.theme.input.background};
 	border-radius: 12px;
 	border-style: none; 
     cursor: pointer;
@@ -28,7 +28,7 @@ const QuantityChange = styled.input`
 const Quantity = styled.input`
     z-index: 1;
 	flex-grow: 1;
-	background-color: #FEFFFE;
+	background-color: ${props => props.theme.input.background};
 	border-style: none;
 	text-align: center;
     cursor: default;
@@ -90,7 +90,7 @@ export const QuantityInput = ({
 const QuantitySuggestion = styled.div`
     ${textItem}
     width: 20%;
-    background-color: #FEFFFE;
+    background-color: ${props => props.theme.input.background};
     border-style: none;
     height: 100%;
     align-items: center;    

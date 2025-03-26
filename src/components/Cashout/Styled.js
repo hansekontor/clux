@@ -5,7 +5,7 @@ import RangeSlider from 'react-range-slider-input';
 // css styled components
 import { Scrollable } from '@components/Common/Container';
 const FlexGrow = styled(Scrollable)`
-    background-color: #FEFFFE;
+    background-color: ${props => props.theme.checkout.background};
 `;
 const Form = styled.form`
     flex-grow: 1;
@@ -39,7 +39,7 @@ const Button = styled.button`
     background-color: #44405B;
     border-radius: 100px;
     padding: 7px;
-    color: #FFFFFF
+    color: ${props => props.theme.checkout.background};
     font-weight: 600;
     height: 25px;
     display: flex; 

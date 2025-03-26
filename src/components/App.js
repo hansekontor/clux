@@ -12,7 +12,6 @@ import {
 import { ThemeProvider } from "styled-components";
 import '../index.css';
 import * as Styled from "@components/styles";
-import { theme } from '../assets/styles/theme';
 
 
 // react components
@@ -94,7 +93,7 @@ const App = () => {
 
     return (
         <>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={Styled.theme}>
                 <Styled.GlobalStyle />
                     <Styled.App>
                         <Styled.AppBody>

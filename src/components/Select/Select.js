@@ -69,8 +69,8 @@ const Select = ({
 
 
     return (
-        <Styled.FadeOut fadeOut={fadeOut}>
-            <Header />
+        <Styled.FadeOut $fadeOut={fadeOut}>
+            <Header $transparent={true}/>
             <Scrollable>
                 <JackpotCarousel />
                 <Styled.AnimationCtn>

@@ -85,7 +85,7 @@ const Result = ({
 
     return (
         <>
-            <Header />
+            <Header $transparent={true} />
             <S.Scrollable>
 					<S.FlashCtn>             
 						{animationLabels && 
