@@ -7,23 +7,23 @@ import { Scrollable, Background } from '@components/Common/Container';
 import { textItem } from '@components/Common/CssUtil';
 
 const PrimaryFlexGrow = styled(Scrollable)`
-    background-color: #EAEAEA;
+    background-color:${props => props.theme.checkout.payment.background};
 `;
 const SecondaryFlexGrow = styled(Scrollable)`
-	background-color: #FEFFFE;
+	background-color: ${props => props.theme.checkout.background};
 `;
 
 const PrimaryFooterBackground = styled(Background)`
-    background-color: #EAEAEA;
+    background-color:${props => props.theme.checkout.payment.background};
 `;
 const SecondaryFooterBackground = styled(Background)`
-	background-color: #FEFFFE;
+	background-color: ${props => props.theme.checkout.background};
 `;
 const InfoText = styled.p`
     width: 90%;
     font-size: 15px;
     line-height: 150%;
-    color: #1A1826;
+    color: ${props => props.theme.checkout.text};
     text-align: justify;
     hyphens: auto;
     text-align-last: none;
@@ -48,19 +48,19 @@ const AccountForm = styled.form`
 `;
 const ErrorMessage = styled.div`
 	${textItem}
-	background-color: #FB918E;
-	color: #002152;
+	background-color: ${props => props.theme.error.background};
+	color: ${props => props.theme.error.color};
 	display: flex;
 	justify-content: center;
 	align-items: center;
 `;
 const PaymentMethod = styled(ErrorMessage)`
 	${textItem}
-	background-color: ${props => props.$active ? '#131312' : '#EAEAEA'};
-	color: ${props => props.$active ? '#FEFFFE' : '#131312'};
+	background-color: ${props => props.$active ? props.theme.checkout.methods.active.background : props.theme.checkout.methods.inactive.background};
+	color: ${props => props.$active ? props.theme.checkout.methods.active.color : props.theme.checkout.methods.inactive.color};
 	border-width: 1px;
 	border-style: solid;
-	border-color: #B9B9B9;
+	border-color: ${props => props.theme.checkout.methods.border};
 `;
 const WideCreatableSelect = styled(CreatableSelect)`
 	width: 100%;
@@ -104,7 +104,7 @@ const Divider = styled.div`
 	height: 1px;
 	width: 100%;
 	color: #00000;
-	background-color: #E1E0E0;
+	background-color: ${props => props.theme.checkout.divider};
 `;
 const FormSection = styled.div`
 	display: flex; 

@@ -11,7 +11,7 @@ import { CnmiIcon } from '@components/Common/Icons';
 
 // styled css components
 export const FooterCtn = styled.div`
-    background-color: #48445c;
+    background-color: ${props => props.theme.footer.background};
     align-items: center;
     justify-content: flex-start;
     display: flex;

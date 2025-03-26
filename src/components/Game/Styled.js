@@ -23,13 +23,13 @@ const FlexGrow = styled.div`
 const Animation = styled.div`
     width: inherit;
     position: absolute; 
-    display: ${props => props.hidden ? 'none' : 'flex'};
+    display: ${props => props.$hidden ? 'none' : 'flex'};
     justify-content: center;
     align-items: center;
 `;
 const CustomFlash = styled(Flash)`
     position: absolute;
-    visibility: ${props => props.hidden ? "hidden" : "visible"};
+    visibility: ${props => props.$hidden ? "hidden" : "visible"};
 `;
 const SlideIn = styled.div`
     position: absolute;

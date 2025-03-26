@@ -9,7 +9,7 @@ import CluxLogo from '@assets/clux_logo.png';
 // styled css modules
 const HeaderCtn = styled.div`
     margin-top: 0px;
-    background-color:${props => props.background ? props.background : "transparent"};
+    background-color:${props => props.$transparent ? "transparent" : props.theme.checkout.background};
     height: 83px;
     width: 100%;
 `;

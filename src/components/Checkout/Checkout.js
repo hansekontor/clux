@@ -621,7 +621,7 @@ const Checkout = ({
                 <> 
 					{!hasAgreed ? (
 						<>            
-							<Header background="#FEFFFE" />
+							<Header />
 							<NavigationBar 
 								handleOnClick={handleReturn}
 								title={tosTitle}
@@ -642,7 +642,7 @@ const Checkout = ({
 						</>						
 					) : (
 						<>
-							<Header background="#FEFFFE" />
+							<Header />
 							<NavigationBar
 								handleOnClick={handleReturn}
 								title={accountTitle}
@@ -722,7 +722,7 @@ const Checkout = ({
                 <>
 					{showKyc ? (
 						<>
-							<Header background="#FEFFFE" />
+							<Header />
 							<S.SecondaryFlexGrow>
 								<KycInfo />                       
 								<PrimaryButton onClick={handleKYC}>Continue</PrimaryButton>

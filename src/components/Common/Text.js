@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Paragraph = styled.p`
-    color: #000000;
+    color: ${props => props.theme.text.color};
     font-size: 16px;
     font-family: Helvetica;
     margin-block-start: 0px;

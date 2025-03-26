@@ -11,13 +11,13 @@ import MerchantSvg from '@assets/merchant_icon.svg';
 // styled css components
 const AgreeHeader = styled.div`
     width: 100%;
-    background-color: #FEFFFE;
+    background-color: ${props => props.theme.checkout.navigation.background};
     display: flex;
     justify-content: space-between;
     flex-direction: row;
     align-items: center;
     padding: 10px 0;
-    border-bottom: 1px solid #b9b9b9;
+    border-bottom: 1px solid ${props => props.theme.checkout.methods.border};
     margin-top: 0px;
 `;
 const Title = styled.div`

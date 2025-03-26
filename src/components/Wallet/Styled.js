@@ -8,7 +8,7 @@ import { textItem } from '@components/Common/CssUtil';
 const StyledFadeInOut = styled(FadeInOut)`
     width: 100%;
     height: 100%;
-    background-color: #fefffe;
+    background-color: ${props => props.theme.checkout.background};
     display: flex; 
     flex-direction: column;
     justify-content: center;
@@ -26,7 +26,7 @@ const WalletCtn = styled(Scrollable)`
 const Item = styled.div`
     ${textItem}
     border-radius: 7px;
-    background-color: #f6f6f6;
+    background-color:${props => props.theme.app.background};
     min-height: 60px;
     display: flex;
     justify-content: space-between; 

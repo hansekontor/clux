@@ -10,7 +10,7 @@ const Input = styled.input`
     height: 52px;
     cursor: pointer;
     width: 90%;
-    border: ${props => props.error ? "1px solid red" : "none"};
+    border: ${props => props.$error ? "1px solid red" : "none"};
 	text-indent: 12px;
     margin-bottom: 24px;
 `;
