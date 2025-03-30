@@ -8,7 +8,7 @@ import PrimaryButton, { SecondaryButton } from '@components/PrimaryButton';
 import SeedPhrase from '@components/SeedPhrase';
 import { WalletContext } from '@utils/context';
 import { FadeInAnimation } from '@components/CssAnimations';
-import FadeInOut from './FadeInOut'
+import FadeInOut from '@components/FadeInOut'
 import { successNotification } from '@components/Notifications';
 import { LargeHeading } from '@components/Text';
 import { Paragraph } from '@components/Text';
