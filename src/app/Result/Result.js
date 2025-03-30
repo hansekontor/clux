@@ -10,7 +10,8 @@ import Footer from '@components/Footer'
 import { TicketResult } from '@components/Jackpot';
 import RandomNumbers from '@components/RandomNumbers';
 import { WhiteCashoutButton, WhiteTicketButton } from '@components/PrimaryButton';
-import * as S from './Styled';
+
+import * as S from './components/Styled';
 
 // util
 import { WalletContext } from '@utils/context';
