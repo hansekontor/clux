@@ -19,7 +19,7 @@ import sleep from '@utils/sleep';
 // assets
 import RingPng from '@assets/images/ring_on_beach.png';
 
-import * as Styled from "./styles";
+import * as Styled from "./components/Styles";
 
 
 const Select = ({
