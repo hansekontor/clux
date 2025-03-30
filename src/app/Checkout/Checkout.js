@@ -24,20 +24,21 @@ import BigNumber from 'bignumber.js';
 
 import Header from '@components/Header';
 import NavigationBar from '@components/Navigation';
-import Tos from './Tos'
-import KycInfo from './KycInfo';
-import Ticket from './Ticket';
 import RandomNumbers from '@components/RandomNumbers';
 import { FooterCtn } from '@components/Footer';
 import PrimaryButton from '@components/PrimaryButton';
 import { CardIconBox } from '@components/Icons';
 import { successNotification, errorNotification } from '@components/Notifications';
-import { NmiCheckoutForm, WidgetBody } from './Processors';
 import { Input, QuantityInput, QuantitySuggestions } from '@components/Inputs';
 import { Paragraph, LargeHeading } from '@components/Text';
 import { Column, Overlay } from '@components/Container';
 import { RollUp } from '@components/CssAnimations';
-import * as S from './Styled';
+
+import { NmiCheckoutForm, WidgetBody } from './components/Processors';
+import * as S from './components/Styled';
+import Tos from './components/Tos'
+import KycInfo from './components/KycInfo';
+import Ticket from './components/Ticket';
 
 // utils & hooks
 import useWallet from '@hooks/useWallet';
