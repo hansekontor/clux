@@ -18,7 +18,7 @@ import { getWalletState } from '@utils/cashMethods'
 // assets
 import RingPng from '@assets/ring_on_beach.png';
 
-import * as Styled from "@components/Select/styles";
+import * as Styled from "./styles";
 
 
 const Select = ({

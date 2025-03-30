@@ -24,9 +24,9 @@ import BigNumber from 'bignumber.js';
 
 import Header from '@components/Common/Header';
 import NavigationBar from '@components/Common/Navigation';
-import Tos from '@components/Checkout/Tos'
-import KycInfo from '@components/Checkout/KycInfo';
-import Ticket from '@components/Checkout/Ticket';
+import Tos from './Tos'
+import KycInfo from './KycInfo';
+import Ticket from './Ticket';
 import RandomNumbers from '@components/Common/RandomNumbers';
 import { FooterCtn } from '@components/Common/Footer';
 import PrimaryButton from '@components/Common/PrimaryButton';

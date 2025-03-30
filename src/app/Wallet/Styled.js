@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import FadeInOut from '@components/Backup/FadeInOut';
+import FadeInOut from '../Backup/FadeInOut';
 import PrimaryButton from '@components/Common/PrimaryButton';
 import { Scrollable } from '@components/Common/Container';
 import { textItem } from '@components/Common/CssUtil';
