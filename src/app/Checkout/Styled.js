@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import CreatableSelect from 'react-select/creatable';
 import { Checkbox } from 'antd';
 
-import { BoldHeader, LargeHeading } from '@components/Common/Text';
-import { Scrollable, Background } from '@components/Common/Container';
-import { textItem } from '@components/Common/CssUtil';
+import { BoldHeader, LargeHeading } from '@components/Text';
+import { Scrollable, Background } from '@components/Container';
+import { textItem } from '@components/CssUtil';
 
 const PrimaryFlexGrow = styled(Scrollable)`
     background-color:${props => props.theme.checkout.payment.background};

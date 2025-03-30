@@ -5,11 +5,11 @@ import styled from 'styled-components';
 import { Flash } from 'react-ruffle';
 
 // custom react components
-import Header from '@components/Common/Header';
-import Footer from '@components/Common/Footer'
-import { TicketResult } from '@components/Common/Jackpot';
-import RandomNumbers from '@components/Common/RandomNumbers';
-import { WhiteCashoutButton, WhiteTicketButton } from '@components/Common/PrimaryButton';
+import Header from '@components/Header';
+import Footer from '@components/Footer'
+import { TicketResult } from '@components/Jackpot';
+import RandomNumbers from '@components/RandomNumbers';
+import { WhiteCashoutButton, WhiteTicketButton } from '@components/PrimaryButton';
 import * as S from './Styled';
 
 // util

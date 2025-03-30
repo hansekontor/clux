@@ -25,8 +25,8 @@ const Wallet = lazy(() => import('./Wallet/Wallet'));
 const Cashout = lazy(() => import('./Cashout/Cashout'));
 const NotFound = lazy(() => import('./NotFound'));
 const OnBoarding = lazy(() => import('./OnBoarding/OnBoarding'))
-import { LoadingAnimation } from '@components/Common/Loader';
-import { CashLoadingIcon, LoadingBlock } from '@components/Common/Icons';
+import { LoadingAnimation } from '@components/Loader';
+import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 
 // util
 import { WalletContext } from '@utils/context';

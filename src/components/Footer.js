@@ -4,10 +4,10 @@ import styled from "styled-components";
 import PropTypes from 'prop-types';
 
 // react components 
-import PrimaryButton, { WalletButton, HelpButton, CashoutButton } from '@components/Common/PrimaryButton';
-import Balance from '@components/Common/Balance';
-import RandomNumbers, { ResultingNumbers } from '@components/Common/RandomNumbers';
-import { CnmiIcon } from '@components/Common/Icons';
+import PrimaryButton, { WalletButton, HelpButton, CashoutButton } from '@components/PrimaryButton';
+import Balance from '@components/Balance';
+import RandomNumbers, { ResultingNumbers } from '@components/RandomNumbers';
+import { CnmiIcon } from '@components/Icons';
 
 // styled css components
 export const FooterCtn = styled.div`

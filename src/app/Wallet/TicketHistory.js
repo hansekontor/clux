@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 import { CopyOutlined } from '@ant-design/icons';
 
 // custom modules
-import PrimaryButton from '@components/Common/PrimaryButton';
-import { successNotification } from '@components/Common/Notifications';
+import PrimaryButton from '@components/PrimaryButton';
+import { successNotification } from '@components/Notifications';
 
 import useWallet from '@hooks/useWallet';
 

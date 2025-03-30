@@ -39,7 +39,7 @@ const Jackpot = styled.div`
     justify-content: space-between;
     align-items: center;
 `;
-import { Text } from '@components/Common/Text';
+import { Text } from '@components/Text';
 const JackpotText = styled(Text)`
     padding-left: 30px;
 `;

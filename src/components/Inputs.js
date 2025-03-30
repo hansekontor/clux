@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { textItem } from '@components/Common/CssUtil.js';
-import { ScaleOut } from '@components/Common/CssAnimations';
+import { textItem } from '@components/CssUtil.js';
+import { ScaleOut } from '@components/CssAnimations';
 
 export const Input = styled.input`
     ${textItem}

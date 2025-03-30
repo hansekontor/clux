@@ -3,7 +3,7 @@ import RangeSlider from 'react-range-slider-input';
 
 
 // css styled components
-import { Scrollable } from '@components/Common/Container';
+import { Scrollable } from '@components/Container';
 const FlexGrow = styled(Scrollable)`
     background-color: ${props => props.theme.checkout.background};
 `;

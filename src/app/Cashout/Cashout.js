@@ -12,10 +12,10 @@ import { TX, MTX, Coin, Script, KeyRing } from '@hansekontor/checkout-components
 import { Modal } from 'antd';
 
 // react components
-import { FooterCtn } from '@components/Common/Footer';
-import PrimaryButton from '@components/Common/PrimaryButton';
-import NavigationBar from '@components/Common/Navigation';
-import Header from '@components/Common/Header';
+import { FooterCtn } from '@components/Footer';
+import PrimaryButton from '@components/PrimaryButton';
+import NavigationBar from '@components/Navigation';
+import Header from '@components/Header';
 import * as S from './Styled';
 
 import useWallet from '@hooks/useWallet';

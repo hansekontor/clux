@@ -22,21 +22,21 @@ import BigNumber from 'bignumber.js';
 
 // custom react components
 
-import Header from '@components/Common/Header';
-import NavigationBar from '@components/Common/Navigation';
+import Header from '@components/Header';
+import NavigationBar from '@components/Navigation';
 import Tos from './Tos'
 import KycInfo from './KycInfo';
 import Ticket from './Ticket';
-import RandomNumbers from '@components/Common/RandomNumbers';
-import { FooterCtn } from '@components/Common/Footer';
-import PrimaryButton from '@components/Common/PrimaryButton';
-import { CardIconBox } from '@components/Common/Icons';
-import { successNotification, errorNotification } from '@components/Common/Notifications';
+import RandomNumbers from '@components/RandomNumbers';
+import { FooterCtn } from '@components/Footer';
+import PrimaryButton from '@components/PrimaryButton';
+import { CardIconBox } from '@components/Icons';
+import { successNotification, errorNotification } from '@components/Notifications';
 import { NmiCheckoutForm, WidgetBody } from './Processors';
-import { Input, QuantityInput, QuantitySuggestions } from '@components/Common/Inputs';
-import { Paragraph, LargeHeading } from '@components/Common/Text';
-import { Column, Overlay } from '@components/Common/Container';
-import { RollUp } from '@components/Common/CssAnimations';
+import { Input, QuantityInput, QuantitySuggestions } from '@components/Inputs';
+import { Paragraph, LargeHeading } from '@components/Text';
+import { Column, Overlay } from '@components/Container';
+import { RollUp } from '@components/CssAnimations';
 import * as S from './Styled';
 
 // utils & hooks

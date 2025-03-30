@@ -5,10 +5,10 @@ import { Flash } from 'react-ruffle';
 import PropTypes from 'prop-types';
 
 // react components
-import Header from '@components/Common/Header';
-import JackpotCarousel from '@components/Common/Jackpot';
-import Footer from '@components/Common/Footer';
-import { Scrollable } from '@components/Common/Container';
+import Header from '@components/Header';
+import JackpotCarousel from '@components/Jackpot';
+import Footer from '@components/Footer';
+import { Scrollable } from '@components/Container';
 
 // util
 import animationLabels from '@utils/animations.js';

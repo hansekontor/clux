@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 // custom react modules
-import { ReturnButton } from '@components/Common/PrimaryButton';
+import { ReturnButton } from '@components/PrimaryButton';
 
 // assets
 import MerchantSvg from '@assets/merchant_icon.svg';

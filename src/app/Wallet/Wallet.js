@@ -5,17 +5,17 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
 
 // react components 
-import { successNotification } from '@components/Common/Notifications';
-import SeedPhrase from '@components/Common/SeedPhrase';
+import { successNotification } from '@components/Notifications';
+import SeedPhrase from '@components/SeedPhrase';
 import TicketHistory from './TicketHistory';
-import Header from '@components/Common/Header'; 
-import NavigationBar from '@components/Common/Navigation';
-import { FooterCtn, SupportBar } from '@components/Common/Footer';
-import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Common/Icons';
+import Header from '@components/Header'; 
+import NavigationBar from '@components/Navigation';
+import { FooterCtn, SupportBar } from '@components/Footer';
+import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Icons';
 import Email from './Email';
 import ImportWallet from './ImportWallet';
 import * as S from './Styled';
-import { Paragraph, LargeHeading } from '@components/Common/Text';
+import { Paragraph, LargeHeading } from '@components/Text';
 import useWallet from '@hooks/useWallet';
 
 // util

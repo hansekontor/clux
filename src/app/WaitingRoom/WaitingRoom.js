@@ -15,12 +15,12 @@ import { U64 } from 'n64';
 
 // react components
 import { WalletContext } from '@utils/context';
-import Header from '@components/Common/Header';
-import { FooterCtn, SupportBar } from '@components/Common/Footer';
-import RandomNumbers from '@components/Common/RandomNumbers';
-import PrimaryButton from '@components/Common/PrimaryButton';
+import Header from '@components/Header';
+import { FooterCtn, SupportBar } from '@components/Footer';
+import RandomNumbers from '@components/RandomNumbers';
+import PrimaryButton from '@components/PrimaryButton';
 import { getWalletState } from '@utils/cashMethods'
-import { successNotification } from '@components/Common/Notifications';
+import { successNotification } from '@components/Notifications';
 import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '@utils/ticket';
 import TXUtil from '@utils/txutil';
 import useBCH from '@hooks/useBCH';

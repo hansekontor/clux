@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import RandomNumbers from '@components/Common/RandomNumbers';
-import { FadeOutAnimationShort } from '@components/Common/CssAnimations';
+import RandomNumbers from '@components/RandomNumbers';
+import { FadeOutAnimationShort } from '@components/CssAnimations';
 import { AppCtn } from '@components/styles';
 
 

@@ -18,9 +18,9 @@ import {
 } from '@utils/cashMethods';
 import { isValidCashtabSettings } from '@utils/validation';
 import localforage from 'localforage';
-import { currency } from '@components/Common/Ticker';
+import { currency } from '@components/Ticker';
 import isEqual from 'lodash.isequal';
-import { infoNotification } from '@components/Common/Notifications';
+import { infoNotification } from '@components/Notifications';
 import cashaddr from 'ecashaddrjs';
 import { 
     Mnemonic,

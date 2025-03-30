@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { VideoIcon, PicturesIcon, SmartphoneIcon } from '@components/Common/Icons';
-import { Text, BoldText } from '@components/Common/Text';
+import { VideoIcon, PicturesIcon, SmartphoneIcon } from '@components/Icons';
+import { Text, BoldText } from '@components/Text';
 
 
 const Container = styled.div`

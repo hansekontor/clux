@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import { currency } from '@components/Common/Ticker';
+import { currency } from '@components/Ticker';
 import { notification } from 'antd';
 import styled from 'styled-components';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { SlideInAnimation } from '@components/Common/CssAnimations';
+import { SlideInAnimation } from '@components/CssAnimations';
 import { theme } from '@components/styles';
 
 const AnimationCtn = styled.div`

@@ -5,9 +5,9 @@ import { Modal } from 'antd';
 import styled from 'styled-components';
 
 // custom react modules
-import PrimaryButton from '@components/Common/PrimaryButton';
+import PrimaryButton from '@components/PrimaryButton';
 import { WalletContext } from '@utils/context';
-import { successNotification } from '@components/Common/Notifications';
+import { successNotification } from '@components/Notifications';
 
 // styled css modules
 const ImportWalletCtn = styled.div`

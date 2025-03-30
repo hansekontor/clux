@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { CashLoader } from '@components/Common/Icons';
-import { AlertMsg } from '@components/Common/Atoms';
+import { CashLoader } from '@components/Icons';
+import { AlertMsg } from '@components/Atoms';
 
 const ApiError = () => {
     return (

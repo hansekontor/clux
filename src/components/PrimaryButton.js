@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
 // custom react modules
-import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@components/Common/Icons';
+import { CashoutIcon, HelpIcon, WalletIcon, TicketIcon, BillIcon } from '@components/Icons';
 
 // styled css modules
 const PrimaryButton = styled.button`

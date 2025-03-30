@@ -4,14 +4,14 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
 // custom react components
-import PrimaryButton, { SecondaryButton } from '@components/Common/PrimaryButton';
-import SeedPhrase from '@components/Common/SeedPhrase';
+import PrimaryButton, { SecondaryButton } from '@components/PrimaryButton';
+import SeedPhrase from '@components/SeedPhrase';
 import { WalletContext } from '@utils/context';
-import { FadeInAnimation } from '@components/Common/CssAnimations';
+import { FadeInAnimation } from '@components/CssAnimations';
 import FadeInOut from './FadeInOut'
-import { successNotification } from '@components/Common/Notifications';
-import { LargeHeading } from '@components/Common/Text';
-import { Paragraph } from '@components/Common/Text';
+import { successNotification } from '@components/Notifications';
+import { LargeHeading } from '@components/Text';
+import { Paragraph } from '@components/Text';
 
 // assets
 import CopyboardSvg from '@assets/copyboard.svg';

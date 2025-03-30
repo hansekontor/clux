@@ -1,7 +1,7 @@
 // node modules
 import React, { useState, useEffect, useContext } from 'react';
 import { WalletContext } from '@utils/context';
-import PrimaryButton from '@components/Common/PrimaryButton';
+import PrimaryButton from '@components/PrimaryButton';
 import { nationalityOptions, residencyOptions } from '@utils/geoblock';
 import BeachPng from '@assets/ResultBackground.png';
 import { bcrypto, KeyRing } from '@hansekontor/checkout-components';

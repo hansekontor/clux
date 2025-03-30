@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { SlideInAnimation, FadeOutAnimationShort } from '@components/Common/CssAnimations';
+import { SlideInAnimation, FadeOutAnimationShort } from '@components/CssAnimations';
 import { Flash } from 'react-ruffle';
 
 

@@ -8,10 +8,10 @@ const { Hash256 } = bcash.bcrypto;
 // react components
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
-import PrimaryButton from '@components/Common/PrimaryButton';
-import Header from '@components/Common/Header';
-import { FooterCtn } from '@components/Common/Footer';
-import { ResultingNumbers } from '@components/Common/RandomNumbers';
+import PrimaryButton from '@components/PrimaryButton';
+import Header from '@components/Header';
+import { FooterCtn } from '@components/Footer';
+import { ResultingNumbers } from '@components/RandomNumbers';
 import * as S from './Styled';
 
 // assets and other

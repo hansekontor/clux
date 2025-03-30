@@ -54,7 +54,7 @@ const FormHeader = styled(Item)`
     justify-content: space-between;
     display: flex;
 `;
-import { Header } from '@components/Common/Text';
+import { Header } from '@components/Text';
 const Price = styled(Header)`
     text-align: right;
 `;

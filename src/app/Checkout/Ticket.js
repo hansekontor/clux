@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import RandomNumbers from '@components/Common/RandomNumbers';
-import { TicketFilledIcon } from '@components/Common/Icons';
-import { BoldText } from '@components/Common/Text';
+import RandomNumbers from '@components/RandomNumbers';
+import { TicketFilledIcon } from '@components/Icons';
+import { BoldText } from '@components/Text';
 
 
 const Details = styled.div`

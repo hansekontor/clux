@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import FadeInOut from '../Backup/FadeInOut';
-import PrimaryButton from '@components/Common/PrimaryButton';
-import { Scrollable } from '@components/Common/Container';
-import { textItem } from '@components/Common/CssUtil';
+import PrimaryButton from '@components/PrimaryButton';
+import { Scrollable } from '@components/Container';
+import { textItem } from '@components/CssUtil';
 
 
 const StyledFadeInOut = styled(FadeInOut)`

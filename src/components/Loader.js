@@ -3,8 +3,8 @@ import styled, {css} from 'styled-components';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { FadeInAnimation, FadeOutAnimationShort } from '@components/Common/CssAnimations';
-import { Background } from '@components/Common/Container';
+import { FadeInAnimation, FadeOutAnimationShort } from '@components/CssAnimations';
+import { Background } from '@components/Container';
 
 // styled css components
 const LoaderBackground = styled(Background)`

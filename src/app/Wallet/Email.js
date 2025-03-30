@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 // custom react components
-import { SecondaryButton } from '@components/Common/PrimaryButton';
-import { infoNotification } from '@components/Common/Notifications';
+import { SecondaryButton } from '@components/PrimaryButton';
+import { infoNotification } from '@components/Notifications';
 
 // styled components
 const EmailCtn = styled.div`

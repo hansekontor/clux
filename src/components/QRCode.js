@@ -5,7 +5,7 @@ import {
     currency,
     isValidCashPrefix,
     isValidTokenPrefix,
-} from '@components/Common/Ticker.js';
+} from '@components/Ticker.js';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Event } from '@utils/GoogleAnalytics';
 import { convertToEcashPrefix } from '@utils/cashMethods';
