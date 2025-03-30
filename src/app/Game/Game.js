@@ -15,8 +15,8 @@ import { ResultingNumbers } from '@components/RandomNumbers';
 import * as S from './Styled';
 
 // assets and other
-import VersusPng from '@assets/versus.png';
-import RingPng from '@assets/ring_on_beach.png';
+import VersusPng from '@assets/images/versus.png';
+import RingPng from '@assets/images/ring_on_beach.png';
 
 // util
 import animationLabels from '@utils/animations';

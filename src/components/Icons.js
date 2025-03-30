@@ -4,7 +4,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
 import { currency } from '@components/Ticker';
 
-import CnmiPng from '@assets/cnmi.png';
+import CnmiPng from '@assets/images/cnmi.png';
 import GiftboxSvg from '@assets/svgs/giftbox.svg';
 import QuestionMarkSvg from '@assets/svgs/questionmark.svg';
 import WhiteWalletSvg from '@assets/svgs/wallet_white.svg';

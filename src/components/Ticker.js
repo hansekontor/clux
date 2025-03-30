@@ -1,5 +1,5 @@
-import mainLogo from '@assets/logo_primary.png';
-import tokenLogo from '@assets/logo_secondary.png';
+import mainLogo from '@assets/images/logo_primary.png';
+import tokenLogo from '@assets/images/logo_secondary.png';
 import cashaddr from 'ecashaddrjs';
 import BigNumber from 'bignumber.js';
 

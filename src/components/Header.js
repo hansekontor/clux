@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import styled from "styled-components";
 
 // assets
-import CluxLogo from '@assets/clux_logo.png';
+import CluxLogo from '@assets/images/clux_logo.png';
 
 // styled css modules
 const HeaderCtn = styled.div`

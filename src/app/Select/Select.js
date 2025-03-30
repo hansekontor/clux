@@ -16,7 +16,7 @@ import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 
 // assets
-import RingPng from '@assets/ring_on_beach.png';
+import RingPng from '@assets/images/ring_on_beach.png';
 
 import * as Styled from "./styles";
 

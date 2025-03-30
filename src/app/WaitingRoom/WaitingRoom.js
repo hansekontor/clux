@@ -32,7 +32,7 @@ import * as S from './Styled';
 import animationLabels from '@utils/animations';
 
 // assets
-import LockerPng from '@assets/locker.png';
+import LockerPng from '@assets/images/locker.png';
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import ChickenBackgroundPng from '@assets/ResultBackground.png';
+import ChickenBackgroundPng from '@assets/images/ResultBackground.png';
 import { Flash } from 'react-ruffle';
 
 const FlashCtn = styled.div`
