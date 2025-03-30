@@ -16,7 +16,7 @@ import { FooterCtn } from '@components/Footer';
 import PrimaryButton from '@components/PrimaryButton';
 import NavigationBar from '@components/Navigation';
 import Header from '@components/Header';
-import * as S from './Styled';
+import * as S from './components/Styled';
 
 import useWallet from '@hooks/useWallet';
 
