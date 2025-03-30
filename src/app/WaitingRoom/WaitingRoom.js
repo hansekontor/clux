@@ -26,7 +26,7 @@ import TXUtil from '@utils/txutil';
 import useBCH from '@hooks/useBCH';
 import useWallet from '@hooks/useWallet';
 
-import * as S from './Styled';
+import * as S from './components/Styled';
 
 // util
 import animationLabels from '@utils/animations';
