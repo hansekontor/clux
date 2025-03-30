@@ -5,23 +5,23 @@ import { Image } from 'antd';
 import { currency } from '@components/Ticker';
 
 import CnmiPng from '@assets/cnmi.png';
-import GiftboxSvg from '@assets/giftbox.svg';
-import QuestionMarkSvg from '@assets/questionmark.svg';
-import WhiteWalletSvg from '@assets/wallet_white.svg';
-import VideoSvg from '@assets/video.svg';
-import PicturesSvg from '@assets/pictures.svg';
-import SmartphoneSvg from '@assets/smartphone.svg';
-import TicketFilledSvg from '@assets/ticket_filled.svg';
-import BillSvg from '@assets/bill.svg';
-import TicketSvg from '@assets/ticket.svg';
-import ContactSvg from '@assets/contact.svg';
-import KeySvg from '@assets/key.svg';
-import WalletSvg from '@assets/wallet.svg';
-import EnvelopeSvg from '@assets/envelope.svg';
-import CardIconSvg from '@assets/card_icon.svg'
-import LockIconSvg from '@assets/lock_icon.svg'
-import MastercardIconSvg from '@assets/mastercard_icon.svg'
-import VisaIconSvg from '@assets/visa_icon.svg'
+import GiftboxSvg from '@assets/svgs/giftbox.svg';
+import QuestionMarkSvg from '@assets/svgs/questionmark.svg';
+import WhiteWalletSvg from '@assets/svgs/wallet_white.svg';
+import VideoSvg from '@assets/svgs/video.svg';
+import PicturesSvg from '@assets/svgs/pictures.svg';
+import SmartphoneSvg from '@assets/svgs/smartphone.svg';
+import TicketFilledSvg from '@assets/svgs/ticket_filled.svg';
+import BillSvg from '@assets/svgs/bill.svg';
+import TicketSvg from '@assets/svgs/ticket.svg';
+import ContactSvg from '@assets/svgs/contact.svg';
+import KeySvg from '@assets/svgs/key.svg';
+import WalletSvg from '@assets/svgs/wallet.svg';
+import EnvelopeSvg from '@assets/svgs/envelope.svg';
+import CardIconSvg from '@assets/svgs/card_icon.svg'
+import LockIconSvg from '@assets/svgs/lock_icon.svg'
+import MastercardIconSvg from '@assets/svgs/mastercard_icon.svg'
+import VisaIconSvg from '@assets/svgs/visa_icon.svg'
 
 
 

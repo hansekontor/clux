@@ -23,8 +23,8 @@ import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods';
 
 // assets 
-import RightArrowSvg from '@assets/arrow_right.svg';
-import PencilIconSvg from '@assets/pencil_icon.svg';
+import RightArrowSvg from '@assets/svgs/arrow_right.svg';
+import PencilIconSvg from '@assets/svgs/pencil_icon.svg';
 
 
 const Wallet = ({    

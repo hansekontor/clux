@@ -14,7 +14,7 @@ import { LargeHeading } from '@components/Text';
 import { Paragraph } from '@components/Text';
 
 // assets
-import CopyboardSvg from '@assets/copyboard.svg';
+import CopyboardSvg from '@assets/svgs/copyboard.svg';
 
 // styled components
 const Modal = styled.div`

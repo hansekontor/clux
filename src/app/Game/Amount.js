@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 // assets
-import CoinBagSvg from '@assets/coin_bag.svg';
+import CoinBagSvg from '@assets/svgs/coin_bag.svg';
 
 // styled css components
 const AmountCtn = styled.div`

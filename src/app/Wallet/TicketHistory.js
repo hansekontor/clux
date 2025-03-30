@@ -12,9 +12,9 @@ import { successNotification } from '@components/Notifications';
 import useWallet from '@hooks/useWallet';
 
 // assets
-import TicketSvg from '@assets/ticket_filled.svg';
-import WinningTicketSvg from '@assets/ticket_filled_green.svg';
-import RightArrowSvg from '@assets/arrow_right_white.svg';
+import TicketSvg from '@assets/svgs/ticket_filled.svg';
+import WinningTicketSvg from '@assets/svgs/ticket_filled_green.svg';
+import RightArrowSvg from '@assets/svgs/arrow_right_white.svg';
 
 // styled css components
 import { Item } from './Styled';

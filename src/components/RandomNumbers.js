@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 // assets
-import LeftArrowSvg from '@assets/arrow_left.svg'
-import RightArrowSvg from '@assets/arrow_right.svg';
-import WhiteRightArrowSvg from '@assets/arrow_right_white.svg';
-import WhiteLeftArrowSvg from '@assets/arrow_left_white.svg';
+import LeftArrowSvg from '@assets/svgs/arrow_left.svg'
+import RightArrowSvg from '@assets/svgs/arrow_right.svg';
+import WhiteRightArrowSvg from '@assets/svgs/arrow_right_white.svg';
+import WhiteLeftArrowSvg from '@assets/svgs/arrow_left_white.svg';
 
 
 const RandomNumbersCtn = styled.div`

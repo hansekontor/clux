@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Carousel } from 'antd';
-import CoinBagSvg from '@assets/coin_bag.svg';
+import CoinBagSvg from '@assets/svgs/coin_bag.svg';
 
 // styled css components
 const StyledCarousel = styled(Carousel)`

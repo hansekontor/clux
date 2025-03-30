@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { ReturnButton } from '@components/PrimaryButton';
 
 // assets
-import MerchantSvg from '@assets/merchant_icon.svg';
+import MerchantSvg from '@assets/svgs/merchant_icon.svg';
 
 // styled css components
 const AgreeHeader = styled.div`
