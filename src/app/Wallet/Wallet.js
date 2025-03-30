@@ -7,16 +7,18 @@ import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
 // react components 
 import { successNotification } from '@components/Notifications';
 import SeedPhrase from '@components/SeedPhrase';
-import TicketHistory from './TicketHistory';
+
 import Header from '@components/Header'; 
 import NavigationBar from '@components/Navigation';
 import { FooterCtn, SupportBar } from '@components/Footer';
 import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Icons';
-import Email from './Email';
-import ImportWallet from './ImportWallet';
-import * as S from './Styled';
 import { Paragraph, LargeHeading } from '@components/Text';
 import useWallet from '@hooks/useWallet';
+
+import TicketHistory from './components/TicketHistory';
+import Email from './components/Email';
+import ImportWallet from './components/ImportWallet';
+import * as S from './components/Styled';
 
 // util
 import { WalletContext } from '@utils/context';
