@@ -20,12 +20,7 @@ import RingPng from '@assets/images/ring_on_beach.png';
 
 // util
 import animationLabels from '@utils/animations';
-
-
-const sleep = (ms) => {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
+import sleep from '@utils/sleep';
 
 const Game = ({
     passLoadingStatus,

@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
+// util
+import sleep from '@utils/sleep';
+
 // assets
 import LeftArrowSvg from '@assets/svgs/arrow_left.svg'
 import RightArrowSvg from '@assets/svgs/arrow_right.svg';
@@ -195,10 +198,6 @@ export const ResultingNumbers = ({
 	}
 
     const sortedNumberArray = Array.from(indexMap).sort((a,b) => a[1] - b[1]);
-
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 	
     const revealNumber = (stage, sum) => {
 		const index = sortedNumberArray[stage][0];

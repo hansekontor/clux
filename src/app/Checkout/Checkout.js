@@ -43,13 +43,11 @@ import * as S from './Styled';
 import useWallet from '@hooks/useWallet';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
+import sleep from '@utils/sleep';
 
 const allowedCountries = ["AllowedCountry"];
 const ticketPrice = 10;
 
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 const signMessage = (secret, msg) => {
 	const keyring = KeyRing.fromSecret(secret);
 	const sig = keyring.sign(msg);

@@ -21,6 +21,7 @@ import useWallet from '@hooks/useWallet';
 // util
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods';
+import sleep from '@utils/sleep';
 
 // assets 
 import RightArrowSvg from '@assets/svgs/arrow_right.svg';
@@ -49,10 +50,6 @@ const Wallet = ({
 	useEffect(() => {
 		passLoadingStatus(false);
 	}, [])
-
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    } 
 
     // handlers
     const handleReturn = () => {

@@ -31,10 +31,7 @@ import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 // util
 import { WalletContext } from '@utils/context';
 import { isValidStoredWallet } from '@utils/cashMethods';
-
-const sleep = (ms) => {
-	return new Promise(resolve => setTimeout(resolve, ms));
-};
+import sleep from '@utils/sleep';
 
 const App = () => {
     const history = useHistory();

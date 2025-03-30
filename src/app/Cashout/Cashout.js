@@ -23,17 +23,10 @@ import useWallet from '@hooks/useWallet';
 // util
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
-
-
+import sleep from '@utils/sleep';
 
 const countryOptions = [{value: "US", label: "United States"}];
 const currencyOptions = [{value: "USD", label:"USD"}];
-
-
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
 
 const Cashout = ({
     passLoadingStatus

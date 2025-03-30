@@ -29,7 +29,7 @@ import {
 	TX, 
 } from '@hansekontor/checkout-components';
 import TicketHistory from '@utils/ticket';
-
+import sleep from '@utils/sleep';
 
 const useWallet = () => {
     const [wallet, setWallet] = useState(false);
@@ -54,11 +54,6 @@ const useWallet = () => {
     const previousTokens = usePrevious(tokens);
 
 	// console.log("useWallet tickets", wallet?.state?.tickets.length);
-
-
-	const sleep = (ms) => {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	};
 
     const normalizeBalance = slpBalancesAndUtxos => {
         const totalBalanceInSatoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(

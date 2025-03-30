@@ -16,11 +16,7 @@ import * as S from './Styled';
 import { WalletContext } from '@utils/context';
 import { getWalletState } from '@utils/cashMethods'
 import animationLabels from '@utils/animations';
-
-
-const sleep = (ms) => {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
+import sleep from '@utils/sleep';
 
 
 const Result = ({

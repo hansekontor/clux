@@ -13,7 +13,8 @@ import { Scrollable } from '@components/Container';
 // util
 import animationLabels from '@utils/animations.js';
 import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods'
+import { getWalletState } from '@utils/cashMethods';
+import sleep from '@utils/sleep';
 
 // assets
 import RingPng from '@assets/images/ring_on_beach.png';
@@ -36,10 +37,6 @@ const Select = ({
     const [fadeOut, setFadeOut] = useState(false);
 
 	console.log("wif", wallet.Path1899.fundingWif);
-
-    const sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 
 	const handleButtonClick = () => {
 		if (user.ipGeo.ticketPurchase)

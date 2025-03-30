@@ -9,6 +9,10 @@ import PrimaryButton from '@components/PrimaryButton';
 import { WalletContext } from '@utils/context';
 import { successNotification } from '@components/Notifications';
 
+// util
+import sleep from '@utils/sleep';
+
+
 // styled css modules
 const ImportWalletCtn = styled.div`
     display: flex-start;
@@ -48,10 +52,6 @@ const StyledPrimaryButton = styled(PrimaryButton)`
 	font-size: 14px;
 	font-weight: 600;
 `;
-
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 const ImportWallet = ({
     currentAddress,

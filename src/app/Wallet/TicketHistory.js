@@ -11,6 +11,9 @@ import { successNotification } from '@components/Notifications';
 
 import useWallet from '@hooks/useWallet';
 
+// util
+import sleep from '@utils/sleep';
+
 // assets
 import TicketSvg from '@assets/svgs/ticket_filled.svg';
 import WinningTicketSvg from '@assets/svgs/ticket_filled_green.svg';
@@ -143,10 +146,6 @@ const SyncButton = styled(PrimaryButton)`
 	width: 100%;
 `;
 const RedeemButton = styled(SyncButton)``;
-
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
 
 const shortifyHash = (hash, length) => {
 	return String(hash.slice(0,length) + "..." + hash.slice(64-length,));

@@ -30,13 +30,10 @@ import * as S from './Styled';
 
 // util
 import animationLabels from '@utils/animations';
+import sleep from '@utils/sleep';
 
 // assets
 import LockerPng from '@assets/images/locker.png';
-
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 const WaitingRoom = ({
     passLoadingStatus, 
