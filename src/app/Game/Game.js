@@ -1,7 +1,6 @@
 // node modules
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
 import bcash from '@hansekontor/checkout-components';
 const { Hash256 } = bcash.bcrypto;
 
@@ -12,7 +11,8 @@ import PrimaryButton from '@components/PrimaryButton';
 import Header from '@components/Header';
 import { FooterCtn } from '@components/Footer';
 import { ResultingNumbers } from '@components/RandomNumbers';
-import * as S from './Styled';
+
+import * as S from './components/Styled';
 
 // assets and other
 import VersusPng from '@assets/images/versus.png';
