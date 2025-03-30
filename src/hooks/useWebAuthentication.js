@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import localforage from 'localforage';
-import { currency } from '@components/Ticker';
+import { currency } from '@utils/ticker';
 import {
     convertBase64ToArrayBuffer,
     convertArrayBufferToBase64,

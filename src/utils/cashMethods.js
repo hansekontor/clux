@@ -1,4 +1,4 @@
-import { currency } from '@components/Ticker';
+import { currency } from '@utils/ticker';
 import BigNumber from 'bignumber.js';
 import cashaddr from 'ecashaddrjs';
 import { script, Script, TX } from '@hansekontor/checkout-components';

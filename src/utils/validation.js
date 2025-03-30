@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { currency, isValidTokenPrefix } from '@components/Ticker.js';
+import { currency, isValidTokenPrefix } from '@utils/ticker.js';
 import { fromSmallestDenomination } from '@utils/cashMethods';
 
 // Validate cash amount

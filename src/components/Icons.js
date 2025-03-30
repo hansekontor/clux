@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
-import { currency } from '@components/Ticker';
+import { currency } from '@utils/ticker';
 
 import CnmiPng from '@assets/images/cnmi.png';
 import GiftboxSvg from '@assets/svgs/giftbox.svg';

@@ -18,7 +18,7 @@ import {
 } from '@utils/cashMethods';
 import { isValidCashtabSettings } from '@utils/validation';
 import localforage from 'localforage';
-import { currency } from '@components/Ticker';
+import { currency } from '@utils/ticker';
 import isEqual from 'lodash.isequal';
 import { infoNotification } from '@components/Notifications';
 import cashaddr from 'ecashaddrjs';

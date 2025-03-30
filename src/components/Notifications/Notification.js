@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import { currency } from '@components/Ticker';
+import { currency } from '@utils/ticker';
 import { notification } from 'antd';
 import styled from 'styled-components';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
