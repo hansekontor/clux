@@ -7,7 +7,8 @@ import BeachPng from '@assets/images/ResultBackground.png';
 import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
 import { Modal } from 'antd';
 const { SHA256 } = bcrypto;
-import * as S from './Styled';
+
+import * as S from './components/Styled';
 
 
 const PasswordProtection = ({
