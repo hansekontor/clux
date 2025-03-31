@@ -182,7 +182,16 @@ const Checkout = ({
 					const paymentTxs = payment.transactions.map(raw => TX.fromRaw(raw));
 					await addIssueTxs(ticketTxs, coinsUsed, paymentTxs);
 
-					history.push("/waitingroom");
+					// wait until ticket has been added to storage
+					await sleep(5000);
+
+					// pass hash for waiting room to find parsed ticket in storage
+					history.push({
+						pathname: "/waitingroom",
+						state: { 
+							issueHash: ticketTxs[0].rhash()
+						}
+					});
 				}		
 			} 
 		} catch (err) {
