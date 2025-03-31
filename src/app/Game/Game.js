@@ -161,7 +161,7 @@ const Game = ({
 										<div></div>   
 									</S.CustomFlash>
 								</S.Animation>
-								<S.Animation hidden={animationStage !== "fight"}>
+								<S.Animation $hidden={animationStage !== "fight"}>
 									<S.CustomFlash 
 										src={folder + labels.fight}
 										config={{
@@ -180,7 +180,7 @@ const Game = ({
 										<div></div>   
 									</S.CustomFlash>             
 								</S.Animation>
-								<S.Animation hidden={animationStage !== "celebration"}>
+								<S.Animation $hidden={animationStage !== "celebration"}>
 									<S.CustomFlash 
 										src={folder + labels.celebration}
 										config={{
