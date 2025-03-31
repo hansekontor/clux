@@ -31,7 +31,7 @@ const NotificationCtn =  styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background: ${props => props.$color ? props.color : '#FFFFFF'};
+    background: ${props => props.$color ? props.$color : '#FFFFFF'};
 `;
 const CheckIcon = styled(CheckCircleOutlined)`
     color: #FFFFFF;
@@ -43,7 +43,7 @@ const InfoIcon = styled(ExclamationCircleOutlined)`
     color: #002152;
 `;
 const Text = styled. div`
-    color: ${props => props.$color ? props.color : '#002152'};
+    color: ${props => props.$color ? props.$color : '#002152'};
     font-size: 18px;
     font-weight: 600;
 `;
@@ -87,7 +87,7 @@ const Notification = ({
     }
 
     return (
-		<AnimationCtn $animate={true} fadeOut={isClosing}>
+		<AnimationCtn $animate={true} $fadeOut={isClosing}>
 			<NotificationCtn $color={backgroundColor[type]}>
 				{type === "success" && <CheckIcon />}
 				{type === "error" && <ErrorIcon />}                
