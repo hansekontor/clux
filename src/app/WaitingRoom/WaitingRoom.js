@@ -15,28 +15,25 @@ import { U64 } from 'n64';
 
 // react components
 import { WalletContext } from '@utils/context';
-import Header from '@components/Common/Header';
-import { FooterCtn, SupportBar } from '@components/Common/Footer';
-import RandomNumbers from '@components/Common/RandomNumbers';
-import PrimaryButton from '@components/Common/PrimaryButton';
+import Header from '@components/Header';
+import { FooterCtn, SupportBar } from '@components/Footer';
+import RandomNumbers from '@components/RandomNumbers';
+import PrimaryButton from '@components/PrimaryButton';
 import { getWalletState } from '@utils/cashMethods'
-import { successNotification, infoNotification } from '@components/Common/Notifications';
+import { successNotification, infoNotification } from '@components/Notifications';
 import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '@utils/ticket';
 import TXUtil from '@utils/txutil';
 import useBCH from '@hooks/useBCH';
 import useWallet from '@hooks/useWallet';
 
-import * as S from './Styled';
+import * as S from './components/Styled';
 
 // util
 import animationLabels from '@utils/animations';
+import sleep from '@utils/sleep';
 
 // assets
-import LockerPng from '@assets/locker.png';
-
-const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+import LockerPng from '@assets/images/locker.png';
 
 const WaitingRoom = ({
     passLoadingStatus, 
@@ -59,8 +56,6 @@ const WaitingRoom = ({
 
     // states
 	const [activeTicket, setActiveTicket ] = useState(location.state?.ticketToRedeem || false);
-	// const [minedTicket, setMinedTicket] = useState(false);
-	// const [isRedeemed, setIsRedeemed] = useState(false);
 	const [hasRequested, setHasRequested] = useState(false);
 	const [apiError, setApiError] = useState(false);
 	const [modal, modalHolder] = Modal.useModal();
@@ -105,8 +100,6 @@ const WaitingRoom = ({
 				if (isMined) {
 					setIsRedeemable(true);
 				} else {
-					// explain reason for waiting only the first time
-					modal.info(requestFailedInfoConfig);
 					const timeBetweenPolling = 2*60*1000;
 					
 					// poll indexer every 2 min

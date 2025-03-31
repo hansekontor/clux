@@ -16,8 +16,8 @@ import { FooterCtn } from '@components/Footer';
 import PrimaryButton from '@components/PrimaryButton';
 import NavigationBar from '@components/Navigation';
 import Header from '@components/Header';
-import { QuantityInput } from '@components/Common/Inputs';
-import { LargeHeading } from '@components/Common/Text';
+import { QuantityInput } from '@components/Inputs';
+import { LargeHeading } from '@components/Text';
 import * as S from './components/Styled';
 
 import useWallet from '@hooks/useWallet';
