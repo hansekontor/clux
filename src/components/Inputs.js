@@ -46,6 +46,8 @@ const Quantity = styled.input`
 export const QuantityInput = ({
     quantity,
     passQuantity,
+    step, 
+    max
 }) => {
 
     const handleQuantityChange = (input) => {
@@ -53,11 +55,13 @@ export const QuantityInput = ({
             if (input !== quantity)
     			passQuantity(input);
 		} else if (input === "increment") {
-			const newQuantity = Number(quantity) + 1;
-			passQuantity(newQuantity);
-		} else if (quantity > 1) {
-			const newQuantity = Number(quantity) - 1;
-			passQuantity(newQuantity);
+			let newQuantity = Number(quantity) + step;
+            if (newQuantity > max)
+                newQuantity = max;
+		} else if (quantity > step) {
+			let newQuantity = Number(quantity) - step;
+            if (newQuantity < step) 
+                newQuantity = step;
 		}
 	}
 
@@ -71,8 +75,9 @@ export const QuantityInput = ({
             />
             <Quantity 
                 type="number"
-                step={1}
-                min={1}
+                step={step}
+                min={step}
+                max={max}
                 value={quantity}
                 onChange={e => handleQuantityChange(e.target.value)}
                 name="quantity"

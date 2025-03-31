@@ -16,6 +16,8 @@ import { FooterCtn } from '@components/Footer';
 import PrimaryButton from '@components/PrimaryButton';
 import NavigationBar from '@components/Navigation';
 import Header from '@components/Header';
+import { QuantityInput } from '@components/Common/Inputs';
+import { LargeHeading } from '@components/Common/Text';
 import * as S from './components/Styled';
 
 import useWallet from '@hooks/useWallet';
@@ -341,18 +343,13 @@ const Cashout = ({
                 />
                     {stage === "filter" && 
                         <S.Form id={`${stage}-form`} onSubmit={handleSubmitFilters}>
-                            <S.Amount>{cardAmount} Tokens</S.Amount>
-                            <S.StyledRangeSlider
-                                min={minAmount}
-                                max={maxAmount}
+                            <LargeHeading>How many Tokens?</LargeHeading>
+                            <QuantityInput 
+                                quantity={cardAmount}
+                                passQuantity={setCardAmount}
                                 step={10}
-                                defaultValue={[0, 10]}
-                                className={"single-thumb"}
-                                thumbsDisabled={[true, false]}
-                                rangeSlideDisabled={true}
-                                onInput={(range) => handleCardAmountChange(range)}
-                                required
-                            />                 
+                                max={maxAmount}
+                            />                   
                             <Select 
                                 options={currencyOptions} 
                                 label="Currency"
