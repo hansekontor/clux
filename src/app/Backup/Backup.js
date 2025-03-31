@@ -10,6 +10,7 @@ import FadeInOut from '@components/FadeInOut'
 import { successNotification } from '@components/Notifications';
 import { LargeHeading } from '@components/Text';
 import { Paragraph } from '@components/Text';
+import * as S from './components/Styled';
 
 // assets
 import CopyboardSvg from '@assets/svgs/copyboard.svg';
@@ -47,20 +48,20 @@ const Backup = ({
     return (
         <>
             <FadeInOut show={!fadeOut} duration={300}>
-                <ModalCtn>
-                    <Modal>
+                <S.ModalCtn>
+                    <S.Modal>
                         <LargeHeading>Backup Account</LargeHeading>
                         <Paragraph>This unhosted and non-custodial wallet associated with this lottery game is not backed up. Please backup your seed phrase and secure this wallet to avoid loss of funds from potential winnings.</Paragraph>
                         <SeedPhrase 
                             phrase={wallet.mnemonic ? wallet.mnemonic : ""}
                         />            
                         <SecondaryButton type="button" onClick={handleCopySeedPhrase}>
-                            <CopyboardIcon src={CopyboardSvg} />
+                            <S.CopyboardIcon src={CopyboardSvg} />
                             Copy
                         </SecondaryButton>
                         <PrimaryButton type="button" onClick={handleBackedUp}>I've Secured</PrimaryButton> 
-                    </Modal>                                        
-                </ModalCtn>
+                    </S.Modal>                                        
+                </S.ModalCtn>
             </FadeInOut>
         </>
     )

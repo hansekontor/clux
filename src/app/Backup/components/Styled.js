@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { FadeInAnimation } from '@components/CssAnimations';
 
 // styled components
-export const Modal = styled.div`
+const Modal = styled.div`
     width: 95%;
     background-color: #FEFFFE;
     gap: 12px;
@@ -17,7 +17,7 @@ export const Modal = styled.div`
     }
 `;
 
-export const ModalCtn = styled.div`
+const ModalCtn = styled.div`
     width: 100%;
     gap: 24px;
     justify-content: center;
@@ -28,8 +28,14 @@ export const ModalCtn = styled.div`
     ${FadeInAnimation}
 `;
 
-export const CopyboardIcon = styled.img`
+const CopyboardIcon = styled.img`
     position: relative;
     top: 3px;
     margin-right: 5px;
 `;
+
+export {
+    Modal, 
+    ModalCtn,
+    CopyboardIcon
+}
