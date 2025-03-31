@@ -755,6 +755,8 @@ const Checkout = ({
 									<QuantityInput
 										quantity={ticketQuantity}
 										passQuantity={setTicketQuantity}
+										step={1}
+										max={50}
 									/>
 									<QuantitySuggestions
 										passQuantity={setTicketQuantity}
