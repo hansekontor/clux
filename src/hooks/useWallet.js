@@ -18,9 +18,9 @@ import {
 } from '@utils/cashMethods';
 import { isValidCashtabSettings } from '@utils/validation';
 import localforage from 'localforage';
-import { currency } from '@components/Common/Ticker';
+import { currency } from '@utils/ticker';
 import isEqual from 'lodash.isequal';
-import { infoNotification } from '@components/Common/Notifications';
+import { infoNotification } from '@components/Notifications';
 import cashaddr from 'ecashaddrjs';
 import { 
     Mnemonic,
@@ -29,7 +29,7 @@ import {
 	TX, 
 } from '@hansekontor/checkout-components';
 import TicketHistory from '@utils/ticket';
-
+import sleep from '@utils/sleep';
 
 const useWallet = () => {
     const [wallet, setWallet] = useState(false);
@@ -54,11 +54,6 @@ const useWallet = () => {
     const previousTokens = usePrevious(tokens);
 
 	// console.log("useWallet tickets", wallet?.state?.tickets.length);
-
-
-	const sleep = (ms) => {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	};
 
     const normalizeBalance = slpBalancesAndUtxos => {
         const totalBalanceInSatoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(

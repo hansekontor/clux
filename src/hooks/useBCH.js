@@ -4,7 +4,7 @@ import {
     isCashtabOutput,
     extractCashtabMessage,
     extractExternalMessage,
-} from '@components/Common/Ticker';
+} from '@utils/ticker';
 import {
     toSmallestDenomination,
     fromSmallestDenomination,
