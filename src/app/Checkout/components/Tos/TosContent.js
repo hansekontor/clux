@@ -1,53 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
+import { Scrollable, TosHeader, TosLink, TosList, TosText } from './TosStyles';
 
-const Scrollable = styled.div`
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100%;
-    background-color: #FEFFFE;
-`;
-const TosList = styled.ol`
-    align-items: flex-start;
-    display: inline-flex;
-    flex-direction: column;
-    height: fit-content;
-    position: relative;
-    width: 90%;
-    gap: 10px;
-`;
-const TosHeader = styled.p`
-    color: #000000;
-    font-family: "Inter-Medium", Helvetica;
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: 0; 
-    line-height: 25px;
-    position: relative;
-    width: 90%;
-    top: 10px;
-    text-align: left;
-`; 
-const TosText = styled.li`
-    color: #000000;
-    font-family: "Inter-Medium", Helvetica;
-    font-size: 14x;
-    font-weight: 500;
-    letter-spacing: 0; 
-    line-height: 20px;
-    position: relative;
-    text-align: left;
-    width: 90%;
-`;
-const TosLink = styled.a`
-    text-decoration-line: none;
-`;
-
-
-const Tos = () => {
+const TosContent = () => {
     const previousPath = "/select";
     const title = "Agree";
 
@@ -84,4 +38,4 @@ const Tos = () => {
     )
 }
 
-export default Tos;
+export default TosContent;
