@@ -58,10 +58,12 @@ export const QuantityInput = ({
 			let newQuantity = Number(quantity) + step;
             if (newQuantity > max)
                 newQuantity = max;
+            passQuantity(newQuantity);
 		} else if (quantity > step) {
 			let newQuantity = Number(quantity) - step;
             if (newQuantity < step) 
                 newQuantity = step;
+            passQuantity(newQuantity);
 		}
 	}
 
