@@ -411,7 +411,13 @@ module.exports = function (webpackEnv) {
                 '@utils': path.resolve(paths.appPath, 'src/utils/'),
                 '@assets': path.resolve(paths.appPath, 'src/assets/'),
                 '@core': path.resolve(paths.appPath, 'src/core/'),
-                'react': path.resolve(paths.appPath, 'node_modules/react')
+                '@data': path.resolve(paths.appPath, 'src/data/'),
+                '@database': path.resolve(paths.appPath, 'src/database/'),
+                '@animations': path.resolve(paths.appPath, 'src/animations/'),
+                '@lib': path.resolve(paths.appPath, 'src/lib/'),
+                '@services': path.resolve(paths.appPath, 'src/services/'),
+                '@i18n': path.resolve(paths.appPath, 'src/i18n/'),
+                '@languages': path.resolve(paths.appPath, 'src/languages/'),
             },
             plugins: [
                 // Adds support for installing with Plug'n'Play, leading to faster installs and adding
