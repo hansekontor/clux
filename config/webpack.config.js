@@ -418,6 +418,10 @@ module.exports = function (webpackEnv) {
                 '@services': path.resolve(paths.appPath, 'src/services/'),
                 '@i18n': path.resolve(paths.appPath, 'src/i18n/'),
                 '@languages': path.resolve(paths.appPath, 'src/languages/'),
+                '@styles': path.resolve(paths.appPath, 'src/styles/'),
+                '@css': path.resolve(paths.appPath, 'src/css/'),
+                '@scss': path.resolve(paths.appPath, 'src/scss/'),
+                '@theme': path.resolve(paths.appPath, 'src/theme/'),
             },
             plugins: [
                 // Adds support for installing with Plug'n'Play, leading to faster installs and adding
