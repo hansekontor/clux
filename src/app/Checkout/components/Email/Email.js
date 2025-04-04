@@ -10,7 +10,7 @@ import { Input } from '@components/Inputs';
 import { AccountForm, CheckboxItem, CheckboxText, CustomCheckbox, Divider, ErrorMessage, FormSection, Item, Label, PrimaryFlexGrow, PrimaryFooterBackground, selectStyle, WideCreatableSelect } from '../Styled';
 
 // core functions
-import { useCheckout } from '@core/checkout';
+import { useCheckout } from '@core/context/Checkout';
 
 const accountTitle = "Create Account";
 const emailButtonText = "Continue";

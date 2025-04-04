@@ -10,11 +10,10 @@ import {
 
 // css components
 import { ThemeProvider } from "styled-components";
-import '../index.css';
 import * as Styled from "@components/styles";
 
 // core components
-import { CheckoutProvider } from '@core/checkout';
+import { CheckoutProvider } from '@core/context/Checkout';
 import { useWallet } from '@core/context/Wallet';
 import { isValidStoredWallet } from '@core/utils/cashMethods';
 

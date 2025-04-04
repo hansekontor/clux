@@ -14,7 +14,7 @@ import { RollUp } from '@components/CssAnimations';
 import { NmiCheckoutForm, WidgetBody } from './Processors';
 
 // core functions
-import { useCheckout } from '@core/checkout';
+import { useCheckout } from '@core/context/Checkout';
 
 // dom variables
 const checkoutTitle = "Checkout";

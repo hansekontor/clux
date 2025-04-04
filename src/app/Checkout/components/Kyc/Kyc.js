@@ -7,7 +7,7 @@ import KycContent from './KycContent';
 import PrimaryButton from '@components/PrimaryButton';
 
 // core functions
-import { useCheckout } from '@core/checkout';
+import { useCheckout } from '@core/context/Checkout';
 
 export default function Kyc() {
     const { handleKYC } = useCheckout();

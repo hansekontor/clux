@@ -11,7 +11,7 @@ import { PrimaryFooterBackground } from '../Styled';
 import TosContent from './TosContent';
 
 // core functions
-import { useCheckout } from '@core/checkout';
+import { useCheckout } from '@core/context/Checkout';
 
 const tosTitle = "Purchase Terms";
 const agreeButtonText = "Agree and Continue";

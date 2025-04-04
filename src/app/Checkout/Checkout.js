@@ -1,7 +1,7 @@
 import React from 'react';
 
 // core functions
-import { useCheckout } from '@core/checkout';
+import { useCheckout } from '@core/context/Checkout';
 
 // checkout components
 import Tos from './components/Tos/Tos';
