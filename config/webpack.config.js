@@ -410,6 +410,7 @@ module.exports = function (webpackEnv) {
                 '@components': path.resolve(paths.appPath, 'src/components/'),
                 '@utils': path.resolve(paths.appPath, 'src/utils/'),
                 '@assets': path.resolve(paths.appPath, 'src/assets/'),
+                '@core': path.resolve(paths.appPath, 'src/core/'),
                 'react': path.resolve(paths.appPath, 'node_modules/react')
             },
             plugins: [
