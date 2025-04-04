@@ -406,6 +406,7 @@ module.exports = function (webpackEnv) {
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 'react-native': 'react-native-web',
+                'react': path.resolve(paths.appPath, 'node_modules/react'),
                 '@hooks': path.resolve(paths.appPath, 'src/hooks/'),
                 '@components': path.resolve(paths.appPath, 'src/components/'),
                 '@utils': path.resolve(paths.appPath, 'src/utils/'),
