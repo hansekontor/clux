@@ -8,14 +8,20 @@ import { HashRouter as Router } from 'react-router-dom';
 import GA from '@core/utils/GoogleAnalytics';
 import { AuthenticationProvider } from '@core/context/Authentication';
 import { WalletProvider } from '@core/context/Wallet';
+import { NotificationsProvider } from '@core/context/Notifications';
+
+// react components
+import Notification from './components/Notification';
 
 ReactDOM.render(
     <AuthenticationProvider>
         <WalletProvider>
-            <Router>
-                {GA.init() && <GA.RouteTracker />}
-                <App />
-            </Router>
+            <NotificationsProvider Notification={Notification}>
+                <Router>
+                    {GA.init() && <GA.RouteTracker />}
+                    <App />
+                </Router>
+            </NotificationsProvider>
         </WalletProvider>
     </AuthenticationProvider>,
     document.getElementById('root'),

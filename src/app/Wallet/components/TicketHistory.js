@@ -7,11 +7,11 @@ import { CopyOutlined } from '@ant-design/icons';
 
 // custom modules
 import PrimaryButton from '@components/PrimaryButton';
-import { successNotification } from '@components/Notifications';
 
 // core functions
 import { useWallet } from '@core/context/Wallet';
 import sleep from '@core/utils/sleep';
+import { useNotifications } from '@core/context/Notifications';
 
 // assets
 import TicketSvg from '@assets/svgs/ticket_filled.svg';
@@ -156,6 +156,7 @@ const Ticket = ({
 	...props
 }) => {
 	const history = useHistory();
+	const notify = useNotifications();
 
     const [collapsed, setCollapsed] = useState(false);
 	const [height, setHeight] = useState(collapsed ? 0 : undefined);
@@ -177,7 +178,7 @@ const Ticket = ({
     }
     const handleCopy = (copy) => {
         navigator.clipboard.writeText(copy);
-		successNotification("Copied to Clipboard!")
+		notify({message: "Copied to clipboard", type: "success"});
     };
 	const handleRedeemTicket = () => {
 		passLoadingStatus("LOADING TICKET");

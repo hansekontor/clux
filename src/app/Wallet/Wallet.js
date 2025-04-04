@@ -5,7 +5,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
 
 // react components 
-import { successNotification } from '@components/Notifications';
 import SeedPhrase from '@components/SeedPhrase';
 
 import Header from '@components/Header'; 
@@ -23,6 +22,7 @@ import * as S from './components/Styled';
 import { useWallet } from '@core/context/Wallet';
 import { getWalletState } from '@core/utils/cashMethods';
 import sleep from '@core/utils/sleep';
+import { useNotifications } from '@core/context/Notifications';
 
 // assets 
 import RightArrowSvg from '@assets/svgs/arrow_right.svg';
@@ -42,6 +42,7 @@ const Wallet = ({
     const [selection, setSelection] = useState(false);
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
     console.log("slpBalances", slpBalancesAndUtxos);
+    const notify = useNotifications();
 	
 	// console.log("tickets from wallet state", tickets);
 
@@ -88,7 +89,7 @@ const Wallet = ({
 
     const handleCopySeedPhrase = () => {
         navigator.clipboard.writeText(wallet.mnemonic);
-		successNotification("Copied to Clipboard!");
+        notify({message: "Copied to clipboard", type: "success"});
     }
 
     const title = "Wallet, Settings and Legal";

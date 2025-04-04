@@ -5,9 +5,7 @@ import { useHistory } from 'react-router-dom';
 // custom react components
 import PrimaryButton, { SecondaryButton } from '@components/PrimaryButton';
 import SeedPhrase from '@components/SeedPhrase';
-import { WalletContext } from '@core/context/Wallet';
 import FadeInOut from '@components/FadeInOut'
-import { successNotification } from '@components/Notifications';
 import { LargeHeading } from '@components/Text';
 import { Paragraph } from '@components/Text';
 import * as S from './components/Styled';
@@ -18,13 +16,17 @@ import CopyboardSvg from '@assets/svgs/copyboard.svg';
 // styled components
 import { CopyboardIcon, Modal, ModalCtn } from './components/Styled';
 
+// core functions
+import { useNotifications } from '@core/context/Notifications';
+import { useWallet } from '@core/context/Wallet';
+
 
 const Backup = ({
     passLoadingStatus,
 }) => {
     const history = useHistory();
-    const ContextValue = useContext(WalletContext);
-    const { wallet } = ContextValue;
+    const { wallet } = useWallet();
+    const notify = useNotifications();
 
     const [fadeOut, setFadeOut] = useState(false);
 
@@ -36,7 +38,7 @@ const Backup = ({
     // handlers
     const handleCopySeedPhrase = () => {
         navigator.clipboard.writeText(wallet.mnemonic);
-        successNotification("Copied to clipboard");
+        notify({message: "Copied to clipboard", type: "success"});
     }
     const handleBackedUp = (e) => {
         e.preventDefault();

@@ -1,0 +1,39 @@
+import React, { createContext, useCallback, useContext, useState } from 'react';
+import DefaultNotification from '../components/DefaultNotification';
+import NotificationAnimation from '../components/NotificationAnimation';
+import NotificationCollector from '../components/NotificationBody';
+
+export const NotificationsContext = createContext();
+
+export const NotificationsProvider = ({ children, Notification = DefaultNotification }) => {
+    const [notifications, setNotifications] = useState([]);
+
+    const addNotification = useCallback(({ type, message }) => {
+        setNotifications((prev) => [...prev, { type, message, id: Date.now() }]);
+    }, []);
+
+    const removeNotification = useCallback((id) => {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, []);
+
+    return (
+        <NotificationsContext.Provider value={addNotification}>
+            {children}
+            <NotificationCollector>
+                {notifications.map(({ type, message, id }, index) => (
+                    <NotificationAnimation key={index} id={id} removeNotification={removeNotification}>
+                        <Notification type={type} message={message} />
+                    </NotificationAnimation>
+                ))}
+            </NotificationCollector>
+        </NotificationsContext.Provider>
+    )
+};
+
+export const useNotifications = () => {
+    const context = useContext(NotificationsContext);
+    if (!context) {
+        throw new Error("useNotifications must be used within a NotificationsProvider");
+    }
+    return context;
+};

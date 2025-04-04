@@ -31,6 +31,7 @@ import BigNumber from 'bignumber.js';
 import { useWallet } from '@core/context/Wallet';
 import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
+import { useNotifications } from '@core/context/Notifications';
 
 const allowedCountries = ["AllowedCountry"];
 
@@ -47,6 +48,7 @@ export const CheckoutContext = createContext();
 
 export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, user }) {
     const history = useHistory();
+    const notify = useNotifications();
 
     // find ticket indicator
     const { wallet, forceWalletUpdate, addIssueTxs } = useWallet();
@@ -392,8 +394,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
             console.log(ticketTxs.map(tx => tx.toJSON()));
 
             setTicketIssued(true);
-            // successNotification("Successful Purchase"); <-- change this
-            alert("Successful Purchase");
+            notify({ type: 'success', message: 'Successful Purchase' });
 
             // put txs in storage
             const capturedPayment = Payment.fromRaw(authPayment.rawPayment);
@@ -464,9 +465,9 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
             // ----Incomplete workflow-----
             case "user_cancelled":
                 if (kycCancelCount == 0 && !user.kyc_status?.includes("cancelled")) {
-                    console.log("increase counter")
-                    // errorNotification("KYC was cancelled, try again"); <-- change this
-                    alert("KYC was cancelled, try again");
+                    console.log("increase counter");
+                    notify({ type: 'error', message: 'KYC was cancelled, try again' });
+
                     setKycCancelCount(1);
                     break;
                 } else {

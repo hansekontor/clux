@@ -6,11 +6,11 @@ import styled from 'styled-components';
 
 // custom react modules
 import PrimaryButton from '@components/PrimaryButton';
-import { WalletContext } from '@core/context/Wallet';
-import { successNotification } from '@components/Notifications';
 
 // core functions
 import sleep from '@core/utils/sleep';
+import { useWallet } from '@core/context/Wallet';
+import { useNotifications } from '@core/context/Notifications';
 
 
 // styled css modules
@@ -58,8 +58,8 @@ const ImportWallet = ({
     passLoadingStatus
 }) => {
     const history = useHistory();
-    const ContextValue = React.useContext(WalletContext);
-    const { createWallet, validateMnemonic } = ContextValue;
+    const { createWallet, validateMnemonic } = useWallet();
+    const notify = useNotifications();
 
     const [alertModal, alertModalHolder] = Modal.useModal();
     const [isValidMnemonic, setIsValidMnemonic] = useState(false);
@@ -97,7 +97,10 @@ const ImportWallet = ({
         createWallet(formData.mnemonic);        
         passLoadingStatus("IMPORT WALLET");
         await sleep(1000);
-        successNotification("Imported Wallet");
+        notify({
+            message: "Imported Wallet",
+            type: "success"
+        });
         passLoadingStatus("LOAD USER");
         await sleep(3000);
         history.push({

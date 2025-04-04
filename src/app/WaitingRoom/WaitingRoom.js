@@ -18,7 +18,6 @@ import Header from '@components/Header';
 import { FooterCtn, SupportBar } from '@components/Footer';
 import RandomNumbers from '@components/RandomNumbers';
 import PrimaryButton from '@components/PrimaryButton';
-import { successNotification, infoNotification } from '@components/Notifications';
 
 import * as S from './components/Styled';
 
@@ -29,6 +28,7 @@ import { getWalletState } from '@core/utils/cashMethods'
 import TXUtil from '@core/utils/txutil';
 import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '@core/utils/ticket';
 import sleep from '@core/utils/sleep';
+import { useNotifications } from '@core/context/Notifications';
 
 // util
 import animationLabels from '@animations/animations';
@@ -44,6 +44,7 @@ const WaitingRoom = ({
 
     const history = useHistory();
 	const location = useLocation();
+	const notify = useNotifications();
 
     const { 
 		wallet, 
@@ -113,9 +114,9 @@ const WaitingRoom = ({
 						isMined = issueTxFromNode.height > -1;	
 						console.log("isMined", isMined);
 						if (!isMined) {
-							infoNotification("Please wait...")
+							notify({message: "Please wait...", type: "info"});
 						} else {
-							successNotification("You can redeem your ticket now!")
+							notify({message: "You can redeem your ticket now!", type: "success"});
 							setIsRedeemable(true);	
 						}
 					} 

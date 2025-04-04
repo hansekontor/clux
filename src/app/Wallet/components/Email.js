@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 // custom react components
 import { SecondaryButton } from '@components/PrimaryButton';
-import { infoNotification } from '@components/Notifications';
+import { useNotifications } from '@core/context/Notifications';
 
 // styled components
 const EmailCtn = styled.div`
@@ -37,6 +37,8 @@ const Email = ({
     passLoadingStatus
 }) => {
     const [emailChanged, setEmailChanged] = useState(false);
+
+    const notify = useNotifications();
 
     const handleChangeEmail = async (e) => {
         e.preventDefault();
@@ -71,7 +73,10 @@ const Email = ({
 		const userResJson = await userRes.json();
 		console.log("userResJson", userResJson);
 		if (userRes.status === 200) {
-			successNotification("Email has been changed");
+            notify({
+                message: "Email has been changed",
+                type: "success"
+            });
 			history.pushState({
 				pathname: "/",
 				state: {

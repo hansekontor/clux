@@ -1,5 +1,4 @@
 import React from 'react';
-// import { successNotification, errorNotification } from '@components/Notifications';
 
 // core functions
 import { useCheckout } from '@core/checkout';
