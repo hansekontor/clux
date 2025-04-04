@@ -10,7 +10,7 @@ import { AuthenticationProvider } from '@core/context/Authentication';
 import { WalletProvider } from '@core/context/Wallet';
 import { NotificationsProvider } from '@core/context/Notifications';
 
-// react components
+// custom notifications
 import Notification from './components/Notification';
 
 ReactDOM.render(
