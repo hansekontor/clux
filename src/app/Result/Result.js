@@ -14,10 +14,12 @@ import { WhiteCashoutButton, WhiteTicketButton } from '@components/PrimaryButton
 import * as S from './components/Styled';
 
 // util
-import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods'
-import animationLabels from '@utils/animations';
-import sleep from '@utils/sleep';
+import animationLabels from '@animations/animations';
+
+// core functions
+import { useWallet } from '@core/context/Wallet';
+import { getWalletState } from '@core/utils/cashMethods'
+import sleep from '@core/utils/sleep';
 
 
 const Result = ({
@@ -26,8 +28,7 @@ const Result = ({
 }) => {
     const history = useHistory();
 	const location = useLocation();
-    const ContextValue = useContext(WalletContext);
-    const { wallet } = ContextValue;
+    const { wallet } = useWallet();
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;
     const unredeemedTickets = tickets.filter(ticket => !ticket.redeemTx);

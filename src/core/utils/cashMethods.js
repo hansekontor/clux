@@ -1,12 +1,12 @@
-import { currency } from '@utils/ticker';
+import { currency } from '@core/utils/ticker';
 import BigNumber from 'bignumber.js';
 import cashaddr from 'ecashaddrjs';
 import { script, Script, TX } from '@hansekontor/checkout-components';
 const { SLP } = script; 
 import bio from 'bufio';
 
-import { sandboxTokenInfo } from '@utils/token';
-import { calculatePayout, readTicketAuthCode } from './ticket';
+import { sandboxTokenInfo } from '@core/utils/token';
+import { calculatePayout, readTicketAuthCode } from '@core/utils/ticket';
 
 export const fromLegacyDecimals = (
     amount,

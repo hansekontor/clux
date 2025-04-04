@@ -27,11 +27,10 @@ import {
 const { SHA256 } = bcrypto;
 import BigNumber from 'bignumber.js';
 
-// utils & hooks <--- should also be in a module
-import useWallet from '@hooks/useWallet';
-import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods'
-import sleep from '@utils/sleep';
+// core functions
+import { useWallet } from '@core/context/Wallet';
+import { getWalletState } from '@core/utils/cashMethods'
+import sleep from '@core/utils/sleep';
 
 const allowedCountries = ["AllowedCountry"];
 
@@ -50,10 +49,8 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
     const history = useHistory();
 
     // find ticket indicator
-    const ContextValue = useContext(WalletContext);
-    const { wallet } = ContextValue;
+    const { wallet, forceWalletUpdate, addIssueTxs } = useWallet();
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
-    const { forceWalletUpdate, addIssueTxs } = useWallet();
     const token = slpBalancesAndUtxos.tokens ? slpBalancesAndUtxos.tokens[0] : false;
     let maxEtokenTicketQuantity = 0;
     if (token) {

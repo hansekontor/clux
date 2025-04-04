@@ -6,11 +6,11 @@ import styled from 'styled-components';
 
 // custom react modules
 import PrimaryButton from '@components/PrimaryButton';
-import { WalletContext } from '@utils/context';
+import { WalletContext } from '@core/context/Wallet';
 import { successNotification } from '@components/Notifications';
 
-// util
-import sleep from '@utils/sleep';
+// core functions
+import sleep from '@core/utils/sleep';
 
 
 // styled css modules

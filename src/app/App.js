@@ -15,6 +15,8 @@ import * as Styled from "@components/styles";
 
 // core components
 import { CheckoutProvider } from '@core/checkout';
+import { useWallet } from '@core/context/Wallet';
+import { isValidStoredWallet } from '@core/utils/cashMethods';
 
 // react components
 const Select = lazy(() => import('./Select/Select'));
@@ -30,17 +32,12 @@ const OnBoarding = lazy(() => import('./OnBoarding/OnBoarding'))
 import { LoadingAnimation } from '@components/Loader';
 import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 
-// util
-import { WalletContext } from '@utils/context';
-import { isValidStoredWallet } from '@utils/cashMethods';
-import sleep from '@utils/sleep';
 
 const App = () => {
 	const history = useHistory();
 	const location = useLocation();
 
-	const ContextValue = useContext(WalletContext);
-	const { wallet, loading } = ContextValue;
+	const { wallet, loading } = useWallet();
 	const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
 	const [loadingStatus, setLoadingStatus] = useState(false);
 	const [loader, setLoader] = useState(true);

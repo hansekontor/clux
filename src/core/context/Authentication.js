@@ -1,14 +1,17 @@
+import React, { createContext, useContext } from 'react';
 import { useState, useEffect } from 'react';
 import localforage from 'localforage';
-import { currency } from '@utils/ticker';
+import { currency } from '@core/utils/ticker';
 import {
     convertBase64ToArrayBuffer,
     convertArrayBufferToBase64,
-} from '@utils/convertArrBuffBase64';
+} from '@core/utils/convertArrBuffBase64';
 
-// return an Authentication Object
-// OR null if user device does not support Web Authentication
-const useWebAuthentication = () => {
+export const AuthenticationContext = createContext();
+
+export const AuthenticationProvider = ({ children }) => {
+
+    // useWebAuthentication returns null if Web Authn is not supported
     const [isWebAuthnSupported, setIsWebAuthnSupported] = useState(false);
     // Possible values of isAuthenticationRequired:
     //   true - YES, authentication is required
@@ -230,9 +233,21 @@ const useWebAuthentication = () => {
     // (hardware failure, OS problems, the behaviour of some authenticators after several failed authentication attempts, etc)
     // If this is the case, and user has previous enabled the lock, the decision here is to lock up the wallet.
     // Otherwise, malicious user needs to simply disbale the platform authenticator to gain access to the wallet
-    return !isWebAuthnSupported && !isAuthenticationRequired
+    const webAuth = !isWebAuthnSupported && !isAuthenticationRequired
         ? null
         : authentication;
+
+    return (
+        <AuthenticationContext.Provider value={webAuth}>
+            {children}
+        </AuthenticationContext.Provider>
+    );
 };
 
-export default useWebAuthentication;
+export const useAuthentication = () => {
+    const context = useContext(AuthenticationContext);
+    if (!context) {
+        throw new Error("useAuthentication must be used within a AuthenticationProvider");
+    }
+    return context;
+};

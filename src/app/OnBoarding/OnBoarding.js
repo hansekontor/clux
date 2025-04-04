@@ -1,8 +1,7 @@
 // node modules
 import React, { useState, useEffect, useContext } from 'react';
-import { WalletContext } from '@utils/context';
+import { WalletContext } from '@core/context/Wallet';
 import PrimaryButton from '@components/PrimaryButton';
-import { nationalityOptions, residencyOptions } from '@utils/geoblock';
 import BeachPng from '@assets/images/ResultBackground.png';
 import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
 import { Modal } from 'antd';
@@ -10,6 +9,8 @@ const { SHA256 } = bcrypto;
 
 import * as S from './components/Styled';
 
+// core functions
+import { nationalityOptions, residencyOptions } from '@core/utils/geoblock';
 
 const PasswordProtection = ({
     passProtection

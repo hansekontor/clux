@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 // custom react components
 import PrimaryButton, { SecondaryButton } from '@components/PrimaryButton';
 import SeedPhrase from '@components/SeedPhrase';
-import { WalletContext } from '@utils/context';
+import { WalletContext } from '@core/context/Wallet';
 import FadeInOut from '@components/FadeInOut'
 import { successNotification } from '@components/Notifications';
 import { LargeHeading } from '@components/Text';

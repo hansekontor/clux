@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { currency, isValidTokenPrefix } from '@utils/ticker.js';
-import { fromSmallestDenomination } from '@utils/cashMethods';
+import { currency, isValidTokenPrefix } from '@core/utils/ticker.js';
+import { fromSmallestDenomination } from '@core/utils/cashMethods';
 
 // Validate cash amount
 export const shouldRejectAmountInput = (

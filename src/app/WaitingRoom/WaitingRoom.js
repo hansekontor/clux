@@ -1,5 +1,5 @@
 // node modules
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Modal } from 'antd';
@@ -14,23 +14,24 @@ import {
 import { U64 } from 'n64';
 
 // react components
-import { WalletContext } from '@utils/context';
 import Header from '@components/Header';
 import { FooterCtn, SupportBar } from '@components/Footer';
 import RandomNumbers from '@components/RandomNumbers';
 import PrimaryButton from '@components/PrimaryButton';
-import { getWalletState } from '@utils/cashMethods'
 import { successNotification, infoNotification } from '@components/Notifications';
-import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '@utils/ticket';
-import TXUtil from '@utils/txutil';
-import useBCH from '@hooks/useBCH';
-import useWallet from '@hooks/useWallet';
 
 import * as S from './components/Styled';
 
+// core functions
+import { useWallet } from '@core/context/Wallet';
+import useBCH from '@core/hooks/useBCH';
+import { getWalletState } from '@core/utils/cashMethods'
+import TXUtil from '@core/utils/txutil';
+import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '@core/utils/ticket';
+import sleep from '@core/utils/sleep';
+
 // util
-import animationLabels from '@utils/animations';
-import sleep from '@utils/sleep';
+import animationLabels from '@animations/animations';
 
 // assets
 import LockerPng from '@assets/images/locker.png';
@@ -43,12 +44,13 @@ const WaitingRoom = ({
 
     const history = useHistory();
 	const location = useLocation();
-    const ContextValue = useContext(WalletContext);
+
     const { 
 		wallet, 
 		addMinedTicketToStorage, 
 		addRedeemTxToStorage
-	} = ContextValue;
+	} = useWallet();
+
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;
 	// otherwise the indicator is showing the number of unconfirmed issuetx, this is an exception, showing only redeemable tx

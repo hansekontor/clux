@@ -2,9 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app/App';
-import { AuthenticationProvider, WalletProvider } from './utils/context';
 import { HashRouter as Router } from 'react-router-dom';
-import GA from './utils/GoogleAnalytics';
+
+// core functions
+import GA from '@core/utils/GoogleAnalytics';
+import { AuthenticationProvider } from '@core/context/Authentication';
+import { WalletProvider } from '@core/context/Wallet';
 
 ReactDOM.render(
     <AuthenticationProvider>

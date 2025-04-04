@@ -9,10 +9,9 @@ import { CopyOutlined } from '@ant-design/icons';
 import PrimaryButton from '@components/PrimaryButton';
 import { successNotification } from '@components/Notifications';
 
-import useWallet from '@hooks/useWallet';
-
-// util
-import sleep from '@utils/sleep';
+// core functions
+import { useWallet } from '@core/context/Wallet';
+import sleep from '@core/utils/sleep';
 
 // assets
 import TicketSvg from '@assets/svgs/ticket_filled.svg';

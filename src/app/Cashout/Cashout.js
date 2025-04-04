@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import Select from 'react-select';
 import 'react-range-slider-input/dist/style.css';
-import { PaymentRequest, Payment, PaymentACK } from  'b70-checkout';
+import { PaymentRequest, Payment, PaymentACK } from 'b70-checkout';
 import bio from 'bufio';
 import { stringify as uuidStringify } from 'uuid';
 import { U64 } from 'n64';
@@ -20,28 +20,24 @@ import { QuantityInput } from '@components/Inputs';
 import { LargeHeading } from '@components/Text';
 import * as S from './components/Styled';
 
-import useWallet from '@hooks/useWallet';
+// core functions
+import { useWallet } from '@core/context/Wallet';
+import { getWalletState } from '@core/utils/cashMethods'
+import sleep from '@core/utils/sleep';
 
-// util
-import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods'
-import sleep from '@utils/sleep';
-
-const countryOptions = [{value: "US", label: "United States"}];
-const currencyOptions = [{value: "USD", label:"USD"}];
+const countryOptions = [{ value: "US", label: "United States" }];
+const currencyOptions = [{ value: "USD", label: "USD" }];
 
 const Cashout = ({
     passLoadingStatus
 }) => {
-    const ContextValue = useContext(WalletContext);
-    const { wallet } = ContextValue;
+    const { wallet, forceWalletUpdate, addCashout } = useWallet();
     const { slpBalancesAndUtxos } = getWalletState(wallet);
     // console.log("slpBalancesAndUtxos", slpBalancesAndUtxos);
     const token = slpBalancesAndUtxos.tokens?.length > 0 ? slpBalancesAndUtxos.tokens[0] : false;
     // console.log("token", token);
-    const balance = token ? new BigNumber({...token.balance, _isBigNumber: true}).toNumber() / 100 : 0;
+    const balance = token ? new BigNumber({ ...token.balance, _isBigNumber: true }).toNumber() / 100 : 0;
     // console.log("balance", balance);
-    const { forceWalletUpdate, addCashout } = useWallet();
 
 
     const [stage, setStage] = useState("filter");
@@ -51,13 +47,13 @@ const Cashout = ({
     const [brandData, setBrandData] = useState(false);
     const [cardAmount, setCardAmount] = useState(10);
     const [modal, modalHolder] = Modal.useModal();
-    
+
 
     const history = useHistory();
 
     // DOM variables
     const title = "Cashout";
-    const previousPath = location.state?.returnTo || "/select";    
+    const previousPath = location.state?.returnTo || "/select";
 
     // force wallet update on cashout
     useEffect(async () => {
@@ -74,8 +70,8 @@ const Cashout = ({
             await sleep(3000);
             history.push("/select");
         } else {
-			passLoadingStatus(false);
-		}
+            passLoadingStatus(false);
+        }
     }, [balance]);
 
     // fetch tillo options
@@ -93,7 +89,7 @@ const Cashout = ({
             const availableBrands = await response.json();
             // console.log("availableBrands", availableBrands);
 
-            const possibleBrands = availableBrands.filter(function(brand) {
+            const possibleBrands = availableBrands.filter(function (brand) {
                 const lowerLimit = brand.limits?.lower;
                 if (!lowerLimit)
                     return true;
@@ -111,12 +107,12 @@ const Cashout = ({
             const formattedBrandsWithoutCreditCards = formattedBrands.filter(brand => {
                 if (brand.label === "Reward Pass USD")
                     return false;
-                else 
+                else
                     return true;
             });
 
             setTilloOptions(formattedBrandsWithoutCreditCards);
-            setTilloSelection(formattedBrandsWithoutCreditCards );
+            setTilloSelection(formattedBrandsWithoutCreditCards);
         }
     }, [tilloOptions]);
 
@@ -126,7 +122,7 @@ const Cashout = ({
             return handleGiftcardConfirmation()
         else
             history.push(previousPath);
-    }    
+    }
     // const handleAmountSubmit = (e) => {
     //     e.preventDefault();
     //     const inputAmount = e.target.amount.value;
@@ -151,39 +147,39 @@ const Cashout = ({
         // console.log("tillooptions", tilloOptions);
         const newTilloSelection = tilloOptions.filter(brand => brand.countries.includes(country))
             .filter(brand => brand.currency === currency)
-            .filter(function(brand) {
+            .filter(function (brand) {
                 if (!brand.limits) {
                     return true;
                 } else {
                     const lowerLimit = brand.limits.lower;
                     const upperLimit = brand.limits.upper;
                     const isInRange = cardAmount >= lowerLimit && cardAmount <= upperLimit;
-                    if (isInRange) 
+                    if (isInRange)
                         return true;
-                    else 
+                    else
                         return false;
                 }
             });
 
-            setTilloSelection(newTilloSelection);
+        setTilloSelection(newTilloSelection);
         setStage("brand");
     }
 
     const handleBrandSubmit = async (e) => {
         try {
             e.preventDefault();
-            
-			passLoadingStatus("REQUESTING GIFTCARD");
+
+            passLoadingStatus("REQUESTING GIFTCARD");
 
             const brand = e.target.brand.value;
             const json = {
                 value: String(cardAmount),
-                brand, 
+                brand,
             };
             // console.log("cardOptions", json);
 
             const invoiceRes = await fetch("https://lsbx.nmrai.com/v1/cardreq", {
-                method: "POST", 
+                method: "POST",
                 mode: "cors",
                 body: JSON.stringify(json),
                 headers: new Headers({
@@ -193,16 +189,16 @@ const Cashout = ({
             });
             // console.log("invoiceRes", invoiceRes);
 
-			// add api error handling
+            // add api error handling
 
             const invoiceArrayBuffer = await invoiceRes.arrayBuffer();
             const invoiceBuf = Buffer.from(invoiceArrayBuffer);
-            
+
             const pr = PaymentRequest.fromRaw(invoiceBuf);
             const prOutputs = pr.paymentDetails.outputs;
             console.log("pr", pr);
 
-			passLoadingStatus("BUILDING TRANSACTION");
+            passLoadingStatus("BUILDING TRANSACTION");
 
             const merchantData = pr.paymentDetails.getData('json');
             // console.log("merchantData", merchantData);
@@ -211,20 +207,20 @@ const Cashout = ({
             const id = uuidStringify(br.readBytes(16))
             const amount = br.readU32() / 100
             // console.log({id, amount})
-        
+
             const payment = new Payment({
                 memo: pr.paymentDetails.memo
             })
-        
+
             // Get token coins
             const sortedTokenUtxos = slpBalancesAndUtxos.slpUtxos.filter(u => u.slp?.tokenId && ['MINT', 'SEND'].includes(u.slp.type))
-            .sort((a, b) => parseInt(a.slp.value) - parseInt(b.slp.value));
-        
+                .sort((a, b) => parseInt(a.slp.value) - parseInt(b.slp.value));
+
             const tx = new MTX()
             // Add outputs
             for (let i = 0; i < prOutputs.length; i++) {
                 tx.addOutput(Script.fromRaw(prOutputs[i].script), prOutputs[i].value)
-            }   
+            }
 
             // Calculate needed coins
             const coinsBurned = []
@@ -235,16 +231,16 @@ const Cashout = ({
                 coinsBurned.push(utxo);
                 baseAmount -= parseInt(utxo.slp.value)
                 if (baseAmount <= 0)
-                        break
+                    break
             }
 
             console.log("baseAmount", baseAmount);
-        
+
             if (baseAmount > 0)
                 throw new Error('Insufficient token funds in address')
 
             const buyerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
-        
+
             // Add a change output to script if necessary
             const baseChange = parseInt(baseAmount * -1);
             if (baseChange > 0) {
@@ -256,41 +252,41 @@ const Cashout = ({
             const hashTypes = Script.hashType;
             const sighashType = hashTypes.ALL | hashTypes.ANYONECANPAY | hashTypes.SIGHASH_FORKID;
             tx.sign(buyerKeyring, sighashType)
-            
+
             payment.transactions.push(tx.toRaw())
             payment.refundTo.push({
                 value: 546,
                 script: Script.fromAddress(buyerKeyring.getAddress('string')).toRaw()
             })
-        
+
             const sig = buyerKeyring.sign(paymentDataBuf)
-        
+
             payment.setData({
                 ...merchantData,
                 buyerpubkey: buyerKeyring.getPublicKey('hex'),
                 signature: sig.toString('hex')
             })
-        
-			const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/cardpay", {
-				method: "POST",
-				signal: AbortSignal.timeout(20000),
-				headers: new Headers({
-					'Content-Type': `application/etoken-payment`
-				}),
-				body: payment.toRaw()
-			})
-			console.log("rawPaymentRes", rawPaymentRes);
+
+            const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/cardpay", {
+                method: "POST",
+                signal: AbortSignal.timeout(20000),
+                headers: new Headers({
+                    'Content-Type': `application/etoken-payment`
+                }),
+                body: payment.toRaw()
+            })
+            console.log("rawPaymentRes", rawPaymentRes);
             if (rawPaymentRes.status !== 200)
                 throw new Error(rawPaymentRes.statusText)
 
-			const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
+            const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
             const response = Buffer.from(paymentResArrayBuf);
-                    
+
             const ack = PaymentACK.fromRaw(response);
-        
+
             // console.log("ack.payment", ack.payment.getData('json'))
             // console.log("ack.memo", ack.memo)
-        
+
             const rawTransactions = ack.payment.transactions;
             const txs = rawTransactions.map(r => TX.fromRaw(r));
             // console.log(txs)
@@ -300,8 +296,8 @@ const Cashout = ({
 
             setLink(ack.payment.getData('json').payout.result.url);
             setStage("giftcard");
-			passLoadingStatus(false);
-        } catch(err) {
+            passLoadingStatus(false);
+        } catch (err) {
             console.error(err);
         }
     }
@@ -314,7 +310,7 @@ const Cashout = ({
     const handleCardAmountChange = (range) => {
         const newCardAmount = range[1];
         setCardAmount(newCardAmount);
-    } 
+    }
     const handleGiftcardConfirmation = (e) => {
         if (e)
             e.preventDefault();
@@ -332,81 +328,81 @@ const Cashout = ({
         history.push("/select");
     }
 
-    return (            
+    return (
         <>
             {modalHolder}
             <S.FlexGrow>
                 <Header />
-                <NavigationBar 
+                <NavigationBar
                     handleOnClick={handleReturn}
-                    title={title}                              
+                    title={title}
                 />
-                    {stage === "filter" && 
-                        <S.Form id={`${stage}-form`} onSubmit={handleSubmitFilters}>
-                            <LargeHeading>How many Tokens?</LargeHeading>
-                            <QuantityInput 
-                                quantity={cardAmount}
-                                passQuantity={setCardAmount}
-                                step={10}
-                                max={maxAmount}
-                            />                   
-                            <Select 
-                                options={currencyOptions} 
-                                label="Currency"
-                                name="currency"
-                                required
-                            />                            
-                            <Select 
-                                options={countryOptions} 
-                                label="Country"
-                                name="country"
-                                required
-                            />
-                        </S.Form>
-                    }         
+                {stage === "filter" &&
+                    <S.Form id={`${stage}-form`} onSubmit={handleSubmitFilters}>
+                        <LargeHeading>How many Tokens?</LargeHeading>
+                        <QuantityInput
+                            quantity={cardAmount}
+                            passQuantity={setCardAmount}
+                            step={10}
+                            max={maxAmount}
+                        />
+                        <Select
+                            options={currencyOptions}
+                            label="Currency"
+                            name="currency"
+                            required
+                        />
+                        <Select
+                            options={countryOptions}
+                            label="Country"
+                            name="country"
+                            required
+                        />
+                    </S.Form>
+                }
 
-                    {stage === "brand" && 
-                        <S.Form id={`${stage}-form`}
-                            onSubmit={handleBrandSubmit}
-                        >
-                            <Select 
-                                options={tilloSelection}
-                                onChange={handleBrandChange}
-                                name="brand"
-                            />                        
-                        
-                            {brandData && (
-                                <p>
-                                    {brandData.description}
-                                </p>
-                            )}
+                {stage === "brand" &&
+                    <S.Form id={`${stage}-form`}
+                        onSubmit={handleBrandSubmit}
+                    >
+                        <Select
+                            options={tilloSelection}
+                            onChange={handleBrandChange}
+                            name="brand"
+                        />
+
+                        {brandData && (
+                            <p>
+                                {brandData.description}
+                            </p>
+                        )}
 
 
-                        </S.Form>
-                    }
+                    </S.Form>
+                }
 
-                    {stage === "giftcard" &&
-                        <S.Form id={`${stage}-form`} onSubmit={handleGiftcardConfirmation}>
-                            <S.Link href={link} target="_blank">
-                                "Claim your Giftcard"
-                            </S.Link>
-                        </S.Form>
-                    }
+                {stage === "giftcard" &&
+                    <S.Form id={`${stage}-form`} onSubmit={handleGiftcardConfirmation}>
+                        <S.Link href={link} target="_blank">
+                            "Claim your Giftcard"
+                        </S.Link>
+                    </S.Form>
+                }
 
-                    <FooterCtn>
-                        <PrimaryButton type="submit" form={`${stage}-form`}>
-                            {stage === "filter" && 
-                                <>Go to Brands</>
-                            }
-                            {stage === "brand" && 
-                                <>Get Giftcard</>
-                            }
-                            {stage === "giftcard" &&
-                                <>Back to Home</>
-                            }
-                        </PrimaryButton>
-                    </FooterCtn>    
-            </S.FlexGrow>           
+                <FooterCtn>
+                    <PrimaryButton type="submit" form={`${stage}-form`}>
+                        {stage === "filter" &&
+                            <>Go to Brands</>
+                        }
+                        {stage === "brand" &&
+                            <>Get Giftcard</>
+                        }
+                        {stage === "giftcard" &&
+                            <>Back to Home</>
+                        }
+                    </PrimaryButton>
+                </FooterCtn>
+            </S.FlexGrow>
         </>
     )
 }

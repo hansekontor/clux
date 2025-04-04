@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Paragraph from 'antd/lib/typography/Paragraph';
-import { currency } from '@utils/ticker';
+import { currency } from '@core/utils/ticker';
 import { notification } from 'antd';
 import styled from 'styled-components';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ const AnimationCtn = styled.div`
 	max-width: 480px;
 	position: relative;
 	z-index: 3000;
-
+x
     animation: slide-in-from-top 0.5s cubic-bezier(0.24, 0.48, 0.47, 0.95);
     ${SlideInAnimation}	
 

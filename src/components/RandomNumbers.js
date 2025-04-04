@@ -3,15 +3,15 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-// util
-import sleep from '@utils/sleep';
-
 // assets
 import LeftArrowSvg from '@assets/svgs/arrow_left.svg'
 import RightArrowSvg from '@assets/svgs/arrow_right.svg';
 import WhiteRightArrowSvg from '@assets/svgs/arrow_right_white.svg';
 import WhiteLeftArrowSvg from '@assets/svgs/arrow_left_white.svg';
 
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
 
 const RandomNumbersCtn = styled.div`
     width: 90%;

@@ -5,8 +5,6 @@ import bcash from '@hansekontor/checkout-components';
 const { Hash256 } = bcash.bcrypto;
 
 // react components
-import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods'
 import PrimaryButton from '@components/PrimaryButton';
 import Header from '@components/Header';
 import { FooterCtn } from '@components/Footer';
@@ -19,8 +17,12 @@ import VersusPng from '@assets/images/versus.png';
 import RingPng from '@assets/images/ring_on_beach.png';
 
 // util
-import animationLabels from '@utils/animations';
-import sleep from '@utils/sleep';
+import animationLabels from '@animations/animations';
+
+// core functions
+import { useWallet } from '@core/context/Wallet';
+import { getWalletState } from '@core/utils/cashMethods'
+import sleep from '@core/utils/sleep';
 
 const Game = ({
     passLoadingStatus,
@@ -28,10 +30,9 @@ const Game = ({
 
     const history = useHistory();
 	const location = useLocation();
-    const ContextValue = useContext(WalletContext);
     const { 
 		wallet, 
-	} = ContextValue;
+	} = useWallet();
     const walletState = getWalletState(wallet)
     const { tickets } = walletState;
 	const [redeemHash, ] = useState(location.state?.redeemHash || false);

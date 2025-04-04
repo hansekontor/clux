@@ -1,5 +1,5 @@
 // node modules
-import React, { useState, useContext, useEffect }  from 'react';
+import React, { useState, useEffect }  from 'react';
 import PropTypes from 'prop-types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
@@ -13,17 +13,16 @@ import NavigationBar from '@components/Navigation';
 import { FooterCtn, SupportBar } from '@components/Footer';
 import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Icons';
 import { Paragraph, LargeHeading } from '@components/Text';
-import useWallet from '@hooks/useWallet';
 
 import TicketHistory from './components/TicketHistory';
 import Email from './components/Email';
 import ImportWallet from './components/ImportWallet';
 import * as S from './components/Styled';
 
-// util
-import { WalletContext } from '@utils/context';
-import { getWalletState } from '@utils/cashMethods';
-import sleep from '@utils/sleep';
+// core functions
+import { useWallet } from '@core/context/Wallet';
+import { getWalletState } from '@core/utils/cashMethods';
+import sleep from '@core/utils/sleep';
 
 // assets 
 import RightArrowSvg from '@assets/svgs/arrow_right.svg';
@@ -37,15 +36,12 @@ const Wallet = ({
 }) => {
     const history = useHistory();
     const location = useLocation();
-    const ContextValue = useContext(WalletContext);
-    const { wallet, loading } = ContextValue;
+    const { wallet, loading } = useWallet();
     const walletState = getWalletState(wallet);
     const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
     console.log("slpBalances", slpBalancesAndUtxos);
-
-	const { forceWalletUpdate } = useWallet();
 	
 	// console.log("tickets from wallet state", tickets);
 

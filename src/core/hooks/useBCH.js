@@ -4,15 +4,15 @@ import {
     isCashtabOutput,
     extractCashtabMessage,
     extractExternalMessage,
-} from '@utils/ticker';
+} from '@core/utils/ticker';
 import {
     toSmallestDenomination,
     fromSmallestDenomination,
     isValidStoredWallet,
     convertToEcashPrefix,
-} from '@utils/cashMethods';
-import { postPayment } from '@utils/bip70';
-import TXUtil from '@utils/txutil';
+} from '@core/utils/cashMethods';
+import { postPayment } from '@core/utils/bip70';
+import TXUtil from '@core/utils/txutil';
 import cashaddr from 'ecashaddrjs';
 import { U64 } from 'n64';
 import { 
