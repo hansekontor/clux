@@ -3,7 +3,8 @@ import {
     StyledQuantity,
     StyledQuantityChange,
     StyledQuantityInputContainer,
-    StyledQuantitySuggestion
+    StyledQuantitySuggestion,
+    StyledScaleOut
 } from './Input.styles';
 
 export const QuantityInput = ({
