@@ -48,7 +48,7 @@ const App = () => {
 	} = useApp();
 
 	const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
-	
+
 	return (
 		<Layout>
 			<Suspense fallback={codeSplitLoader}>
@@ -77,12 +77,7 @@ const App = () => {
 										/>
 									</Route>
 									<Route path="/checkout">
-										<CheckoutProvider
-											passLoadingStatus={setLoadingStatus}
-											playerNumbers={playerNumbers}
-											passPurchasedTicket={setActiveTicket}
-											user={user}
-										>
+										<CheckoutProvider>
 											<Checkout />
 										</CheckoutProvider>
 									</Route>

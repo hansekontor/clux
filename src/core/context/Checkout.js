@@ -32,6 +32,7 @@ import { useWalletGlobal } from '@core/context/WalletGlobal';
 import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
+import { useApp } from '@core/context/App';
 
 const allowedCountries = ["AllowedCountry"];
 
@@ -46,9 +47,11 @@ const signMessage = (secret, msg) => {
 
 export const CheckoutContext = createContext();
 
-export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, user }) {
+export function CheckoutProvider({ children }) {
     const history = useHistory();
     const notify = useNotifications();
+
+    const { setLoadingStatus, playerNumbers, user } = useApp();
 
     // find ticket indicator
     const { wallet, forceWalletUpdate, addIssueTxs } = useWalletGlobal();
@@ -85,7 +88,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
 
         const checkPlayerNumbers = async () => {
             if (!playerNumbers && isMounted) {
-                passLoadingStatus("PLAYER NUMBERS ARE MISSING");
+                setLoadingStatus("PLAYER NUMBERS ARE MISSING");
                 history.push("/select");
             }
         };
@@ -98,7 +101,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
     useEffect(async () => {
         console.log("CHECKOUT user", user);
         if (user && !user.ipGeo.ticketPurchase) {
-            passLoadingStatus("ACCESS DENIED");
+            setLoadingStatus("ACCESS DENIED");
             await sleep(2000);
             history.push("/select");
         }
@@ -112,11 +115,11 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
         if (user.kyc_status?.includes("approved") || tickets.length > 0) {
             setIsKYCed(true);
         } else if (user.kyc_status === "needs_review") {
-            passLoadingStatus("KYC NEEDS REVIEW")
+            setLoadingStatus("KYC NEEDS REVIEW")
             return repeatOnboarding();
         } else if (user.kyc_status?.includes("declined")) {
             // user usually should not get here in this case
-            passLoadingStatus("ACCESS DENIED")
+            setLoadingStatus("ACCESS DENIED")
             return repeatOnboarding();
         }
 
@@ -126,7 +129,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
     useEffect(async () => {
         try {
             if (paymentMetadata && paymentRequest && !ticketIssued) {
-                passLoadingStatus("PROCESSING");
+                setLoadingStatus("PROCESSING");
                 const type = paymentProcessor === "etoken" ? paymentProcessor : "fiat";
                 const authonly = type === "fiat" && !isKYCed;
                 console.log("authonly", authonly);
@@ -136,7 +139,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
                 );
                 console.log("init payment", payment.toRaw().toString("hex"))
                 setKycAccessToken(kycToken);
-                // passLoadingStatus(false);
+                // setLoadingStatus(false);
                 const rawPaymentRes = await fetch("https://lsbx.nmrai.com/v1/pay", {
                     method: "POST",
                     headers: new Headers({
@@ -159,7 +162,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
                         coinsUsed
                     });
                     setShowKyc(true);
-                    passLoadingStatus(false);
+                    setLoadingStatus(false);
                 } else {
                     const paymentResArrayBuf = await rawPaymentRes.arrayBuffer();
                     const response = Buffer.from(paymentResArrayBuf);
@@ -190,7 +193,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
             }
         } catch (err) {
             console.error(err);
-            passLoadingStatus("AN ERROR OCCURED");
+            setLoadingStatus("AN ERROR OCCURED");
             await sleep(3000);
             history.push("/select");
         }
@@ -405,7 +408,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
 
         } catch (err) {
             console.error(err);
-            passLoadingStatus("AN ERROR OCCURED");
+            setLoadingStatus("AN ERROR OCCURED");
             await sleep(2000);
             return repeatOnboarding();
         }
@@ -427,7 +430,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
                     return repeatOnboarding();
 
                     if (msg?.includes("cancelled")) {
-                        passLoadingStatus(false);
+                        setLoadingStatus(false);
                         return;
                     }
 
@@ -442,7 +445,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
             }
         } catch (err) {
             console.error(err);
-            passLoadingStatus("AN ERROR OCCURED");
+            setLoadingStatus("AN ERROR OCCURED");
             await sleep(2000);
             return repeatOnboarding();
         }
@@ -471,31 +474,31 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
                     setKycCancelCount(1);
                     break;
                 } else {
-                    passLoadingStatus("KYC WAS CANCELLED AGAIN");
+                    setLoadingStatus("KYC WAS CANCELLED AGAIN");
                     await sleep(2000);
                     history.push("/select");
                 }
             case "error":
-                passLoadingStatus("A KYC ERROR OCCURED");
+                setLoadingStatus("A KYC ERROR OCCURED");
                 return setKycResult();
 
             // ----Complete workflow-----
             case "auto_approved":
                 if (isFiat) {
-                    passLoadingStatus("CAPTURE PAYMENT")
+                    setLoadingStatus("CAPTURE PAYMENT")
                     return capturePayment();
                 } else {
                     setShowKyc(false);
                     break;
                 }
             case "auto_declined":
-                passLoadingStatus("INVALID KYC");
+                setLoadingStatus("INVALID KYC");
                 if (isFiat)
                     return setKycResult();
                 else
                     return repeatOnboarding();
             case "needs_review":
-                passLoadingStatus("KYC NEEDS REVIEW")
+                setLoadingStatus("KYC NEEDS REVIEW")
                 return setKycResult();
         }
     }
@@ -513,7 +516,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
     const handleEtokenPayment = async (e) => {
         if (e)
             e.preventDefault();
-        passLoadingStatus("BUILDING TRANSACTION");
+        setLoadingStatus("BUILDING TRANSACTION");
         await sleep(1000);
         setPaymentMetadata(true);
     }
@@ -550,7 +553,7 @@ export function CheckoutProvider({ children, passLoadingStatus, playerNumbers, u
 
         // kyc the user if first payment is with etoken
         if (isEtoken && !isKYCed) {
-            passLoadingStatus("LOADING KYC");
+            setLoadingStatus("LOADING KYC");
             setShowKyc(true);
             // return handleEtokenPayment();
         } else if (isEtoken)
