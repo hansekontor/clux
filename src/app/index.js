@@ -1,17 +1,16 @@
 // node modules
-import React, { useState, Suspense, lazy, useEffect, useContext } from 'react';
+import React, { Suspense, lazy } from 'react';
 import {
 	Route,
 	Switch,
 	Redirect,
-	useHistory,
-	useLocation
 } from 'react-router-dom';
 
 // core components
 import { CheckoutProvider } from '@core/context/Checkout';
 import { useWalletGlobal } from '@core/context/WalletGlobal';
 import { isValidStoredWallet } from '@core/utils/cashMethods';
+import { useApp } from '@core/context/App';
 
 // react components
 import Layout from '@components/Layout';
@@ -30,63 +29,30 @@ import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 
 
 const App = () => {
-	const history = useHistory();
-	const location = useLocation();
+	const { wallet } = useWalletGlobal();
+	const {
+		loadingStatus,
+		loading,
+		protection,
+		user,
+		playerNumbers,
+		activeTicket,
+		redeemAll,
+		payout,
+		setProtection,
+		setUser,
+		setLoadingStatus,
+		setPlayerNumbers,
+		setActiveTicket,
+		setRedeemAll
+	} = useApp();
 
-	const { wallet, loading } = useWalletGlobal();
 	const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
-	const [loadingStatus, setLoadingStatus] = useState(false);
-	const [loader, setLoader] = useState(true);
-	const [playerNumbers, setPlayerNumbers] = useState(false);
-	const [activeTicket, setActiveTicket] = useState(false);
-	const [payout, setPayout] = useState(false);
-	const [protection, setProtection] = useState(true);
-	const [redeemAll, setRedeemAll] = useState(false);
-	const [user, setUser] = useState(false);
-
-
-	useEffect(() => {
-		if (location.state?.repeatOnboarding) {
-			setProtection(true);
-			window.history.replaceState({}, '')
-		}
-	}, [location.state])
-
-	// activates the loading screen on change of loadingStatus for loading within routes
-	useEffect(async () => {
-		if (loadingStatus && !loader) {
-			setLoader(true);
-		} else if (!loadingStatus && loader) {
-			// await sleep(500);
-			setLoader(false);
-		}
-	}, [loadingStatus]);
-
-	// initial wallet loading or creation
-	useEffect(async () => {
-		console.log("APP wallet", wallet);
-		if (loading) {
-			setLoadingStatus("LOADING WALLET");
-		} else {
-			setLoader(false);
-		}
-	}, [loading]);
-
-	// handle query parameters
-	useEffect(() => {
-		const ticketIdFromQuery = new URLSearchParams(location?.search).get("ticket");
-		const hasCorrectLength = ticketIdFromQuery?.length === 64;
-		if (ticketIdFromQuery && hasCorrectLength) {
-			setActiveTicket({ id: ticketIdFromQuery });
-			history.push("/waitingroom");
-		}
-	}, []);
-
-
+	
 	return (
 		<Layout>
 			<Suspense fallback={codeSplitLoader}>
-				{loader &&
+				{loading &&
 					<>
 						<LoadingAnimation loadingStatus={loadingStatus} />
 					</>

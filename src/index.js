@@ -8,6 +8,7 @@ import GA from '@core/utils/GoogleAnalytics';
 import { AuthenticationProvider } from '@core/context/Authentication';
 import { WalletGlobalProvider } from '@core/context/WalletGlobal';
 import { NotificationsProvider } from '@core/context/Notifications';
+import { AppProvider } from '@core/context/App';
 
 // styles
 import { theme, GlobalStyles } from './styles';
@@ -24,7 +25,9 @@ ReactDOM.render(
                 <NotificationsProvider Notification={Notification}>
                     <Router>
                         {GA.init() && <GA.RouteTracker />}
-                        <App />
+                        <AppProvider>
+                            <App />
+                        </AppProvider>
                     </Router>
                 </NotificationsProvider>
             </ThemeProvider>
