@@ -1,8 +1,7 @@
 import styled from "styled-components";
-import RandomNumbers from '@components/RandomNumbers';
-import { FadeOutAnimationShort } from '@components/CssAnimations';
-import { AppCtn } from '@components/styles';
-
+import PlayerNumbers from '@components/PlayerNumbers';
+import { FadeOutShort } from '@components/Animations';
+import { StyledContainer } from '@components/Layout/Layout.styles';
 
 const AnimationCtn = styled.div`
     background-color: #fefffe;
@@ -38,13 +37,13 @@ const FlashCtn = styled.div`
     justify-content: center;
     align-items: center;
 `;
-const StickyRandomNumbers = styled(RandomNumbers)`
+const StickyRandomNumbers = styled(PlayerNumbers)`
     z-index: 1;
 `;
-const FadeOut = styled(AppCtn)`
+const FadeOut = styled(StyledContainer)`
     box-shadow: none;
     animate: fade-out 1s ease-out both;
-    ${FadeOutAnimationShort}    
+    ${FadeOutShort}    
 `;
 
 export {

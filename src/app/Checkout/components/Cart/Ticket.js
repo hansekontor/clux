@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import RandomNumbers from '@components/RandomNumbers';
+import PlayerNumbers from '@components/PlayerNumbers';
 import { TicketFilledIcon } from '@components/Icons';
-import { BoldText } from '@components/Text';
+import Typography from '@components/Typography';
 
 
 const Details = styled.div`
@@ -43,16 +43,16 @@ const Price = styled.div`
 `;
 
 const Ticket = ({
-    numbers, 
+    numbers,
     background,
     quantity
 }) => {
 
-	const date = new Date();
-	const day = date.getDate();
-	const month = date.toLocaleString('default', {month: 'short'});
-	const year = date.getFullYear();
-	const displayDate = `${day} ${month} ${year} `;
+    const date = new Date();
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    const displayDate = `${day} ${month} ${year} `;
 
     return (
         <>
@@ -60,19 +60,19 @@ const Ticket = ({
                 <Row>
                     <TicketFilledIcon />
                     <DateColumn>
-                        <BoldText>Date</BoldText>
-                        <BoldText>{displayDate}</BoldText>
+                        <Typography weight="bold">Date</Typography>
+                        <Typography weight="bold">{displayDate}</Typography>
                     </DateColumn>
                 </Row>
                 <PriceColumn>
-                    <BoldText>Ticket Cost</BoldText>
-                    <Price>${10*quantity}</Price>
+                    <Typography weight="bold">Ticket Cost</Typography>
+                    <Price>${10 * quantity}</Price>
                 </PriceColumn>
             </Details>
-            <RandomNumbers 
+            <PlayerNumbers
                 fixedRandomNumbers={numbers}
                 background={background}
-            />          
+            />
         </>
     )
 }

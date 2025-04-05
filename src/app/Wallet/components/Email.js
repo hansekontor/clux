@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 // custom react components
-import { SecondaryButton } from '@components/PrimaryButton';
+import Button from '@components/Button';
 import { useNotifications } from '@core/context/Notifications';
 
 // styled components
@@ -97,9 +97,9 @@ const Email = ({
                         type="text"
                     />
                 </Form>
-                <SecondaryButton type="submit" form="email-form">
+                <Button variant="secondary" type="submit" form="email-form">
                     Change Email
-                </SecondaryButton>
+                </Button>
             </EmailCtn>        
         </>
     )

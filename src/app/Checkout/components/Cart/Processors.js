@@ -54,9 +54,11 @@ const FormHeader = styled(Item)`
     justify-content: space-between;
     display: flex;
 `;
-import { Header } from '@components/Text';
-const Price = styled(Header)`
-    text-align: right;
+
+import Typography from '@components/Typography';
+
+const Price = styled(Typography).attrs({ variant: 'header' })`
+  text-align: right;
 `;
 
 export const NmiCheckoutForm = ({
@@ -119,7 +121,7 @@ export const NmiCheckoutForm = ({
     return (
         <PaymentForm onSubmit={handleSubmit} id="NMIC-form">
             <FormHeader>
-                <Header>{headerText}</Header>
+                <Typography variant="header">{headerText}</Typography>
                 <Price>{currency}{amount}</Price>
             </FormHeader>
             <PaymentInput 

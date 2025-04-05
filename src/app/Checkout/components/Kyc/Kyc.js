@@ -1,13 +1,13 @@
 import React from 'react'
 
+// core functions
+import { useCheckout } from '@core/context/Checkout';
+
 // custom react components
 import Header from '@components/Header';
 import { SecondaryFlexGrow } from '../Styled';
 import KycContent from './KycContent';
-import PrimaryButton from '@components/PrimaryButton';
-
-// core functions
-import { useCheckout } from '@core/context/Checkout';
+import Button from '@components/Button';
 
 export default function Kyc() {
     const { handleKYC } = useCheckout();
@@ -17,7 +17,7 @@ export default function Kyc() {
             <Header />
             <SecondaryFlexGrow>
                 <KycContent />
-                <PrimaryButton onClick={handleKYC}>Continue</PrimaryButton>
+                <Button onClick={handleKYC}>Continue</Button>
             </SecondaryFlexGrow>
         </>
     )

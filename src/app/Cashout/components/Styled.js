@@ -3,10 +3,12 @@ import RangeSlider from 'react-range-slider-input';
 
 
 // css styled components
-import { Scrollable } from '@components/Container';
+import { Scrollable } from '@components/Common';
+
 const FlexGrow = styled(Scrollable)`
     background-color: ${props => props.theme.app.background};
 `;
+
 const Form = styled.form`
     flex-grow: 1;
     width: 90%;

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { CopyOutlined } from '@ant-design/icons';
 
 // custom modules
-import PrimaryButton from '@components/PrimaryButton';
+import Button from '@components/Button';
 
 // core functions
 import { useWallet } from '@core/context/Wallet';
@@ -43,7 +43,7 @@ const StyledCircle = styled.div`
     align-items: center;
 `;
 
-const Button = styled.button`
+const BaseButton = styled.button`
     background-color: #44405B;
     border-radius: 100px;
     padding: 7px;
@@ -138,7 +138,7 @@ const Collapsible = styled.div`
 	transition: height 0.5s ease-in-out;
 	width: 95%;
 `;
-const SyncButton = styled(PrimaryButton)`
+const SyncButton = styled(Button)`
 	font-family: "Helvetica";
 	font-size: 14px;
 	font-weight: 600;
@@ -259,9 +259,9 @@ const Ticket = ({
                 </LeftCtn>
                 <RightCtn>
                     {!ticket.redeemTx &&
-						<Button onClick={handleRedeemTicket}>
+						<BaseButton onClick={handleRedeemTicket}>
 							{ticket.issueTx?.height > 0 ? "Redeem" : "Request Redemption"}
-						</Button>
+						</BaseButton>
 					}
                     <RoundButton $rotateDown={collapsed}>
                         <RightArrow src={RightArrowSvg} />

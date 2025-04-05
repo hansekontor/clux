@@ -5,7 +5,7 @@ import { Modal } from 'antd';
 import styled from 'styled-components';
 
 // custom react modules
-import PrimaryButton from '@components/PrimaryButton';
+import Button from '@components/Button';
 
 // core functions
 import sleep from '@core/utils/sleep';
@@ -47,7 +47,7 @@ const Input = styled.input`
 const Help = styled.div`
     color: red;
 `;
-const StyledPrimaryButton = styled(PrimaryButton)`
+const StyledPrimaryButton = styled(Button)`
 	font-family: "Helvetica";
 	font-size: 14px;
 	font-weight: 600;

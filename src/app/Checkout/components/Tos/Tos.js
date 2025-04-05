@@ -1,17 +1,16 @@
 import React from 'react'
 
-// custom react components
-import Header from '@components/Header';
-import NavigationBar from '@components/Navigation';
-import RandomNumbers from '@components/RandomNumbers';
-import PrimaryButton from '@components/PrimaryButton';
-import { FooterCtn } from '@components/Footer';
-import { PrimaryFooterBackground } from '../Styled';
-
-import TosContent from './TosContent';
-
 // core functions
 import { useCheckout } from '@core/context/Checkout';
+
+// custom react components
+import Header from '@components/Header';
+import Navigation from '@components/Navigation';
+import PlayerNumbers from '@components/PlayerNumbers';
+import Footer from '@components/Footer';
+import { PrimaryFooterBackground } from '../Styled';
+import TosContent from './TosContent';
+import Button from '@components/Button';
 
 const tosTitle = "Purchase Terms";
 const agreeButtonText = "Agree and Continue";
@@ -26,23 +25,23 @@ export default function Tos() {
     return (
         <>
             <Header />
-            <NavigationBar
+            <Navigation
                 handleOnClick={handleReturn}
                 title={tosTitle}
             />
             
             <TosContent />
-            <FooterCtn>
+            <Footer variant="empty">
                 <PrimaryFooterBackground />
-                <RandomNumbers
+                <PlayerNumbers
                     fixedRandomNumbers={playerNumbers}
                 />
-                <PrimaryButton
+                <Button
                     onClick={handleAgree}
                 >
                     {agreeButtonText}
-                </PrimaryButton>
-            </FooterCtn>
+                </Button>
+            </Footer>
         </>
     )
 }

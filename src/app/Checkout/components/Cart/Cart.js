@@ -1,20 +1,20 @@
 import React from 'react'
 
-// custom react components
-import NavigationBar from '@components/Navigation';
-import Ticket from './Ticket';
-import PrimaryButton from '@components/PrimaryButton';
-import { FooterCtn } from '@components/Footer';
-import { CardIconBox } from '@components/Icons';
-import { QuantityInput, QuantitySuggestions } from '@components/Inputs';
-import { Paragraph, LargeHeading } from '@components/Text';
-import { Column, Overlay } from '@components/Container';
-import { AccountForm, ErrorMessage, Item, PaymentMethod, Price, PrimaryFlexGrow, SecondaryFooterBackground } from '../Styled';
-import { RollUp } from '@components/CssAnimations';
-import { NmiCheckoutForm, WidgetBody } from './Processors';
-
 // core functions
 import { useCheckout } from '@core/context/Checkout';
+
+// custom react components
+import Navigation from '@components/Navigation';
+import Ticket from './Ticket';
+import Footer from '@components/Footer';
+import { CardIconBox } from '@components/Icons';
+import { QuantityInput, QuantitySuggestions } from '@components/Inputs';
+import Typography from '@components/Typography';
+import { Column, Overlay } from '@components/Common';
+import { AccountForm, ErrorMessage, Item, PaymentMethod, Price, PrimaryFlexGrow, SecondaryFooterBackground } from '../Styled';
+import { RollUp } from '@components/Animations';
+import { NmiCheckoutForm, WidgetBody } from './Processors';
+import Button from '@components/Button';
 
 // dom variables
 const checkoutTitle = "Checkout";
@@ -39,7 +39,7 @@ export default function Cart() {
 
     return (
         <>
-            <NavigationBar
+            <Navigation
                 handleOnClick={handleReturn}
                 title={checkoutTitle}
                 merchantTag={true}
@@ -54,12 +54,12 @@ export default function Cart() {
 
                 <AccountForm id="purchase-options-form">
                     <Item>
-                        <LargeHeading>How  many tickets?</LargeHeading>
+                        <Typography variant="header" size="large">How many tickets?</Typography>
                     </Item>
                     <Item>
-                        <Paragraph>
+                        <Typography variant="paragraph">
                             Each ticket result is random and unique, including entry in each of the Jackpots.
-                        </Paragraph>
+                        </Typography>
                     </Item>
 
                     <QuantityInput
@@ -75,7 +75,7 @@ export default function Cart() {
 
                     <Column>
                         <Item>
-                            <LargeHeading>Payment Method</LargeHeading>
+                            <Typography variant="header" size="large">Payment Method</Typography>
                             <CardIconBox />
                         </Item>
                         <PaymentMethod
@@ -89,19 +89,19 @@ export default function Cart() {
                             >eToken</PaymentMethod>
                         }
                         <Item>
-                            <LargeHeading>Total</LargeHeading>
+                            <Typography variant="header" size="large">Total</Typography>
                             <Price>${ticketQuantity * ticketPrice}</Price>
                         </Item>
                     </Column>
                 </AccountForm>
             </PrimaryFlexGrow>
 
-            <FooterCtn>
+            <Footer variant="empty">
                 <SecondaryFooterBackground />
-                <PrimaryButton onClick={handleConfirmation}>
+                <Button onClick={handleConfirmation}>
                     Pay
-                </PrimaryButton>
-            </FooterCtn>
+                </Button>
+            </Footer>
 
             {showPaymentForm && (
                 <Overlay onClick={() => setShowPaymentForm(false)}>
@@ -111,12 +111,12 @@ export default function Cart() {
                                 passMetadata={setPaymentMetadata}
                                 amount={ticketPrice * ticketQuantity}
                             />
-                            <PrimaryButton
+                            <Button
                                 type="submit"
                                 form={`${paymentProcessor}-form`}
                             >
                                 {fiatPurchaseButtonText}
-                            </PrimaryButton>
+                            </Button>
                         </WidgetBody>
                     </RollUp>
                 </Overlay>

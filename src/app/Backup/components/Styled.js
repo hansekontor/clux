@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { FadeInAnimation } from '@components/CssAnimations';
+import { FadeIn } from '@components/Animations';
 
 // styled components
 const Modal = styled.div`
@@ -25,7 +25,7 @@ const ModalCtn = styled.div`
     display: flex;
     flex-direction: column;
 
-    ${FadeInAnimation}
+    ${FadeIn}
 `;
 
 const CopyboardIcon = styled.img`

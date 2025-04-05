@@ -2,9 +2,8 @@ import styled from 'styled-components';
 import CreatableSelect from 'react-select/creatable';
 import { Checkbox } from 'antd';
 
-import { BoldHeader, LargeHeading } from '@components/Text';
-import { Scrollable, Background } from '@components/Container';
-import { textItem } from '@components/CssUtil';
+import Typography from '@components/Typography';
+import { Scrollable, Background } from '@components/Common';
 
 const PrimaryFlexGrow = styled(Scrollable)`
     background-color:${props => props.theme.checkout.payment.background};
@@ -46,8 +45,9 @@ const AccountForm = styled.form`
 	display: flex;
 	flex-direction: column;
 `;
-const ErrorMessage = styled.div`
-	${textItem}
+const ErrorMessage = styled(Typography).attrs({
+	variant: "textItem"
+})`
 	background-color: ${props => props.theme.error.background};
 	color: ${props => props.theme.error.color};
 	display: flex;
@@ -55,7 +55,6 @@ const ErrorMessage = styled.div`
 	align-items: center;
 `;
 const PaymentMethod = styled(ErrorMessage)`
-	${textItem}
 	background-color: ${props => props.$active ? props.theme.checkout.methods.active.background : props.theme.checkout.methods.inactive.background};
 	color: ${props => props.$active ? props.theme.checkout.methods.active.color : props.theme.checkout.methods.inactive.color};
 	border-width: 1px;
@@ -125,13 +124,17 @@ const CustomCheckbox = styled(Checkbox)`
 		border-color: #000000;
 	}
 `;
-const Label = styled(BoldHeader)`
+const Label = styled(Typography).attrs({
+	variant: "header", weight: "bold"
+})`
 	width: 100%;
 `;
 const CheckboxText = styled(Label)`
 	margin-top: 0;
 `;
-const Price = styled(LargeHeading)`
+const Price = styled(Typography).attrs({
+	variant: "header", size: "large"
+})`
 	width: fit-content;
 `;
 export {

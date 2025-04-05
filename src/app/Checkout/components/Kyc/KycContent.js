@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { VideoIcon, PicturesIcon, SmartphoneIcon } from '@components/Icons';
-import { Text, BoldText } from '@components/Text';
+import Typography from '@components/Typography';
 import { BottomItem, Container, Content, Header, Subscript, Subtitle, TopItem } from './KycStyles';
 
 const KycContent = () => {
@@ -13,15 +13,15 @@ const KycContent = () => {
             <TopItem>
                 <Content>
                     <PicturesIcon />
-                    <BoldText>Submit a photo ID</BoldText>
-                    <Text>1 minute</Text>
+                    <Typography weight="bold">Submit a photo ID</Typography>
+                    <Typography>1 minute</Typography>
                 </Content>
             </TopItem>
             <BottomItem>
                 <Content>
                     <SmartphoneIcon />
-                    <BoldText>Do a liveness check</BoldText>
-                    <Text>1 minute</Text>
+                    <Typography weight="bold">Do a liveness check</Typography>
+                    <Typography>1 minute</Typography>
                 </Content>
             </BottomItem>
             <Subscript>Total time 2 minutes</Subscript>

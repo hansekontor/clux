@@ -1,16 +1,30 @@
 import React from 'react'
 
-// custom react components
-import Header from '@components/Header';
-import NavigationBar from '@components/Navigation';
-import PrimaryButton from '@components/PrimaryButton';
-import { FooterCtn } from '@components/Footer';
-import { Paragraph, LargeHeading } from '@components/Text';
-import { Input } from '@components/Inputs';
-import { AccountForm, CheckboxItem, CheckboxText, CustomCheckbox, Divider, ErrorMessage, FormSection, Item, Label, PrimaryFlexGrow, PrimaryFooterBackground, selectStyle, WideCreatableSelect } from '../Styled';
-
 // core functions
 import { useCheckout } from '@core/context/Checkout';
+
+// custom react components
+import Header from '@components/Header';
+import Navigation from '@components/Navigation';
+import Footer from '@components/Footer';
+import Typography from '@components/Typography';
+import { Input } from '@components/Inputs';
+import { 
+    AccountForm, 
+    CheckboxItem, 
+    CheckboxText, 
+    CustomCheckbox, 
+    Divider, 
+    ErrorMessage, 
+    FormSection, 
+    Item, 
+    Label, 
+    PrimaryFlexGrow, 
+    PrimaryFooterBackground, 
+    selectStyle, 
+    WideCreatableSelect 
+} from '../Styled';
+import Button from '@components/Button';
 
 const accountTitle = "Create Account";
 const emailButtonText = "Continue";
@@ -32,7 +46,7 @@ export default function Email() {
     return (
         <>
             <Header />
-            <NavigationBar
+            <Navigation
                 handleOnClick={handleReturn}
                 title={accountTitle}
             />
@@ -41,12 +55,12 @@ export default function Email() {
 
                     <FormSection>
                         <Item>
-                            <LargeHeading>Create Your Account</LargeHeading>
+                            <Typography variant="header" size="large">Create Your Account</Typography>
                         </Item>
                         <Item>
-                            <Paragraph>
+                            <Typography variant="paragraph">
                                 Please enter your details to create an account.
-                            </Paragraph>
+                            </Typography>
                         </Item>
                     </FormSection>
 
@@ -60,13 +74,13 @@ export default function Email() {
                         />
                         {emailError && <ErrorMessage>{emailError}</ErrorMessage>}
                         <Item>
-                            <Paragraph>Your email is required and is only used to announce results. No marketing emails.</Paragraph>
+                            <Typography variant="paragraph">Your email is required and is only used to announce results. No marketing emails.</Typography>
                         </Item>
                     </FormSection>
                     <FormSection>
                         <Label>Country</Label>
                         <Item>
-                            <Paragraph>Select the country of your government-issued ID.</Paragraph>
+                            <Typography variant="paragraph">Select the country of your government-issued ID.</Typography>
                         </Item>
                         <WideCreatableSelect
                             isClearable
@@ -96,14 +110,14 @@ export default function Email() {
 
                 </AccountForm>
             </PrimaryFlexGrow>
-            <FooterCtn>
+            <Footer variant="empty">
                 <PrimaryFooterBackground />
-                <PrimaryButton
+                <Button
                     form={"email-form"}
                 >
                     {emailButtonText}
-                </PrimaryButton>
-            </FooterCtn>
+                </Button>
+            </Footer>
         </>
     )
 }

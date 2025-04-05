@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { SlideInAnimation, FadeOutAnimationShort } from '@components/CssAnimations';
+import { SlideIn as SlideInAnimation, FadeOutShort } from '@components/Animations';
 import { Flash } from 'react-ruffle';
 
 
@@ -40,7 +40,7 @@ const SlideIn = styled.div`
     ${SlideInAnimation};
 `;
 const FadeOut = styled.div`
-    ${FadeOutAnimationShort};
+    ${FadeOutShort};
 `;
 const Versus = styled.img`
     width: 70%;
