@@ -17,7 +17,7 @@ import * as S from './components/Styled';
 import animationLabels from '@utils/animations';
 
 // core functions
-import { useWallet } from '@core/context/Wallet';
+import { useWalletGlobal } from '@core/context/WalletGlobal';
 import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
 
@@ -28,7 +28,7 @@ const Result = ({
 }) => {
     const history = useHistory();
 	const location = useLocation();
-    const { wallet } = useWallet();
+    const { wallet } = useWalletGlobal();
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;
     const unredeemedTickets = tickets.filter(ticket => !ticket.redeemTx);

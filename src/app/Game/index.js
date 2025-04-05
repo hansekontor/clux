@@ -20,7 +20,7 @@ import RingPng from '@assets/images/ring_on_beach.png';
 import animationLabels from '@utils/animations';
 
 // core functions
-import { useWallet } from '@core/context/Wallet';
+import { useWalletGlobal } from '@core/context/WalletGlobal';
 import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
 
@@ -32,7 +32,7 @@ const Game = ({
 	const location = useLocation();
     const { 
 		wallet, 
-	} = useWallet();
+	} = useWalletGlobal();
     const walletState = getWalletState(wallet)
     const { tickets } = walletState;
 	const [redeemHash, ] = useState(location.state?.redeemHash || false);

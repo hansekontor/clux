@@ -36,9 +36,9 @@ import {
 import TicketHistory from '@core/utils/ticket';
 import sleep from '@core/utils/sleep';
 
-export const WalletContext = createContext();
+export const WalletGlobalContext = createContext();
 
-export const WalletProvider = ({ children }) => {
+export const WalletGlobalProvider = ({ children }) => {
     const [wallet, setWallet] = useState(false);
     const [cashtabSettings, setCashtabSettings] = useState(false);
     const [apiError, setApiError] = useState(false);
@@ -950,7 +950,7 @@ export const WalletProvider = ({ children }) => {
     }
 
     return (
-        <WalletContext.Provider value={{
+        <WalletGlobalContext.Provider value={{
             wallet,
             // fiatPrice,
             loading,
@@ -974,14 +974,14 @@ export const WalletProvider = ({ children }) => {
             addCashout
         }}>
             {children}
-        </WalletContext.Provider>
+        </WalletGlobalContext.Provider>
     );
 };
 
-export const useWallet = () => {
-    const context = useContext(WalletContext);
+export const useWalletGlobal = () => {
+    const context = useContext(WalletGlobalContext);
     if (!context) {
-        throw new Error("useWallet must be used within a WalletProvider");
+        throw new Error("useWalletGlobal must be used within a WalletGlobalProvider");
     }
     return context;
 };

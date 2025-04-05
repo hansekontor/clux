@@ -10,7 +10,7 @@ import {
 
 // core components
 import { CheckoutProvider } from '@core/context/Checkout';
-import { useWallet } from '@core/context/Wallet';
+import { useWalletGlobal } from '@core/context/WalletGlobal';
 import { isValidStoredWallet } from '@core/utils/cashMethods';
 
 // react components
@@ -33,7 +33,7 @@ const App = () => {
 	const history = useHistory();
 	const location = useLocation();
 
-	const { wallet, loading } = useWallet();
+	const { wallet, loading } = useWalletGlobal();
 	const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
 	const [loadingStatus, setLoadingStatus] = useState(false);
 	const [loader, setLoader] = useState(true);

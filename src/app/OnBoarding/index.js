@@ -1,16 +1,16 @@
 // node modules
 import React, { useState, useEffect, useContext } from 'react';
-import { WalletContext } from '@core/context/Wallet';
 import BeachPng from '@assets/images/ResultBackground.png';
 import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
 import { Modal } from 'antd';
 const { SHA256 } = bcrypto;
 
 import * as S from './components/Styled';
+import Button from '@components/Button';
 
 // core functions
 import { nationalityOptions, residencyOptions } from '@core/utils/geoblock';
-import Button from '../../components/Button';
+import { useWalletGlobal } from '@core/context/WalletGlobal';
 
 const PasswordProtection = ({
     passProtection
@@ -46,8 +46,7 @@ const OnBoarding = ({
 	passUser,
 	passLoadingStatus,
 }) => {
-	const ContextValue = useContext(WalletContext);
-    const { wallet } = ContextValue;
+    const { wallet } = useWalletGlobal();
 	
     const [passwordProtection, setPasswordProtection] = useState(true);
     const [geoProtection, setGeoProtection] = useState(true);

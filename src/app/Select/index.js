@@ -19,7 +19,7 @@ import RingPng from '@assets/images/ring_on_beach.png';
 import * as Styled from "./components/Styles";
 
 // core functions
-import { useWallet } from "../../core/context/Wallet";
+import { useWalletGlobal } from "../../core/context/WalletGlobal";
 import { getWalletState } from '@core/utils/cashMethods';
 import sleep from '@core/utils/sleep';
 
@@ -30,7 +30,7 @@ const Select = ({
 	user
 }) => {
     const history = useHistory();
-    const { wallet } = useWallet();
+    const { wallet } = useWalletGlobal();
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
     const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
 

@@ -9,7 +9,7 @@ import Button from '@components/Button';
 
 // core functions
 import sleep from '@core/utils/sleep';
-import { useWallet } from '@core/context/Wallet';
+import { useWalletGlobal } from '@core/context/WalletGlobal';
 import { useNotifications } from '@core/context/Notifications';
 
 
@@ -58,7 +58,7 @@ const ImportWallet = ({
     passLoadingStatus
 }) => {
     const history = useHistory();
-    const { createWallet, validateMnemonic } = useWallet();
+    const { createWallet, validateMnemonic } = useWalletGlobal();
     const notify = useNotifications();
 
     const [alertModal, alertModalHolder] = Modal.useModal();
