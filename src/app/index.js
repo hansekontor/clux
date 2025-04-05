@@ -13,7 +13,6 @@ import { isValidStoredWallet } from '@core/utils/cashMethods';
 import { useApp } from '@core/context/App';
 
 // react components
-import Layout from '@components/Layout';
 const Select = lazy(() => import('./Select'));
 const Checkout = lazy(() => import('./Checkout'));
 const Backup = lazy(() => import('./Backup'));
@@ -24,6 +23,7 @@ const Wallet = lazy(() => import('./Wallet'));
 const Cashout = lazy(() => import('./Cashout'));
 const NotFound = lazy(() => import('./NotFound'));
 const OnBoarding = lazy(() => import('./OnBoarding'))
+import Layout from '@components/Layout';
 import LoadingAnimation from '@components/LoadingAnimation';
 import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 
