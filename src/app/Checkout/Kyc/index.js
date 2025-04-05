@@ -14,6 +14,7 @@ import ContentHeader from './components/ContentHeader';
 import Subtitle from './components/Subtitle';
 import { BottomItem, TopItem } from './components/Item';
 import Content from './components/Content';
+import Subscript from './components/Subscript';
 
 export default function Kyc() {
     const { handleKYC } = useCheckout();
