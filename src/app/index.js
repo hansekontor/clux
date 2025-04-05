@@ -7,10 +7,11 @@ import {
 } from 'react-router-dom';
 
 // core components
-import { CheckoutProvider } from '@core/context/Checkout';
 import { useWalletGlobal } from '@core/context/WalletGlobal';
 import { isValidStoredWallet } from '@core/utils/cashMethods';
 import { useApp } from '@core/context/App';
+import { CheckoutProvider } from '@core/context/Checkout';
+import { OnBoardingProvider } from '@core/context/OnBoarding';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -61,11 +62,9 @@ const App = () => {
 				{wallet && isValidStoredWallet(wallet) ? (
 					<>
 						{protection ?
-							<OnBoarding
-								passProtection={setProtection}
-								passUser={setUser}
-								passLoadingStatus={setLoadingStatus}
-							/>
+							<OnBoardingProvider>
+								<OnBoarding />
+							</OnBoardingProvider>
 							:
 							<>
 								<Switch>
