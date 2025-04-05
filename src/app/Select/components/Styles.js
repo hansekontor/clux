@@ -40,6 +40,7 @@ const FlashCtn = styled.div`
 const StickyRandomNumbers = styled(PlayerNumbers)`
     z-index: 1;
 `;
+
 const FadeOut = styled(StyledContainer)`
     box-shadow: none;
     animate: fade-out 1s ease-out both;

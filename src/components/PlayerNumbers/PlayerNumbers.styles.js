@@ -55,7 +55,7 @@ export const StyledCutOut = styled.div`
     position: absolute;
     top: -26px;
     border-radius: 24px;
-    background-color: ${props => props.$color ? props.color : '#48445c'};
+    background-color: ${props => props.$color ? props.$color : '#48445c'};
     width: 24px;
     height: 24px;
 `;

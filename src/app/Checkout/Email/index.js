@@ -9,22 +9,18 @@ import Navigation from '@components/Navigation';
 import Footer from '@components/Footer';
 import Typography from '@components/Typography';
 import { Input } from '@components/Inputs';
-import { 
-    AccountForm, 
-    CheckboxItem, 
-    CheckboxText, 
-    CustomCheckbox, 
-    Divider, 
-    ErrorMessage, 
-    FormSection, 
-    Item, 
-    Label, 
-    PrimaryFlexGrow, 
-    PrimaryFooterBackground, 
-    selectStyle, 
-    WideCreatableSelect 
-} from '../Styled';
 import Button from '@components/Button';
+import FlexGrow from '../components/FlexGrow';
+import FooterBackground from '../components/FooterBackground';
+import AccountForm from '../components/AccountForm';
+import Item from '../components/Item';
+import CheckboxItem from './components/CheckboxItem';
+import CustomCheckbox from './components/CustomCheckbox';
+import CheckboxText from './components/CheckboxText';
+import WideCreatableSelect, { selectStyle } from './components/WideCreatableSelect';
+import Label from './components/Label';
+import FormSection from './components/FormSection';
+import Divider from './components/Divider';
 
 const accountTitle = "Create Account";
 const emailButtonText = "Continue";
@@ -50,7 +46,7 @@ export default function Email() {
                 handleOnClick={handleReturn}
                 title={accountTitle}
             />
-            <PrimaryFlexGrow>
+            <FlexGrow>
                 <AccountForm id='email-form' onSubmit={(e) => handleSubmitEmail(e)}>
 
                     <FormSection>
@@ -109,9 +105,9 @@ export default function Email() {
                     </CheckboxItem>
 
                 </AccountForm>
-            </PrimaryFlexGrow>
+            </FlexGrow>
             <Footer variant="empty">
-                <PrimaryFooterBackground />
+                <FooterBackground />
                 <Button
                     form={"email-form"}
                 >

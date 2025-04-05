@@ -5,16 +5,22 @@ import { useCheckout } from '@core/context/Checkout';
 
 // custom react components
 import Navigation from '@components/Navigation';
-import Ticket from './Ticket';
+import Ticket from './components/Ticket';
 import Footer from '@components/Footer';
 import { CardIconBox } from '@components/Icons';
 import { QuantityInput, QuantitySuggestions } from '@components/Inputs';
 import Typography from '@components/Typography';
 import { Column, Overlay } from '@components/Common';
-import { AccountForm, ErrorMessage, Item, PaymentMethod, Price, PrimaryFlexGrow, SecondaryFooterBackground } from '../Styled';
 import { RollUp } from '@components/Animations';
-import { NmiCheckoutForm, WidgetBody } from './Processors';
+import { NmiCheckoutForm, WidgetBody } from './components/Processors';
 import Button from '@components/Button';
+import FlexGrow from '../components/FlexGrow';
+import FooterBackground from '../components/FooterBackground';
+import AccountForm from '../components/AccountForm';
+import Item from '../components/Item';
+import ErrorMessage from '../components/ErrorMessage';
+import PaymentMethod from './components/PaymentMethod';
+import Price from './components/Price';
 
 // dom variables
 const checkoutTitle = "Checkout";
@@ -45,7 +51,7 @@ export default function Cart() {
                 merchantTag={true}
             />
 
-            <PrimaryFlexGrow>
+            <FlexGrow>
                 <Ticket
                     numbers={playerNumbers}
                     background={'#EAEAEA'}
@@ -94,10 +100,10 @@ export default function Cart() {
                         </Item>
                     </Column>
                 </AccountForm>
-            </PrimaryFlexGrow>
+            </FlexGrow>
 
             <Footer variant="empty">
-                <SecondaryFooterBackground />
+                <FooterBackground variant={"secondary"} />
                 <Button onClick={handleConfirmation}>
                     Pay
                 </Button>

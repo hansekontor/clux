@@ -4,10 +4,10 @@ import React from 'react';
 import { useCheckout } from '@core/context/Checkout';
 
 // checkout components
-import Tos from './components/Tos/Tos';
-import Email from './components/Email/Email';
-import Kyc from './components/Kyc/Kyc';
-import Cart from './components/Cart/Cart';
+import Tos from './Tos';
+import Email from './Email';
+import Kyc from './Kyc';
+import Payment from './Payment';
 
 const Checkout = () => {
 	const {
@@ -25,7 +25,7 @@ const Checkout = () => {
 	// If KYC is required
 	if (showKyc) return <Kyc />;
 
-	return <Cart />;
+	return <Payment />;
 }
 
 export default Checkout;
