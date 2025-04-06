@@ -6,20 +6,51 @@
  * Please consult the project maintainers before making modifications.
 */
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
+// core functions
+import { useNotifications } from '@core/context/Notifications';
+import { useBlockLotto } from '@core/context/BlockLotto';
+import { useApp } from '@core/context/App';
 
 export const BackupContext = createContext();
 
-export default function BackupProvider({ children }) {
+export function BackupProvider({ children }) {
+    const history = useHistory();
+    const { wallet } = useBlockLotto();
+    const { setLoadingStatus } = useApp();
+    const notify = useNotifications();
+
+    // manually stop loading screen
+    useEffect(() => {
+        setLoadingStatus(false);
+    }, [])
+
+    // handlers
+    const handleCopySeedPhrase = () => {
+        navigator.clipboard.writeText(wallet.mnemonic);
+        notify({ message: "Copied to clipboard", type: "success" });
+    }
+    
+    const handleBackedUp = (e) => {
+        e.preventDefault();
+        history.push('/waitingroom');
+    }
+
+
     return (
-        <BackupContext.Provider>
+        <BackupContext.Provider value={{
+            handleCopySeedPhrase,
+            handleBackedUp
+        }}>
             {children}
         </BackupContext.Provider>
     )
 }
 
 export const useBackup = () => {
-    const context = useContext(NotificationsContext);
+    const context = useContext(BackupContext);
     if (!context) {
         throw new Error("useBackup must be used within a BackupProvider");
     }

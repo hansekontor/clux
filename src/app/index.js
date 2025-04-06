@@ -12,6 +12,7 @@ import { isValidStoredWallet } from '@core/utils/cashMethods';
 import { useApp } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
 import { OnBoardingProvider } from '@core/context/OnBoarding';
+import { BackupProvider } from '@core/context/Backup';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -104,10 +105,12 @@ const App = () => {
 										/>
 									</Route>
 									<Route path="/backup">
-										<Backup
-											purchasedTicket={activeTicket}
-											passLoadingStatus={setLoadingStatus}
-										/>
+										<BackupProvider>
+											<Backup
+												purchasedTicket={activeTicket}
+												passLoadingStatus={setLoadingStatus}
+											/>
+										</BackupProvider>
 									</Route>
 									<Route path="/wallet">
 										<Wallet
