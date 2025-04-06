@@ -19,7 +19,7 @@ export default function CashoutProvider({ children }) {
 }
 
 export const useCashout = () => {
-    const context = useContext(NotificationsContext);
+    const context = useContext(CashoutContext);
     if (!context) {
         throw new Error("useCashout must be used within a CashoutProvider");
     }

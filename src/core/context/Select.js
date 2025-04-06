@@ -19,7 +19,7 @@ export default function SelectProvider({ children }) {
 }
 
 export const useSelect = () => {
-    const context = useContext(NotificationsContext);
+    const context = useContext(SelectContext);
     if (!context) {
         throw new Error("useSelect must be used within a SelectProvider");
     }

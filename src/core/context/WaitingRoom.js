@@ -19,7 +19,7 @@ export default function WaitingRoomProvider({ children }) {
 }
 
 export const useWaitingRoom = () => {
-    const context = useContext(NotificationsContext);
+    const context = useContext(WaitingRoomContext);
     if (!context) {
         throw new Error("useWaitingRoom must be used within a WaitingRoomProvider");
     }

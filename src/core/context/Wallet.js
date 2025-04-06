@@ -19,7 +19,7 @@ export default function WalletProvider({ children }) {
 }
 
 export const useWallet = () => {
-    const context = useContext(NotificationsContext);
+    const context = useContext(WalletContext);
     if (!context) {
         throw new Error("useWallet must be used within a WalletProvider");
     }

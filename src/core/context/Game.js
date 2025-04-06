@@ -19,7 +19,7 @@ export default function GameProvider({ children }) {
 }
 
 export const useGame = () => {
-    const context = useContext(NotificationsContext);
+    const context = useContext(GameContext);
     if (!context) {
         throw new Error("useGame must be used within a GameProvider");
     }
