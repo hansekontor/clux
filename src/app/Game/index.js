@@ -27,7 +27,7 @@ import SlideIn from './components/SlideIn';
 import Versus from './components/Versus';
 
 const Game = () => {
-	const { isWinner, resultingNumbers, handleResultRedirect } = useGame();
+	const { isWinner, tier, resultingNumbers, handleResultRedirect } = useGame();
 	const { setLoadingStatus } = useApp();
 
 	const winner = isWinner ? "A" : "B";

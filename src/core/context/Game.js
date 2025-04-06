@@ -26,6 +26,7 @@ export function GameProvider({ children }) {
     const [redeemHash,] = useState(location.state?.redeemHash || false);
     const [ticket, setTicket] = useState();
     const [isWinner, setIsWinner] = useState(false);
+    const [tier, setTier] = useState(0);
     const resultingNumbers = ticket?.details?.redemption?.resultingNumbers;
 
     useEffect(async () => {
@@ -56,6 +57,7 @@ export function GameProvider({ children }) {
                 const tier = ticketFromState.details.redemption.tier;
                 console.log("GAME tier", tier);
 
+                setTier(tier);
                 setIsWinner(tier != 0);
                 setTicket(ticketFromState);
                 setLoadingStatus(false);
@@ -77,6 +79,7 @@ export function GameProvider({ children }) {
     return (
         <GameContext.Provider value={{
             isWinner,
+            tier,
             resultingNumbers,
             handleResultRedirect,
         }}>
