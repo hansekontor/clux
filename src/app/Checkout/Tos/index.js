@@ -18,7 +18,6 @@ import Link from './components/Link';
 
 export default function Tos() {
     const {
-        playerNumbers,
         handleReturn,
         handleAgree,
     } = useCheckout();
