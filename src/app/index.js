@@ -16,6 +16,7 @@ import { BackupProvider } from '@core/context/Backup';
 import { CashoutProvider } from '@core/context/Cashout';
 import { GameProvider } from '@core/context/Game';
 import { ResultProvider } from '@core/context/Result';
+import { SelectProvider } from '@core/context/Select';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -73,11 +74,9 @@ const App = () => {
 							<>
 								<Switch>
 									<Route path="/select">
-										<Select
-											passRandomNumbers={setPlayerNumbers}
-											passLoadingStatus={setLoadingStatus}
-											user={user}
-										/>
+										<SelectProvider>
+											<Select />
+										</SelectProvider>
 									</Route>
 									<Route path="/checkout">
 										<CheckoutProvider>

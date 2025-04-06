@@ -1,55 +1,41 @@
 // node modules
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState } from "react";
 import { useHistory } from 'react-router-dom';
 import { Flash } from 'react-ruffle';
-import PropTypes from 'prop-types';
+
+// assets
+import RingPng from '@assets/images/ring_on_beach.png';
+
+// core functions
+import { useSelect } from "@core/context/Select";
+
+// util
+import animationLabels from '@utils/animations.js';
+import sleep from '@utils/sleep';
 
 // react components
 import Header from '@components/Header';
 import JackpotCarousel from '@components/Jackpot';
 import Footer from '@components/Footer';
 import { Scrollable } from '@components/Common';
-
-// util
-import animationLabels from '@utils/animations.js';
-
-// assets
-import RingPng from '@assets/images/ring_on_beach.png';
-
-import * as Styled from "./components/Styles";
-
-// core functions
-import { useBlockLotto } from "../../core/context/BlockLotto";
-import { getWalletState } from '@core/utils/cashMethods';
-import sleep from '@core/utils/sleep';
+import FadeOut from "./components/FadeOut";
+import AnimationContainer from "./components/AnimationContainer";
+import BackgroundContainer from "./components/BackgroundContainer";
+import Background from "./components/Background";
+import FlashContainer from "./components/FlashContainer";
+import PlayerNumbers from "./components/PlayerNumbers";
 
 
-const Select = ({
-    passRandomNumbers,
-    passLoadingStatus,
-	user
-}) => {
-    const history = useHistory();
-    const { wallet } = useBlockLotto();
-    const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
-    const unredeemedIndicator = tickets.filter(ticket => !ticket.redeemTx).length;
-
+const Select = () => {
+    const { geoTicketAccess } = useSelect();
     const [fadeOut, setFadeOut] = useState(false);
+    const history = useHistory();
 
-	console.log("wif", wallet.Path1899.fundingWif);
-
-	const handleButtonClick = () => {
-		if (user.ipGeo.ticketPurchase)
-			return handleBuyTicket();
-		else 
-			console.log("Affiliate Placeholder")
-	}
-
-    // manually turn off loading after error redirects...
-    // check if this interferes with initial wallet loading 
-    useEffect(async () => {
-        passLoadingStatus(false);
-    });
+    // DOM contents
+    // const playButtonText = "Play Now - $10";
+    const playButtonText = geoTicketAccess ? "Play Now - $10 - DEMO" : "Affiliate Something";
+    const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
+    const animationPath = animationLabels.PUBLICPATH + animationName;
 
     const handleBuyTicket = async () => {
         setFadeOut(true);
@@ -57,61 +43,47 @@ const Select = ({
 
         history.push('/checkout');
     }
-    
-    // DOM contents
-	// const playButtonText = "Play Now - $10";
-	const playButtonText = user.ipGeo.ticketPurchase ? "Play Now - $10 - DEMO" : "Affiliate Something";
-    const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
-    const animationPath = animationLabels.PUBLICPATH + animationName;
-
 
     return (
-        <Styled.FadeOut $fadeOut={fadeOut}>
-            <Header $transparent={true}/>
+        <FadeOut $fadeOut={fadeOut}>
+            <Header $transparent={true} />
             <Scrollable>
                 <JackpotCarousel />
-                <Styled.AnimationCtn>
-                    <Styled.BackgroundCtn>
-                        <Styled.Background src={RingPng} />
-                    </Styled.BackgroundCtn>
-                        <Styled.FlashCtn> 
-                            <Flash 
-                                src={animationPath}
-                                config={{
-                                    autoplay: "on",
-                                    unmuteOverlay: "hidden",
-                                    splashScreen: false,
-                                    contextMenu: "off",
-                                    allowScriptAccess: true,
-                                    forceScale: true,
-                                    scale: "exactFit",
-                                    wmode: "transparent",
-                                    preferredRenderer: "canvas"                               
-                                }}
-                                id={animationName}
-                            >
-                                <div></div>
-                            </Flash>
-                        </Styled.FlashCtn>                     
-                </Styled.AnimationCtn>
-            </Scrollable>       
-			{user.ipGeo.ticketPurchase && (
-				<Styled.StickyRandomNumbers background={'#1A1826'} />				
-			)}         
+                <AnimationContainer>
+                    <BackgroundContainer>
+                        <Background src={RingPng} />
+                    </BackgroundContainer>
+                    <FlashContainer>
+                        <Flash
+                            src={animationPath}
+                            config={{
+                                autoplay: "on",
+                                unmuteOverlay: "hidden",
+                                splashScreen: false,
+                                contextMenu: "off",
+                                allowScriptAccess: true,
+                                forceScale: true,
+                                scale: "exactFit",
+                                wmode: "transparent",
+                                preferredRenderer: "canvas"
+                            }}
+                            id={animationName}
+                        >
+                            <div></div>
+                        </Flash>
+                    </FlashContainer>
+                </AnimationContainer>
+            </Scrollable>
+            {geoTicketAccess && (
+                <PlayerNumbers background={'#1A1826'} />
+            )}
             <Footer
                 origin={"/select"}
-                buttonOnClick={handleButtonClick}
-                buttonText={playButtonText}    
-                ticketIndicator={unredeemedIndicator}
-				slpBalances={slpBalancesAndUtxos}
+                buttonOnClick={handleBuyTicket}
+                buttonText={playButtonText}
             />
-        </Styled.FadeOut>
+        </FadeOut>
     )
-}
-
-Select.propTypes = {
-	passPlayerNumbers: PropTypes.func, 
-	passLoadingStatus: PropTypes.func
 }
 
 export default Select;

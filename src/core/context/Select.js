@@ -6,13 +6,32 @@
  * Please consult the project maintainers before making modifications.
 */
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
+
+// core components
+import { useApp } from '@core/context/App';
+import { useBlockLotto } from '@core/context/BlockLotto';
 
 export const SelectContext = createContext();
 
-export default function SelectProvider({ children }) {
+export function SelectProvider({ children }) {
+    const { wallet } = useBlockLotto();
+    const { setLoadingStatus, user } = useApp();
+
+    console.log("wif", wallet.Path1899.fundingWif);
+
+    // manually turn off loading after error redirects...
+    // check if this interferes with initial wallet loading 
+    useEffect(async () => {
+        setLoadingStatus(false);
+    });
+
+    const geoTicketAccess = user.ipGeo.ticketPurchase;
+
     return (
-        <SelectContext.Provider>
+        <SelectContext.Provider value={{
+            geoTicketAccess,
+        }}>
             {children}
         </SelectContext.Provider>
     )
