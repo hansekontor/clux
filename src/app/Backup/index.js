@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useNotifications } from '@core/context/Notifications';
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 
 // custom react components
 import SeedPhrase from '@components/SeedPhrase';
@@ -24,7 +24,7 @@ const Backup = ({
     passLoadingStatus,
 }) => {
     const history = useHistory();
-    const { wallet } = useWalletGlobal();
+    const { wallet } = useBlockLotto();
     const notify = useNotifications();
 
     const [fadeOut, setFadeOut] = useState(false);

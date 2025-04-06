@@ -8,7 +8,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 import { useApp } from '@core/context/App';
 import { nationalityOptions, residencyOptions } from '@core/utils/geoblock';
 
@@ -20,7 +20,7 @@ const { SHA256 } = bcrypto;
 export const OnBoardingContext = createContext();
 
 export const OnBoardingProvider = ({ children }) => {
-    const { wallet } = useWalletGlobal();
+    const { wallet } = useBlockLotto();
     const { setProtection, setUser, setLoadingStatus } = useApp();
 
     const [passwordProtection, setPasswordProtection] = useState(true);

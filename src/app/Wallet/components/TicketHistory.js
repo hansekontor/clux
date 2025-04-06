@@ -9,7 +9,7 @@ import { CopyOutlined } from '@ant-design/icons';
 import Button from '@components/Button';
 
 // core functions
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
 
@@ -385,7 +385,7 @@ const TicketHistory = ({
     tickets,
 	passRedeemAll
 }) => {
-	const { forceWalletUpdate } = useWalletGlobal();
+	const { forceWalletUpdate } = useBlockLotto();
 	const history = useHistory();
 
 	const unredeemed = tickets.filter(ticket => !ticket.redeemTx);

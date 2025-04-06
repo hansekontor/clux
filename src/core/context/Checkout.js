@@ -28,7 +28,7 @@ const { SHA256 } = bcrypto;
 import BigNumber from 'bignumber.js';
 
 // core functions
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
@@ -54,7 +54,7 @@ export function CheckoutProvider({ children }) {
     const { setLoadingStatus, playerNumbers, user } = useApp();
 
     // find ticket indicator
-    const { wallet, forceWalletUpdate, addIssueTxs } = useWalletGlobal();
+    const { wallet, forceWalletUpdate, addIssueTxs } = useBlockLotto();
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
     const token = slpBalancesAndUtxos.tokens ? slpBalancesAndUtxos.tokens[0] : false;
     let maxEtokenTicketQuantity = 0;

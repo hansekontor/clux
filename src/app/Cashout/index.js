@@ -12,7 +12,7 @@ import { TX, MTX, Coin, Script, KeyRing } from '@hansekontor/checkout-components
 import { Modal } from 'antd';
 
 // core functions
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
 
@@ -31,7 +31,7 @@ const currencyOptions = [{ value: "USD", label: "USD" }];
 const Cashout = ({
     passLoadingStatus
 }) => {
-    const { wallet, forceWalletUpdate, addCashout } = useWalletGlobal();
+    const { wallet, forceWalletUpdate, addCashout } = useBlockLotto();
     const { slpBalancesAndUtxos } = getWalletState(wallet);
     // console.log("slpBalancesAndUtxos", slpBalancesAndUtxos);
     const token = slpBalancesAndUtxos.tokens?.length > 0 ? slpBalancesAndUtxos.tokens[0] : false;

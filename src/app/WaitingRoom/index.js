@@ -22,7 +22,7 @@ import Button from '@components/Button';
 import * as S from './components/Styled';
 
 // core functions
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 import useBCH from '@core/hooks/useBCH';
 import { getWalletState } from '@core/utils/cashMethods'
 import TXUtil from '@core/utils/txutil';
@@ -50,7 +50,7 @@ const WaitingRoom = ({
 		wallet, 
 		addMinedTicketToStorage, 
 		addRedeemTxToStorage
-	} = useWalletGlobal();
+	} = useBlockLotto();
 
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;

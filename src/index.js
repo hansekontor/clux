@@ -6,7 +6,7 @@ import { ThemeProvider } from "styled-components";
 // core functions
 import GA from '@core/utils/GoogleAnalytics';
 import { AuthenticationProvider } from '@core/context/Authentication';
-import { WalletGlobalProvider } from '@core/context/WalletGlobal';
+import { BlockLottoProvider } from '@core/context/BlockLotto';
 import { NotificationsProvider } from '@core/context/Notifications';
 import { AppProvider } from '@core/context/App';
 
@@ -19,7 +19,7 @@ import App from './app';
 
 ReactDOM.render(
     <AuthenticationProvider>
-        <WalletGlobalProvider>
+        <BlockLottoProvider>
             <ThemeProvider theme={theme}>
                 <GlobalStyles />
                 <NotificationsProvider Notification={Notification}>
@@ -31,7 +31,7 @@ ReactDOM.render(
                     </Router>
                 </NotificationsProvider>
             </ThemeProvider>
-        </WalletGlobalProvider>
+        </BlockLottoProvider>
     </AuthenticationProvider>,
     document.getElementById('root'),
 );

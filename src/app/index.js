@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 
 // core components
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 import { isValidStoredWallet } from '@core/utils/cashMethods';
 import { useApp } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
@@ -30,7 +30,7 @@ import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 
 
 const App = () => {
-	const { wallet } = useWalletGlobal();
+	const { wallet } = useBlockLotto();
 	const {
 		loadingStatus,
 		loading,

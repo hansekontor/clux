@@ -13,7 +13,7 @@ import {
 } from 'react-router-dom';
 
 // core components
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 
 export const AppContext = createContext();
 
@@ -21,7 +21,7 @@ export const AppProvider = ({ children }) => {
     const history = useHistory();
     const location = useLocation();
 
-    const { wallet, loading } = useWalletGlobal();
+    const { wallet, loading } = useBlockLotto();
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [loader, setLoader] = useState(true);
     const [playerNumbers, setPlayerNumbers] = useState(false);

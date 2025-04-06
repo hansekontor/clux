@@ -17,7 +17,7 @@ import * as S from './components/Styled';
 import animationLabels from '@utils/animations';
 
 // core functions
-import { useWalletGlobal } from '@core/context/WalletGlobal';
+import { useBlockLotto } from '@core/context/BlockLotto';
 import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
 
@@ -28,7 +28,7 @@ const Result = ({
 }) => {
     const history = useHistory();
 	const location = useLocation();
-    const { wallet } = useWalletGlobal();
+    const { wallet } = useBlockLotto();
     const walletState = getWalletState(wallet)
     const { tickets, slpBalancesAndUtxos } = walletState;
     const unredeemedTickets = tickets.filter(ticket => !ticket.redeemTx);
