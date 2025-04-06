@@ -17,6 +17,7 @@ import { CashoutProvider } from '@core/context/Cashout';
 import { GameProvider } from '@core/context/Game';
 import { ResultProvider } from '@core/context/Result';
 import { SelectProvider } from '@core/context/Select';
+import { WaitingRoomProvider } from '@core/context/WaitingRoom';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -84,12 +85,14 @@ const App = () => {
 										</CheckoutProvider>
 									</Route>
 									<Route path="/waitingroom">
-										<WaitingRoom
-											passLoadingStatus={setLoadingStatus}
-											activeTicket={activeTicket}
-											playerNumbers={playerNumbers}
-											user={user}
-										/>
+										<WaitingRoomProvider>
+											<WaitingRoom
+												passLoadingStatus={setLoadingStatus}
+												activeTicket={activeTicket}
+												playerNumbers={playerNumbers}
+												user={user}
+											/>
+										</WaitingRoomProvider>
 									</Route>
 									<Route path="/game">
 										<GameProvider>
