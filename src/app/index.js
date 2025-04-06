@@ -15,6 +15,7 @@ import { OnBoardingProvider } from '@core/context/OnBoarding';
 import { BackupProvider } from '@core/context/Backup';
 import { CashoutProvider } from '@core/context/Cashout';
 import { GameProvider } from '@core/context/Game';
+import { ResultProvider } from '@core/context/Result';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -93,27 +94,23 @@ const App = () => {
 									</Route>
 									<Route path="/game">
 										<GameProvider>
-											<Game
-												passLoadingStatus={setLoadingStatus}
-												ticket={activeTicket}
-											/>
+											<Game />
 										</GameProvider>
 									</Route>
 
 									<Route path="/result">
-										<Result
-											passLoadingStatus={setLoadingStatus}
-											payout={payout}
-											ticket={activeTicket}
-											redeemAll={redeemAll}
-										/>
+										<ResultProvider>
+											<Result
+												passLoadingStatus={setLoadingStatus}
+												payout={payout}
+												ticket={activeTicket}
+												redeemAll={redeemAll}
+											/>
+										</ResultProvider>
 									</Route>
 									<Route path="/backup">
 										<BackupProvider>
-											<Backup
-												purchasedTicket={activeTicket}
-												passLoadingStatus={setLoadingStatus}
-											/>
+											<Backup />
 										</BackupProvider>
 									</Route>
 									<Route path="/wallet">
