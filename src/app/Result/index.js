@@ -1,8 +1,11 @@
 // node modules
-import React, { useState, useEffect, useContext } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
-import { Flash } from 'react-ruffle';
+import React from 'react';
+
+// util
+import animationLabels from '@utils/animations';
+
+// core functions
+import { useResult } from '@core/context/Result';
 
 // custom react components
 import Header from '@components/Header';
@@ -10,128 +13,71 @@ import Footer from '@components/Footer';
 import { TicketResult } from '@components/Jackpot';
 import PlayerNumbers from '@components/PlayerNumbers';
 import { WhiteCashoutButton, WhiteTicketButton } from '@components/Button';
-
-import * as S from './components/Styled';
-
-// util
-import animationLabels from '@utils/animations';
-
-// core functions
-import { useBlockLotto } from '@core/context/BlockLotto';
-import { getWalletState } from '@core/utils/cashMethods'
-import sleep from '@core/utils/sleep';
+import Scrollable from './components/Scrollable';
+import FlashContainer from './components/FlashContainer';
+import StyledFlash from './components/StyledFlash';
+import Ticket from './components/Ticket';
+import ButtonContainer from './components/ButtonContainer';
 
 
-const Result = ({
-    passLoadingStatus,
-    redeemAll
-}) => {
-    const history = useHistory();
-	const location = useLocation();
-    const { wallet } = useBlockLotto();
-    const walletState = getWalletState(wallet)
-    const { tickets, slpBalancesAndUtxos } = walletState;
-    const unredeemedTickets = tickets.filter(ticket => !ticket.redeemTx);
-    const unredeemedIndicator = unredeemedTickets.length;
-    const redeemableTickets = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);
-    const availableTickets = tickets.filter(ticket => !ticket.redeemTx);
-	const [ticket,] = useState(location.state?.ticket || false);
-    const [nextTicket, setNextTicket] = useState(false);
-
-    // manually stop loading screen
-    useEffect(async () => {
-		if (ticket) {
-	        passLoadingStatus(false);
-            if (redeemAll) {
-                let nextTicket;
-                if (redeemableTickets.length > 0) {
-                    nextTicket = redeemableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
-                } else if (availableTickets.length > 0) {
-                    nextTicket = availableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
-                }
-                
-                if (nextTicket)     
-                    setNextTicket(nextTicket);
-            }
-		} else {
-			passLoadingStatus("NO TICKET SELECTED");
-			await sleep(2000);
-			history.push("/select")
-		}
-    }, [ticket]);
-
-    // handlers
-    const handleButtonClick = () => {
-        if (nextTicket) {
-            history.push({
-                pathname: '/waitingroom', 
-                state: {
-                    ticketToRedeem: nextTicket
-                }
-            });
-        } else {
-            history.push('/select');
-        }
-    }
+const Result = () => {
+    const { amount, hasTicket, nextTicket, isWinner, resultingNumbers, handleRedirect } = useResult();
 
     // DOM variables
     const buttonText = nextTicket ? "Redeem Next Ticket" : "Play Again";
-	const displayAmount = ticket?.details?.redemption?.actualPayoutNum / 100;
 
-    const animationName = ticket?.details?.redemption?.actualPayoutNum > 0 ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
+    const animationName = isWinner ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
     return (
         <>
             <Header $transparent={true} />
-            <S.Scrollable>
-					<S.FlashCtn>             
-						{animationLabels && 
-							<S.StyledFlash                
-								src={animationPath}
-								config={{
-									autoplay: "on",
-									unmuteOverlay: "hidden",
-									splashScreen: false,
-									contextMenu: "off",
-									allowScriptAccess: true,
-									scale: "exactFit",
-									wmode: "transparent",
-									preferredRenderer: "canvas"                                      
-								}}
-								id={animationName}
-							>
-									<div></div>
-							</S.StyledFlash> 							
-						}   
-		
-					</S.FlashCtn>
+            <Scrollable>
+                <FlashContainer>
+                    {animationLabels &&
+                        <StyledFlash
+                            src={animationPath}
+                            config={{
+                                autoplay: "on",
+                                unmuteOverlay: "hidden",
+                                splashScreen: false,
+                                contextMenu: "off",
+                                allowScriptAccess: true,
+                                scale: "exactFit",
+                                wmode: "transparent",
+                                preferredRenderer: "canvas"
+                            }}
+                            id={animationName}
+                        >
+                            <div></div>
+                        </StyledFlash>
+                    }
 
-                <S.Ticket>
-					{ticket && (
-						<>
-							<TicketResult 
-								amount={displayAmount}
-							/>			
-							<PlayerNumbers 
-								overrideNumbers={ticket.details.redemption.resultingNumbers}
-								background={"#1A1826"}
-							/>  						
-						</>
-					)}
-                </S.Ticket>
-                <S.ButtonCtn>
+                </FlashContainer>
+
+                <Ticket>
+                    {hasTicket && (
+                        <>
+                            <TicketResult
+                                amount={amount}
+                            />
+                            <PlayerNumbers
+                                overrideNumbers={resultingNumbers}
+                                background={"#1A1826"}
+                            />
+                        </>
+                    )}
+                </Ticket>
+                <ButtonContainer>
                     <WhiteCashoutButton />
                     <WhiteTicketButton />
-                </S.ButtonCtn>
-            </S.Scrollable>
+                </ButtonContainer>
+            </Scrollable>
             <Footer
-				// directly go to select from result because result can not displayed correctly afterwards
+                // directly go to select from result because result can not displayed correctly afterwards
                 origin={"/select"}
-                buttonOnClick={handleButtonClick}
+                buttonOnClick={handleRedirect}
                 buttonText={buttonText}
-                ticketIndicator={unredeemedIndicator}
-                slpBalances={slpBalancesAndUtxos}
             />
         </>
     )

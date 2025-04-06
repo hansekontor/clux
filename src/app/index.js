@@ -100,12 +100,7 @@ const App = () => {
 
 									<Route path="/result">
 										<ResultProvider>
-											<Result
-												passLoadingStatus={setLoadingStatus}
-												payout={payout}
-												ticket={activeTicket}
-												redeemAll={redeemAll}
-											/>
+											<Result />
 										</ResultProvider>
 									</Route>
 									<Route path="/backup">

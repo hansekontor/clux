@@ -6,13 +6,78 @@
  * Please consult the project maintainers before making modifications.
 */
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+
+// core components
+import { useApp } from '@core/context/App';
+import { useBlockLotto } from '@core/context/BlockLotto';
+import { getWalletState } from '@core/utils/cashMethods';
 
 export const ResultContext = createContext();
 
-export default function ResultProvider({ children }) {
+export function ResultProvider({ children }) {
+    const { redeemAll, setLoadingStatus } = useApp();
+    const history = useHistory();
+    const location = useLocation();
+    const { wallet } = useBlockLotto();
+    const walletState = getWalletState(wallet)
+    const { tickets } = walletState;
+    const redeemableTickets = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);
+    const availableTickets = tickets.filter(ticket => !ticket.redeemTx);
+    const [ticket,] = useState(location.state?.ticket || false);
+    const [nextTicket, setNextTicket] = useState(false);
+
+    // manually stop loading screen
+    useEffect(async () => {
+        if (ticket) {
+            setLoadingStatus(false);
+            if (redeemAll) {
+                let nextTicket;
+                if (redeemableTickets.length > 0) {
+                    nextTicket = redeemableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
+                } else if (availableTickets.length > 0) {
+                    nextTicket = availableTickets.find(newTicket => newTicket.issueTx.hash !== ticket.issueTx.hash);
+                }
+
+                if (nextTicket)
+                    setNextTicket(nextTicket);
+            }
+        } else {
+            setLoadingStatus("NO TICKET SELECTED");
+            await sleep(2000);
+            history.push("/select")
+        }
+    }, [ticket]);
+
+      // handlers
+      const handleRedirect = () => {
+        if (nextTicket) {
+            history.push({
+                pathname: '/waitingroom', 
+                state: {
+                    ticketToRedeem: nextTicket
+                }
+            });
+        } else {
+            history.push('/select');
+        }
+    }
+
+    const resultingNumbers = ticket.details.redemption.resultingNumbers;
+    const amount = ticket?.details?.redemption?.actualPayoutNum / 100;
+    const hasTicket = !!ticket;
+    const isWinner = ticket?.details?.redemption?.actualPayoutNum > 0;
+
     return (
-        <ResultContext.Provider>
+        <ResultContext.Provider value={{
+            amount,
+            hasTicket,
+            nextTicket,
+            isWinner,
+            resultingNumbers,
+            handleRedirect
+        }}>
             {children}
         </ResultContext.Provider>
     )
