@@ -346,7 +346,7 @@ const WaitingRoom = ({
                 </Flash>                    
             </S.FlexGrow>
 			<Footer variant="empty">
-				<PlayerNumbers fixedRandomNumbers={activeTicket ? activeTicket.details.playerNumbers : playerNumbers} />
+				<PlayerNumbers overrideNumbers={activeTicket ? activeTicket.details.playerNumbers : playerNumbers} />
 				<Button onClick={handleButtonClick}>
 					{activeTicket ? (
 						<>	

@@ -114,7 +114,7 @@ const Result = ({
 								amount={displayAmount}
 							/>			
 							<PlayerNumbers 
-								fixedRandomNumbers={ticket.details.redemption.resultingNumbers}
+								overrideNumbers={ticket.details.redemption.resultingNumbers}
 								background={"#1A1826"}
 							/>  						
 						</>

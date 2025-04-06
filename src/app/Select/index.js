@@ -96,10 +96,7 @@ const Select = ({
                 </Styled.AnimationCtn>
             </Scrollable>       
 			{user.ipGeo.ticketPurchase && (
-				<Styled.StickyRandomNumbers 
-					passRandomNumbers={passRandomNumbers} 
-					background={'#1A1826'}
-				/>				
+				<Styled.StickyRandomNumbers background={'#1A1826'} />				
 			)}         
             <Footer
                 origin={"/select"}

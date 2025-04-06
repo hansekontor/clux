@@ -26,7 +26,7 @@ function Footer({
     return (
         <StyledFooter>
             {randomNumbers &&
-                <PlayerNumbers fixedRandomNumbers={randomNumbers} />
+                <PlayerNumbers overrideNumbers={randomNumbers} />
             }
             {buttonText &&
                 <>

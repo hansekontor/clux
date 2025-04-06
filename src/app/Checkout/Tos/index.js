@@ -61,9 +61,7 @@ export default function Tos() {
             </Scrollable>
             <Footer variant="empty">
                 <FooterBackground />
-                <PlayerNumbers
-                    fixedRandomNumbers={playerNumbers}
-                />
+                <PlayerNumbers isFixed />
                 <Button
                     onClick={handleAgree}
                 >

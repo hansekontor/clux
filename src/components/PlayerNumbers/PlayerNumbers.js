@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
+// core components
+import { useApp } from '@core/context/App';
+
 // assets
 import LeftArrowSvg from '@assets/svgs/arrow_left.svg'
 import RightArrowSvg from '@assets/svgs/arrow_right.svg';
@@ -30,66 +33,65 @@ const getRandomInt = (min, max) => {
 }
 
 const PlayerNumbers = ({
-    passRandomNumbers,
-    fixedRandomNumbers,
     background,
+    isFixed,
+    overrideNumbers,
     ...props
 }) => {
-    // todo: change var names
-    const [randomNumberArray, setRandomNumberArray] = useState(fixedRandomNumbers ? fixedRandomNumbers : []);
+    const { playerNumbers, setPlayerNumbers } = useApp();
+
     useEffect(() => {
-        if (!fixedRandomNumbers)
-            handleNewNumbers();
+        if (!isFixed || playerNumbers.length === 0) {
+            generateRandomNumbers();
+        }
     }, [])
 
-    const handleNewNumbers = () => {
+    const generateRandomNumbers = () => {
+        if (isFixed || overrideNumbers) return;
+
         const newRandomNumbers = [];
 
         for (let i = 0; i < 4; i++) {
             const newRandomNumber = getRandomInt(1, 127);
             newRandomNumbers.push(newRandomNumber);
         }
-        console.log("RandomNumbers", newRandomNumbers);
-        // set component state
-        setRandomNumberArray(newRandomNumbers);
-
-        // set parent state
-        passRandomNumbers(newRandomNumbers);
+        console.log("New Player Numbers:", newRandomNumbers);
+        setPlayerNumbers(newRandomNumbers);
     }
 
     return (
         <StyledContainer {...props}>
-            {randomNumberArray.length === 4 &&
+            {playerNumbers.length === 4 &&
                 <>
-                    {!fixedRandomNumbers ? (
-                        <StyledLeftEnd onClick={() => handleNewNumbers()}>
-                            <StyledLeftCutOut $color={background} />
-                            <StyledArrowIcon src={LeftArrowSvg} />
-                        </StyledLeftEnd>
-                    ) : (
+                    {isFixed || overrideNumbers ? (
                         <StyledLeftEnd>
                             <StyledLeftCutOut $color={background} />
                             <StyledArrowIcon src={WhiteLeftArrowSvg} />
                         </StyledLeftEnd>
-                    )}
-                    <StyledVerticalDivider />
-                    <StyledNumber>{randomNumberArray[0]}</StyledNumber>
-                    <StyledVerticalDivider />
-                    <StyledNumber>{randomNumberArray[1]}</StyledNumber>
-                    <StyledVerticalDivider />
-                    <StyledNumber>{randomNumberArray[2]}</StyledNumber>
-                    <StyledVerticalDivider />
-                    <StyledNumber>{randomNumberArray[3]}</StyledNumber>
-                    <StyledVerticalDivider />
-                    {!fixedRandomNumbers ? (
-                        <StyledRightEnd onClick={() => handleNewNumbers()}>
-                            <StyledRightCutOut $color={background} />
-                            <StyledArrowIcon src={RightArrowSvg} />
-                        </StyledRightEnd>
                     ) : (
+                        <StyledLeftEnd onClick={() => generateRandomNumbers()}>
+                            <StyledLeftCutOut $color={background} />
+                            <StyledArrowIcon src={LeftArrowSvg} />
+                        </StyledLeftEnd>
+                    )}
+                    <>
+                        <StyledVerticalDivider />
+                        {(overrideNumbers || playerNumbers).map((number, index) => (
+                            <React.Fragment key={index}>
+                                <StyledNumber>{number}</StyledNumber>
+                                <StyledVerticalDivider />
+                            </React.Fragment>
+                        ))}
+                    </>
+                    {isFixed || overrideNumbers ? (
                         <StyledRightEnd>
                             <StyledRightCutOut $color={background} />
                             <StyledArrowIcon src={WhiteRightArrowSvg} />
+                        </StyledRightEnd>
+                    ) : (
+                        <StyledRightEnd onClick={() => generateRandomNumbers()}>
+                            <StyledRightCutOut $color={background} />
+                            <StyledArrowIcon src={RightArrowSvg} />
                         </StyledRightEnd>
                     )}
                 </>
@@ -99,9 +101,9 @@ const PlayerNumbers = ({
 }
 
 PlayerNumbers.propTypes = {
-    passRandomNumbers: PropTypes.func,
-    fixedRandomNumbers: PropTypes.array,
-    background: PropTypes.string
+    overrideNumbers: PropTypes.array || PropTypes.arrayOf(PropTypes.number) || PropTypes.number || null,
+    background: PropTypes.string,
+    isFixed: PropTypes.bool
 }
 
 export default PlayerNumbers;

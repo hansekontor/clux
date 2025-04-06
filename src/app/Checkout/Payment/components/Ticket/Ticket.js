@@ -33,8 +33,8 @@ const Ticket = ({
                 </PriceColumn>
             </Details>
             <PlayerNumbers
-                fixedRandomNumbers={numbers}
                 background={background}
+                isFixed
             />
         </>
     )
