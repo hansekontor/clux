@@ -615,6 +615,53 @@ export function CheckoutProvider({ children }) {
         setPaymentProcessor(method);
     }
 
+    // NMI payment form
+    useEffect(() => {
+        window.CollectJS.configure({
+            variant: 'lightbox',
+            styleSniffer: false,
+            callback: (token) => {
+                console.log("token", token);
+                handleNmiResult(token);
+            },
+            fields: {
+                ccnumber: {
+                    placeholder: "1234 1234 1234 1234",
+                    selector: "#ccnumber"
+                },
+                ccexp: {
+                    placeholder: "MM / YY",
+                    selector: "#ccexp"
+                },
+                cvv: {
+                    placeholder: "CVV",
+                    selector: "#cvv"
+                }
+            },
+            customCss: {
+                "border-radius": "12px",
+                "height": "44px",
+                "border-style": "none"
+            }
+        })
+    }, []);
+
+    const handleNmiResult = async (result) => {
+        console.log("payment token", result.token);
+        const paymentMetadata = result.token;
+        setPaymentMetadata(paymentMetadata);
+    }
+
+    const handleSubmit = (e) => {
+        console.log("handleSubmit()")
+        e.preventDefault();
+
+        if (window.CollectJS) {
+            window.CollectJS.startPaymentRequest();
+        } else
+            console.log("CollectJS unavailable")
+    }
+
     return (
         <CheckoutContext.Provider
             value={{
@@ -637,8 +684,8 @@ export function CheckoutProvider({ children }) {
                 handleConfirmation,
                 handleSubmitEmail,
                 handlePaymentMethod,
+                handleSubmit,
                 setTicketQuantity,  // <--- should be it's own function???
-                setPaymentMetadata, // <--- should be it's own function???
                 setShowPaymentForm, // <--- should be it's own function???
             }}
         >

@@ -39,7 +39,6 @@ export default function Cart() {
         handleConfirmation,
         handlePaymentMethod,
         setTicketQuantity,
-        setPaymentMetadata,
         setShowPaymentForm,
     } = useCheckout();
 
@@ -113,10 +112,7 @@ export default function Cart() {
                 <Overlay onClick={() => setShowPaymentForm(false)}>
                     <RollUp onClick={(e) => e.stopPropagation()} $animate={showPaymentForm}>
                         <WidgetBody>
-                            <NmiCheckoutForm
-                                passMetadata={setPaymentMetadata}
-                                amount={ticketPrice * ticketQuantity}
-                            />
+                            <NmiCheckoutForm />
                             <Button
                                 type="submit"
                                 form={`${paymentProcessor}-form`}
