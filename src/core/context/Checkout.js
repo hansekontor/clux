@@ -33,8 +33,7 @@ import { getWalletState } from '@core/utils/cashMethods'
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
 import { useApp } from '@core/context/App';
-
-const allowedCountries = ["AllowedCountry"];
+import checkoutAllowedCountryOptions from '@core/constants/checkoutAllowedCountryOptions';
 
 const ticketPrice = 10;
 
@@ -571,7 +570,7 @@ export function CheckoutProvider({ children }) {
         }
 
         const countryInput = e.target.country.value;
-        const isValidCountry = allowedCountries.includes(countryInput);
+        const isValidCountry = checkoutAllowedCountryOptions.map(({ value }) => value).includes(countryInput);
         if (!isValidCountry) {
             setCountryError(`Clux is unavailable in ${countryInput}`);
         }

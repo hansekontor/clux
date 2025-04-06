@@ -2,6 +2,7 @@ import React from 'react'
 
 // core functions
 import { useCheckout } from '@core/context/Checkout';
+import checkoutCountryOptions from '@core/constants/checkoutCountryOptions';
 
 // custom react components
 import Header from '@components/Header';
@@ -22,15 +23,6 @@ import Label from './components/Label';
 import FormSection from './components/FormSection';
 import Divider from './components/Divider';
 
-const accountTitle = "Create Account";
-const emailButtonText = "Continue";
-const countryOptions = ["AllowedCountry", "ForbiddenCountry"].map(option => {
-    return {
-        label: option,
-        value: option
-    };
-});
-
 export default function Email() {
     const {
         emailError,
@@ -44,7 +36,7 @@ export default function Email() {
             <Header />
             <Navigation
                 handleOnClick={handleReturn}
-                title={accountTitle}
+                title={"Create Account"}
             />
             <FlexGrow>
                 <AccountForm id='email-form' onSubmit={(e) => handleSubmitEmail(e)}>
@@ -82,7 +74,7 @@ export default function Email() {
                             isClearable
                             name="country"
                             required
-                            options={countryOptions}
+                            options={checkoutCountryOptions}
                             placeholder={"Select your country"}
                             styles={selectStyle}
                         />
@@ -111,7 +103,7 @@ export default function Email() {
                 <Button
                     form={"email-form"}
                 >
-                    {emailButtonText}
+                    Continue
                 </Button>
             </Footer>
         </>
