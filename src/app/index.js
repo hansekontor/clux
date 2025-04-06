@@ -13,6 +13,7 @@ import { useApp } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
 import { OnBoardingProvider } from '@core/context/OnBoarding';
 import { BackupProvider } from '@core/context/Backup';
+import { CashoutProvider } from '@core/context/Cashout';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -120,9 +121,9 @@ const App = () => {
 										/>
 									</Route>
 									<Route path="/cashout">
-										<Cashout
-											passLoadingStatus={setLoadingStatus}
-										/>
+										<CashoutProvider>
+											<Cashout />
+										</CashoutProvider>
 									</Route>
 									<Redirect exact from="/" to="/select" />
 									<Route component={NotFound} />
