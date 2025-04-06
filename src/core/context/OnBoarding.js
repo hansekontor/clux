@@ -12,7 +12,6 @@ import { useBlockLotto } from '@core/context/BlockLotto';
 import { useApp } from '@core/context/App';
 import { nationalityOptions, residencyOptions } from '@core/utils/geoblock';
 
-import { Modal } from 'antd';
 import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
 const { SHA256 } = bcrypto;
 
@@ -27,7 +26,6 @@ export const OnBoardingProvider = ({ children }) => {
     const [geoProtection, setGeoProtection] = useState(true);
     const [kycProtection, setKycProtection] = useState(true);
     const [checksDone, setChecksDone] = useState(false);
-    const [modal, modalHolder] = Modal.useModal();
 
     useEffect(() => {
         // remove protections if access allowed
@@ -159,7 +157,6 @@ export const OnBoardingProvider = ({ children }) => {
 
     return (
         <OnBoardingContext.Provider value={{
-            modalHolder,
             passwordProtection,
             handlePasswordSubmit,
         }}>
