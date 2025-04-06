@@ -1,8 +1,5 @@
 // node modules
-import React, { useState, useEffect, useContext } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import bcash from '@hansekontor/checkout-components';
-const { Hash256 } = bcash.bcrypto;
+import React, { useState, useEffect } from 'react';
 
 // react components
 import Button from '@components/Button';
@@ -18,132 +15,81 @@ import RingPng from '@assets/images/ring_on_beach.png';
 
 // util
 import animationLabels from '@utils/animations';
+import sleep from '@utils/sleep';
 
 // core functions
-import { useBlockLotto } from '@core/context/BlockLotto';
-import { getWalletState } from '@core/utils/cashMethods'
-import sleep from '@core/utils/sleep';
+import { useGame } from '@core/context/Game';
+import { useApp } from '@core/context/App';
 
-const Game = ({
-    passLoadingStatus,
-}) => {
+const Game = () => {
+	const { isWinner, resultingNumbers, handleResultRedirect } = useGame();
+	const { setLoadingStatus } = useApp();
 
-    const history = useHistory();
-	const location = useLocation();
-    const { 
-		wallet, 
-	} = useBlockLotto();
-    const walletState = getWalletState(wallet)
-    const { tickets } = walletState;
-	const [redeemHash, ] = useState(location.state?.redeemHash || false);
-    const [animationStage, setAnimationStage] = useState("faceoff");
-    const [labels, setLabels] = useState(false);
-    const [fightStarted, setFightStarted] = useState(false);
-    const [versus, setVersus] = useState(false);
-    const [fadeOutVersus, setFadeOutVersus] = useState(false);
-	const [ticket, setTicket] = useState(false);
+	const winner = isWinner ? "A" : "B";
+	const labels = {
+		faceoff: animationLabels.CLUX.NORRIS.FACEOFF,
+		fight: animationLabels.CLUX.NORRIS[winner].FIGHT,
+		celebration: isWinner ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION
+	}
 
+	const [animationStage, setAnimationStage] = useState("faceoff");
+	const [fightStarted, setFightStarted] = useState(false);
+	const [versus, setVersus] = useState(false);
+	const [fadeOutVersus, setFadeOutVersus] = useState(false);
+
+	// slide-in and fadeout animation for versus
 	useEffect(async () => {
-		if (!redeemHash) {
-			passLoadingStatus("NO TICKET SELECTED");
-			await sleep(2000);
-			history.push("/select");
+		await sleep(1000);
+		setVersus(true);
+	}, [])
+
+	// switch from fight to celebration animation
+	useEffect(async () => {
+		if (animationStage === "fight") {
+			await sleep(4000);
+			setAnimationStage("celebration");
+			document.getElementById(labels.celebration).startCelebrationAnimation();
 		}
-	},[])
+	}, [animationStage])
 
-    // load labels
-    useEffect(async () => {    
-		console.log("GAME useEffect redeem Hash", redeemHash)
-        if (redeemHash) {
-			console.log("redeemHash", redeemHash);
-			const ticketFromState = tickets.find(ticket => ticket.redeemTx?.hash === redeemHash)
-			console.log("GAME ticketFromState", ticketFromState)
-			if (!ticketFromState) {
-				passLoadingStatus("TICKET NOT FOUND");
-				sleep(3000);
-				history.push("/select");
-			} else if (!ticketFromState.details.redemption) {
-				// wait and try again
-				console.log("GAME DATA NOT FOUND")
-			} else {
-				console.log("GAME WORKED")
+	// go to result page automatically
+	useEffect(async () => {
+		if (animationStage === "celebration") {
+			await sleep(3000);
+			setLoadingStatus("LOADING RESULT");
+			handleResultRedirect();
+		}
+	}, [animationStage])
 
-				console.log("GAME resulting Numbers", ticketFromState.details.redemption.resultingNumbers);
-				const tier = ticketFromState.details.redemption.tier;
-				console.log("GAME tier", tier);
-				const win = tier != 0;
-				const winner = win ? "A" : "B";
-				
-				setTicket(ticketFromState);
-				setLabels({ 
-					faceoff: animationLabels.CLUX.NORRIS.FACEOFF, 
-					fight: animationLabels.CLUX.NORRIS[winner].FIGHT,
-					celebration: win ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION    
-				})
-				
-				passLoadingStatus(false);
-			}
-        }
-    }, [redeemHash]);
-
-    // slide-in and fadeout animation for versus
-    useEffect(async() => {
-        await sleep(1000);
-        setVersus(true);
-    }, [])   
-
-    // switch from fight to celebration animation
-    useEffect(async() => {
-        if (animationStage === "fight") {
-            await sleep(4000);
-            setAnimationStage("celebration");
-            document.getElementById(labels.celebration).startCelebrationAnimation();
-        }
-    }, [animationStage]) 
-    
-    // go to result page automatically
-    useEffect(async() => {
-        if (animationStage === "celebration") {
-            await sleep(3000);
-			passLoadingStatus("LOADING RESULT");
-            history.push({
-				pathname: "/result", 
-				state: { 
-					ticket
-				}
-			});
-        }
-    }, [animationStage])
-
-    const handlePlay = async () => {
+	const handlePlay = async () => {
 		setFadeOutVersus(true);
-        setAnimationStage("fight");
-        document.getElementById(labels.fight).startFightAnimation();
-        setFightStarted(true);
-    }
+		setAnimationStage("fight");
+		document.getElementById(labels.fight).startFightAnimation();
+		setFightStarted(true);
+	}
 
-    const playButtonText = "Fight";
-    const folder = animationLabels.PUBLICPATH;
+	const playButtonText = "Fight";
+	const folder = animationLabels.PUBLICPATH;
 
-    return (
-        <>
-            <S.Background src={RingPng} />
-            <Header $transparent={true} />
-			{ticket?.details?.redemption?.resultingNumbers && (
+	return (
+		<>
+			<S.Background src={RingPng} />
+			<Header $transparent={true} />
+			{resultingNumbers && (
 				<>
-					<S.FlexGrow>    
+					<S.FlexGrow>
 						<S.SlideIn>
-							{versus && 
+							{versus &&
 								<S.FadeOut $fadeOut={fadeOutVersus}>
-									<S.Versus src={VersusPng}/>
-								</S.FadeOut>                    
+									<S.Versus src={VersusPng} />
+								</S.FadeOut>
 							}
 
 						</S.SlideIn>
 						{labels && (
 							<>
 								<S.Animation $hidden={animationStage !== "faceoff"}>
-									<S.CustomFlash 
+									<S.CustomFlash
 										src={folder + labels.faceoff}
 										config={{
 											autoplay: "on",
@@ -154,16 +100,16 @@ const Game = ({
 											forceScale: true,
 											scale: "exactFit",
 											wmode: "transparent",
-											preferredRenderer: "canvas"                                    
+											preferredRenderer: "canvas"
 										}}
 										id={labels.faceoff}
 										style={S.faceoffAnimationStyle}
 									>
-										<div></div>   
+										<div></div>
 									</S.CustomFlash>
 								</S.Animation>
 								<S.Animation $hidden={animationStage !== "fight"}>
-									<S.CustomFlash 
+									<S.CustomFlash
 										src={folder + labels.fight}
 										config={{
 											autoplay: "on",
@@ -173,16 +119,16 @@ const Game = ({
 											allowScriptAccess: true,
 											scale: "exactFit",
 											wmode: "transparent",
-											preferredRenderer: "canvas"                                    
+											preferredRenderer: "canvas"
 										}}
 										id={labels.fight}
 										style={S.animationStyle}
-									>       
-										<div></div>   
-									</S.CustomFlash>             
+									>
+										<div></div>
+									</S.CustomFlash>
 								</S.Animation>
 								<S.Animation $hidden={animationStage !== "celebration"}>
-									<S.CustomFlash 
+									<S.CustomFlash
 										src={folder + labels.celebration}
 										config={{
 											autoplay: "on",
@@ -193,30 +139,30 @@ const Game = ({
 											forceScale: true,
 											scale: "exactFit",
 											wmode: "transparent",
-											preferredRenderer: "canvas"                                    
+											preferredRenderer: "canvas"
 										}}
 										id={labels.celebration}
 										style={S.animationStyle}
-									>        
-										<div></div>   
-									</S.CustomFlash>            
-								</S.Animation>                    
+									>
+										<div></div>
+									</S.CustomFlash>
+								</S.Animation>
 							</>
 						)}
 					</S.FlexGrow>
 					<Footer variant="empty">
-						<ResultingNumbers 
-							numberArray={ticket?.details?.redemption?.resultingNumbers}
+						<ResultingNumbers
+							numberArray={resultingNumbers}
 							active={fightStarted}
-						/>                
+						/>
 						<Button onClick={handlePlay} grey={fightStarted} disabled={fightStarted}>
 							{playButtonText}
 						</Button>
 					</Footer>
 				</>
 			)}
-        </>
-    )
+		</>
+	)
 }
 
 export default Game;

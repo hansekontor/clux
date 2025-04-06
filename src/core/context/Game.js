@@ -6,13 +6,80 @@
  * Please consult the project maintainers before making modifications.
 */
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+
+import { useApp } from '@core/context/App';
+import sleep from '@core/utils/sleep';
+import { useBlockLotto } from '@core/context/BlockLotto';
+import { getWalletState } from '@core/utils/cashMethods'
 
 export const GameContext = createContext();
 
-export default function GameProvider({ children }) {
+export function GameProvider({ children }) {
+    const history = useHistory();
+    const location = useLocation();
+    const { setLoadingStatus } = useApp();
+    const { wallet } = useBlockLotto();
+    const walletState = getWalletState(wallet)
+    const { tickets } = walletState;
+    const [redeemHash,] = useState(location.state?.redeemHash || false);
+    const [ticket, setTicket] = useState();
+    const [isWinner, setIsWinner] = useState(false);
+    const resultingNumbers = ticket?.details?.redemption?.resultingNumbers;
+
+    useEffect(async () => {
+        if (!redeemHash) {
+            setLoadingStatus("NO TICKET SELECTED");
+            await sleep(2000);
+            history.push("/select");
+        }
+    }, [])
+
+    useEffect(async () => {
+        console.log("GAME useEffect redeem Hash", redeemHash)
+        if (redeemHash) {
+            console.log("redeemHash", redeemHash);
+            const ticketFromState = tickets.find(ticket => ticket.redeemTx?.hash === redeemHash)
+            console.log("GAME ticketFromState", ticketFromState);
+            if (!ticketFromState) {
+                setLoadingStatus("TICKET NOT FOUND");
+                sleep(3000);
+                history.push("/select");
+            } else if (!ticketFromState.details.redemption) {
+                // wait and try again
+                console.log("GAME DATA NOT FOUND")
+            } else {
+                console.log("GAME WORKED")
+
+                console.log("GAME resulting Numbers", ticketFromState.details.redemption.resultingNumbers);
+                const tier = ticketFromState.details.redemption.tier;
+                console.log("GAME tier", tier);
+
+                setIsWinner(tier != 0);
+                setTicket(ticketFromState);
+                setLoadingStatus(false);
+            }
+        }
+    }, [])
+
+
+    const handleResultRedirect = () => {
+        history.push({
+            pathname: "/result",
+            state: {
+                ticket
+            }
+        });
+    }
+
+
     return (
-        <GameContext.Provider>
+        <GameContext.Provider value={{
+            isWinner,
+            resultingNumbers,
+            handleResultRedirect,
+        }}>
             {children}
         </GameContext.Provider>
     )
