@@ -29,7 +29,7 @@ import BigNumber from 'bignumber.js';
 
 // core functions
 import { useBlockLotto } from '@core/context/BlockLotto';
-import { getWalletState } from '@core/utils/cashMethods'
+import { getWalletState } from '@core/utils/cashMethods';
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
 import { useApp } from '@core/context/App';
