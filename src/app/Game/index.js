@@ -1,14 +1,6 @@
 // node modules
 import React, { useState, useEffect } from 'react';
 
-// react components
-import Button from '@components/Button';
-import Header from '@components/Header';
-import Footer from '@components/Footer';
-import { ResultingNumbers } from '@components/PlayerNumbers';
-
-import * as S from './components/Styled';
-
 // assets and other
 import VersusPng from '@assets/images/versus.png';
 import RingPng from '@assets/images/ring_on_beach.png';
@@ -19,7 +11,20 @@ import sleep from '@utils/sleep';
 
 // core functions
 import { useGame } from '@core/context/Game';
-import { useApp } from '@core/context/App';
+import { useApp } from '@core/context/App';;
+
+// react components
+import Button from '@components/Button';
+import Header from '@components/Header';
+import Footer from '@components/Footer';
+import { ResultingNumbers } from '@components/PlayerNumbers';
+import Background from './components/Background'
+import FlexGrow from './components/FlexGrow';
+import CustomFlash from './components/CustomFlash';
+import Animation from './components/Animation';
+import FadeOut from './components/FadeOut';
+import SlideIn from './components/SlideIn';
+import Versus from './components/Versus';
 
 const Game = () => {
 	const { isWinner, resultingNumbers, handleResultRedirect } = useGame();
@@ -68,28 +73,27 @@ const Game = () => {
 		setFightStarted(true);
 	}
 
-	const playButtonText = "Fight";
 	const folder = animationLabels.PUBLICPATH;
 
 	return (
 		<>
-			<S.Background src={RingPng} />
+			<Background src={RingPng} />
 			<Header $transparent={true} />
 			{resultingNumbers && (
 				<>
-					<S.FlexGrow>
-						<S.SlideIn>
+					<FlexGrow>
+						<SlideIn>
 							{versus &&
-								<S.FadeOut $fadeOut={fadeOutVersus}>
-									<S.Versus src={VersusPng} />
-								</S.FadeOut>
+								<FadeOut $fadeOut={fadeOutVersus}>
+									<Versus src={VersusPng} />
+								</FadeOut>
 							}
 
-						</S.SlideIn>
+						</SlideIn>
 						{labels && (
 							<>
-								<S.Animation $hidden={animationStage !== "faceoff"}>
-									<S.CustomFlash
+								<Animation $hidden={animationStage !== "faceoff"}>
+									<CustomFlash
 										src={folder + labels.faceoff}
 										config={{
 											autoplay: "on",
@@ -103,13 +107,15 @@ const Game = () => {
 											preferredRenderer: "canvas"
 										}}
 										id={labels.faceoff}
-										style={S.faceoffAnimationStyle}
+										style={{
+											width: "960px", height: "600px", position: "absolute", marginLeft: "15%"
+										}}
 									>
 										<div></div>
-									</S.CustomFlash>
-								</S.Animation>
-								<S.Animation $hidden={animationStage !== "fight"}>
-									<S.CustomFlash
+									</CustomFlash>
+								</Animation>
+								<Animation $hidden={animationStage !== "fight"}>
+									<CustomFlash
 										src={folder + labels.fight}
 										config={{
 											autoplay: "on",
@@ -122,13 +128,13 @@ const Game = () => {
 											preferredRenderer: "canvas"
 										}}
 										id={labels.fight}
-										style={S.animationStyle}
+										style={{ width: "960px", height: "600px" }}
 									>
 										<div></div>
-									</S.CustomFlash>
-								</S.Animation>
-								<S.Animation $hidden={animationStage !== "celebration"}>
-									<S.CustomFlash
+									</CustomFlash>
+								</Animation>
+								<Animation $hidden={animationStage !== "celebration"}>
+									<CustomFlash
 										src={folder + labels.celebration}
 										config={{
 											autoplay: "on",
@@ -142,21 +148,21 @@ const Game = () => {
 											preferredRenderer: "canvas"
 										}}
 										id={labels.celebration}
-										style={S.animationStyle}
+										style={{ width: "960px", height: "600px" }}
 									>
 										<div></div>
-									</S.CustomFlash>
-								</S.Animation>
+									</CustomFlash>
+								</Animation>
 							</>
 						)}
-					</S.FlexGrow>
+					</FlexGrow>
 					<Footer variant="empty">
 						<ResultingNumbers
 							numberArray={resultingNumbers}
 							active={fightStarted}
 						/>
 						<Button onClick={handlePlay} grey={fightStarted} disabled={fightStarted}>
-							{playButtonText}
+							Fight
 						</Button>
 					</Footer>
 				</>
