@@ -10,8 +10,6 @@ function Footer({
     randomNumbers,
     buttonOnClick,
     buttonText,
-    ticketIndicator,
-    slpBalances,
     variant = 'default',
     children
 }) {
@@ -35,7 +33,7 @@ function Footer({
                     </Button>
                 </>
             }
-            <SupportBar returnTo={origin} ticketIndicator={ticketIndicator} slpBalances={slpBalances} />
+            <SupportBar returnTo={origin} />
         </StyledFooter>
     )
 }
@@ -52,6 +50,6 @@ Footer.propTypes = {
     slpBalances: PropTypes.any,
     children: PropTypes.node,
     variant: PropTypes.oneOf(['default', 'empty']),
-  }
+}
 
 export default Footer;
