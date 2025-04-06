@@ -10,7 +10,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { useBlockLotto } from '@core/context/BlockLotto';
 import { useApp } from '@core/context/App';
-import { nationalityOptions, residencyOptions } from '@core/utils/geoblock';
+import { nationalityOptions, residencyOptions } from '@core/constants/geoBlockedOptions';
 
 import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
 const { SHA256 } = bcrypto;
