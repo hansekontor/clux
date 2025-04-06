@@ -28,7 +28,6 @@ const fiatPurchaseButtonText = "Pay";
 
 export default function Cart() {
     const {
-        playerNumbers,
         showPaymentForm,
         ticketPrice,
         ticketQtyError,
@@ -52,7 +51,6 @@ export default function Cart() {
 
             <FlexGrow>
                 <Ticket
-                    numbers={playerNumbers}
                     background={'#EAEAEA'}
                     quantity={ticketQuantity}
                 />

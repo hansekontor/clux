@@ -666,7 +666,6 @@ export function CheckoutProvider({ children }) {
         <CheckoutContext.Provider
             value={{
                 isFirstRendering,
-                playerNumbers,
                 hasAgreed,
                 hasEmail,
                 showPaymentForm,

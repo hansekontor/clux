@@ -6,7 +6,6 @@ import Typography from '@components/Typography';
 import { DateColumn, Details, Price, PriceColumn, Row } from './Ticket.styles';
 
 const Ticket = ({
-    numbers,
     background,
     quantity
 }) => {
