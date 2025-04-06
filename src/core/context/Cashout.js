@@ -160,7 +160,7 @@ export function CashoutProvider({ children }) {
         try {
             e.preventDefault();
 
-            passLoadingStatus("REQUESTING GIFTCARD");
+            setLoadingStatus("REQUESTING GIFTCARD");
 
             const brand = e.target.brand.value;
             const json = {
@@ -189,7 +189,7 @@ export function CashoutProvider({ children }) {
             const prOutputs = pr.paymentDetails.outputs;
             console.log("pr", pr);
 
-            passLoadingStatus("BUILDING TRANSACTION");
+            setLoadingStatus("BUILDING TRANSACTION");
 
             const merchantData = pr.paymentDetails.getData('json');
             // console.log("merchantData", merchantData);
@@ -287,7 +287,7 @@ export function CashoutProvider({ children }) {
 
             setLink(ack.payment.getData('json').payout.result.url);
             setStage("giftcard");
-            passLoadingStatus(false);
+            setLoadingStatus(false);
         } catch (err) {
             console.error(err);
         }
