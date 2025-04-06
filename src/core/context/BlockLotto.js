@@ -16,10 +16,10 @@ import {
     loadStoredWallet,
     isValidStoredWallet,
     isLegacyMigrationRequired,
-	getSlpBalancesAndUtxos,
-	addSlpToRedeemTx,
+    getSlpBalancesAndUtxos,
+    addSlpToRedeemTx,
     addSlpToSendTx,
-	addUtxos,
+    addUtxos,
     removeUsedCoins
 } from '@core/utils/cashMethods';
 import { isValidCashtabSettings } from '@core/utils/validation';
@@ -27,14 +27,15 @@ import localforage from 'localforage';
 import { currency } from '@core/utils/ticker';
 import isEqual from 'lodash.isequal';
 import cashaddr from 'ecashaddrjs';
-import { 
+import {
     Mnemonic,
     HDPrivateKey,
     KeyRing,
-	TX, 
+    TX,
 } from '@hansekontor/checkout-components';
 import TicketHistory from '@core/utils/ticket';
 import sleep from '@core/utils/sleep';
+import { getWalletState } from '@core/utils/cashMethods';
 
 export const BlockLottoContext = createContext();
 
@@ -949,6 +950,31 @@ export const BlockLottoProvider = ({ children }) => {
         }
     }
 
+    const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
+    const unredeemedTickets = tickets.filter(ticket => !ticket.redeemTx).length;
+    const [balance, setBalance] = useState("000000");
+
+    useEffect(() => {
+        if (slpBalancesAndUtxos) {
+            console.log("Balance.js slpBalances", slpBalancesAndUtxos);
+            if (slpBalancesAndUtxos.tokens?.length > 0) {
+                const token = slpBalancesAndUtxos.tokens[0];
+                if ("balance" in token) {
+                    const balance = new BigNumber({ ...token.balance, _isBigNumber: true }).toNumber();
+                    const decimals = token.info.decimals;
+                    const formattedBalance = balance / (10 ** decimals);
+                    const amountString = String(formattedBalance);
+                    const digits = amountString.length;
+                    const fillupDigitsString = String(0).repeat(6 - digits);
+                    const displayAmountString = fillupDigitsString.concat(amountString);
+
+                    setBalance(displayAmountString);
+                }
+            }
+        }
+
+    }, [])
+
     return (
         <BlockLottoContext.Provider value={{
             wallet,
@@ -956,6 +982,8 @@ export const BlockLottoProvider = ({ children }) => {
             loading,
             apiError,
             cashtabSettings,
+            balance,
+            unredeemedTickets,
             changeCashtabSettings,
             getActiveWalletFromLocalForage,
             forceWalletUpdate,
