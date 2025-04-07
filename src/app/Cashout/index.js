@@ -1,6 +1,5 @@
 // node modules
 import React from 'react';
-import { Modal } from 'antd';
 
 // core functions
 import { useCashout } from '@core/context/Cashout';
@@ -18,8 +17,7 @@ import FlexGrow from './components/FlexGrow';
 
 
 const Cashout = () => {
-    const [modal, modalHolder] = Modal.useModal();
-    const { stage, handleReturn } = useCashout();
+    const { stage, handleReturn, modalHolder } = useCashout();
 
     return (
         <>

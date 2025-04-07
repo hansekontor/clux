@@ -41,6 +41,7 @@ export function CashoutProvider({ children }) {
     const [link, setLink] = useState(false);
     const [brandData, setBrandData] = useState(false);
     const [cardAmount, setCardAmount] = useState(10);
+    const [modal, modalHolder] = Modal.useModal();
 
     const previousPath = location.state?.returnTo || "/select";
 
@@ -332,6 +333,7 @@ export function CashoutProvider({ children }) {
                 tilloSelection,
                 brandData,
                 link,
+                modalHolder,
                 handleReturn,
                 handleSubmitFilters,
                 handleBrandSubmit,
