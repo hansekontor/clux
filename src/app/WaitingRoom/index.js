@@ -10,9 +10,10 @@ import PlayerNumbers from '@components/PlayerNumbers';
 import Button from '@components/Button';
 import Background from './components/Background';
 import FlexGrow from './components/FlexGrow';
-
+ 
 // core functions
 import { useWaitingRoom } from '@core/context/WaitingRoom';
+import { useApp } from '@core/context/App';
 
 // util
 import animationLabels from '@utils/animations';
