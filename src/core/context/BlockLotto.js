@@ -36,6 +36,7 @@ import {
 import TicketHistory from '@core/utils/ticket';
 import sleep from '@core/utils/sleep';
 import { getWalletState } from '@core/utils/cashMethods';
+import BigNumber from 'bignumber.js';
 
 export const BlockLottoContext = createContext();
 
@@ -973,7 +974,7 @@ export const BlockLottoProvider = ({ children }) => {
             }
         }
 
-    }, [])
+    }, [slpBalancesAndUtxos]);
 
     return (
         <BlockLottoContext.Provider value={{
