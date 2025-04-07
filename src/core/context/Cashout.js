@@ -13,6 +13,7 @@ import bio from 'bufio';
 import { TX, MTX, Coin, Script, KeyRing } from '@hansekontor/checkout-components';
 import { PaymentRequest, Payment, PaymentACK } from 'b70-checkout';
 import { stringify as uuidStringify } from 'uuid';
+import { Modal } from 'antd';
 
 // core functions
 import { useBlockLotto } from '@core/context/BlockLotto';
