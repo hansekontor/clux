@@ -17,7 +17,8 @@ import styled from "styled-components";
 
 const RollUp = styled.div`
     max-width: 480px;
-    width: 100vh;
+    width: 100%;
+    left: 0;
     bottom: 0px;
     background: #fff;
     border: 1px solid #666;

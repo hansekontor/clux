@@ -21,7 +21,8 @@ export const PaymentInput = styled(Input)`
 
 export const WidgetBody = styled.div`
     width: 100%;
-    max-width: 480px;
+    max-width: 100%;
+    left: 0;
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -45,6 +46,7 @@ export const PaymentForm = styled.form`
 	margin-bottom: 30px;
     gap: 12px;
     width: 90%;
+    max-width: 100%;
 `;
 
 export const Item = styled.div`
