@@ -1,6 +1,5 @@
 // node modules
 import React from 'react';
-import { Modal } from 'antd';
 import { Flash } from 'react-ruffle';
 
 // react components
@@ -23,9 +22,8 @@ import LockerPng from '@assets/images/locker.png';
 
 
 const WaitingRoom = () => {
-	const [modal, modalHolder] = Modal.useModal();
 	const { playerNumbers } = useApp();
-	const { activeTicket, isAlternativeTicket, handleButtonClick } = useWaitingRoom();
+	const { activeTicket, isAlternativeTicket, modalHolder, handleButtonClick } = useWaitingRoom();
 
 	const animationName = animationLabels.CLUX.IDLE.SHADOWBOX;
 	const animationPath = animationLabels.PUBLICPATH + animationName;

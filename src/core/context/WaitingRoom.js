@@ -25,6 +25,7 @@ import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '@core
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
 import { useApp } from '@core/context/App';
+import { Modal } from 'antd';
 
 export const WaitingRoomContext = createContext();
 
@@ -41,6 +42,7 @@ export function WaitingRoomProvider({ children }) {
 
     const walletState = getWalletState(wallet)
     const { tickets } = walletState;
+    const [modal, modalHolder] = Modal.useModal();
 
     // states
     const [activeTicket, setActiveTicket] = useState(location.state?.ticketToRedeem || false);
@@ -302,7 +304,7 @@ export function WaitingRoomProvider({ children }) {
     };
 
     const lottoSignature = activeTicket?.details?.minedTicket?.lottoSignature;
-    const ticketNumbers = activeTicket.details.playerNumbers;
+    const ticketNumbers = activeTicket?.details?.playerNumbers;
 
     return (
         <WaitingRoomContext.Provider value={{
@@ -310,6 +312,7 @@ export function WaitingRoomProvider({ children }) {
             isAlternativeTicket,
             lottoSignature,
             ticketNumbers,
+            modalHolder,
             handleButtonClick,
         }}>
             {children}
