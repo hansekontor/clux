@@ -35,7 +35,7 @@ import forceWalletUpdateFn from './services/forceWalletUpdate';
 import createWalletFn from './services/createWallet';
 import activateWalletFn from './services/activateWallet';
 
-export const CashTabContext = createContext/** @type {CashTabContextType} */(null);
+export const CashTabContext = createContext/** @type {CashTabContextType} */({});
 
 export const CashTabWrapper = ({ children, passWallet }) => {
     const { getTicketData } = useBCH();
@@ -263,7 +263,6 @@ export const CashTabWrapper = ({ children, passWallet }) => {
 
 export const CashTabProvider = ({ children }) => {
 
-    /** @type {[Wallet | null, (value: Wallet) => void]} */
     const [wallet, setWallet] = useState(null);
 
     /** @type {[boolean, (value: boolean) => void]} */
@@ -309,7 +308,6 @@ export const CashTabProvider = ({ children }) => {
 /**
  * Custom hook to access CashTabContext.
  * 
- * @returns {CashTabContextType} The context object, containing wallet and associated functions.
  */
 export const useCashTab = () => {
     const context = useContext(CashTabContext);
