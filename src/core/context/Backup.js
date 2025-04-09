@@ -11,14 +11,14 @@ import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useNotifications } from '@core/context/Notifications';
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { useApp } from '@core/context/App';
 
 export const BackupContext = createContext();
 
 export function BackupProvider({ children }) {
     const history = useHistory();
-    const { wallet } = useBlockLotto();
+    const { wallet } = useCashTab();
     const { setLoadingStatus } = useApp();
     const notify = useNotifications();
 

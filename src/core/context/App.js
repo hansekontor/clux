@@ -13,7 +13,7 @@ import {
 } from 'react-router-dom';
 
 // core components
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 
 export const AppContext = createContext();
 
@@ -21,7 +21,7 @@ export const AppProvider = ({ children }) => {
     const history = useHistory();
     const location = useLocation();
 
-    const { wallet, loading } = useBlockLotto();
+    const { wallet, loading } = useCashTab();
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [loader, setLoader] = useState(true);
     const [playerNumbers, setPlayerNumbers] = useState(false);

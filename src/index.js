@@ -5,9 +5,9 @@ import { ThemeProvider } from "styled-components";
 
 // core functions
 import GA from '@core/utils/GoogleAnalytics';
-import { AuthenticationProvider } from '@core/context/Authentication';
-import { BlockLottoProvider } from '@core/context/BlockLotto';
 import { NotificationsProvider } from '@core/context/Notifications';
+import BlockLottoCoreProvider from '@core/providers/CoreProvider';
+import BlockLottoFunctionsProvider from '@core/providers/FunctionsProvider';
 import { AppProvider } from '@core/context/App';
 
 // styles
@@ -17,22 +17,23 @@ import { theme, GlobalStyles } from './styles';
 import Notification from '@components/Notification';
 import App from './app';
 
+
 ReactDOM.render(
-    <AuthenticationProvider>
-        <BlockLottoProvider>
-            <ThemeProvider theme={theme}>
-                <GlobalStyles />
-                <NotificationsProvider Notification={Notification}>
-                    <Router>
-                        {GA.init() && <GA.RouteTracker />}
-                        <AppProvider>
+    <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <BlockLottoCoreProvider>
+            <NotificationsProvider Notification={Notification}>
+                <Router>
+                    {GA.init() && <GA.RouteTracker />}
+                    <AppProvider>
+                        <BlockLottoFunctionsProvider>
                             <App />
-                        </AppProvider>
-                    </Router>
-                </NotificationsProvider>
-            </ThemeProvider>
-        </BlockLottoProvider>
-    </AuthenticationProvider>,
+                        </BlockLottoFunctionsProvider>
+                    </AppProvider>
+                </Router>
+            </NotificationsProvider>
+        </BlockLottoCoreProvider>
+    </ThemeProvider>,
     document.getElementById('root'),
 );
 

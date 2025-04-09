@@ -10,7 +10,7 @@ import { currency } from '@core/utils/ticker';
 import BigNumber from 'bignumber.js';
 import cashaddr from 'ecashaddrjs';
 import { script, Script, TX } from '@hansekontor/checkout-components';
-const { SLP } = script; 
+const { SLP } = script;
 import bio from 'bufio';
 
 import { sandboxTokenInfo } from '@core/utils/token';
@@ -166,29 +166,34 @@ export const normalizeBalance = slpBalancesAndUtxos => {
 };
 
 export const isValidStoredWallet = walletStateFromStorage => {
-	// console.log("ISVALIDSTOREDWALLET", walletStateFromStorage);
-	// console.log(typeof walletStateFromStorage === 'object');
-	// console.log('state' in walletStateFromStorage);
-	// console.log(typeof walletStateFromStorage.state === 'object');
-	// console.log('balances' in walletStateFromStorage.state);
-	// console.log('utxos' in walletStateFromStorage.state);
-	// console.log('slpBalancesAndUtxos' in walletStateFromStorage.state);
-	// console.log('tokens' in walletStateFromStorage.state);
-	// console.log('tickets' in walletStateFromStorage.state);
+    // console.log("ISVALIDSTOREDWALLET", walletStateFromStorage);
+    // console.log(typeof walletStateFromStorage === 'object');
+    // console.log('state' in walletStateFromStorage);
+    // console.log(typeof walletStateFromStorage.state === 'object');
+    // console.log('balances' in walletStateFromStorage.state);
+    // console.log('utxos' in walletStateFromStorage.state);
+    // console.log('slpBalancesAndUtxos' in walletStateFromStorage.state);
+    // console.log('tokens' in walletStateFromStorage.state);
+    // console.log('tickets' in walletStateFromStorage.state);
 
-	const valid =(
-		typeof walletStateFromStorage === 'object' &&
+    // Ensure walletStateFromStorage is not null or undefined
+    if (walletStateFromStorage === null || walletStateFromStorage === undefined) {
+        return false;
+    }
+
+    const valid = (
+        typeof walletStateFromStorage === 'object' &&
         'state' in walletStateFromStorage &&
-        typeof walletStateFromStorage.state === 'object' &&
-        'balances' in walletStateFromStorage.state &&
+        typeof walletStateFromStorage?.state === 'object' &&
+        'balances' in walletStateFromStorage?.state &&
         'utxos' in walletStateFromStorage.state &&
-        'slpBalancesAndUtxos' in walletStateFromStorage.state &&
-        'tokens' in walletStateFromStorage.state &&
-        'tickets' in walletStateFromStorage.state
+        'slpBalancesAndUtxos' in walletStateFromStorage?.state &&
+        'tokens' in walletStateFromStorage?.state &&
+        'tickets' in walletStateFromStorage?.state
     );
-	// console.log("valid", valid);
+    // console.log("valid", valid);
 
-	return valid;
+    return valid;
 };
 
 export const getWalletState = wallet => {
@@ -203,7 +208,7 @@ export const getWalletState = wallet => {
             tickets: [],
         };
     }
-	
+
     return wallet.state;
 };
 
@@ -323,112 +328,112 @@ export const isLegacyMigrationRequired = wallet => {
 };
 
 export const getSlpBalancesAndUtxos = (utxos) => {
-	// Prevent app from treating slpUtxos as nonSlpUtxos
-	// Do not classify any utxos that include token information as nonSlpUtxos
-	const nonSlpUtxos = utxos.filter(utxo => 
-		!utxo.slp || (utxo.slp && utxo.slp.value == '0')
-	);
+    // Prevent app from treating slpUtxos as nonSlpUtxos
+    // Do not classify any utxos that include token information as nonSlpUtxos
+    const nonSlpUtxos = utxos.filter(utxo =>
+        !utxo.slp || (utxo.slp && utxo.slp.value == '0')
+    );
 
-	// To be included in slpUtxos, the utxo must
-	// have utxo.isValid = true
-	// If utxo has a utxo.tokenQty field, i.e. not a minting baton, then utxo.value !== '0'
-	const slpUtxos = utxos.filter(utxo => 
-		utxo.slp && ( utxo.slp.value != '0' || utxo.slp.type == 'MINT')
-	);
+    // To be included in slpUtxos, the utxo must
+    // have utxo.isValid = true
+    // If utxo has a utxo.tokenQty field, i.e. not a minting baton, then utxo.value !== '0'
+    const slpUtxos = utxos.filter(utxo =>
+        utxo.slp && (utxo.slp.value != '0' || utxo.slp.type == 'MINT')
+    );
 
-	let tokensById = {};
+    let tokensById = {};
 
-	for (let i = 0; i < slpUtxos.length; i++) {
-		const slpUtxo = slpUtxos[i];
-		let token = tokensById[slpUtxo.slp.tokenId];
+    for (let i = 0; i < slpUtxos.length; i++) {
+        const slpUtxo = slpUtxos[i];
+        let token = tokensById[slpUtxo.slp.tokenId];
 
-		if (token) {
-			// Minting baton does nto have a slpUtxo.tokenQty type
-			token.hasBaton = slpUtxo.slp.type === 'BATON';
+        if (token) {
+            // Minting baton does nto have a slpUtxo.tokenQty type
+            token.hasBaton = slpUtxo.slp.type === 'BATON';
 
-			if (!token.hasBaton) {
-				token.balance = new BigNumber({...token.balance, _isBigNumber:true}).plus(
-					new BigNumber(slpUtxo.slp.value)
-				);
-			}
+            if (!token.hasBaton) {
+                token.balance = new BigNumber({ ...token.balance, _isBigNumber: true }).plus(
+                    new BigNumber(slpUtxo.slp.value)
+                );
+            }
 
-		} else {
-			token = {};
-			token.info = sandboxTokenInfo;
-			token.tokenId = slpUtxo.slp.tokenId;
-			token.hasBaton = slpUtxo.slp.type === 'BATON';
-			if (!token.hasBaton) {
-				token.balance = new BigNumber(slpUtxo.slp.value);
-			} else {
-				token.balance = new BigNumber(0);
-			}
+        } else {
+            token = {};
+            token.info = sandboxTokenInfo;
+            token.tokenId = slpUtxo.slp.tokenId;
+            token.hasBaton = slpUtxo.slp.type === 'BATON';
+            if (!token.hasBaton) {
+                token.balance = new BigNumber(slpUtxo.slp.value);
+            } else {
+                token.balance = new BigNumber(0);
+            }
 
-			tokensById[slpUtxo.slp.tokenId] = token;
-		}
-	}
+            tokensById[slpUtxo.slp.tokenId] = token;
+        }
+    }
 
-	const tokens = Object.values(tokensById);
-	// console.log(`tokens`, tokens);
-	return {
-		tokens,
-		nonSlpUtxos,
-		slpUtxos,
-	};
+    const tokens = Object.values(tokensById);
+    // console.log(`tokens`, tokens);
+    return {
+        tokens,
+        nonSlpUtxos,
+        slpUtxos,
+    };
 };
 
 export const addredeemData = (tickets, hash, redeemData) => {
-	// console.log("addredeemData", tickets, hash, redeemData);
-	const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === hash);
+    // console.log("addredeemData", tickets, hash, redeemData);
+    const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === hash);
 
-	// console.log("addredeemData index", index);
-	tickets[index].details = Object.assign(tickets[index].details, { game: redeemData });
+    // console.log("addredeemData index", index);
+    tickets[index].details = Object.assign(tickets[index].details, { game: redeemData });
 
-	return tickets;
+    return tickets;
 }
 
 export const addSlpToRedeemTx = (tx) => {
-	// input is a TX
-	const opReturn = tx.outputs[0].script;
-	const slp = new SLP(opReturn);
-	const mintRecords = slp.getMintRecords(tx.hash());
-	const mintRecordsJson = mintRecords.map(record => record.getJSON());
-	const tokenId = slp.getTokenId().toString('hex');
-	
-	let slpTx = tx.toJSON();
-	slpTx.slpToken = { tokenId };
+    // input is a TX
+    const opReturn = tx.outputs[0].script;
+    const slp = new SLP(opReturn);
+    const mintRecords = slp.getMintRecords(tx.hash());
+    const mintRecordsJson = mintRecords.map(record => record.getJSON());
+    const tokenId = slp.getTokenId().toString('hex');
 
-	for (let i = 1; i < tx.outputs.length; i++) {
-		const matchedSlpRecord = mintRecordsJson.find(record => record.vout === i);
-		if (matchedSlpRecord) 
-			slpTx.outputs[i].slp = matchedSlpRecord;
-	}
+    let slpTx = tx.toJSON();
+    slpTx.slpToken = { tokenId };
 
-	return slpTx;
+    for (let i = 1; i < tx.outputs.length; i++) {
+        const matchedSlpRecord = mintRecordsJson.find(record => record.vout === i);
+        if (matchedSlpRecord)
+            slpTx.outputs[i].slp = matchedSlpRecord;
+    }
+
+    return slpTx;
 }
 export const addSlpToSendTx = (tx) => {
-	// input is a TX
-	const opReturn = tx.outputs[0].script;
-	const slp = new SLP(opReturn);
-	const sendRecords = slp.getSendRecords(tx.hash());
-	const sendRecordsJson = sendRecords.map(record => record.getJSON());
-	const tokenId = slp.getTokenId().toString('hex');
-	
-	let slpTx = tx.toJSON();
+    // input is a TX
+    const opReturn = tx.outputs[0].script;
+    const slp = new SLP(opReturn);
+    const sendRecords = slp.getSendRecords(tx.hash());
+    const sendRecordsJson = sendRecords.map(record => record.getJSON());
+    const tokenId = slp.getTokenId().toString('hex');
+
+    let slpTx = tx.toJSON();
     // console.log("slpTx", slpTx);
-	slpTx.slpToken = { tokenId };
+    slpTx.slpToken = { tokenId };
 
-	for (let i = 1; i < tx.outputs.length; i++) {
-		const matchedSlpRecord = sendRecordsJson.find(record => record.vout === i);
-		if (matchedSlpRecord) {
+    for (let i = 1; i < tx.outputs.length; i++) {
+        const matchedSlpRecord = sendRecordsJson.find(record => record.vout === i);
+        if (matchedSlpRecord) {
             // console.log("matchedSlpRecord", matchedSlpRecord);
-			slpTx.outputs[i].slp = matchedSlpRecord;
+            slpTx.outputs[i].slp = matchedSlpRecord;
         }
-	}
+    }
 
-	return slpTx;
+    return slpTx;
 }
 export const addUtxos = (slpBalancesAndUtxos, address, txs) => {
-	const newSlpBalancesAndUtxos = slpBalancesAndUtxos;
+    const newSlpBalancesAndUtxos = slpBalancesAndUtxos;
     const slpUtxos = [];
     const nonSlpUtxos = [];
 
@@ -436,44 +441,44 @@ export const addUtxos = (slpBalancesAndUtxos, address, txs) => {
         const utxosFromTx = tx.outputs.filter(outputs => outputs.address === address);
         // console.log("utxosFromTx", utxosFromTx);
 
-        const nonSlpUtxosFromTx = utxosFromTx.filter(utxo => 
+        const nonSlpUtxosFromTx = utxosFromTx.filter(utxo =>
             !utxo.slp || (utxo.slp && utxo.slp.value == '0')
         );
         nonSlpUtxos.push(...nonSlpUtxosFromTx);
 
-        const slpUtxosFromTx = utxosFromTx.filter(utxo => 
-            utxo.slp && ( utxo.slp?.value != '0' || utxo.slp?.type == 'MINT') && ( utxo.slp?.value != '0' || utxo.slp?.type == 'SEND')
+        const slpUtxosFromTx = utxosFromTx.filter(utxo =>
+            utxo.slp && (utxo.slp?.value != '0' || utxo.slp?.type == 'MINT') && (utxo.slp?.value != '0' || utxo.slp?.type == 'SEND')
         );
         slpUtxos.push(...slpUtxosFromTx);
     }
 
     // console.log("added slpUtxos", slpUtxos);
 
-	newSlpBalancesAndUtxos.nonSlpUtxos.push(nonSlpUtxos);
-	newSlpBalancesAndUtxos.slpUtxos.push(slpUtxos);
+    newSlpBalancesAndUtxos.nonSlpUtxos.push(nonSlpUtxos);
+    newSlpBalancesAndUtxos.slpUtxos.push(slpUtxos);
 
-	const hasToken = slpBalancesAndUtxos.tokens.length > 0 ? true : false;
-	const token = hasToken ? slpBalancesAndUtxos?.tokens[0] : {info: sandboxTokenInfo};
-	const previousBalance = token.balance ? new BigNumber({...token.balance, _isBigNumber:true }) : BigNumber(0);
-	// console.log("previousBalance", previousBalance);
-	let updatedBalance = previousBalance;
+    const hasToken = slpBalancesAndUtxos.tokens.length > 0 ? true : false;
+    const token = hasToken ? slpBalancesAndUtxos?.tokens[0] : { info: sandboxTokenInfo };
+    const previousBalance = token.balance ? new BigNumber({ ...token.balance, _isBigNumber: true }) : BigNumber(0);
+    // console.log("previousBalance", previousBalance);
+    let updatedBalance = previousBalance;
 
-	for (const utxo of slpUtxos) {
-		updatedBalance = new BigNumber(updatedBalance).plus(new BigNumber(utxo.slp.value));
+    for (const utxo of slpUtxos) {
+        updatedBalance = new BigNumber(updatedBalance).plus(new BigNumber(utxo.slp.value));
         token.balance = updatedBalance;
-	}
-	// console.log("updatedBalance", updatedBalance);
+    }
+    // console.log("updatedBalance", updatedBalance);
 
 
-	newSlpBalancesAndUtxos.tokens = [ token ];
-	
-	return newSlpBalancesAndUtxos;
+    newSlpBalancesAndUtxos.tokens = [token];
+
+    return newSlpBalancesAndUtxos;
 }
 
 export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
     // console.log("removed coins:", coinsUsed);
     const slpUtxos = slpBalancesAndUtxos.slpUtxos;
-    const nonSlpUtxos = slpBalancesAndUtxos.nonSlpUtxos;   
+    const nonSlpUtxos = slpBalancesAndUtxos.nonSlpUtxos;
     for (const coin of coinsUsed) {
         const slpCoinIndex = slpUtxos.findIndex(utxo => utxo.hash === coin.hash);
         // console.log("slpCoinIndex", slpCoinIndex);
@@ -482,7 +487,7 @@ export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
         } else {
             const nonSlpCoinIndex = nonSlpUtxos.findIndex(utxo => utxo.hash === coin.hash);
             // console.log("nonSlpCoinIndex", nonSlpCoinIndex);
-            if (nonSlpCoinIndex >=0) {
+            if (nonSlpCoinIndex >= 0) {
                 nonSlpUtxos.splice(nonSlpCoinIndex, 1);
             }
         }
@@ -490,42 +495,42 @@ export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
 
     let tokensById = {};
 
-	for (let i = 0; i < slpUtxos.length; i++) {
-		const slpUtxo = slpUtxos[i];
-		let token = tokensById[slpUtxo.slp.tokenId];
+    for (let i = 0; i < slpUtxos.length; i++) {
+        const slpUtxo = slpUtxos[i];
+        let token = tokensById[slpUtxo.slp.tokenId];
 
-		if (token) {
-			// Minting baton does nto have a slpUtxo.tokenQty type
-			token.hasBaton = slpUtxo.slp.type === 'BATON';
+        if (token) {
+            // Minting baton does nto have a slpUtxo.tokenQty type
+            token.hasBaton = slpUtxo.slp.type === 'BATON';
 
-			if (!token.hasBaton) {
+            if (!token.hasBaton) {
                 // console.log("token.balance prior", token.balance);
-				token.balance = new BigNumber({...token.balance, _isBigNumber:true}).plus(
-					new BigNumber(slpUtxo.slp.value)
-				);
+                token.balance = new BigNumber({ ...token.balance, _isBigNumber: true }).plus(
+                    new BigNumber(slpUtxo.slp.value)
+                );
                 // console.log("token.balance post", token.balance);
-			}
+            }
 
-		} else {
-			token = {};
-			token.info = sandboxTokenInfo;
-			token.tokenId = slpUtxo.slp.tokenId;
-			token.hasBaton = slpUtxo.slp.type === 'BATON';
-			if (!token.hasBaton) {
-				token.balance = new BigNumber(slpUtxo.slp.value);
-			} else {
-				token.balance = new BigNumber(0);
-			}
+        } else {
+            token = {};
+            token.info = sandboxTokenInfo;
+            token.tokenId = slpUtxo.slp.tokenId;
+            token.hasBaton = slpUtxo.slp.type === 'BATON';
+            if (!token.hasBaton) {
+                token.balance = new BigNumber(slpUtxo.slp.value);
+            } else {
+                token.balance = new BigNumber(0);
+            }
 
-			tokensById[slpUtxo.slp.tokenId] = token;
-		}
-	}
+            tokensById[slpUtxo.slp.tokenId] = token;
+        }
+    }
 
-	const tokens = Object.values(tokensById);
-	// console.log(`tokens`, tokens);
-	return {
-		tokens,
-		nonSlpUtxos,
-		slpUtxos,
-	};
+    const tokens = Object.values(tokensById);
+    // console.log(`tokens`, tokens);
+    return {
+        tokens,
+        nonSlpUtxos,
+        slpUtxos,
+    };
 }

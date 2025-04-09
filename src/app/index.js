@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 
 // core components
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { isValidStoredWallet } from '@core/utils/cashMethods';
 import { useApp } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
@@ -36,7 +36,7 @@ import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 
 
 const App = () => {
-	const { wallet } = useBlockLotto();
+	const { wallet } = useCashTab();
 	const {
 		loadingStatus,
 		loading,
@@ -65,74 +65,69 @@ const App = () => {
 					</>
 				}
 
-				{wallet && isValidStoredWallet(wallet) ? (
-					<>
-						{protection ?
-							<OnBoardingProvider>
-								<OnBoarding />
-							</OnBoardingProvider>
-							:
-							<>
-								<Switch>
-									<Route path="/select">
-										<SelectProvider>
-											<Select />
-										</SelectProvider>
-									</Route>
-									<Route path="/checkout">
-										<CheckoutProvider>
-											<Checkout />
-										</CheckoutProvider>
-									</Route>
-									<Route path="/waitingroom">
-										<WaitingRoomProvider>
-											<WaitingRoom
-												passLoadingStatus={setLoadingStatus}
-												activeTicket={activeTicket}
-												playerNumbers={playerNumbers}
-												user={user}
-											/>
-										</WaitingRoomProvider>
-									</Route>
-									<Route path="/game">
-										<GameProvider>
-											<Game />
-										</GameProvider>
-									</Route>
-
-									<Route path="/result">
-										<ResultProvider>
-											<Result />
-										</ResultProvider>
-									</Route>
-									<Route path="/backup">
-										<BackupProvider>
-											<Backup />
-										</BackupProvider>
-									</Route>
-									<Route path="/wallet">
-										<Wallet
+				<>
+					{protection ?
+						<OnBoardingProvider>
+							<OnBoarding />
+						</OnBoardingProvider>
+						:
+						<>
+							<Switch>
+								<Route path="/select">
+									<SelectProvider>
+										<Select />
+									</SelectProvider>
+								</Route>
+								<Route path="/checkout">
+									<CheckoutProvider>
+										<Checkout />
+									</CheckoutProvider>
+								</Route>
+								<Route path="/waitingroom">
+									<WaitingRoomProvider>
+										<WaitingRoom
 											passLoadingStatus={setLoadingStatus}
-											passRedeemAll={setRedeemAll}
+											activeTicket={activeTicket}
+											playerNumbers={playerNumbers}
 											user={user}
 										/>
-									</Route>
-									<Route path="/cashout">
-										<CashoutProvider>
-											<Cashout />
-										</CashoutProvider>
-									</Route>
-									<Redirect exact from="/" to="/select" />
-									<Route component={NotFound} />
-								</Switch>
-							</>
-						}
-					</>
-				) : (
-					<>
-						<LoadingAnimation loadingStatus={"LOADING WALLET"} />
-					</>
-				)}
+									</WaitingRoomProvider>
+								</Route>
+								<Route path="/game">
+									<GameProvider>
+										<Game />
+									</GameProvider>
+								</Route>
+
+								<Route path="/result">
+									<ResultProvider>
+										<Result />
+									</ResultProvider>
+								</Route>
+								<Route path="/backup">
+									<BackupProvider>
+										<Backup />
+									</BackupProvider>
+								</Route>
+								<Route path="/wallet">
+									<Wallet
+										passLoadingStatus={setLoadingStatus}
+										passRedeemAll={setRedeemAll}
+										user={user}
+									/>
+								</Route>
+								<Route path="/cashout">
+									<CashoutProvider>
+										<Cashout />
+									</CashoutProvider>
+								</Route>
+								<Redirect exact from="/" to="/select" />
+								<Route component={NotFound} />
+							</Switch>
+						</>
+					}
+				</>
+
 
 			</Suspense>
 		</Layout>

@@ -10,12 +10,12 @@ import React, { createContext, useContext, useEffect } from 'react';
 
 // core components
 import { useApp } from '@core/context/App';
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 
 export const SelectContext = createContext();
 
 export function SelectProvider({ children }) {
-    const { wallet } = useBlockLotto();
+    const { wallet } = useCashTab();
     const { setLoadingStatus, user } = useApp();
 
     console.log("wif", wallet.Path1899.fundingWif);

@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * This file is part of the BlockLotto core functionality.
  * 
@@ -6,7 +7,18 @@
  * Please consult the project maintainers before making modifications.
 */
 
-export const convertArrayBufferToBase64 = buffer => {
+/**
+ * Converts an ArrayBuffer to a Base64 encoded string.
+ *
+ * @param {ArrayBuffer} buffer - The ArrayBuffer to be converted.
+ * @returns {string} The Base64 encoded string representation of the ArrayBuffer.
+ *
+ * @example
+ * const buffer = new ArrayBuffer(8);
+ * const base64Str = convertArrayBufferToBase64(buffer);
+ * console.log(base64Str); // Outputs the Base64 string of the buffer
+ */
+export const convertArrayBufferToBase64 = (buffer) => {
     // convert the buffer from ArrayBuffer to Array of 8-bit unsigned integers
     const dataView = new Uint8Array(buffer);
     // convert the Array of 8-bit unsigned integers to a String
@@ -18,10 +30,21 @@ export const convertArrayBufferToBase64 = buffer => {
     return window.btoa(dataStr);
 };
 
-export const convertBase64ToArrayBuffer = base64Str => {
+/**
+ * Converts a Base64 encoded string to an ArrayBuffer.
+ *
+ * @param {string} base64Str - The Base64 string to be converted.
+ * @returns {ArrayBuffer} The ArrayBuffer representation of the Base64 string.
+ *
+ * @example
+ * const base64Str = "U29tZSBkYXRh";
+ * const buffer = convertBase64ToArrayBuffer(base64Str);
+ * console.log(buffer); // Outputs the ArrayBuffer representation of the Base64 string
+ */
+export const convertBase64ToArrayBuffer = (base64Str) => {
     // convert base64 String to normal String
     const dataStr = window.atob(base64Str);
     // convert the String to an Array of 8-bit unsigned integers
-    const dataView = Uint8Array.from(dataStr, char => char.charCodeAt(0));
+    const dataView = Uint8Array.from(dataStr, (char) => char.charCodeAt(0));
     return dataView.buffer;
 };

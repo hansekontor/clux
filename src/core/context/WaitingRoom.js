@@ -17,7 +17,7 @@ import {
 import { U64 } from 'n64';
 
 // core functions
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import useBCH from '@core/hooks/useBCH';
 import { getWalletState } from '@core/utils/cashMethods'
 import TXUtil from '@core/utils/txutil';
@@ -38,7 +38,7 @@ export function WaitingRoomProvider({ children }) {
         wallet,
         addMinedTicketToStorage,
         addRedeemTxToStorage
-    } = useBlockLotto();
+    } = useCashTab();
 
     const walletState = getWalletState(wallet)
     const { tickets } = walletState;

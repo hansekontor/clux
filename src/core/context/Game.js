@@ -11,7 +11,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import { useApp } from '@core/context/App';
 import sleep from '@core/utils/sleep';
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { getWalletState } from '@core/utils/cashMethods'
 
 export const GameContext = createContext();
@@ -20,7 +20,7 @@ export function GameProvider({ children }) {
     const history = useHistory();
     const location = useLocation();
     const { setLoadingStatus } = useApp();
-    const { wallet } = useBlockLotto();
+    const { wallet } = useCashTab();
     const walletState = getWalletState(wallet)
     const { tickets } = walletState;
     const [redeemHash,] = useState(location.state?.redeemHash || false);

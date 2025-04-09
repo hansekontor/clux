@@ -16,7 +16,7 @@ import { stringify as uuidStringify } from 'uuid';
 import { Modal } from 'antd';
 
 // core functions
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { getWalletState } from '@core/utils/cashMethods'
 import { useApp } from '@core/context/App';
 import sleep from '@core/utils/sleep';
@@ -28,7 +28,7 @@ export const CashoutContext = createContext();
 export function CashoutProvider({ children }) {
     const history = useHistory();
     const { setLoadingStatus } = useApp();
-    const { wallet, forceWalletUpdate, addCashout } = useBlockLotto();
+    const { wallet, forceWalletUpdate, addCashout } = useCashTab();
     const { slpBalancesAndUtxos } = getWalletState(wallet);
     // console.log("slpBalancesAndUtxos", slpBalancesAndUtxos);
     const token = slpBalancesAndUtxos.tokens?.length > 0 ? slpBalancesAndUtxos.tokens[0] : false;

@@ -8,7 +8,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { useApp } from '@core/context/App';
 import { nationalityOptions, residencyOptions } from '@core/constants/geoBlockedOptions';
 
@@ -20,7 +20,7 @@ import { Modal } from 'antd';
 export const OnBoardingContext = createContext();
 
 export const OnBoardingProvider = ({ children }) => {
-    const { wallet } = useBlockLotto();
+    const { wallet } = useCashTab();
     const { setProtection, setUser, setLoadingStatus } = useApp();
 
     const [passwordProtection, setPasswordProtection] = useState(true);

@@ -28,7 +28,7 @@ const { SHA256 } = bcrypto;
 import BigNumber from 'bignumber.js';
 
 // core functions
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { getWalletState } from '@core/utils/cashMethods';
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
@@ -53,7 +53,7 @@ export function CheckoutProvider({ children }) {
     const { setLoadingStatus, playerNumbers, user } = useApp();
 
     // find ticket indicator
-    const { wallet, forceWalletUpdate, addIssueTxs } = useBlockLotto();
+    const { wallet, forceWalletUpdate, addIssueTxs } = useCashTab();
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
     const token = slpBalancesAndUtxos.tokens ? slpBalancesAndUtxos.tokens[0] : false;
     let maxEtokenTicketQuantity = 0;
@@ -82,20 +82,20 @@ export function CheckoutProvider({ children }) {
     const [authPayment, setAuthPayment] = useState(false);
     const [kycCancelCount, setKycCancelCount] = useState(0);
 
-    useEffect(() => {
-        let isMounted = true;
+    // useEffect(() => {
+    //     let isMounted = true;
 
-        const checkPlayerNumbers = async () => {
-            if (!playerNumbers && isMounted) {
-                setLoadingStatus("PLAYER NUMBERS ARE MISSING");
-                history.push("/select");
-            }
-        };
+    //     const checkPlayerNumbers = async () => {
+    //         if (!playerNumbers && isMounted) {
+    //             setLoadingStatus("PLAYER NUMBERS ARE MISSING");
+    //             history.push("/select");
+    //         }
+    //     };
 
-        checkPlayerNumbers();
+    //     checkPlayerNumbers();
 
-        return () => { isMounted = false };  // Cleanup function
-    }, [playerNumbers]);
+    //     return () => { isMounted = false };  // Cleanup function
+    // }, [playerNumbers]);
 
     useEffect(async () => {
         console.log("CHECKOUT user", user);

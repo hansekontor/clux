@@ -11,7 +11,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 // core components
 import { useApp } from '@core/context/App';
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { getWalletState } from '@core/utils/cashMethods';
 
 export const ResultContext = createContext();
@@ -20,7 +20,7 @@ export function ResultProvider({ children }) {
     const { redeemAll, setLoadingStatus } = useApp();
     const history = useHistory();
     const location = useLocation();
-    const { wallet } = useBlockLotto();
+    const { wallet } = useCashTab();
     const walletState = getWalletState(wallet)
     const { tickets } = walletState;
     const redeemableTickets = tickets.filter(ticket => ticket.issueTx.height > 0 && !ticket.redeemTx);

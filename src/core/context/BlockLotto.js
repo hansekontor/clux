@@ -59,10 +59,12 @@ export const BlockLottoProvider = ({ children }) => {
             //   tokenBalance: 0,
             //   tickets: [],
         };
-    const previousBalances = usePrevious(balances);
-    const previousTokens = usePrevious(tokens);
+    // const previousBalances = usePrevious(balances);
+    // const previousTokens = usePrevious(tokens);
 
     // console.log("useWallet tickets", wallet?.state?.tickets.length);
+
+    console.log("wallet", wallet);
 
     const normalizeBalance = slpBalancesAndUtxos => {
         const totalBalanceInSatoshis = slpBalancesAndUtxos.nonSlpUtxos.reduce(
@@ -919,6 +921,7 @@ export const BlockLottoProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
+
     const createWallet = async (importMnemonic) => {
         // console.log("prototype createNewWallet called")
         // setLoading(true);
@@ -980,9 +983,9 @@ export const BlockLottoProvider = ({ children }) => {
         <BlockLottoContext.Provider value={{
             wallet,
             // fiatPrice,
-            loading,
-            apiError,
-            cashtabSettings,
+            // loading,
+            // apiError,
+            // cashtabSettings,
             balance,
             unredeemedTickets,
             changeCashtabSettings,

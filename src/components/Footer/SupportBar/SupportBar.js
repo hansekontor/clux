@@ -4,10 +4,10 @@ import { WalletButton, HelpButton, CashoutButton } from '@components/Button';
 import { StyledSupportBar } from './SupportBar.styles';
 import Balance from '../Balance';
 
-import { useBlockLotto } from "@core/context/BlockLotto";
+import { useCashTab } from '@core/context/CashTab';
 
 export default function SupportBar({ returnTo }) {
-    const { unredeemedTickets } = useBlockLotto();
+    const { unredeemedTickets } = useCashTab();
 
     const handleCnmiRedirect = () => {
         window.location.href = "https://example.com";

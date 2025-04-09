@@ -19,7 +19,7 @@ import ImportWallet from './components/ImportWallet';
 import * as S from './components/Styled';
 
 // core functions
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { getWalletState } from '@core/utils/cashMethods';
 import sleep from '@core/utils/sleep';
 import { useNotifications } from '@core/context/Notifications';
@@ -36,7 +36,7 @@ const Wallet = ({
 }) => {
     const history = useHistory();
     const location = useLocation();
-    const { wallet, loading } = useBlockLotto();
+    const { wallet, loading } = useCashTab();
     const walletState = getWalletState(wallet);
     const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
