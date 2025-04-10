@@ -7,13 +7,13 @@
 */
 
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import DefaultNotification from '../components/DefaultNotification';
-import NotificationAnimation from '../components/NotificationAnimation';
-import NotificationCollector from '../components/NotificationBody';
+import DefaultNotification from '../components/Notification/DefaultNotification';
+import NotificationAnimation from '../components/Notification/NotificationAnimation';
+import NotificationCollector from '../components/Notification/NotificationBody';
 
 export const NotificationsContext = createContext();
 
-export const NotificationsProvider = ({ children, Notification = DefaultNotification }) => {
+export const NotificationsProvider = ({ children, Notification }) => {
     const [notifications, setNotifications] = useState([]);
 
     const addNotification = useCallback(({ type, message }) => {

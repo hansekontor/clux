@@ -1,15 +1,23 @@
 // @ts-check
 import React from 'react';
 import { AuthProvider } from '../context/Auth';
-import { BlockLottoProvider } from '../context/BlockLotto';
 import { CashTabProvider } from '../context/CashTab';
-// import { AuthenticationProvider } from '../context/Authentication';
+import DefaultLoading from '../components/Loading';
+import DefaultNotification from '../components/Notification/DefaultNotification';
+import { NotificationsProvider } from '../context/Notifications';
 
-export default function BlockLottoCoreProvider({ children }) {
+export default function BlockLottoCoreProvider({
+    children,
+    Loading =
+    DefaultLoading,
+    Notification = DefaultNotification
+}) {
     return (
         <AuthProvider>
-            <CashTabProvider>
-                {children}
+            <CashTabProvider Loading={Loading}>
+                <NotificationsProvider Notification={Notification}>
+                    {children}
+                </NotificationsProvider>
             </CashTabProvider>
         </AuthProvider>
     )

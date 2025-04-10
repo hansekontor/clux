@@ -34,6 +34,7 @@ import migrateLegacyWallet from './services/migrateLegacyWallet';
 import forceWalletUpdateFn from './services/forceWalletUpdate';
 import createWalletFn from './services/createWallet';
 import activateWalletFn from './services/activateWallet';
+import DefaultLoading from '../../components/Loading';
 
 export const CashTabContext = createContext/** @type {CashTabContextType} */({});
 
@@ -261,7 +262,7 @@ export const CashTabWrapper = ({ children, passWallet }) => {
     )
 };
 
-export const CashTabProvider = ({ children }) => {
+export const CashTabProvider = ({ children, Loading }) => {
 
     const [wallet, setWallet] = useState(null);
 
@@ -289,7 +290,7 @@ export const CashTabProvider = ({ children }) => {
     }, []);
 
     if (isLoading) {
-        return <div>Loading Wallet...</div>; // Optionally show loading state
+        return <Loading>Loading Wallet...</Loading>;
     }
 
     if (!wallet || !isValidStoredWallet(wallet)) {

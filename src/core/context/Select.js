@@ -26,6 +26,8 @@ export function SelectProvider({ children }) {
         setLoadingStatus(false);
     });
 
+    console.log("user", user);
+
     const geoTicketAccess = user.ipGeo.ticketPurchase;
 
     return (

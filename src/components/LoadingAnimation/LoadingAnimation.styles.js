@@ -12,6 +12,18 @@ export const StyledLoaderBackground = styled(Background)`
     ${FadeOutShort}
 `;
 
+export const StyledLoadingWrapper = styled.div`
+    z-index: 334;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
 export const StyledLoadingContainer = styled.div`
     z-index: 333;
     background-color: ${props => props.theme.loader.container};

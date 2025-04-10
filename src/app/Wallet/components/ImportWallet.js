@@ -9,7 +9,7 @@ import Button from '@components/Button';
 
 // core functions
 import sleep from '@core/utils/sleep';
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { useNotifications } from '@core/context/Notifications';
 
 
@@ -58,7 +58,7 @@ const ImportWallet = ({
     passLoadingStatus
 }) => {
     const history = useHistory();
-    const { createWallet, validateMnemonic } = useBlockLotto();
+    const { createWallet, validateMnemonic } = useCashTab();
     const notify = useNotifications();
 
     const [alertModal, alertModalHolder] = Modal.useModal();

@@ -2,7 +2,7 @@
 import React from 'react';
 
 // core functions
-import { useBlockLotto } from '@core/context/BlockLotto';
+import { useCashTab } from '@core/context/CashTab';
 import { useBackup } from '@core/context/Backup';
 
 // assets
@@ -19,7 +19,7 @@ import CopyboardIcon from './components/CopyboardIcon';
 
 const Backup = () => {
     const { handleCopySeedPhrase, handleBackedUp } = useBackup();
-    const { wallet } = useBlockLotto();
+    const { wallet } = useCashTab();
 
     return (
         <FadeInOut show={true} duration={300}>

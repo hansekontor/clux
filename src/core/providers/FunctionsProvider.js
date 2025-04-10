@@ -12,7 +12,7 @@ import { WaitingRoomProvider } from '@core/context/WaitingRoom';
 export default function BlockLottoFunctionsProvider({ children }) {
     return (
         <AppProvider>
-            {/* <OnBoardingProvider> */}
+            <OnBoardingProvider>
                 {/* <SelectProvider> */}
                     <CheckoutProvider>
                         <BackupProvider>
@@ -28,7 +28,7 @@ export default function BlockLottoFunctionsProvider({ children }) {
                         </BackupProvider>
                     </CheckoutProvider>
                 {/* </SelectProvider> */}
-            {/* </OnBoardingProvider> */}
+            </OnBoardingProvider>
         </AppProvider>
     )
 }

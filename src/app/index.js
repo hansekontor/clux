@@ -61,7 +61,7 @@ const App = () => {
 			<Suspense fallback={codeSplitLoader}>
 				{loading &&
 					<>
-						<LoadingAnimation loadingStatus={loadingStatus} />
+						<LoadingAnimation>{loadingStatus}</LoadingAnimation>
 					</>
 				}
 
