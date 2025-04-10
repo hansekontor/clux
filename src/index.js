@@ -7,7 +7,7 @@ import { ThemeProvider } from "styled-components";
 import GA from '@core/utils/GoogleAnalytics';
 import BlockLottoCoreProvider from '@core/providers/CoreProvider';
 import BlockLottoFunctionsProvider from '@core/providers/FunctionsProvider';
-import { AppProvider } from '@core/context/App';
+// import { AppProvider } from '@core/context/App';
 import LoadingAnimation from '@components/LoadingAnimation';
 
 // styles
@@ -24,11 +24,11 @@ ReactDOM.render(
         <BlockLottoCoreProvider Notification={Notification} Loading={LoadingAnimation}>
             <Router>
                 {GA.init() && <GA.RouteTracker />}
-                <AppProvider>
+                {/* <AppProvider> */}
                     <BlockLottoFunctionsProvider>
                         <App />
                     </BlockLottoFunctionsProvider>
-                </AppProvider>
+                {/* </AppProvider> */}
             </Router>
         </BlockLottoCoreProvider>
     </ThemeProvider>,

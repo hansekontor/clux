@@ -295,7 +295,7 @@ export const CashTabProvider = ({ children, Loading }) => {
 
     if (!wallet || !isValidStoredWallet(wallet)) {
         console.error("No wallet found");
-        return <div>No Wallet Found</div>; // Handle case where wallet is not found
+        return <Loading>No Wallet Found!</Loading>; // Handle case where wallet is not found
     }
 
     return (
@@ -309,11 +309,13 @@ export const CashTabProvider = ({ children, Loading }) => {
 /**
  * Custom hook to access CashTabContext.
  * 
+ * @returns {CashTabContextType} The context object, containing wallet and associated functions.
  */
 export const useCashTab = () => {
     const context = useContext(CashTabContext);
     if (!context) {
         throw new Error("useCashTab must be used within a CashTabProvider");
     }
+    // @ts-ignore
     return context;
 };

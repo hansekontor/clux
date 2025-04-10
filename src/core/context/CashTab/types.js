@@ -40,7 +40,11 @@
  * 
  * @typedef {Object} CashTabContextType
  * @property {Wallet} wallet - The current wallet object.
- * @property {function} setWallet - Function to update the wallet.
+ * @property {boolean} setWallet - Function to update the wallet.
+ * @property {Wallet} loading - The current wallet object.
+ * @property {function} setLoading - Function to update the wallet.
+ * @property {number} unredeemedTickets - The number of unredeemed tickets in the wallet.
+ * @property {number} balance - The total balance of the wallet.
  * @property {function} updateWallets - Function to update the wallet state based on transaction data.
  * @property {function} addIssueTxs - Function to add issue transactions to the wallet.
  * @property {function} changeCashtabSettings - Function to update the settings of the Cashtab.

@@ -1,5 +1,4 @@
 import React from 'react';
-import { AppProvider } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
 import { OnBoardingProvider } from '@core/context/OnBoarding';
 import { BackupProvider } from '@core/context/Backup';
@@ -11,24 +10,22 @@ import { WaitingRoomProvider } from '@core/context/WaitingRoom';
 
 export default function BlockLottoFunctionsProvider({ children }) {
     return (
-        <AppProvider>
-            <OnBoardingProvider>
-                {/* <SelectProvider> */}
-                    <CheckoutProvider>
-                        <BackupProvider>
-                            <CashoutProvider>
-                                <GameProvider>
-                                    {/* <ResultProvider> */}
-                                        <WaitingRoomProvider>
-                                            {children}
-                                        </WaitingRoomProvider>
-                                    {/* </ResultProvider> */}
-                                </GameProvider>
-                            </CashoutProvider>
-                        </BackupProvider>
-                    </CheckoutProvider>
-                {/* </SelectProvider> */}
-            </OnBoardingProvider>
-        </AppProvider>
+        <OnBoardingProvider>
+            <SelectProvider>
+                <CheckoutProvider>
+                    <BackupProvider>
+                        <CashoutProvider>
+                            <GameProvider>
+                                {/* <ResultProvider> */}
+                                <WaitingRoomProvider>
+                                    {children}
+                                </WaitingRoomProvider>
+                                {/* </ResultProvider> */}
+                            </GameProvider>
+                        </CashoutProvider>
+                    </BackupProvider>
+                </CheckoutProvider>
+            </SelectProvider>
+        </OnBoardingProvider>
     )
 }
