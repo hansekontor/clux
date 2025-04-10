@@ -1,8 +1,8 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { ScaleOut } from '@components/Animations';
 import Typography from '@components/Typography';
 
-export const StyledInput = styled.input`
+export const InputCss = css`
     border-radius: 12px;
     font-family: "Inter-Semibold", Helvetica;
     font-size: 16px;
@@ -16,6 +16,12 @@ export const StyledInput = styled.input`
     text-color: ${props => props.theme.input.color};
     border: ${props => props.$error ? "1px solid red" : "none"};
 `;
+
+export const StyledInput = styled.input`
+    ${InputCss}
+`;
+
+
 
 export const StyledQuantityInputContainer = styled.div`
 	width: 100%;

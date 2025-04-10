@@ -8,15 +8,12 @@ import {
 
 // core components
 import { useCashTab } from '@core/context/CashTab';
-import { isValidStoredWallet } from '@core/utils/cashMethods';
 import { useApp } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
-import { OnBoardingProvider } from '@core/context/OnBoarding';
 import { BackupProvider } from '@core/context/Backup';
 import { CashoutProvider } from '@core/context/Cashout';
 import { GameProvider } from '@core/context/Game';
 import { ResultProvider } from '@core/context/Result';
-import { SelectProvider } from '@core/context/Select';
 import { WaitingRoomProvider } from '@core/context/WaitingRoom';
 
 // react components
@@ -59,24 +56,14 @@ const App = () => {
 	return (
 		<Layout>
 			<Suspense fallback={codeSplitLoader}>
-				{loading &&
-					<>
-						<LoadingAnimation>{loadingStatus}</LoadingAnimation>
-					</>
-				}
-
 				<>
 					{protection ?
-						<OnBoardingProvider>
-							<OnBoarding />
-						</OnBoardingProvider>
+						<OnBoarding />
 						:
 						<>
 							<Switch>
 								<Route path="/select">
-									<SelectProvider>
-										<Select />
-									</SelectProvider>
+									<Select />
 								</Route>
 								<Route path="/checkout">
 									<CheckoutProvider>
@@ -105,9 +92,7 @@ const App = () => {
 									</ResultProvider>
 								</Route>
 								<Route path="/backup">
-									<BackupProvider>
-										<Backup />
-									</BackupProvider>
+									<Backup />
 								</Route>
 								<Route path="/wallet">
 									<Wallet
@@ -127,8 +112,6 @@ const App = () => {
 						</>
 					}
 				</>
-
-
 			</Suspense>
 		</Layout>
 

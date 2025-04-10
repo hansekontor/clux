@@ -14,11 +14,12 @@ import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
 const { SHA256 } = bcrypto;
 import { useHistory } from 'react-router-dom';
 
-export const AppContext = createContext(null);
+
+export const AppContext = createContext/** @type {AppContextValue} */({});
 
 export const AppWrapper = ({ Loading, children, user }) => {
     const history = useHistory();
-    const { wallet, unredeemedTickets, balance, loading } = useCashTab();
+    const { wallet, unredeemedTickets, balance } = useCashTab();
 
     /**
      * @typedef {number[]} PlayerNumbers
@@ -38,33 +39,12 @@ export const AppWrapper = ({ Loading, children, user }) => {
     /** @type {[object, (value: object) => void]} */
     const [activeTicket, setActiveTicket] = useState({});
 
+    /** @type {[number, (value: number) => void]} */
+    const [ticketQuantity, setTicketQuantity] = useState(1);
+
     const [payout, setPayout] = useState(false);
     const [protection, setProtection] = useState(true);
     const [redeemAll, setRedeemAll] = useState(false);
-
-    // activates the loading screen on change of loadingStatus for loading within routes
-    useEffect(() => {
-        (async () => {
-            if (loadingStatus && !loader) {
-                setLoader(true);
-            } else if (!loadingStatus && loader) {
-                // await sleep(500);
-                setLoader(false);
-            }
-        })();
-    }, [loadingStatus]);
-
-    // initial wallet loading or creation
-    useEffect(() => {
-        (async () => {
-            console.log("APP wallet", wallet);
-            if (loading) {
-                setLoadingStatus("LOADING WALLET");
-            } else {
-                setLoader(false);
-            }
-        })();
-    }, [loading]);
 
     // handle query parameters
     useEffect(() => {
@@ -87,6 +67,8 @@ export const AppWrapper = ({ Loading, children, user }) => {
             activeTicket,
             redeemAll,
             payout,
+            ticketQuantity, 
+            setTicketQuantity,
             setProtection,
             setLoadingStatus,
             setPlayerNumbers,
@@ -94,7 +76,7 @@ export const AppWrapper = ({ Loading, children, user }) => {
             setRedeemAll,
         }}>
             {children}
-            {loader && <Loading>{loadingStatus}</Loading>}
+            {loadingStatus && <Loading>{loadingStatus}</Loading>}
         </AppContext.Provider>
     )
 };
@@ -249,10 +231,16 @@ export const AppProvider = ({ Loading, children }) => {
     )
 }
 
+/**
+ * Custom hook to access AppContext.
+ * 
+ * @returns {AppContextValue} The context object, containing wallet and associated functions.
+ */
 export const useApp = () => {
     const context = useContext(AppContext);
     if (!context) {
         throw new Error("useApp must be used within a AppProvider");
     }
+    // @ts-ignore
     return context;
 };

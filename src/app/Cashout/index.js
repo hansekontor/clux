@@ -1,5 +1,5 @@
 // node modules
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // core functions
 import { useCashout } from '@core/context/Cashout';
@@ -13,7 +13,7 @@ import Filter from './components/Filter';
 import Brand from './components/Brand';
 import GiftCard from './components/GiftCard';
 import FlexGrow from './components/FlexGrow';
-
+import { useApp } from '../../core/context/App';
 
 
 const Cashout = () => {

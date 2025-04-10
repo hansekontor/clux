@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormHeader, PaymentForm, PaymentInput, Price } from './Processors.styles';
 import Typography from '@components/Typography';
 
 // core functions
 import { useCheckout } from '@core/context/Checkout';
+import { NMICheckout } from '@core/context/Checkout';
 
 export const NmiCheckoutForm = () => {
-    const { ticketPrice, ticketQuantity, handleSubmit } = useCheckout();
+    const { ticketPrice, ticketQuantity, initiatePayment } = useCheckout();
 
     return (
-        <PaymentForm onSubmit={handleSubmit} id="NMIC-form">
+        <PaymentForm onSubmit={initiatePayment} id="NMIC-form">
             <FormHeader>
                 <Typography variant="header">PAY WITH CARD</Typography>
                 <Price>${ticketPrice * ticketQuantity}</Price>
@@ -32,6 +33,7 @@ export const NmiCheckoutForm = () => {
                 placeholder="ZIP"
                 required
             />
+            <NMICheckout variant="inline"/>
         </PaymentForm>
     )
 }

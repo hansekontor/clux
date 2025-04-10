@@ -6,13 +6,13 @@ import { ThemeProvider } from "styled-components";
 // core functions
 import GA from '@core/utils/GoogleAnalytics';
 import BlockLottoProvider from '@core/providers/BlockLottoProvider';
-import LoadingAnimation from '@components/LoadingAnimation';
 
 // styles
 import { theme, GlobalStyles } from './styles';
 
 // react components
 import Notification from '@components/Notification';
+import LoadingAnimation from '@components/LoadingAnimation';
 import App from './app';
 
 

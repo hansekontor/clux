@@ -12,7 +12,6 @@ import { BackupProvider } from '../context/Backup';
 import { CashoutProvider } from '../context/Cashout';
 import { GameProvider } from '../context/Game';
 import { ResultProvider } from '../context/Result';
-import { SelectProvider } from '../context/Select';
 import { WaitingRoomProvider } from '../context/WaitingRoom';
 
 export default function BlockLottoProvider({
@@ -22,13 +21,12 @@ export default function BlockLottoProvider({
 }) {
     return (
         <AuthProvider>
-            <CashTabProvider Loading={Loading}>
+            <CashTabProvider Loading={DefaultLoading}>
                 <NotificationsProvider Notification={Notification}>
-                    <AppProvider Loading={Loading}>
+                    <AppProvider Loading={DefaultLoading}>
                         <OnBoardingProvider>
-                            <SelectProvider>
-                                <CheckoutProvider>
-                                    <BackupProvider>
+                                {/* <CheckoutProvider>
+                                    <BackupProvider> */}
                                         {/* <CashoutProvider> */}
                                             {/* <GameProvider> */}
                                                 {/* <ResultProvider> */}
@@ -38,9 +36,8 @@ export default function BlockLottoProvider({
                                                 {/* </ResultProvider> */}
                                             {/* </GameProvider> */}
                                         {/* </CashoutProvider> */}
-                                    </BackupProvider>
-                                </CheckoutProvider>
-                            </SelectProvider>
+                                    {/* </BackupProvider>
+                                </CheckoutProvider> */}
                         </OnBoardingProvider>
                     </AppProvider>
                 </NotificationsProvider>

@@ -21,6 +21,7 @@ import Item from '../components/Item';
 import ErrorMessage from '../components/ErrorMessage';
 import PaymentMethod from './components/PaymentMethod';
 import Price from './components/Price';
+import { FormWrapper } from './components/Processors/Processors.styles';
 
 // dom variables
 const checkoutTitle = "Checkout";
@@ -108,17 +109,19 @@ export default function Cart() {
 
             {showPaymentForm && (
                 <Overlay onClick={() => setShowPaymentForm(false)}>
-                    <RollUp onClick={(e) => e.stopPropagation()} $animate={showPaymentForm}>
-                        <WidgetBody>
-                            <NmiCheckoutForm />
-                            <Button
-                                type="submit"
-                                form={`${paymentProcessor}-form`}
-                            >
-                                {fiatPurchaseButtonText}
-                            </Button>
-                        </WidgetBody>
-                    </RollUp>
+                    <FormWrapper>
+                        <RollUp onClick={(e) => e.stopPropagation()} $animate={showPaymentForm}>
+                            <WidgetBody>
+                                <NmiCheckoutForm />
+                                <Button
+                                    type="submit"
+                                    form={`${paymentProcessor}-form`}
+                                >
+                                    {fiatPurchaseButtonText}
+                                </Button>
+                            </WidgetBody>
+                        </RollUp>
+                    </FormWrapper>
                 </Overlay>
             )}
         </>

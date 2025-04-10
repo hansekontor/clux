@@ -6,9 +6,6 @@ import { Flash } from 'react-ruffle';
 // assets
 import RingPng from '@assets/images/ring_on_beach.png';
 
-// core functions
-import { useSelect } from "@core/context/Select";
-
 // util
 import animationLabels from '@utils/animations.js';
 import sleep from '@utils/sleep';
@@ -27,13 +24,11 @@ import PlayerNumbers from "./components/PlayerNumbers";
 
 
 const Select = () => {
-    const { geoTicketAccess } = useSelect();
     const [fadeOut, setFadeOut] = useState(false);
     const history = useHistory();
 
     // DOM contents
-    // const playButtonText = "Play Now - $10";
-    const playButtonText = geoTicketAccess ? "Play Now - $10 - DEMO" : "Affiliate Something";
+    const playButtonText = "Play Now - $10 - DEMO";
     const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
@@ -74,9 +69,7 @@ const Select = () => {
                     </FlashContainer>
                 </AnimationContainer>
             </Scrollable>
-            {geoTicketAccess && (
-                <PlayerNumbers background={'#1A1826'} />
-            )}
+            <PlayerNumbers background={'#1A1826'} />
             <Footer
                 origin={"/select"}
                 buttonOnClick={handleBuyTicket}

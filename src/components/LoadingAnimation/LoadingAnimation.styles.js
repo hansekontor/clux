@@ -55,4 +55,5 @@ export const StyledStatus = styled.div`
     font-family: Inter-Semibold, Helvetica;
     font-size: 20px;
     line-height: 140%;
+    text-align: center;
 `;

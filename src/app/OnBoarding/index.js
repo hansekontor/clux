@@ -10,23 +10,20 @@ import Background from './components/Background';
 import { useOnBoarding } from '@core/context/OnBoarding';
 
 const OnBoarding = () => {
-	const { passwordProtection, modalHolder, handlePasswordSubmit } = useOnBoarding();
+	const { handlePasswordSubmit } = useOnBoarding();
 
 	return (
 		<>
-			{modalHolder}
 			<Background src={BeachPng} />
-			{passwordProtection &&
-				<Form onSubmit={(e) => handlePasswordSubmit(e)}>
-					<Input
-						name="password"
-						type="text"
-						placeholder="Password"
-						required={true}
-					/>
-					<Button type="submit">Log In</Button>
-				</Form>
-			}
+			<Form onSubmit={(e) => handlePasswordSubmit(e)}>
+				<Input
+					name="password"
+					type="text"
+					placeholder="Password"
+					required={true}
+				/>
+				<Button type="submit">Log In</Button>
+			</Form>
 		</>
 	);
 };

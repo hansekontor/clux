@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useCheckout } from '@core/context/Checkout';
+import { useApp } from '@core/context/App';
+import { useNotifications } from '@core/context/Notifications';
 
 // checkout components
 import Tos from './Tos';
@@ -15,6 +18,22 @@ const Checkout = () => {
 		hasEmail,
 		showKyc,
 	} = useCheckout();
+	const { playerNumbers } = useApp()
+	const history = useHistory();
+	const notify = useNotifications();
+
+	// Check if player numbers are set
+	useEffect(() => {
+		let isMounted = true;
+		const checkPlayerNumbers = async () => {
+			if (playerNumbers.length !== 4 && isMounted) {
+				notify({message: "PLAYER NUMBERS ARE MISSING", type: "error"});
+				history.push("/select");
+			}
+		};
+		checkPlayerNumbers();
+		return () => { isMounted = false };  // Cleanup function
+	}, [playerNumbers]);
 
 	// If user has not agreed to the terms
 	if (!hasAgreed) return <Tos />;

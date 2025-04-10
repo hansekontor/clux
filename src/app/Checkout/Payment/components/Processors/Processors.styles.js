@@ -19,11 +19,19 @@ export const PaymentInput = styled(Input)`
 	background-color: #EAEAEA;
 `;
 
+export const FormWrapper = styled.div`
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+`
+
 export const WidgetBody = styled.div`
     width: 100%;
-    max-width: 100%;
-    left: 0;
-    position: fixed;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,7 +49,7 @@ export const PaymentForm = styled.form`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	align-items: center;
+	align-items: stretch;
 	margin-top: 30px;
 	margin-bottom: 30px;
     gap: 12px;

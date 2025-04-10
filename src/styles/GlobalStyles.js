@@ -1,5 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 import ReservoirGrunge from '@assets/fonts/ReservoirGrunge.ttf.woff';
+import { InputCss } from "../components/Inputs/Input.styles";
 
 const GlobalStyle = createGlobalStyle`
     /* Font face */
@@ -58,6 +59,12 @@ const GlobalStyle = createGlobalStyle`
         background-color: #48445c;
         border-color: #48445c;
     }      
+
+    #NMIC-form input {
+     ${InputCss}
+     background-color: #EAEAEA;
+     height: 52px !important;
+    }
 `;
 
 export default GlobalStyle;

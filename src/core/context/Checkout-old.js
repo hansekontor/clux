@@ -82,21 +82,6 @@ export function CheckoutProvider({ children }) {
     const [authPayment, setAuthPayment] = useState(false);
     const [kycCancelCount, setKycCancelCount] = useState(0);
 
-    // useEffect(() => {
-    //     let isMounted = true;
-
-    //     const checkPlayerNumbers = async () => {
-    //         if (!playerNumbers && isMounted) {
-    //             setLoadingStatus("PLAYER NUMBERS ARE MISSING");
-    //             history.push("/select");
-    //         }
-    //     };
-
-    //     checkPlayerNumbers();
-
-    //     return () => { isMounted = false };  // Cleanup function
-    // }, [playerNumbers]);
-
     useEffect(async () => {
         console.log("CHECKOUT user", user);
         if (user && !user.ipGeo.ticketPurchase) {
@@ -613,37 +598,6 @@ export function CheckoutProvider({ children }) {
     const handlePaymentMethod = (method) => {
         setPaymentProcessor(method);
     }
-
-    // NMI payment form
-    useEffect(() => {
-        window.CollectJS.configure({
-            variant: 'lightbox',
-            styleSniffer: false,
-            callback: (token) => {
-                console.log("token", token);
-                handleNmiResult(token);
-            },
-            fields: {
-                ccnumber: {
-                    placeholder: "1234 1234 1234 1234",
-                    selector: "#ccnumber"
-                },
-                ccexp: {
-                    placeholder: "MM / YY",
-                    selector: "#ccexp"
-                },
-                cvv: {
-                    placeholder: "CVV",
-                    selector: "#cvv"
-                }
-            },
-            customCss: {
-                "border-radius": "12px",
-                "height": "44px",
-                "border-style": "none"
-            }
-        })
-    }, []);
 
     const handleNmiResult = async (result) => {
         console.log("payment token", result.token);

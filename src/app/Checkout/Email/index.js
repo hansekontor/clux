@@ -22,6 +22,7 @@ import WideCreatableSelect, { selectStyle } from './components/WideCreatableSele
 import Label from './components/Label';
 import FormSection from './components/FormSection';
 import Divider from './components/Divider';
+import ErrorMessage from '../components/ErrorMessage';
 
 export default function Email() {
     const {
