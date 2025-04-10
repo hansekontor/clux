@@ -254,7 +254,8 @@ export const CashTabWrapper = ({ children, passWallet }) => {
             addIssueTxs,
             addMinedTicketToStorage,
             addRedeemTxToStorage,
-            addCashout
+            addCashout,
+            setLoading
         }}>
             {children}
         </CashTabContext.Provider>
