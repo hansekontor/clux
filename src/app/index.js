@@ -92,7 +92,9 @@ const App = () => {
 									</ResultProvider>
 								</Route>
 								<Route path="/backup">
-									<Backup />
+									<BackupProvider>
+										<Backup />
+									</BackupProvider>
 								</Route>
 								<Route path="/wallet">
 									<Wallet
