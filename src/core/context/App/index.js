@@ -46,6 +46,14 @@ export const AppWrapper = ({ Loading, children, user }) => {
     const [protection, setProtection] = useState(true);
     const [redeemAll, setRedeemAll] = useState(false);
 
+    useEffect(() => {
+        const unlisten = history.listen(() => {
+            setLoadingStatus("");
+        });
+        return () => unlisten();
+    }, [history]);
+
+
     // handle query parameters
     useEffect(() => {
         const ticketIdFromQuery = new URLSearchParams(location?.search).get("ticket");
@@ -67,7 +75,7 @@ export const AppWrapper = ({ Loading, children, user }) => {
             activeTicket,
             redeemAll,
             payout,
-            ticketQuantity, 
+            ticketQuantity,
             setTicketQuantity,
             setProtection,
             setLoadingStatus,
