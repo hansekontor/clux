@@ -21,12 +21,12 @@ export default function BlockLottoProvider({
 }) {
     return (
         <AuthProvider>
-            <CashTabProvider Loading={DefaultLoading}>
+            <CashTabProvider Loading={Loading}>
                 <NotificationsProvider Notification={Notification}>
-                    <AppProvider Loading={DefaultLoading}>
+                    <AppProvider Loading={Loading}>
                         <OnBoardingProvider>
-                                {/* <CheckoutProvider>
-                                    <BackupProvider> */}
+                                <CheckoutProvider>
+                                    <BackupProvider>
                                         {/* <CashoutProvider> */}
                                             {/* <GameProvider> */}
                                                 {/* <ResultProvider> */}
@@ -36,8 +36,8 @@ export default function BlockLottoProvider({
                                                 {/* </ResultProvider> */}
                                             {/* </GameProvider> */}
                                         {/* </CashoutProvider> */}
-                                    {/* </BackupProvider>
-                                </CheckoutProvider> */}
+                                    </BackupProvider>
+                                </CheckoutProvider>
                         </OnBoardingProvider>
                     </AppProvider>
                 </NotificationsProvider>
