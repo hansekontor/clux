@@ -19,12 +19,12 @@ import App from './app';
 ReactDOM.render(
     <ThemeProvider theme={theme}>
         <GlobalStyles />
-        <BlockLottoProvider Notification={Notification} Loading={LoadingAnimation}>
-            <Router>
+        <Router>
+            <BlockLottoProvider Notification={Notification} Loading={LoadingAnimation}>
                 {GA.init() && <GA.RouteTracker />}
                 <App />
-            </Router>
-        </BlockLottoProvider>
+            </BlockLottoProvider>s
+        </Router>
     </ThemeProvider>,
     document.getElementById('root'),
 );
