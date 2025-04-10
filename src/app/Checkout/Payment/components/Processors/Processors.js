@@ -33,7 +33,7 @@ export const NmiCheckoutForm = () => {
                 placeholder="ZIP"
                 required
             />
-            <NMICheckout variant="inline"/>
+            <NMICheckout variant="lightbox"/>
         </PaymentForm>
     )
 }
