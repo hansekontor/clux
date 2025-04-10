@@ -34,7 +34,6 @@ import migrateLegacyWallet from './services/migrateLegacyWallet';
 import forceWalletUpdateFn from './services/forceWalletUpdate';
 import createWalletFn from './services/createWallet';
 import activateWalletFn from './services/activateWallet';
-import DefaultLoading from '../../components/Loading';
 
 export const CashTabContext = createContext/** @type {CashTabContextType} */({});
 
