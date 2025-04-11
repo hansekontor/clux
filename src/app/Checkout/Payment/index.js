@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useCheckout } from '@core/context/Checkout';
@@ -28,6 +29,8 @@ const checkoutTitle = "Checkout";
 const fiatPurchaseButtonText = "Pay";
 
 export default function Cart() {
+    const history = useHistory();
+
     const {
         showPaymentForm,
         ticketPrice,

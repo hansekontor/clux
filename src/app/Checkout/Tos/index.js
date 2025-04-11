@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useCheckout } from '@core/context/Checkout';
@@ -17,6 +18,7 @@ import Text from './components/Text';
 import Link from './components/Link';
 
 export default function Tos() {
+    const history = useHistory();
     const { handleAgree } = useCheckout();
 
     const handleReturn = () => {

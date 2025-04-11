@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useCheckout } from '@core/context/Checkout';
@@ -25,6 +26,8 @@ import Divider from './components/Divider';
 import ErrorMessage from '../components/ErrorMessage';
 
 export default function Email() {
+    const history = useHistory();
+
     const {
         emailError,
         countryError,
