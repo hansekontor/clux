@@ -17,10 +17,12 @@ import Text from './components/Text';
 import Link from './components/Link';
 
 export default function Tos() {
-    const {
-        handleReturn,
-        handleAgree,
-    } = useCheckout();
+    const { handleAgree } = useCheckout();
+
+    const handleReturn = () => {
+        const previousPath = "/select";
+        history.push(previousPath);
+    }
 
     return (
         <>

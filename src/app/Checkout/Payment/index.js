@@ -35,12 +35,16 @@ export default function Cart() {
         ticketQuantity,
         paymentProcessor,
         maxEtokenTicketQuantity,
-        handleReturn,
         handleConfirmation,
         handlePaymentMethod,
         setTicketQuantity,
         setShowPaymentForm,
     } = useCheckout();
+
+    const handleReturn = () => {
+        const previousPath = "/select";
+        history.push(previousPath);
+    }
 
     return (
         <>

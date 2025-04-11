@@ -28,9 +28,13 @@ export default function Email() {
     const {
         emailError,
         countryError,
-        handleReturn,
         handleSubmitEmail,
     } = useCheckout();
+
+    const handleReturn = () => {
+        const previousPath = "/select";
+        history.push(previousPath);
+    }
 
     return (
         <>
