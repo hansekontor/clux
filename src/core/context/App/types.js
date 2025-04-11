@@ -28,3 +28,5 @@
  * @property {(value: object) => void} setActiveTicket
  * @property {(value: boolean) => void} setRedeemAll
  */
+
+export {};

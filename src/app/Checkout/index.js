@@ -28,7 +28,7 @@ const Checkout = () => {
 		const checkPlayerNumbers = async () => {
 			if (playerNumbers.length !== 4 && isMounted) {
 				notify({message: "PLAYER NUMBERS ARE MISSING", type: "error"});
-				history.push("/select");
+				history.push("/");
 			}
 		};
 		checkPlayerNumbers();

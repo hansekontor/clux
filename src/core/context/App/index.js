@@ -15,7 +15,7 @@ const { SHA256 } = bcrypto;
 import { useHistory } from 'react-router-dom';
 
 
-export const AppContext = createContext/** @type {AppContextValue} */({});
+export const AppContext = createContext/** @type {import('./types').AppContextValue} */({});
 
 export const AppWrapper = ({ Loading, children, user }) => {
     const history = useHistory();
@@ -242,7 +242,7 @@ export const AppProvider = ({ Loading, children }) => {
 /**
  * Custom hook to access AppContext.
  * 
- * @returns {AppContextValue} The context object, containing wallet and associated functions.
+ * @returns {import('./types').AppContextValue} The context object, containing wallet and associated functions.
  */
 export const useApp = () => {
     const context = useContext(AppContext);
