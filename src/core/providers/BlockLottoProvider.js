@@ -8,7 +8,6 @@ import { NotificationsProvider } from '../context/Notifications';
 import { AppProvider } from '../context/App';
 import { CheckoutProvider } from '../context/Checkout';
 import { OnBoardingProvider } from '../context/OnBoarding';
-import { BackupProvider } from '../context/Backup';
 import { CashoutProvider } from '../context/Cashout';
 import { GameProvider } from '../context/Game';
 import { ResultProvider } from '../context/Result';
@@ -25,19 +24,17 @@ export default function BlockLottoProvider({
                 <NotificationsProvider Notification={Notification}>
                     <AppProvider Loading={Loading}>
                         <OnBoardingProvider>
-                                <CheckoutProvider>
-                                    <BackupProvider>
-                                        {/* <CashoutProvider> */}
-                                            {/* <GameProvider> */}
-                                                {/* <ResultProvider> */}
-                                                {/* <WaitingRoomProvider> */}
-                                                    {children}
-                                                {/* </WaitingRoomProvider> */}
-                                                {/* </ResultProvider> */}
-                                            {/* </GameProvider> */}
-                                        {/* </CashoutProvider> */}
-                                    </BackupProvider>
-                                </CheckoutProvider>
+                            <CheckoutProvider>
+                                {/* <CashoutProvider> */}
+                                    {/* <GameProvider> */}
+                                        {/* <ResultProvider> */}
+                                        {/* <WaitingRoomProvider> */}
+                                            {children}
+                                        {/* </WaitingRoomProvider> */}
+                                        {/* </ResultProvider> */}
+                                    {/* </GameProvider> */}
+                                {/* </CashoutProvider> */}
+                            </CheckoutProvider>
                         </OnBoardingProvider>
                     </AppProvider>
                 </NotificationsProvider>

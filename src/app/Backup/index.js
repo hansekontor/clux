@@ -1,9 +1,10 @@
 // node modules
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useCashTab } from '@core/context/CashTab';
-import { useBackup } from '@core/context/Backup';
+import { useNotifications } from '@core/context/Notifications';
 
 // assets
 import CopyboardSvg from '@assets/svgs/copyboard.svg';
@@ -18,8 +19,19 @@ import Modal from './components/Modal';
 import CopyboardIcon from './components/CopyboardIcon';
 
 const Backup = () => {
-    const { handleCopySeedPhrase, handleBackedUp } = useBackup();
     const { wallet } = useCashTab();
+    const notify = useNotifications();
+    const history = useHistory();
+
+    const handleCopySeedPhrase = () => {
+        navigator.clipboard.writeText(wallet.mnemonic);
+        notify({ message: "Copied to clipboard", type: "success" });
+    }
+
+    const handleBackedUp = (e) => {
+        e.preventDefault();
+        history.push('/waitingroom');
+    }
 
     return (
         <FadeInOut show={true} duration={300}>
