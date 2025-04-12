@@ -55,7 +55,7 @@ const BaseButton = styled.button`
 	border-style: none;
 	cursor: pointer;
 `;
-const RoundButton = styled(Button)`
+const RoundButton = styled(BaseButton)`
     border-radius: 70px;
     width: 25px;
     padding-right: 10px;
