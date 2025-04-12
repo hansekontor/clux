@@ -1,5 +1,5 @@
 // node modules
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flash } from 'react-ruffle';
 
 // react components
@@ -23,7 +23,17 @@ import LockerPng from '@assets/images/locker.png';
 
 const WaitingRoom = () => {
 	const { playerNumbers } = useApp();
-	const { activeTicket, isAlternativeTicket, modalHolder, handleButtonClick } = useWaitingRoom();
+	const { activeTicket, isAlternativeTicket, modalHolder, handleButtonClick, isRedeemable } = useWaitingRoom();
+
+	// states
+	const [buttonText, setButtonText] = useState("Wait...");
+
+	// change button text when ticket becomes redeemable
+	useEffect(() => {
+		if (isRedeemable) {
+			setButtonText("Redeem Ticket");
+		}
+	}, [isRedeemable])
 
 	const animationName = animationLabels.CLUX.IDLE.SHADOWBOX;
 	const animationPath = animationLabels.PUBLICPATH + animationName;
@@ -58,7 +68,7 @@ const WaitingRoom = () => {
 				<Button onClick={handleButtonClick}>
 					{activeTicket ? (
 						<>
-							{activeTicket.details?.minedTicket?.lottoSignature ? redeemButtonText : "Wait..."}
+							{buttonText}
 						</>
 					) : (
 						<>

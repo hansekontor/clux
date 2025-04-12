@@ -303,14 +303,13 @@ export function WaitingRoomProvider({ children }) {
         }
     };
 
-    const lottoSignature = activeTicket?.details?.minedTicket?.lottoSignature;
     const ticketNumbers = activeTicket?.details?.playerNumbers;
 
     return (
         <WaitingRoomContext.Provider value={{
             activeTicket,
             isAlternativeTicket,
-            lottoSignature,
+            isRedeemable,
             ticketNumbers,
             modalHolder,
             handleButtonClick,
