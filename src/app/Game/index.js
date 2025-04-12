@@ -27,13 +27,14 @@ import SlideIn from './components/SlideIn';
 import Versus from './components/Versus';
 
 const Game = () => {
-	const { isWinner, tier, resultingNumbers, handleResultRedirect } = useGame();
+	const { tier, resultingNumbers, handleResultRedirect } = useGame();
 	const { setLoadingStatus } = useApp();
 
-	const winner = isWinner ? "A" : "B";
+	const isWinner = tier !== 0;
+	const winnerLabel = isWinner ? "A" : "B";
 	const labels = {
 		faceoff: animationLabels.CLUX.NORRIS.FACEOFF,
-		fight: animationLabels.CLUX.NORRIS[winner].FIGHT,
+		fight: animationLabels.CLUX.NORRIS[winnerLabel].FIGHT,
 		celebration: isWinner ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION
 	}
 
@@ -71,7 +72,7 @@ const Game = () => {
 		setAnimationStage("fight");
 		document.getElementById(labels.fight).startFightAnimation();
 		setFightStarted(true);
-	}
+    }
 
 	const folder = animationLabels.PUBLICPATH;
 

@@ -58,7 +58,6 @@ export function GameProvider({ children }) {
                 console.log("GAME tier", tier);
 
                 setTier(tier);
-                setIsWinner(tier != 0);
                 setTicket(ticketFromState);
                 setLoadingStatus(false);
             }
@@ -78,7 +77,6 @@ export function GameProvider({ children }) {
 
     return (
         <GameContext.Provider value={{
-            isWinner,
             tier,
             resultingNumbers,
             handleResultRedirect,
