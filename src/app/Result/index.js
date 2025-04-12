@@ -1,5 +1,6 @@
 // node modules
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 // util
 import animationLabels from '@utils/animations';
@@ -21,13 +22,27 @@ import ButtonContainer from './components/ButtonContainer';
 
 
 const Result = () => {
-    const { amount, hasTicket, nextTicket, isWinner, resultingNumbers, handleRedirect } = useResult();
+    const { amount, hasTicket, nextTicket, resultingNumbers } = useResult();
+    const history = useHistory();
 
     // DOM variables
     const buttonText = nextTicket ? "Redeem Next Ticket" : "Play Again";
-
+    const isWinner = amount > 0;
     const animationName = isWinner ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
     const animationPath = animationLabels.PUBLICPATH + animationName;
+
+    const handleRedirect = () => {
+        if (nextTicket) {
+            history.push({
+                pathname: '/waitingroom', 
+                state: {
+                    ticketToRedeem: nextTicket
+                }
+            });
+        } else {
+            history.push('/select');
+        }
+    }
 
     return (
         <>

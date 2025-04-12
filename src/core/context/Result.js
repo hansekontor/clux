@@ -50,33 +50,16 @@ export function ResultProvider({ children }) {
         }
     }, [ticket]);
 
-      // handlers
-      const handleRedirect = () => {
-        if (nextTicket) {
-            history.push({
-                pathname: '/waitingroom', 
-                state: {
-                    ticketToRedeem: nextTicket
-                }
-            });
-        } else {
-            history.push('/select');
-        }
-    }
-
     const resultingNumbers = ticket.details.redemption.resultingNumbers;
     const amount = ticket?.details?.redemption?.actualPayoutNum / 100;
     const hasTicket = !!ticket;
-    const isWinner = ticket?.details?.redemption?.actualPayoutNum > 0;
 
     return (
         <ResultContext.Provider value={{
             amount,
             hasTicket,
             nextTicket,
-            isWinner,
             resultingNumbers,
-            handleRedirect
         }}>
             {children}
         </ResultContext.Provider>
