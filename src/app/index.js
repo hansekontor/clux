@@ -11,7 +11,6 @@ import { useCashTab } from '@core/context/CashTab';
 import { useApp } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
 import { CashoutProvider } from '@core/context/Cashout';
-import { GameProvider } from '@core/context/Game';
 import { ResultProvider } from '@core/context/Result';
 import { WaitingRoomProvider } from '@core/context/WaitingRoom';
 
@@ -80,9 +79,7 @@ const App = () => {
 									</WaitingRoomProvider>
 								</Route>
 								<Route path="/game">
-									<GameProvider>
 										<Game />
-									</GameProvider>
 								</Route>
 
 								<Route path="/result">

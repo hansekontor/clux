@@ -1,5 +1,6 @@
 // node modules
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 // assets and other
 import VersusPng from '@assets/images/versus.png';
@@ -10,7 +11,6 @@ import animationLabels from '@utils/animations';
 import sleep from '@utils/sleep';
 
 // core functions
-import { useGame } from '@core/context/Game';
 import { useApp } from '@core/context/App';;
 
 // react components
@@ -27,9 +27,12 @@ import SlideIn from './components/SlideIn';
 import Versus from './components/Versus';
 
 const Game = () => {
-	const { tier, resultingNumbers, handleResultRedirect } = useGame();
-	const { setLoadingStatus } = useApp();
+	const { setLoadingStatus, activeTicket } = useApp();
+	const history = useHistory();
+	console.log("Game activeTicket", activeTicket);
 
+	const resultingNumbers = activeTicket.details.redemption.resultingNumbers;
+	const tier = activeTicket.details.redemption.tier;
 	const isWinner = tier !== 0;
 	const winnerLabel = isWinner ? "A" : "B";
 	const labels = {
@@ -42,6 +45,21 @@ const Game = () => {
 	const [fightStarted, setFightStarted] = useState(false);
 	const [versus, setVersus] = useState(false);
 	const [fadeOutVersus, setFadeOutVersus] = useState(false);
+
+	// redirect if either activeTicket or its required data is unavailable 
+	useEffect(() => {
+		if (!activeTicket) {
+			setLoadingStatus("TICKET NOT FOUND");
+			sleep(3000);
+			history.push("/select");
+		} else if (!activeTicket.details?.redemption?.resultingNumbers) {
+			setLoadingStatus("TICKET DATA NOT FOUND");
+			sleep(3000);
+			history.push("/select");
+		} else {
+			setLoadingStatus(false);
+		}
+	}, [])
 
 	// slide-in and fadeout animation for versus
 	useEffect(async () => {
@@ -72,6 +90,10 @@ const Game = () => {
 		setAnimationStage("fight");
 		document.getElementById(labels.fight).startFightAnimation();
 		setFightStarted(true);
+    }
+
+	const handleResultRedirect = () => {
+        history.push("/result");
     }
 
 	const folder = animationLabels.PUBLICPATH;

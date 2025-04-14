@@ -33,7 +33,7 @@ export function WaitingRoomProvider({ children }) {
     const history = useHistory();
     const location = useLocation();
     const notify = useNotifications();
-    const { setLoadingStatus, user, playerNumbers } = useApp();
+    const { setLoadingStatus, user, playerNumbers, setActiveTicket } = useApp();
     const {
         wallet,
         addMinedTicketToStorage,
@@ -45,7 +45,7 @@ export function WaitingRoomProvider({ children }) {
     const [modal, modalHolder] = Modal.useModal();
 
     // states
-    const [activeTicket, setActiveTicket] = useState(location.state?.ticketToRedeem || false);
+    const [activeTicket, ] = useState(location.state?.ticketToRedeem || false);
     const [hasRequested, setHasRequested] = useState(false);
     const [apiError, setApiError] = useState(false);
     const [isAlternativeTicket, setIsAlternativeTicket] = useState(false);

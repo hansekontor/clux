@@ -9,7 +9,6 @@ import { AppProvider } from '../context/App';
 import { CheckoutProvider } from '../context/Checkout';
 import { OnBoardingProvider } from '../context/OnBoarding';
 import { CashoutProvider } from '../context/Cashout';
-import { GameProvider } from '../context/Game';
 import { ResultProvider } from '../context/Result';
 import { WaitingRoomProvider } from '../context/WaitingRoom';
 
@@ -26,13 +25,11 @@ export default function BlockLottoProvider({
                         <OnBoardingProvider>
                             <CheckoutProvider>
                                 {/* <CashoutProvider> */}
-                                    {/* <GameProvider> */}
-                                        {/* <ResultProvider> */}
-                                        {/* <WaitingRoomProvider> */}
-                                            {children}
-                                        {/* </WaitingRoomProvider> */}
-                                        {/* </ResultProvider> */}
-                                    {/* </GameProvider> */}
+                                    {/* <ResultProvider> */}
+                                    {/* <WaitingRoomProvider> */}
+                                        {children}
+                                    {/* </WaitingRoomProvider> */}
+                                    {/* </ResultProvider> */}
                                 {/* </CashoutProvider> */}
                             </CheckoutProvider>
                         </OnBoardingProvider>
