@@ -9,13 +9,15 @@ import { useCashTab } from '@core/context/CashTab';
 export default function SupportBar({ returnTo }) {
     const { unredeemedTickets } = useCashTab();
 
+    const unredeemedTicketsCount = unredeemedTickets.length
+
     const handleCnmiRedirect = () => {
         window.location.href = "https://example.com";
     }
 
     return (
         <StyledSupportBar>
-            <WalletButton returnTo={returnTo} indicator={unredeemedTickets} />
+            <WalletButton returnTo={returnTo} indicator={unredeemedTicketsCount} />
             <HelpButton />
             <Balance />
             <CashoutButton returnTo={returnTo} />

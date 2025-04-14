@@ -43,7 +43,7 @@
  * @property {boolean} setWallet - Function to update the wallet.
  * @property {Wallet} loading - The current wallet object.
  * @property {function} setLoading - Function to update the wallet.
- * @property {number} unredeemedTickets - The number of unredeemed tickets in the wallet.
+ * @property {Array} unredeemedTickets - Array of unredeemed tickets in the wallet.
  * @property {number} balance - The total balance of the wallet.
  * @property {function} updateWallets - Function to update the wallet state based on transaction data.
  * @property {function} addIssueTxs - Function to add issue transactions to the wallet.
