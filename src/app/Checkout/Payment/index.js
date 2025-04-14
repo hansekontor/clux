@@ -97,7 +97,7 @@ export default function Cart() {
                             <PaymentMethod
                                 onClick={() => handlePaymentMethod("etoken")}
                                 $active={paymentProcessor === "etoken"}
-                            >eToken</PaymentMethod>
+                            >Pay with Balance</PaymentMethod>
                         }
                         <Item>
                             <Typography variant="header" size="large">Total</Typography>
