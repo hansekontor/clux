@@ -29,8 +29,9 @@ export const CheckoutProvider = ({ children }) => {
     const { wallet, forceWalletUpdate, addIssueTxs } = useCashTab();
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
     const token = slpBalancesAndUtxos.tokens?.[0];
+    console.log("CheckoutProvider", token.balance);
     const maxEtokenTicketQuantity = token
-        ? Math.floor(new BigNumber(token.balance).dividedBy(100 * ticketPrice).toNumber())
+        ? Math.floor(new BigNumber({...token.balance, _isBigNumber: true}).dividedBy(100 * ticketPrice).toNumber())
         : 0;
 
     // states
