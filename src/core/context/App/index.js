@@ -44,7 +44,9 @@ export const AppWrapper = ({ Loading, children, user }) => {
 
     const [payout, setPayout] = useState(false);
     const [protection, setProtection] = useState(true);
-    const [redeemAll, setRedeemAll] = useState(false);
+
+    const [affiliate, setAffiliate] = useState({});
+    const [externalAid, setExternalAid] = useState("");
 
     useEffect(() => {
         const unlisten = history.listen(() => {
@@ -53,15 +55,48 @@ export const AppWrapper = ({ Loading, children, user }) => {
         return () => unlisten();
     }, [history]);
 
-
-    // handle query parameters
+    // get own affiliate data
     useEffect(() => {
-        const ticketIdFromQuery = new URLSearchParams(location?.search).get("ticket");
-        const hasCorrectLength = ticketIdFromQuery?.length === 64;
-        if (ticketIdFromQuery && hasCorrectLength) {
-            setActiveTicket({ id: ticketIdFromQuery });
-            history.push("/waitingroom");
+        const getAffiliate = () => {
+            // get aid
+            const aidBuf = Buffer.from(wallet.Path1899.publicKey, 'hex');
+            const aid = aidBuf.toString('base64');
+            
+            const query = new URLSearchParams({
+                aid
+            });
+            const url = `${window.location.protocol}//${window.location.host}/#/?${query}`;
+
+            console.log("setting affiliate", aid);
+            setAffiliate({
+                aid,
+                url
+            });
         }
+
+        getAffiliate();
+    }, [wallet]);
+
+    // get external aid from url
+    useEffect(() => {
+        const getAidFromQuery = () => {
+            const aidBase64FromQuery = new URLSearchParams(location.search).get('aid');
+
+            if (aidBase64FromQuery) {
+                try {
+                    const aidBuf = Buffer.from(aidBase64FromQuery, 'base64');
+                    const aidKeyring = new KeyRing(aidBuf);
+                    const aidPubkey = aidKeyring.getPublicKey('hex');
+                    console.log("aidPubkey", aidPubkey);
+                    setExternalAid(aidPubkey);
+                } catch(err) {
+                    console.error('Invalid Affiliate ID:', err);
+                }
+            }
+        }
+
+        getAidFromQuery();
+
     }, []);
 
     return (
@@ -76,6 +111,8 @@ export const AppWrapper = ({ Loading, children, user }) => {
             redeemAll,
             payout,
             ticketQuantity,
+            affiliate,
+            externalAid,
             setTicketQuantity,
             setProtection,
             setLoadingStatus,

@@ -24,7 +24,8 @@ const Result = lazy(() => import('./Result'));
 const Wallet = lazy(() => import('./Wallet'));
 const Cashout = lazy(() => import('./Cashout'));
 const NotFound = lazy(() => import('./NotFound'));
-const OnBoarding = lazy(() => import('./OnBoarding'))
+const OnBoarding = lazy(() => import('./OnBoarding'));
+const Affiliate = lazy(() => import('./Affiliate'));
 import Layout from '@components/Layout';
 import LoadingAnimation from '@components/LoadingAnimation';
 import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
@@ -101,6 +102,9 @@ const App = () => {
 									<CashoutProvider>
 										<Cashout />
 									</CashoutProvider>
+								</Route>
+								<Route path="/affiliate">
+									<Affiliate />
 								</Route>
 								<Redirect exact from="/" to="/select" />
 								<Route component={NotFound} />
