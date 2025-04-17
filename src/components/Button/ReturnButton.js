@@ -5,7 +5,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 export const ReturnButton = (props) => {
     return (
         <StyledReturnButtonContainer {...props}>
-            <ArrowLeftOutlined />
+            <ArrowLeftOutlined style={{ color: props.color || null }} />
         </StyledReturnButtonContainer>
     )
 }
