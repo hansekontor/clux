@@ -54,7 +54,7 @@ const Wallet = ({
         if (selection)
             setSelection(false);
         else
-            history.push(previousPath);
+            history.push("/select");
     }
     const handleToCashout = async () => {
         passLoadingStatus("LOADING WALLET");
@@ -92,7 +92,6 @@ const Wallet = ({
     }
 
     const title = "Wallet, Settings and Legal";
-    const previousPath = location.state?.returnTo || "/select";
 
     return (
         <>
