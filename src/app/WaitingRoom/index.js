@@ -1,5 +1,6 @@
 // node modules
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Flash } from 'react-ruffle';
 
 // react components
@@ -11,38 +12,60 @@ import Background from './components/Background';
 import FlexGrow from './components/FlexGrow';
  
 // core functions
-import { useWaitingRoom } from '@core/context/WaitingRoom';
 import { useApp } from '@core/context/App';
 
 // util
 import animationLabels from '@utils/animations';
+import sleep from '@utils/sleep';
 
 // assets
 import LockerPng from '@assets/images/locker.png';
 
 
 const WaitingRoom = () => {
-	const { playerNumbers } = useApp();
-	const { activeTicket, isAlternativeTicket, modalHolder, handleButtonClick, isRedeemable } = useWaitingRoom();
+	const { playerNumbers, ticketsToRedeem, setGameTickets, checkRedeemability, redeemTicket } = useApp();
+	const history = useHistory();
 
 	// states
-	const [buttonText, setButtonText] = useState("Wait...");
+	const [isRedeemable, setIsRedeemable] = useState(false);
+	const [activeTicket, setActiveTicket] = useState({});
 
-	// change button text when ticket becomes redeemable
+	// set active ticket to state
 	useEffect(() => {
-		if (isRedeemable) {
-			setButtonText("Redeem Ticket");
-		}
-	}, [isRedeemable])
+		setActiveTicket(ticketsToRedeem[0]);
+	}, []);
 
+	// wait until ticket is redeemable
+	useEffect(async () => {
+		if (Object.keys(activeTicket).length > 0) {
+			const isRedeemableTicket = await checkRedeemability(activeTicket, true);
+			if (isRedeemableTicket) {
+				setIsRedeemable(true);
+			} else {
+				setIsRedeemable(false);
+			}
+		} else {
+			setIsRedeemable(false);
+		}
+	}, [activeTicket])
+
+	// handlers
+	const handleButtonClick = async () => {
+		if (isRedeemable) {
+			await redeemTicket(activeTicket);
+			setGameTickets([activeTicket]);
+			await sleep(1000);
+			history.push("/game");
+		}
+	}
+
+	const playerNumbersFromTicket = activeTicket?.parsed?.playerNumbers;
 	const animationName = animationLabels.CLUX.IDLE.SHADOWBOX;
 	const animationPath = animationLabels.PUBLICPATH + animationName;
-
-	const redeemButtonText = isAlternativeTicket ? "Redeem Previous Ticket" : "Redeem Ticket";
+	const buttonText = isRedeemable ? "Redeem Ticket" : "Wait...";
 
 	return (
 		<>
-			{modalHolder}
 			<Background src={LockerPng} />
 			<Header $transparent={true} />
 			<FlexGrow>
@@ -64,17 +87,9 @@ const WaitingRoom = () => {
 				</Flash>
 			</FlexGrow>
 			<Footer variant="empty">
-				<PlayerNumbers overrideNumbers={activeTicket ? activeTicket.details.playerNumbers : playerNumbers} />
+				<PlayerNumbers overrideNumbers={playerNumbersFromTicket ? playerNumbersFromTicket : playerNumbers} />
 				<Button onClick={handleButtonClick}>
-					{activeTicket ? (
-						<>
-							{buttonText}
-						</>
-					) : (
-						<>
-							{"Back To Home"}
-						</>
-					)}
+					{buttonText}
 				</Button>
 				<SupportBar />
 			</Footer>

@@ -31,7 +31,6 @@ import PencilIconSvg from '@assets/svgs/pencil_icon.svg';
 
 const Wallet = ({
     passLoadingStatus,
-    passRedeemAll,
     user
 }) => {
     const history = useHistory();
@@ -210,7 +209,6 @@ const Wallet = ({
                             <TicketHistory
                                 tickets={tickets}
                                 passLoadingStatus={passLoadingStatus}
-                                passRedeemAll={passRedeemAll}
                             />
                         }
                         {selection === "Seed Phrase" &&

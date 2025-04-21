@@ -23,13 +23,12 @@ const ticketPrice = 10;
 export const CheckoutContext = createContext({});
 
 export const CheckoutProvider = ({ children }) => {
-    const { ticketQuantity, setTicketQuantity } = useApp();
+    const { ticketQuantity, setTicketQuantity, setTicketsToRedeem } = useApp();
 
     // find ticket indicator
     const { wallet, forceWalletUpdate, addIssueTxs } = useCashTab();
     const { tickets, slpBalancesAndUtxos } = getWalletState(wallet);
     const token = slpBalancesAndUtxos.tokens?.[0];
-    console.log("CheckoutProvider", token.balance);
     const maxEtokenTicketQuantity = token
         ? Math.floor(new BigNumber({...token.balance, _isBigNumber: true}).dividedBy(100 * ticketPrice).toNumber())
         : 0;
@@ -87,6 +86,7 @@ export const CheckoutProvider = ({ children }) => {
         setPaymentMetadata,
         setTicketQtyError,
         setShowPaymentForm,
+        setTicketsToRedeem,
     })
 
     const {

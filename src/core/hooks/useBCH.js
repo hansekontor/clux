@@ -251,6 +251,7 @@ export default function useBCH() {
         }
         return parsedTxHistory;
     };
+
     const getTxBcash = async (txid) => {
         return fetch(`${getBcashRestUrl()}/tx/${txid}?slp=true`)
             .then(res => res.json())
@@ -1254,6 +1255,45 @@ export default function useBCH() {
         return rawTx;
     }
 
+    // checks if ticket can be redeemed
+    const checkRedeemability = async (ticket, polling) => {
+        const hasLottoSig = ticket.parsed?.minedTicket?.lottoSignature;
+
+        if (hasLottoSig) {
+            console.log("hasLottoSig", hasLottoSig);
+            return true;
+        }
+
+        const issueTxFromNode = await getTxBcash(ticket.issueTx.hash);
+        let isMined = issueTxFromNode.height > -1;
+
+        if (isMined) {
+            console.log("isMined", isMined);
+            return true;
+        } else if (polling) {
+            console.log("CHECKREDEEMABILITY start polling");
+            // poll indexer every 2 min
+            const timeBetweenPolling = 2 * 60 * 1000;
+
+            while (!isMined) {
+                console.log("started waiting time");
+                await sleep(timeBetweenPolling);
+                const issueTxFromNode = await getTxBcash(ticket.issueTx.hash);
+                console.log("issueTxFromNode", issueTxFromNode);
+                isMined = issueTxFromNode.height > -1;
+                console.log("isMined", isMined);
+                if (!isMined) {
+                    notify({ message: "Please wait...", type: "info" });
+                } else {
+                    notify({ message: "You can redeem your ticket now!", type: "success" });
+                    return true;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
     return {
         calcFee,
         getPostage,
@@ -1273,6 +1313,7 @@ export default function useBCH() {
         sendSelfMintV2,
         getMintVaultAddress,
         generateBurnTx,
-		broadcastTx
+		broadcastTx,
+        checkRedeemability
     };
 }

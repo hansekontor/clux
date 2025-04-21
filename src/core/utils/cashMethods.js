@@ -381,16 +381,6 @@ export const getSlpBalancesAndUtxos = (utxos) => {
     };
 };
 
-export const addredeemData = (tickets, hash, redeemData) => {
-    // console.log("addredeemData", tickets, hash, redeemData);
-    const index = tickets.findIndex(ticket => ticket.redeemTx?.hash === hash);
-
-    // console.log("addredeemData index", index);
-    tickets[index].details = Object.assign(tickets[index].details, { game: redeemData });
-
-    return tickets;
-}
-
 export const addSlpToRedeemTx = (tx) => {
     // input is a TX
     const opReturn = tx.outputs[0].script;
@@ -476,7 +466,6 @@ export const addUtxos = (slpBalancesAndUtxos, address, txs) => {
 }
 
 export const removeUsedCoins = (slpBalancesAndUtxos, coinsUsed) => {
-    // console.log("removed coins:", coinsUsed);
     const slpUtxos = slpBalancesAndUtxos.slpUtxos;
     const nonSlpUtxos = slpBalancesAndUtxos.nonSlpUtxos;
     for (const coin of coinsUsed) {

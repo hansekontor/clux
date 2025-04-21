@@ -9,8 +9,6 @@ import { AppProvider } from '../context/App';
 import { CheckoutProvider } from '../context/Checkout';
 import { OnBoardingProvider } from '../context/OnBoarding';
 import { CashoutProvider } from '../context/Cashout';
-import { ResultProvider } from '../context/Result';
-import { WaitingRoomProvider } from '../context/WaitingRoom';
 
 export default function BlockLottoProvider({
     children,
@@ -25,11 +23,7 @@ export default function BlockLottoProvider({
                         <OnBoardingProvider>
                             <CheckoutProvider>
                                 {/* <CashoutProvider> */}
-                                    {/* <ResultProvider> */}
-                                    {/* <WaitingRoomProvider> */}
-                                        {children}
-                                    {/* </WaitingRoomProvider> */}
-                                    {/* </ResultProvider> */}
+                                    {children}
                                 {/* </CashoutProvider> */}
                             </CheckoutProvider>
                         </OnBoardingProvider>

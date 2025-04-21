@@ -234,6 +234,7 @@ export const CashTabWrapper = ({ children, passWallet }) => {
     return (
         <CashTabContext.Provider value={{
             wallet,
+            tickets,
             balance,
             unredeemedTickets,
             loading,
@@ -255,7 +256,7 @@ export const CashTabWrapper = ({ children, passWallet }) => {
             addMinedTicketToStorage,
             addRedeemTxToStorage,
             addCashout,
-            setLoading
+            setLoading,
         }}>
             {children}
         </CashTabContext.Provider>

@@ -10,16 +10,25 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useCashTab } from '../CashTab';
 import { Modal } from 'antd';
-import { bcrypto, KeyRing } from '@hansekontor/checkout-components';
+import { bcrypto, KeyRing, TX, Coin, Script } from '@hansekontor/checkout-components';
 const { SHA256 } = bcrypto;
 import { useHistory } from 'react-router-dom';
+import useBCH from '../../hooks/useBCH';
+import { U64 } from 'n64';
 
+// core modules
+import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '../../utils/ticket';
+import { useNotifications } from '../Notifications';
+import TXUtil from '../../utils/txutil';
+import playerWinningsTier from '../../constants/winningTiers';
 
 export const AppContext = createContext/** @type {import('./types').AppContextValue} */({});
 
 export const AppWrapper = ({ Loading, children, user }) => {
     const history = useHistory();
-    const { wallet, unredeemedTickets, balance } = useCashTab();
+    const { wallet, unredeemedTickets, balance, addMinedTicketToStorage, addRedeemTxToStorage } = useCashTab();
+    const { checkRedeemability, broadcastTx } = useBCH();
+    const notify = useNotifications();
 
     /**
      * @typedef {number[]} PlayerNumbers
@@ -36,8 +45,11 @@ export const AppWrapper = ({ Loading, children, user }) => {
     /** @type {[boolean, (value: boolean) => void]} */
     const [loader, setLoader] = useState(true);
 
-    /** @type {[object, (value: object) => void]} */
-    const [activeTicket, setActiveTicket] = useState({});
+    /** @type {Array} */
+    const [ticketsToRedeem, setTicketsToRedeem] = useState([]);
+
+    /** @type {Array} */
+    const [gameTickets, setGameTickets] = useState([]);
 
     /** @type {[number, (value: number) => void]} */
     const [ticketQuantity, setTicketQuantity] = useState(1);
@@ -46,7 +58,7 @@ export const AppWrapper = ({ Loading, children, user }) => {
     const [protection, setProtection] = useState(true);
 
     const [affiliate, setAffiliate] = useState({});
-    const [externalAid, setExternalAid] = useState("");
+    const [externalAid, setExternalAid] = useState(""); 
 
     useEffect(() => {
         const unlisten = history.listen(() => {
@@ -99,6 +111,139 @@ export const AppWrapper = ({ Loading, children, user }) => {
 
     }, []);
 
+    const getMinedTicket = async (hash) => {
+        const ticketRes = await fetch(`https://lsbx.nmrai.com/v1/ticket/${hash}`, {
+            method: "GET",
+            headers: new Headers({
+                'Accept': "application/json",
+                'Content-Type': "application/json"
+            }),
+            mode: "cors",
+            signal: AbortSignal.timeout(20000),
+        });
+        if (ticketRes.status !== 200)
+            notify({ type: "error", message: "API Error"});
+        const minedTicket = await ticketRes.json();
+        return minedTicket;
+    }
+
+    const redeemTicket = async (ticket) => {
+        let minedTicket = ticket.parsed?.minedTicket;
+
+        if (!minedTicket?.lottoSignature) {
+            const issueHash = ticket.issueTx.hash;
+            minedTicket = await getMinedTicket(issueHash);
+
+            if (!minedTicket.lottoSignature) {
+                notify({type: "error", message: "Ticket not redeemable"});
+                return false;
+            }
+
+            await addMinedTicketToStorage(issueHash, minedTicket);
+        } 
+
+        const ttx = TX.fromRaw(minedTicket.hex, 'hex');
+
+        // Stamp comes from Authorizer address 
+        const authPubkey = ttx.inputs[0].script.getData(1);
+
+        // Shrodinger
+        const outScript = schrodingerOutscript(authPubkey);
+
+        // Build payout tx
+        const ptx = new TXUtil();
+
+        // Add ticket input
+        const pcoin = Coin.fromTX(ttx, 1, -1);
+        ptx.addCoin(pcoin);
+
+        // Add outputs from ttx OP_RETURN
+        const ttxOpreturnAuthBuf = ttx.outputs[0].script.code[1].data;
+        const parsedticketAuthCode = readTicketAuthCode(ttxOpreturnAuthBuf);
+
+        // We also need the block header and block auth sig
+        console.log("redeemTicket() minedTicket.lottoSignature", minedTicket.lottoSignature);
+        const blockAuthSig = Buffer.from(minedTicket.lottoSignature, 'hex');
+
+        const maxPayout = parsedticketAuthCode.txOutputs[0].script.toRaw().slice(-8)
+        const { actualPayoutBE, tier, opponentNumbers, resultingNumbers } = calculatePayout(
+            ttx.hash(),
+            Buffer.from(minedTicket.block, 'hex').reverse(),
+            parsedticketAuthCode.minterNumbers,
+            maxPayout,
+            playerWinningsTier.map(obj => obj.threshold)
+        );
+
+        console.log("actualPayout", actualPayoutBE);
+        console.log('actualPayoutNum', U64.fromBE(actualPayoutBE).toNumber())
+
+        // Set the actual payout
+        parsedticketAuthCode.txOutputs[0].script = Script.fromRaw(Buffer.concat([
+            parsedticketAuthCode.txOutputs[0].script.toRaw().slice(0, -8),
+            actualPayoutBE
+        ]))
+
+        ptx.outputs = parsedticketAuthCode.txOutputs
+
+        // Do signature
+        const sigHashType = Script.hashType.ALL | Script.hashType.SIGHASH_FORKID;
+        const flags = Script.flags.STANDARD_VERIFY_FLAGS;
+        const playerKeyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+        ptx.template(playerKeyring); // prepares the template
+        const sig = ptx.signature(0, outScript, pcoin.value, playerKeyring.privateKey, sigHashType, flags);
+        const preimage = ptx.getPreimage(0, outScript, pcoin.value, sigHashType, false);
+        // console.log('preimage length: ', Buffer.from(preimage.toString('hex'), 'hex').length)
+
+        const items = [
+            sig,
+            playerKeyring.getPublicKey(),
+            blockAuthSig, // block auth signature
+            Buffer.from(preimage.toString('hex'), 'hex'),
+            Buffer.from(minedTicket.header, 'hex'),
+            ttx.toRaw(),
+            outScript.toRaw()
+        ];
+        ptx.inputs[0].script.fromItems(items);
+        // console.log("sigScript length", ptx.inputs[0].script.toRaw().length)
+
+        console.log(ptx)
+        const ptxHex = ptx.toRaw().toString('hex')
+        // console.log(ptxHex)
+
+        console.log('verify', ptx.verify())
+        try {
+            const ptxBroadcast = await broadcastTx(ptxHex)
+            console.log('ptxBroadcast', ptxBroadcast)
+
+            if (ptxBroadcast.success) {
+                console.log('ptx id', ptx.txid())
+
+                const redeemData = {
+                    actualPayoutNum: U64.fromBE(actualPayoutBE).toNumber(),
+                    tier,
+                    opponentNumbers,
+                    resultingNumbers
+                }
+                await addRedeemTxToStorage(ptx, redeemData);
+
+                const redeemHash = ptx.txid();
+
+                const outstandingTickets = ticketsToRedeem;
+                outstandingTickets.shift();
+                setTicketsToRedeem(outstandingTickets);
+
+                return redeemHash;
+            } else {
+                notify({type: "error", message: "Broadcasting Unsuccesful"});
+                return false;
+            }
+        } catch (err) {
+            console.error(err);
+            notify({type: "error", message: "Broadcasting Error"});
+            return false;
+        }
+    }
+
     return (
         <AppContext.Provider value={{
             protection,
@@ -107,18 +252,20 @@ export const AppWrapper = ({ Loading, children, user }) => {
             unredeemedTickets,
             balance,
             playerNumbers,
-            activeTicket,
-            redeemAll,
+            ticketsToRedeem,
+            gameTickets,
             payout,
             ticketQuantity,
             affiliate,
             externalAid,
+            checkRedeemability, 
+            redeemTicket,
             setTicketQuantity,
             setProtection,
             setLoadingStatus,
             setPlayerNumbers,
-            setActiveTicket,
-            setRedeemAll,
+            setTicketsToRedeem,
+            setGameTickets
         }}>
             {children}
             {loadingStatus && <Loading>{loadingStatus}</Loading>}
@@ -145,6 +292,7 @@ export const AppProvider = ({ Loading, children }) => {
     /** @type {[boolean, (value: boolean) => void]} */
     const [checksDone, setChecksDone] = useState(false);
 
+    // get user data
     useEffect(() => {
         const getUser = async () => {
             try {

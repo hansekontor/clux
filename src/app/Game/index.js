@@ -27,12 +27,12 @@ import SlideIn from './components/SlideIn';
 import Versus from './components/Versus';
 
 const Game = () => {
-	const { setLoadingStatus, activeTicket } = useApp();
+	const { setLoadingStatus, gameTickets } = useApp();
 	const history = useHistory();
-	console.log("Game activeTicket", activeTicket);
+	const activeTicket = gameTickets[0];
 
-	const resultingNumbers = activeTicket.details.redemption.resultingNumbers;
-	const tier = activeTicket.details.redemption.tier;
+	const resultingNumbers = activeTicket.parsed?.resultingNumbers;
+	const tier = activeTicket.parsed?.tier;
 	const isWinner = tier !== 0;
 	const winnerLabel = isWinner ? "A" : "B";
 	const labels = {
@@ -52,7 +52,7 @@ const Game = () => {
 			setLoadingStatus("TICKET NOT FOUND");
 			sleep(3000);
 			history.push("/select");
-		} else if (!activeTicket.details?.redemption?.resultingNumbers) {
+		} else if (!activeTicket.parsed?.resultingNumbers) {
 			setLoadingStatus("TICKET DATA NOT FOUND");
 			sleep(3000);
 			history.push("/select");

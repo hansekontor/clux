@@ -26,7 +26,7 @@ const addMinedTicketToStorage = async ({ setWallet, wallet, setApiError }, issue
         const index = newTickets.findIndex(ticket => ticket.issueTx.hash === issueHash);
 
         // Add the mined ticket to the found ticket
-        newTickets[index].details.minedTicket = minedTicket;
+        newTickets[index].parsed.minedTicket = minedTicket;
 
         // Convert mined ticket hex to a TX object and update the ticket issueTx
         const issueTx = TX.fromRaw(Buffer.from(minedTicket.hex, 'hex'), null);

@@ -1,12 +1,12 @@
 // node modules
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 // util
 import animationLabels from '@utils/animations';
 
 // core functions
-import { useResult } from '@core/context/Result';
+import { useApp } from '@core/context/App';
 
 // custom react components
 import Header from '@components/Header';
@@ -22,24 +22,37 @@ import ButtonContainer from './components/ButtonContainer';
 
 
 const Result = () => {
-    const { amount, hasTicket, nextTicket, resultingNumbers } = useResult();
+    const { gameTickets, setGameTickets, ticketsToRedeem } = useApp();
     const history = useHistory();
+    const activeTicket = gameTickets[0];
+    const redemptionsOutstanding = ticketsToRedeem.length > 0;
+    console.log("Result outstanding redemptions", ticketsToRedeem);
+
+    // redirect if ticket data missing
+    useEffect(() => {
+        if (!activeTicket) {
+            history.push("/select");
+        } else if (!activeTicket.parsed?.tier) {
+            history.push("/select");
+        }
+    },[])
 
     // DOM variables
-    const buttonText = nextTicket ? "Redeem Next Ticket" : "Play Again";
+    const amount = activeTicket.parsed?.actualPayoutNum / 100;
+    const resultingNumbers = activeTicket.parsed?.resultingNumbers;
+    const buttonText = redemptionsOutstanding ? "Redeem Next Ticket" : "Play Again";
     const isWinner = amount > 0;
     const animationName = isWinner ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
+    // handlers
     const handleRedirect = () => {
-        if (nextTicket) {
-            history.push({
-                pathname: '/waitingroom', 
-                state: {
-                    ticketToRedeem: nextTicket
-                }
-            });
+        setGameTickets([]);
+        if (ticketsToRedeem.length > 0) {
+            console.log("tickets available: go to waiting room");
+            history.push('/waitingroom');
         } else {
+            console.log("no more tickets: go to select");
             history.push('/select');
         }
     }
@@ -71,7 +84,7 @@ const Result = () => {
                 </FlashContainer>
 
                 <Ticket>
-                    {hasTicket && (
+                    {amount && resultingNumbers && (
                         <>
                             <TicketResult
                                 amount={amount}

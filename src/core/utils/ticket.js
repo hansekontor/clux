@@ -20,6 +20,8 @@ const {	Hash256: hash256 } = bcrypto;
 import { U64 } from 'n64';
 import bio, { read } from 'bufio';
 
+// core functions
+import playerWinningsTier from '@core/constants/winningTiers';
 
 export default class TicketHistory {
     constructor(tickets) {
@@ -53,7 +55,7 @@ export default class TicketHistory {
 
         // add redeem data to ticket
         const index = parsedTickets.findIndex(ticket => ticket.redeemTx?.hash === tx.hash);
-        parsedTickets[index].details = Object.assign(parsedTickets[index].details, { redemption: redeemData });
+        parsedTickets[index].parsed = Object.assign(parsedTickets[index].parsed, {...redeemData});
         
         this.tickets = parsedTickets;
     }
@@ -202,7 +204,7 @@ export default class TicketHistory {
         // playerNumbers, payoutAmount, redeem sig data
         for (const ticket of tickets) {
             // console.log("parse", ticket);
-            const details = ticket.details || {};
+            const parsed = ticket.parsed || {};
 
             const getTXs = async () => {
                 // console.log("GETTXS");
@@ -229,7 +231,7 @@ export default class TicketHistory {
             // console.log("redeemTx", redeemTx);
 
             // parse player numbers from ticket auth code
-            if (!details.playerNumbers || !details.maxPayoutBE && issueTx) {
+            if (!parsed.playerNumbers || !parsed.maxPayoutBE && issueTx) {
                 const opReturn = issueTx.outputs[0].script;
                 const ticketAuthCode = opReturn.get(1).data;
                 // console.log("ticketAuthCode", ticketAuthCode.toString('hex'))
@@ -241,25 +243,55 @@ export default class TicketHistory {
                     const minterNumberInt = br.readU8(byte);
                     minterNumbersArray.push(minterNumberInt);
                 }
-                details.playerNumbers = minterNumbersArray;				
+                parsed.playerNumbers = minterNumbersArray;				
 
                 const maxPayoutBufBE = txOutputs[0].script.code[6].data;
                 // console.log("maxPayout", maxPayoutBufBE);
-                details.maxPayoutBE = maxPayoutBufBE;
+                parsed.maxPayoutBE = maxPayoutBufBE;
             }
 
             // parse payout amount from redeem tx
-            if (!details.payoutAmount && redeemTx) {
+            if (!parsed.payoutAmount && redeemTx) {
                 // console.log("can I get the slp value from this?", redeemTx.outputs[2]);
                 const payoutAmount = ticket.redeemTx.outputs[2].slp?.value;
-                details.payoutAmount = payoutAmount;
+                parsed.payoutAmount = payoutAmount;
             }
 
-            // add parsed ticket details
-            if (!ticket.details) 
-                ticket.details = details;
+            // parse confirmed ticket
+            // todo: add all relevant data
+            const isMined = ticket.issueTx.height > 0;
+            if (isMined) {
+                if (!(parsed.opponentNumbers && parsed.resultingNumbers && parsed.payoutAmountNum && parsed.tier)) {
+                    const ttxOpreturnAuthBuf = issueTx.outputs[0].script.code[1].data;
+                    const parsedticketAuthCode = readTicketAuthCode(ttxOpreturnAuthBuf);
+                    const maxPayout = parsedticketAuthCode.txOutputs[0].script.toRaw().slice(-8)
+
+                    console.log("issueTx.block", ticket.issueTx.block);
+
+                    const { actualPayoutBE, tier, opponentNumbers, resultingNumbers } = calculatePayout(
+                        issueTx.hash(),
+                        Buffer.from(ticket.issueTx.block, 'hex').reverse(),
+                        parsedticketAuthCode.minterNumbers,
+                        maxPayout,
+                        playerWinningsTier.map(obj => obj.threshold)
+                    );
+
+                    const actualPayoutNum = U64.fromBE(actualPayoutBE).toNumber();
+                    
+                    parsed.payoutAmountNum = actualPayoutNum;
+                    parsed.opponentNumbers = opponentNumbers;
+                    parsed.resultingNumbers = resultingNumbers;
+                    parsed.tier = tier;
+
+                    console.log("parseTickets parsed", parsed);
+                }
+            }
+
+            // add parsed ticket data
+            if (!ticket.parsed) 
+                ticket.parsed = parsed;
             else 
-                ticket.details = Object.assign(ticket.details, details);
+                ticket.parsed = Object.assign(ticket.parsed, parsed);
 
         }
 

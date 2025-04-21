@@ -47,6 +47,17 @@ const addIssueTxs = async ({ wallet, setWallet, setApiError }, txs, coinsUsed, p
 
         await writeWalletState(wallet, newState);
         setApiError(false);
+
+        // return newly added tickets
+        const hashArray = txs.map(tx => tx.rhash());
+        console.log("hashArray", hashArray);
+        const addedTickets = hashArray.map(hash => {
+            const newTicket = ticketHistory.tickets.find(ticket => ticket.issueTx.hash === hash);
+            return newTicket;
+        }).filter(ticket => ticket);
+
+        console.log("addedTickets", addedTickets);
+        return addedTickets;
     } catch (error) {
         console.log(`Error in addIssueTx(txs)`);
         console.log(error);

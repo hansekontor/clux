@@ -29,7 +29,8 @@ export default function usePayment({
     setPaymentMetadata,
     maxEtokenTicketQuantity,
     setTicketQtyError,
-    setShowPaymentForm
+    setShowPaymentForm,
+    setTicketsToRedeem
 }) {
     const { wallet, addIssueTxs } = useCashTab();
     const { playerNumbers, setLoadingStatus } = useApp();
@@ -89,18 +90,15 @@ export default function usePayment({
 
                         // put txs in storage
                         const paymentTxs = payment.transactions.map(raw => TX.fromRaw(raw, null));
-                        await addIssueTxs(ticketTxs, coinsUsed, paymentTxs);
+                        const parsedTickets = await addIssueTxs(ticketTxs, coinsUsed, paymentTxs);
+                        console.log("parsedTickets", parsedTickets);
+                        setTicketsToRedeem(parsedTickets);
 
                         // wait until ticket has been added to storage
                         await sleep(5000);
 
                         // pass hash for waiting room to find parsed ticket in storage
-                        history.push({
-                            pathname: "/waitingroom",
-                            state: {
-                                issueHash: ticketTxs[0].rhash()
-                            }
-                        });
+                        history.push("/waitingroom");
                     }
                 }
             } catch (err) {
@@ -300,16 +298,19 @@ export default function usePayment({
             // put txs in storage
             const capturedPayment = Payment.fromRaw(authPayment.rawPayment, null);
             const paymentTxs = capturedPayment.transactions.map(raw => TX.fromRaw(raw, null));
-            await addIssueTxs(ticketTxs, authPayment.coinsUsed, paymentTxs);
+            const parsedTicketTxs = await addIssueTxs(ticketTxs, authPayment.coinsUsed, paymentTxs);
+            setTicketsToRedeem(parsedTicketTxs);
 
-            history.push('/backup');
+            await sleep(5000);
+
+            history.push('/waitingroom');
 
         } catch (err) {
             console.error(err);
             notify({ message: "AN ERROR OCCURED", type: "error" });
             await sleep(2000);
             // return repeatOnboarding();
-            history.push('/');
+            history.push('/select');
         }
     }
 

@@ -11,8 +11,6 @@ import { useCashTab } from '@core/context/CashTab';
 import { useApp } from '@core/context/App';
 import { CheckoutProvider } from '@core/context/Checkout';
 import { CashoutProvider } from '@core/context/Cashout';
-import { ResultProvider } from '@core/context/Result';
-import { WaitingRoomProvider } from '@core/context/WaitingRoom';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -40,14 +38,12 @@ const App = () => {
 		user,
 		playerNumbers,
 		activeTicket,
-		redeemAll,
 		payout,
 		setProtection,
 		setUser,
 		setLoadingStatus,
 		setPlayerNumbers,
 		setActiveTicket,
-		setRedeemAll
 	} = useApp();
 
 	const codeSplitLoader = <LoadingBlock>{CashLoadingIcon}</LoadingBlock>;
@@ -70,23 +66,13 @@ const App = () => {
 									</CheckoutProvider>
 								</Route>
 								<Route path="/waitingroom">
-									<WaitingRoomProvider>
-										<WaitingRoom
-											passLoadingStatus={setLoadingStatus}
-											activeTicket={activeTicket}
-											playerNumbers={playerNumbers}
-											user={user}
-										/>
-									</WaitingRoomProvider>
+									<WaitingRoom />
 								</Route>
 								<Route path="/game">
-										<Game />
+									<Game />
 								</Route>
-
 								<Route path="/result">
-									<ResultProvider>
-										<Result />
-									</ResultProvider>
+									<Result />
 								</Route>
 								<Route path="/backup">
 									<Backup />
@@ -94,7 +80,6 @@ const App = () => {
 								<Route path="/wallet">
 									<Wallet
 										passLoadingStatus={setLoadingStatus}
-										passRedeemAll={setRedeemAll}
 										user={user}
 									/>
 								</Route>
