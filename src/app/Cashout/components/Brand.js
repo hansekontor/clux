@@ -7,21 +7,21 @@ import Form from './Form';
 import { useCashout } from '@core/context/Cashout';
 
 export default function Brand() {
-    const {
-        stage,
-        tilloSelection,
-        brandData,
+    const { 
+        tilloStage,
+        tilloSelection, 
+        brandData, 
+        handleTilloBrandChange,
         handleBrandSubmit,
-        handleBrandChange,
     } = useCashout();
 
     return (
-        <Form id={`${stage}-form`}
+        <Form id={`${tilloStage}-form`}
             onSubmit={handleBrandSubmit}
         >
             <Select
                 options={tilloSelection}
-                onChange={handleBrandChange}
+                onChange={handleTilloBrandChange}
                 name="brand"
             />
 

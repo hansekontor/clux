@@ -1,8 +1,11 @@
 // node modules
 import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Modal } from 'antd';
 
 // core functions
 import { useCashout } from '@core/context/Cashout';
+import { useNotifications } from '@core/context/Notifications';
 
 // react components
 import Footer from '@components/Footer';
@@ -13,11 +16,53 @@ import Filter from './components/Filter';
 import Brand from './components/Brand';
 import GiftCard from './components/GiftCard';
 import FlexGrow from './components/FlexGrow';
-import { useApp } from '../../core/context/App';
 
 
 const Cashout = () => {
-    const { stage, handleReturn, modalHolder } = useCashout();
+    const history = useHistory();
+    const notify = useNotifications();
+    const { 
+        checkBalance, 
+        tilloStage, 
+        giftcardLink, 
+        setGiftcardLink 
+    } = useCashout();
+    const [modal, modalHolder] = Modal.useModal();
+
+    useEffect(() => {
+        const isSufficientBalance = checkBalance();
+        if (!isSufficientBalance) {
+            notify({type: "error", message: "Insufficient Token Balance"});
+            history.push("/select");
+        };
+    }, [])
+
+    // handlers
+    const handleReturn = () => {
+        if (giftcardLink)
+            return handleGiftcardConfirmation()
+        else
+            history.push("/select");
+    }
+
+    const handleBackToHome = () => {
+        setGiftcardLink(false);
+        return history.push("/select");
+    }
+
+    const handleGiftcardConfirmation = (e) => {
+        if (e)
+            e.preventDefault();
+        // add modal asking for confirmation
+        const modalConfig = {
+            title: "Confirm",
+            content: "Have you claimed your giftcard?",
+            okText: "Yes",
+            cancelText: "No",
+            onOk: () => handleBackToHome(),
+        };
+        modal.confirm(modalConfig);
+    }
 
     return (
         <>
@@ -28,21 +73,22 @@ const Cashout = () => {
                     handleOnClick={handleReturn}
                     title={"Cashout"}
                 />
-                {stage === "filter" && <Filter />}
+                {tilloStage === "filter" && 
+                    <Filter />}
 
-                {stage === "brand" && <Brand />}
+                {tilloStage === "brand" && <Brand />}
 
-                {stage === "giftcard" && <GiftCard />}
+                {tilloStage === "giftcard" && <GiftCard />}
 
                 <Footer variant="empty">
-                    <Button type="submit" form={`${stage}-form`}>
-                        {stage === "filter" &&
+                    <Button type="submit" form={`${tilloStage}-form`}>
+                        {tilloStage === "filter" &&
                             <>Go to Brands</>
                         }
-                        {stage === "brand" &&
+                        {tilloStage === "brand" &&
                             <>Get Giftcard</>
                         }
-                        {stage === "giftcard" &&
+                        {tilloStage === "giftcard" &&
                             <>Back to Home</>
                         }
                     </Button>

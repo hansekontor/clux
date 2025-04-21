@@ -9,33 +9,46 @@ import Form from './Form';
 import { useCashout } from '@core/context/Cashout';
 
 export default function Filter() {
-    const {
-        cashoutCountryOptions,
-        cashoutCurrencyOptions,
-        stage,
-        cardAmount,
-        maxAmount,
-        handleSubmitFilters,
-        setCardAmount,
+    const { 
+        cashoutMethod,
+        maxCashoutAmount,  
+        tilloCountryOptions, 
+        tilloCurrencyOptions,
+        cashoutAmount, 
+        giftcardAmount,
+        setGiftcardAmount,
+        filterTilloBrands,
+        tilloStage,
     } = useCashout();
 
+    const handleSubmitFilters = async (e) => {
+        e.preventDefault();
+
+        if (cashoutMethod === "tillo") {
+            const country = e.target.country.value;
+            const currency = e.target.currency.value;
+
+            filterTilloBrands(country, currency);
+        }
+    }
+
     return (
-        <Form id={`${stage}-form`} onSubmit={handleSubmitFilters}>
+        <Form id={`${tilloStage}-form`} onSubmit={handleSubmitFilters}>
             <Typography variant="header" size="large">How many Tokens?</Typography>
             <QuantityInput
-                quantity={cardAmount}
-                passQuantity={setCardAmount}
+                quantity={giftcardAmount}
+                passQuantity={setGiftcardAmount}
                 step={10}
-                max={maxAmount}
+                max={maxCashoutAmount}
             />
             <Select
-                options={cashoutCurrencyOptions}
+                options={tilloCurrencyOptions}
                 label="Currency"
                 name="currency"
                 required
             />
             <Select
-                options={cashoutCountryOptions}
+                options={tilloCountryOptions}
                 label="Country"
                 name="country"
                 required
