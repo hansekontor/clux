@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import sleep from '@utils/sleep';
 
+// core functions
+import playerWinningsTier from '@core/constants/winningTiers';
+
 // assets
 import WhiteRightArrowSvg from '@assets/svgs/arrow_right_white.svg';
 import WhiteLeftArrowSvg from '@assets/svgs/arrow_left_white.svg';
-
-const playerWinningsTier = [
-    { threshold: 0, multiplier: 16 },
-    { threshold: 4, multiplier: 8 },
-    { threshold: 6, multiplier: 4 },
-    { threshold: 11, multiplier: 2 },
-    { threshold: 35, multiplier: 1 },
-];
 
 // styled components
 import {
