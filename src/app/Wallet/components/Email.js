@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import Button from '@components/Button';
 
 // core functions
-import { useApp } from '@core/contextApp';
+import { useApp } from '@core/context/App';
 import { useNotifications } from '@core/context/Notifications';
 
 
