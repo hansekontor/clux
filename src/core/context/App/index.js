@@ -26,7 +26,7 @@ export const AppContext = createContext/** @type {import('./types').AppContextVa
 
 export const AppWrapper = ({ Loading, children, user }) => {
     const history = useHistory();
-    const { wallet, unredeemedTickets, balance, addMinedTicketToStorage, addRedeemTxToStorage } = useCashTab();
+    const { wallet, unredeemedTickets, balance, addMinedTicketToStorage, addRedeemTxToStorage, createWallet, validateMnemonic } = useCashTab();
     const { checkRedeemability, broadcastTx } = useBCH();
     const notify = useNotifications();
 
@@ -280,6 +280,12 @@ export const AppWrapper = ({ Loading, children, user }) => {
 		}
     }
 
+    const importWallet = async (mnemonic) => {
+        setLoadingStatus("IMPORT WALLET");
+        await createWallet(mnemonic);
+        setLoadingStatus(false);
+    }
+
     return (
         <AppContext.Provider value={{
             protection,
@@ -296,6 +302,8 @@ export const AppWrapper = ({ Loading, children, user }) => {
             checkRedeemability, 
             redeemTicket,
             changeEmail,
+            importWallet,
+            validateMnemonic,
             setTicketQuantity,
             setProtection,
             setLoadingStatus,
