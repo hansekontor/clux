@@ -38,7 +38,6 @@ const App = () => {
 		user,
 		playerNumbers,
 		activeTicket,
-		payout,
 		setProtection,
 		setUser,
 		setLoadingStatus,
