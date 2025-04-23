@@ -21,12 +21,13 @@ import { schrodingerOutscript, readTicketAuthCode, calculatePayout } from '../..
 import { useNotifications } from '../Notifications';
 import TXUtil from '../../utils/txutil';
 import playerWinningsTier from '../../constants/winningTiers';
+import sleep from '../../utils/sleep';
 
 export const AppContext = createContext/** @type {import('./types').AppContextValue} */({});
 
 export const AppWrapper = ({ Loading, children, user }) => {
     const history = useHistory();
-    const { wallet, unredeemedTickets, balance, addMinedTicketToStorage, addRedeemTxToStorage, createWallet, validateMnemonic } = useCashTab();
+    const { wallet, unredeemedTickets, balance, addMinedTicketToStorage, addRedeemTxToStorage, createWallet, validateMnemonic, forceWalletUpdate } = useCashTab();
     const { checkRedeemability, broadcastTx } = useBCH();
     const notify = useNotifications();
 
@@ -55,6 +56,7 @@ export const AppWrapper = ({ Loading, children, user }) => {
     const [ticketQuantity, setTicketQuantity] = useState(1);
 
     const [protection, setProtection] = useState(true);
+    const [walletUpdateAvailable, setWalletUpdateAvailable] = useState(false);
 
     const [affiliate, setAffiliate] = useState({});
     const [externalAid, setExternalAid] = useState(""); 
@@ -109,6 +111,12 @@ export const AppWrapper = ({ Loading, children, user }) => {
         getAidFromQuery();
 
     }, []);
+
+    useEffect(() => {
+        if (!walletUpdateAvailable) {
+            setWalletUpdateAvailable(true);
+        }
+    }, [unredeemedTickets]);
 
     const getMinedTicket = async (hash) => {
         const ticketRes = await fetch(`https://lsbx.nmrai.com/v1/ticket/${hash}`, {
@@ -279,10 +287,19 @@ export const AppWrapper = ({ Loading, children, user }) => {
             });
 		}
     }
-
+    
     const importWallet = async (mnemonic) => {
         setLoadingStatus("IMPORT WALLET");
         await createWallet(mnemonic);
+        setWalletUpdateAvailable(false);
+        setLoadingStatus(false);
+    }
+
+    const updateWallet = async () => {
+        setLoadingStatus("LOADING WALLET");
+        await forceWalletUpdate();
+        await sleep(3000);
+        setWalletUpdateAvailable(false);
         setLoadingStatus(false);
     }
 
@@ -304,6 +321,7 @@ export const AppWrapper = ({ Loading, children, user }) => {
             changeEmail,
             importWallet,
             validateMnemonic,
+            updateWallet,
             setTicketQuantity,
             setProtection,
             setLoadingStatus,

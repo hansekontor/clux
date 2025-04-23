@@ -374,14 +374,10 @@ const TicketHistory = ({
 	passLoadingStatus,
     tickets,
 }) => {
-	const { setTicketsToRedeem } = useApp();
-	const { forceWalletUpdate } = useCashTab();
+	const { setTicketsToRedeem, walletUpdateAvailable, updateWallet, unredeemedTickets } = useApp();
 	const history = useHistory();
 
-	const unredeemed = tickets.filter(ticket => !ticket.redeemTx);
-	const confirmedUnredeemed = unredeemed.filter(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0);
-
-	const [walletSynced, setWalletSynced] = useState(false);
+	const confirmedUnredeemed = unredeemedTickets.filter(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0);
 
 	console.log("# of Tickets in History", tickets.length)
 	const ticketList = tickets.map((ticket, index) => {
@@ -394,14 +390,6 @@ const TicketHistory = ({
 		)
 	});
 
-
-	const handleSyncWallet = async () => {
-		passLoadingStatus("LOADING WALLET");
-		await forceWalletUpdate();
-		await sleep(3000);
-		setWalletSynced(true);
-		passLoadingStatus(false);
-	}
 	const handleRedeemAll = () => {
 		passLoadingStatus("LOADING TICKET");
 		setTicketsToRedeem(confirmedUnredeemed);
@@ -411,8 +399,8 @@ const TicketHistory = ({
     return (
 		<VarHeightCtn>
 			<TicketHistoryCtn>
-				{tickets.length > 2 && !walletSynced &&
-						<SyncButton onClick={handleSyncWallet}>
+				{walletUpdateAvailable &&
+						<SyncButton onClick={updateWallet}>
 							Sync Wallet
 						</SyncButton>	
 				}
