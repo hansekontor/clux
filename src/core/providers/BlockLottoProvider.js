@@ -6,9 +6,7 @@ import DefaultLoading from '../components/Loading';
 import DefaultNotification from '../components/Notification/DefaultNotification';
 import { NotificationsProvider } from '../context/Notifications';
 import { AppProvider } from '../context/App';
-import { CheckoutProvider } from '../context/Checkout';
 import { OnBoardingProvider } from '../context/OnBoarding';
-import { CashoutProvider } from '../context/Cashout';
 
 export default function BlockLottoProvider({
     children,
@@ -21,11 +19,7 @@ export default function BlockLottoProvider({
                 <NotificationsProvider Notification={Notification}>
                     <AppProvider Loading={Loading}>
                         <OnBoardingProvider>
-                            <CheckoutProvider>
-                                {/* <CashoutProvider> */}
-                                    {children}
-                                {/* </CashoutProvider> */}
-                            </CheckoutProvider>
+                            {children}
                         </OnBoardingProvider>
                     </AppProvider>
                 </NotificationsProvider>
