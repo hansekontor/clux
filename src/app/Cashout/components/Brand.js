@@ -9,11 +9,24 @@ import { useCashout } from '@core/context/Cashout';
 export default function Brand() {
     const { 
         tilloStage,
+        setTilloStage,
         tilloSelection, 
         brandData, 
         handleTilloBrandChange,
-        handleBrandSubmit,
+        getGiftcardLink,
     } = useCashout();
+
+    const handleBrandSubmit = async (e) => {
+        e.preventDefault();
+
+        const brand = e.target.brand.value;
+
+        const link = await getGiftcardLink(brand);
+
+        if (link) {
+            setTilloStage("giftcard");
+        }
+    }
 
     return (
         <Form id={`${tilloStage}-form`}

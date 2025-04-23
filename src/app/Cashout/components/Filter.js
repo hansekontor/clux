@@ -14,11 +14,11 @@ export default function Filter() {
         maxCashoutAmount,  
         tilloCountryOptions, 
         tilloCurrencyOptions,
-        cashoutAmount, 
         giftcardAmount,
         setGiftcardAmount,
         filterTilloBrands,
         tilloStage,
+        setTilloStage
     } = useCashout();
 
     const handleSubmitFilters = async (e) => {
@@ -28,7 +28,10 @@ export default function Filter() {
             const country = e.target.country.value;
             const currency = e.target.currency.value;
 
-            filterTilloBrands(country, currency);
+            const filteredBrands = filterTilloBrands(country, currency);
+            if (filteredBrands.length > 0) {
+                setTilloStage("brand");
+            }
         }
     }
 

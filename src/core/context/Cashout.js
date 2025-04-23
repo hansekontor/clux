@@ -60,13 +60,15 @@ export function CashoutProvider({ children }) {
         return hasSufficientBalance;
     }
 
-    const handleBrandSubmit = async (e) => {
+    const getGiftcardLink = async (e) => {
         e.preventDefault();
 
         const brand = e.target.brand.value;
 
         const link = await getGiftcard(brand);
         setGiftcardLink(link);
+
+        return link;
     }
 
     const minCashoutAmount = 10;
@@ -92,7 +94,7 @@ export function CashoutProvider({ children }) {
                 filterTilloBrands,
                 handleTilloBrandChange,
                 getGiftcard,
-                handleBrandSubmit,
+                getGiftcardLink,
             }}
         >
             {children}

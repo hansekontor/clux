@@ -99,7 +99,8 @@ export default function useTillo() {
             });
 
         setTilloSelection(newTilloSelection);
-        setTilloStage("brand");
+
+        return newTilloSelection;
     }
 
     const getGiftcard = async (brand) => {
@@ -228,7 +229,6 @@ export default function useTillo() {
             // remove utxos locally
             await addCashout(txs, coinsBurned);
 
-            setTilloStage("giftcard");
             setLoadingStatus(false);
 
             const link = ack.payment.getData('json').payout.result.url;

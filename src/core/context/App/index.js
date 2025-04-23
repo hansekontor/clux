@@ -234,12 +234,12 @@ export const AppWrapper = ({ Loading, children, user }) => {
                 return redeemHash;
             } else {
                 notify({type: "error", message: "Broadcasting Unsuccesful"});
-                return false;
+                return;
             }
         } catch (err) {
             console.error(err);
             notify({type: "error", message: "Broadcasting Error"});
-            return false;
+            return;
         }
     }
 
@@ -253,7 +253,6 @@ export const AppWrapper = ({ Loading, children, user }) => {
             playerNumbers,
             ticketsToRedeem,
             gameTickets,
-            payout,
             ticketQuantity,
             affiliate,
             externalAid,
