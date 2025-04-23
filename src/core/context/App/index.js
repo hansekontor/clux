@@ -243,6 +243,43 @@ export const AppWrapper = ({ Loading, children, user }) => {
         }
     }
 
+    const changeEmail = async (email) => {
+        const keyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
+		const msg = Buffer.from(email, 'utf-8');
+		const sig = keyring.sign(SHA256.digest(msg));
+
+		const json = {
+			email: email, 
+			pubkey: wallet.Path1899.publicKey,
+			signature: sig.toString('hex'),			
+		};
+		console.log("json", json);
+		const userRes = await fetch("https://lsbx.nmrai.com/v1/user", {
+			method: "POST", 
+			mode: "cors",
+			headers: new Headers({
+				"Content-Type": "application/json"
+			}),
+			signal: AbortSignal.timeout(20000),
+			body: JSON.stringify(json)
+		});
+		console.log("userRes", userRes);
+		// forward based on response
+		const userResJson = await userRes.json();
+		console.log("userResJson", userResJson);
+		if (userRes.status === 200) {
+            notify({
+                type: "success",
+                message: "Email has been changed"
+            });
+        } else {
+            notify({
+                type: "error",
+                message: "Error changing email"
+            });
+		}
+    }
+
     return (
         <AppContext.Provider value={{
             protection,
@@ -258,6 +295,7 @@ export const AppWrapper = ({ Loading, children, user }) => {
             externalAid,
             checkRedeemability, 
             redeemTicket,
+            changeEmail,
             setTicketQuantity,
             setProtection,
             setLoadingStatus,
