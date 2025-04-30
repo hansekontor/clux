@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import animationLabels from '@utils/animations';
 
 // core functions
-import { useApp } from '@core/context/App';
+import { useApp } from 'blocklotto-sdk';
 
 // custom react components
 import Header from '@components/Header';

@@ -1,9 +1,9 @@
 import React from "react";
 import { StyledBalance } from './Balance.styles';
-import { useCashTab } from '@core/context/CashTab';
+import { useApp } from 'blocklotto-sdk';
 
 export default function Balance() {
-    const { balance } = useCashTab();
+    const { balance } = useApp();
 
     // Convert to string and pad to 6 digits
     const rawValue = String(Math.floor(balance || 0));

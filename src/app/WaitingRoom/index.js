@@ -12,7 +12,7 @@ import Background from './components/Background';
 import FlexGrow from './components/FlexGrow';
  
 // core functions
-import { useApp } from '@core/context/App';
+import { useApp } from 'blocklotto-sdk';
 
 // util
 import animationLabels from '@utils/animations';
@@ -36,18 +36,18 @@ const WaitingRoom = () => {
 	}, []);
 
 	// wait until ticket is redeemable
-	useEffect(async () => {
-		if (Object.keys(activeTicket).length > 0) {
-			const isRedeemableTicket = await checkRedeemability(activeTicket, true);
-			if (isRedeemableTicket) {
-				setIsRedeemable(true);
-			} else {
-				setIsRedeemable(false);
-			}
-		} else {
-			setIsRedeemable(false);
-		}
-	}, [activeTicket])
+	// useEffect(async () => {
+	// 	if (Object.keys(activeTicket).length > 0) {
+	// 		const isRedeemableTicket = await checkRedeemability(activeTicket, true);
+	// 		if (isRedeemableTicket) {
+	// 			setIsRedeemable(true);
+	// 		} else {
+	// 			setIsRedeemable(false);
+	// 		}
+	// 	} else {
+	// 		setIsRedeemable(false);
+	// 	}
+	// }, [activeTicket])
 
 	// handlers
 	const handleButtonClick = async () => {

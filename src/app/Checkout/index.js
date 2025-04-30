@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 // core functions
-import { useCheckout } from '@core/context/Checkout';
-import { useApp } from '@core/context/App';
-import { useNotifications } from '@core/context/Notifications';
+import { useCheckout } from 'blocklotto-sdk';
+import { useApp } from 'blocklotto-sdk';
+import { useNotifications } from 'blocklotto-sdk';
 
 // checkout components
 import Tos from './Tos';
@@ -18,7 +18,7 @@ const Checkout = () => {
 		hasEmail,
 		showKyc,
 	} = useCheckout();
-	const { playerNumbers } = useApp()
+	const { playerNumbers, ticketsToRedeem } = useApp()
 	const history = useHistory();
 	const notify = useNotifications();
 
@@ -34,6 +34,14 @@ const Checkout = () => {
 		checkPlayerNumbers();
 		return () => { isMounted = false };  // Cleanup function
 	}, [playerNumbers]);
+
+	// proceed to waiting room once at least one ticket has been bought
+	useEffect(() => {
+		console.log("Purchased tickets are in storage, move on");
+		if (ticketsToRedeem.length > 0) {
+			history.push("/waitingroom");
+		}
+	}, [ticketsToRedeem])
 
 	// If user has not agreed to the terms
 	if (!hasAgreed) return <Tos />;

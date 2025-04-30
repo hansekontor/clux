@@ -11,7 +11,7 @@ import animationLabels from '@utils/animations';
 import sleep from '@utils/sleep';
 
 // core functions
-import { useApp } from '@core/context/App';;
+import { useApp } from 'blocklotto-sdk';;
 
 // react components
 import Button from '@components/Button';

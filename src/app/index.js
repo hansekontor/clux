@@ -7,10 +7,9 @@ import {
 } from 'react-router-dom';
 
 // core components
-import { useCashTab } from '@core/context/CashTab';
-import { useApp } from '@core/context/App';
-import { CheckoutProvider } from '@core/context/Checkout';
-import { CashoutProvider } from '@core/context/Cashout';
+import { useApp } from 'blocklotto-sdk';
+import { CheckoutProvider } from 'blocklotto-sdk';
+import { CashoutProvider } from 'blocklotto-sdk';
 
 // react components
 const Select = lazy(() => import('./Select'));
@@ -30,7 +29,7 @@ import { CashLoadingIcon, LoadingBlock } from '@components/Icons';
 
 
 const App = () => {
-	const { wallet } = useCashTab();
+	const { wallet } = useApp();
 	const {
 		loadingStatus,
 		loading,

@@ -4,7 +4,7 @@ import 'react-range-slider-input/dist/style.css';
 import Form from './Form';
 
 // core functions
-import { useCashout } from '@core/context/Cashout';
+import { useCashout } from 'blocklotto-sdk';
 
 export default function Brand() {
     const { 

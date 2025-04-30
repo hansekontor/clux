@@ -1,7 +1,7 @@
 import React from 'react'
 
 // core functions
-import { useCheckout } from '@core/context/Checkout';
+import { useCheckout } from 'blocklotto-sdk';
 
 // custom react components
 import Header from '@components/Header';
@@ -19,6 +19,13 @@ import Subscript from './components/Subscript';
 export default function Kyc() {
     const { handleKYC } = useCheckout();
 
+    const handleSuccess = (message) => {
+    }
+
+    const handleError = (message) => {
+        notify({ type: "error", message });
+        history.push("/select");
+    }
     return (
         <>
             <Header />
@@ -43,7 +50,7 @@ export default function Kyc() {
                     </BottomItem>
                     <Subscript>Total time 2 minutes</Subscript>
                 </Container>
-                <Button onClick={handleKYC}>Continue</Button>
+                <Button onClick={e => handleKYC(e, handleSuccess, handleError)}>Continue</Button>
             </FlexGrow>
         </>
     )

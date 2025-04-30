@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 // core components
-import { useApp } from '@core/context/App';
+import { useApp } from 'blocklotto-sdk';
 
 // assets
 import LeftArrowSvg from '@assets/svgs/arrow_left.svg'

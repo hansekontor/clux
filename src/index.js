@@ -1,11 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { HashRouter as Router } from 'react-router-dom';
 import { ThemeProvider } from "styled-components";
 
 // core functions
-import GA from '@core/utils/GoogleAnalytics';
-import BlockLottoProvider from '@core/providers/BlockLottoProvider';
+import { BlockLottoProvider } from 'blocklotto-sdk';
 
 // styles
 import { theme, GlobalStyles } from './styles';
@@ -15,18 +14,18 @@ import Notification from '@components/Notification';
 import LoadingAnimation from '@components/LoadingAnimation';
 import App from './app';
 
+const container = document.getElementById('root');
+const root = createRoot(container);
 
-ReactDOM.render(
+root.render(
     <ThemeProvider theme={theme}>
         <GlobalStyles />
         <Router>
             <BlockLottoProvider Notification={Notification} Loading={LoadingAnimation}>
-                {GA.init() && <GA.RouteTracker />}
                 <App />
             </BlockLottoProvider>s
         </Router>
-    </ThemeProvider>,
-    document.getElementById('root'),
+    </ThemeProvider>
 );
 
 if ('serviceWorker' in navigator) {

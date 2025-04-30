@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
-import { currency } from '@core/utils/ticker';
 import {
     StyledAlertContainer,
     StyledCardIcons,
@@ -36,19 +35,6 @@ import MastercardIconSvg from '@assets/svgs/mastercard_icon.svg'
 import VisaIconSvg from '@assets/svgs/visa_icon.svg'
 
 export const CashLoadingIcon = <LoadingOutlined className="cashLoadingIcon" />;
-
-export const CashReceivedNotificationIcon = () => (
-    <Image height={'33px'} width={'30px'} src={currency.logo} preview={false} />
-);
-
-export const TokenReceivedNotificationIcon = () => (
-    <Image
-        src={currency.tokenLogo}
-        height={'33px'}
-        width={'30px'}
-        preview={false}
-    />
-);
 
 export const CashLoader = () => (
     <StyledLoadingBlock>

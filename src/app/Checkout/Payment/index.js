@@ -2,7 +2,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom';
 
 // core functions
-import { useCheckout } from '@core/context/Checkout';
+import { useCheckout } from 'blocklotto-sdk';
 
 // custom react components
 import Navigation from '@components/Navigation';

@@ -1,7 +1,5 @@
 export {
     CashLoadingIcon,
-    CashReceivedNotificationIcon,
-    TokenReceivedNotificationIcon,
     CashLoader,
     Alert,
     CnmiIcon,

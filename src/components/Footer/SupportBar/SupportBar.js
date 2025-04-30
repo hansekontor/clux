@@ -4,10 +4,10 @@ import { WalletButton, HelpButton, CashoutButton } from '@components/Button';
 import { StyledSupportBar } from './SupportBar.styles';
 import Balance from '../Balance';
 
-import { useCashTab } from '@core/context/CashTab';
+import { useApp } from 'blocklotto-sdk';
 
 export default function SupportBar({ returnTo }) {
-    const { unredeemedTickets } = useCashTab();
+    const { unredeemedTickets } = useApp();
 
     const unredeemedTicketsCount = unredeemedTickets.length
 

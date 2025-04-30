@@ -9,10 +9,9 @@ import { CopyOutlined } from '@ant-design/icons';
 import Button from '@components/Button';
 
 // core functions
-import { useApp } from '@core/context/App';
-import { useCashTab } from '@core/context/CashTab';
-import sleep from '@core/utils/sleep';
-import { useNotifications } from '@core/context/Notifications';
+import { useApp } from 'blocklotto-sdk';
+import sleep from '@utils/sleep';
+import { useNotifications } from 'blocklotto-sdk';
 
 // assets
 import TicketSvg from '@assets/svgs/ticket_filled.svg';

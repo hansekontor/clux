@@ -11,6 +11,7 @@ import animationLabels from '@utils/animations.js';
 import sleep from '@utils/sleep';
 
 // react components
+import { useApp } from 'blocklotto-sdk';
 import Header from '@components/Header';
 import JackpotCarousel from '@components/Jackpot';
 import Footer from '@components/Footer';
@@ -24,8 +25,10 @@ import PlayerNumbers from "./components/PlayerNumbers";
 
 
 const Select = () => {
-    const [fadeOut, setFadeOut] = useState(false);
     const history = useHistory();
+    const { setTicketsToRedeem } = useApp();
+
+    const [fadeOut, setFadeOut] = useState(false);
 
     // DOM contents
     const playButtonText = "Play Now - $10 - DEMO";
@@ -34,6 +37,7 @@ const Select = () => {
 
     const handleBuyTicket = async () => {
         setFadeOut(true);
+        setTicketsToRedeem([]);
         await sleep(300);
 
         history.push('/checkout');

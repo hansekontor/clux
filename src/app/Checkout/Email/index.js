@@ -2,8 +2,8 @@ import React from 'react'
 import { useHistory } from 'react-router-dom';
 
 // core functions
-import { useCheckout } from '@core/context/Checkout';
-import checkoutCountryOptions from '@core/constants/checkoutCountryOptions';
+import { useCheckout } from 'blocklotto-sdk';
+import { checkoutCountryOptions } from 'blocklotto-sdk';
 
 // custom react components
 import Header from '@components/Header';

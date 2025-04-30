@@ -7,7 +7,7 @@ import Input from './components/Input';
 import Background from './components/Background';
 
 // core functions
-import { useOnBoarding } from '@core/context/OnBoarding';
+import { useOnBoarding } from 'blocklotto-sdk';
 
 const OnBoarding = () => {
 	const { handlePasswordSubmit } = useOnBoarding();

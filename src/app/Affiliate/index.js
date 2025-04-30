@@ -2,7 +2,7 @@
 import React from 'react';
 
 // core functions
-import { useApp } from '@core/context/App';
+import { useApp } from 'blocklotto-sdk';
 
 // react components
 import Navigation from '@components/Navigation';

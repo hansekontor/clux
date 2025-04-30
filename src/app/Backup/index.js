@@ -3,8 +3,8 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 // core functions
-import { useCashTab } from '@core/context/CashTab';
-import { useNotifications } from '@core/context/Notifications';
+import { useApp } from 'blocklotto-sdk';
+import { useNotifications } from 'blocklotto-sdk';
 
 // assets
 import CopyboardSvg from '@assets/svgs/copyboard.svg';
@@ -19,7 +19,7 @@ import Modal from './components/Modal';
 import CopyboardIcon from './components/CopyboardIcon';
 
 const Backup = () => {
-    const { wallet } = useCashTab();
+    const { wallet } = useApp();
     const notify = useNotifications();
     const history = useHistory();
 

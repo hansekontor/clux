@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import sleep from '@utils/sleep';
 
 // core functions
-import playerWinningsTier from '@core/constants/winningTiers';
+import { playerWinningsTier } from 'blocklotto-sdk';
 
 // assets
 import WhiteRightArrowSvg from '@assets/svgs/arrow_right_white.svg';

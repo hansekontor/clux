@@ -4,8 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { Modal } from 'antd';
 
 // core functions
-import { useCashout } from '@core/context/Cashout';
-import { useNotifications } from '@core/context/Notifications';
+import { useCashout } from 'blocklotto-sdk';
+import { useNotifications } from 'blocklotto-sdk';
 
 // react components
 import Footer from '@components/Footer';

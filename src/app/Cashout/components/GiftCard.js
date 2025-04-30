@@ -3,7 +3,7 @@ import Form from './Form';
 import Link from './Link';
 
 // core functions
-import { useCashout } from '@core/context/Cashout';
+import { useCashout } from 'blocklotto-sdk';
 
 export default function GiftCard() {
     const {

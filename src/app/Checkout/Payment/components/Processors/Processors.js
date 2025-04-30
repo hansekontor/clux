@@ -3,8 +3,8 @@ import { FormHeader, PaymentForm, PaymentInput, Price } from './Processors.style
 import Typography from '@components/Typography';
 
 // core functions
-import { useCheckout } from '@core/context/Checkout';
-import { NMICheckout } from '@core/context/Checkout';
+import { useCheckout } from 'blocklotto-sdk';
+import { NMICheckout } from 'blocklotto-sdk';
 
 export const NmiCheckoutForm = () => {
     const { ticketPrice, ticketQuantity, initiatePayment } = useCheckout();

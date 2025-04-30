@@ -7,8 +7,8 @@ import styled from 'styled-components';
 import Button from '@components/Button';
 
 // core functions
-import { useApp } from '@core/context/App';
-import { useNotifications } from '@core/context/Notifications';
+import { useApp } from 'blocklotto-sdk';
+import { useNotifications } from 'blocklotto-sdk';
 
 
 // styled components
