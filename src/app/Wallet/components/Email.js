@@ -1,10 +1,15 @@
 // node modules
-import React, { useState } from 'react';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 // custom react components
-import { SecondaryButton } from '@components/PrimaryButton';
-import { infoNotification } from '@components/Notifications';
+import Button from '@components/Button';
+
+// core functions
+import { useApp } from 'blocklotto-sdk';
+import { useNotifications } from 'blocklotto-sdk';
+
 
 // styled components
 const EmailCtn = styled.div`
@@ -33,52 +38,27 @@ const Input = styled.input`
 	text-indent: 12px;
 `;
 
-const Email = ({
-    passLoadingStatus
-}) => {
-    const [emailChanged, setEmailChanged] = useState(false);
+const Email = () => {
+    const { changeEmail } = useApp();
+    const notify = useNotifications();
+    const history = useHistory();
+
 
     const handleChangeEmail = async (e) => {
         e.preventDefault();
 		const emailInput = e.target.email.value;
 		const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput);
 		if (!isValid) {
-			setEmailError(true);
+            notify({
+                type: "error",
+                message: "Invalid email"
+            })
 			return;
 		}
 
-		const keyring = KeyRing.fromSecret(wallet.Path1899.fundingWif);
-		const msg = Buffer.from(emailInput, 'utf-8');
-		const sig = keyring.sign(SHA256.digest(msg));
+        await changeEmail(emailInput);
 
-		const json = {
-			email: emailInput, 
-			pubkey: wallet.Path1899.publicKey,
-			signature: sig.toString('hex'),			
-		};
-		console.log("json", json);
-		const userRes = await fetch("https://lsbx.nmrai.com/v1/user", {
-			method: "POST", 
-			mode: "cors",
-			headers: new Headers({
-				"Content-Type": "application/json"
-			}),
-			signal: AbortSignal.timeout(20000),
-			body: JSON.stringify(json)
-		});
-		console.log("userRes", userRes);
-		// forward based on response
-		const userResJson = await userRes.json();
-		console.log("userResJson", userResJson);
-		if (userRes.status === 200) {
-			successNotification("Email has been changed");
-			history.pushState({
-				pathname: "/",
-				state: {
-					repeatOnboarding: true
-				}
-			})
-		}
+        history.push("/select");
     }
 
 
@@ -92,9 +72,9 @@ const Email = ({
                         type="text"
                     />
                 </Form>
-                <SecondaryButton type="submit" form="email-form">
+                <Button variant="secondary" type="submit" form="email-form">
                     Change Email
-                </SecondaryButton>
+                </Button>
             </EmailCtn>        
         </>
     )

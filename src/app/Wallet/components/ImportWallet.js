@@ -5,12 +5,11 @@ import { Modal } from 'antd';
 import styled from 'styled-components';
 
 // custom react modules
-import PrimaryButton from '@components/PrimaryButton';
-import { WalletContext } from '@utils/context';
-import { successNotification } from '@components/Notifications';
+import Button from '@components/Button';
 
-// util
-import sleep from '@utils/sleep';
+// core functions
+import { useApp } from 'blocklotto-sdk';
+import { useNotifications } from 'blocklotto-sdk';
 
 
 // styled css modules
@@ -47,7 +46,7 @@ const Input = styled.input`
 const Help = styled.div`
     color: red;
 `;
-const StyledPrimaryButton = styled(PrimaryButton)`
+const StyledPrimaryButton = styled(Button)`
 	font-family: "Helvetica";
 	font-size: 14px;
 	font-weight: 600;
@@ -55,18 +54,13 @@ const StyledPrimaryButton = styled(PrimaryButton)`
 
 const ImportWallet = ({
     currentAddress,
-    passLoadingStatus
 }) => {
     const history = useHistory();
-    const ContextValue = React.useContext(WalletContext);
-    const { createWallet, validateMnemonic } = ContextValue;
+    const { importWallet, validateMnemonic } = useApp();
+    const notify = useNotifications();
 
     const [alertModal, alertModalHolder] = Modal.useModal();
     const [isValidMnemonic, setIsValidMnemonic] = useState(false);
-    const [formData, setFormData] = useState({
-        dirty: true,
-        mnemonic: '',
-    });
 
 
     const handleChange = (e) => {
@@ -74,39 +68,23 @@ const ImportWallet = ({
 
         // Validate mnemonic on change
         setIsValidMnemonic(validateMnemonic(value));
-        setFormData(p => ({ ...p, [name]: value }));
     }
 
 
     const handleImportPhrase = async (e) => {
         e.preventDefault();
 
-        setFormData({
-            ...formData,
-            dirty: false,
-        });
-
-        if (!formData.mnemonic) {
+        if (!isValidMnemonic) {
+            notify({
+                type: "error",
+                message: "Invalid Seed Phrase"
+            });
             return;
         }
 
-        // Event("Category", "Action", "Label")
-        // Track number of created wallets from onboarding
-        // Event('ImportWallet .js', 'Create Wallet', 'Imported');
-        
-        createWallet(formData.mnemonic);        
-        passLoadingStatus("IMPORT WALLET");
-        await sleep(1000);
-        successNotification("Imported Wallet");
-        passLoadingStatus("LOAD USER");
-        await sleep(3000);
-        history.push({
-            pathname: "/",
-            state: { repeatOnboarding: true }
-        });
+        await importWallet(e.target.mnemonic.value);
+        history.push("/select");
     }
-
-    console.log("dirty", formData.dirty, "isvalidmnemonic", isValidMnemonic);
 
     return (
         <ImportWalletCtn>
@@ -117,9 +95,9 @@ const ImportWallet = ({
             </Address>
             <Form
                 id='import-form'
-                validateStatus={!formData.dirty && !formData.mnemonic ? "error" : ""}
+                validateStatus={!isValidMnemonic ? "error" : ""}
                 help={
-                    !formData.mnemonic || !isValidMnemonic
+                        !isValidMnemonic
                         ? 'Valid mnemonic seed phrase required'
                         : ''
                 }
@@ -131,7 +109,7 @@ const ImportWallet = ({
                     name="mnemonic"
                     autoComplete="off"
                     onChange={e => handleChange(e)}
-                    $error={!formData.dirty && !formData.mnemonic}
+                    $error={!isValidMnemonic}
                     required
                 />              
             </Form>

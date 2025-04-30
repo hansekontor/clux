@@ -6,13 +6,12 @@ import PropTypes from 'prop-types';
 import { CopyOutlined } from '@ant-design/icons';
 
 // custom modules
-import PrimaryButton from '@components/PrimaryButton';
-import { successNotification } from '@components/Notifications';
+import Button from '@components/Button';
 
-import useWallet from '@hooks/useWallet';
-
-// util
+// core functions
+import { useApp } from 'blocklotto-sdk';
 import sleep from '@utils/sleep';
+import { useNotifications } from 'blocklotto-sdk';
 
 // assets
 import TicketSvg from '@assets/svgs/ticket_filled.svg';
@@ -44,7 +43,7 @@ const StyledCircle = styled.div`
     align-items: center;
 `;
 
-const Button = styled.button`
+const BaseButton = styled.button`
     background-color: #44405B;
     border-radius: 100px;
     padding: 7px;
@@ -56,7 +55,7 @@ const Button = styled.button`
 	border-style: none;
 	cursor: pointer;
 `;
-const RoundButton = styled(Button)`
+const RoundButton = styled(BaseButton)`
     border-radius: 70px;
     width: 25px;
     padding-right: 10px;
@@ -139,7 +138,7 @@ const Collapsible = styled.div`
 	transition: height 0.5s ease-in-out;
 	width: 95%;
 `;
-const SyncButton = styled(PrimaryButton)`
+const SyncButton = styled(Button)`
 	font-family: "Helvetica";
 	font-size: 14px;
 	font-weight: 600;
@@ -156,7 +155,9 @@ const Ticket = ({
 	ticket, 
 	...props
 }) => {
+	const { setTicketsToRedeem } = useApp();
 	const history = useHistory();
+	const notify = useNotifications();
 
     const [collapsed, setCollapsed] = useState(false);
 	const [height, setHeight] = useState(collapsed ? 0 : undefined);
@@ -178,26 +179,14 @@ const Ticket = ({
     }
     const handleCopy = (copy) => {
         navigator.clipboard.writeText(copy);
-		successNotification("Copied to Clipboard!")
+		notify({message: "Copied to clipboard", type: "success"});
     };
-	const handleRedeemTicket = () => {
+	const handleRedeemTicket = async () => {
 		passLoadingStatus("LOADING TICKET");
-		history.push({
-			pathname: "/waitingroom", 
-			state: { ticketToRedeem: ticket	} 
-		});
-	}
-
-	const TableRows = ticket.details.playerNumbers.map((choice, index) => {
-		return (
-			<TableRow key={index}>
-				<Element key={0}>{choice}</Element>
-				<Element key={1}>{ticket.details.redemption?.opponentNumbers[index]}</Element>
-				<Element key={2}>{3}</Element>
-				<Element key={3}>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
-			</TableRow>			
-		)
-	});                       
+		setTicketsToRedeem([ticket]); 
+		await sleep(1000);
+		history.push("/waitingroom");
+	}                      
 
 	// get redeem utc string
 	let displayTime = false;
@@ -222,16 +211,16 @@ const Ticket = ({
 		displayTime = issueDisplayTime.slice(0,16);
 
 	const primaryHash = ticket.redeemTx ? ticket.redeemTx?.hash : ticket.issueTx?.hash;
-	const displayPlayerNumbers =  ticket.details?.playerNumbers?.join(", ");
-	const displayPayoutAmount = ticket.details?.payoutAmount / 100;
-	const displayResultingNumbers = ticket.details?.game?.resultingNumbers?.join(", ");
+	const displayPlayerNumbers =  ticket.parsed?.playerNumbers?.join(", ");
+	const displayPayoutAmount = ticket.parsed?.payoutAmount / 100;
+	const displayResultingNumbers = ticket.parsed?.game?.resultingNumbers?.join(", ");
 
-	if (ticket.details?.redemption?.opponentNumbers && ticket.details?.playerNumbers && !combinedNumbers) {
+	if (ticket.parsed?.opponentNumbers && ticket.parsed?.playerNumbers && !combinedNumbers) {
 		const combined = [];
 		for (let i = 0; i < 4;i++) {
 			const buf = Buffer.alloc(2);
-			buf.writeUInt8(ticket.details.redemption.opponentNumbers[i], 0);
-			buf.writeUInt8(ticket.details.playerNumbers[i], 1);
+			buf.writeUInt8(ticket.parsed.opponentNumbers[i], 0);
+			buf.writeUInt8(ticket.parsed.playerNumbers[i], 1);
 			const combinedNum = buf.readInt16LE();	
 			combined.push(combinedNum);
 		}
@@ -243,7 +232,7 @@ const Ticket = ({
             <Item onClick={handleTicketOnClick}>
                 <LeftCtn>
                     <StyledCircle>
-						<img src={ticket.details?.payoutAmount > 0 ? WinningTicketSvg : TicketSvg} />
+						<img src={ticket.parsed?.payoutAmount > 0 ? WinningTicketSvg : TicketSvg} />
                     </StyledCircle>
                     <LabelCtn>
                         <Label>Ticket</Label>
@@ -259,9 +248,9 @@ const Ticket = ({
                 </LeftCtn>
                 <RightCtn>
                     {!ticket.redeemTx &&
-						<Button onClick={handleRedeemTicket}>
+						<BaseButton onClick={handleRedeemTicket}>
 							{ticket.issueTx?.height > 0 ? "Redeem" : "Request Redemption"}
-						</Button>
+						</BaseButton>
 					}
                     <RoundButton $rotateDown={collapsed}>
                         <RightArrow src={RightArrowSvg} />
@@ -298,7 +287,7 @@ const Ticket = ({
 									<TicketDataValue>{redeemDisplayTime}</TicketDataValue>
 								</TicketDataItem>								
 							}
-							{ticket.details?.payoutAmount && 
+							{ticket.parsed?.payoutAmount && 
 								<TicketDataItem>
 									<Label>Payout</Label>
 									<TicketDataValue>${displayPayoutAmount}</TicketDataValue>
@@ -319,7 +308,7 @@ const Ticket = ({
 							
 							<Divider />
 							
-							{combinedNumbers && ticket.details?.redemption?.resultingNumbers &&
+							{combinedNumbers &&
 								<>
 									<TableHeader>Ticket Calculations</TableHeader>
 									<Table>
@@ -332,13 +321,13 @@ const Ticket = ({
 											</TableRow>											
 										</thead>
 										<tbody>
-											{ticket.details.playerNumbers.map((choice, index) => {
+											{ticket.parsed.playerNumbers.map((choice, index) => {
 												return (
 													<TableRow key={index}>
 														<Element>{choice}</Element>
-														<Element>{ticket.details?.redemption?.opponentNumbers[index]}</Element>
+														<Element>{ticket.parsed?.opponentNumbers[index]}</Element>
 														<Element>{combinedNumbers[index]}</Element>
-														<Element>{ticket.details?.redemption?.resultingNumbers[index]}</Element>
+														<Element>{ticket.parsed?.resultingNumbers[index]}</Element>
 													</TableRow>			
 												)
 											})}
@@ -346,7 +335,7 @@ const Ticket = ({
 												<Element key={0}></Element>
 												<Element key={1}></Element>
 												<Element key={2}></Element>
-												<Element key={3}><b>{ticket.details?.redemption?.resultingNumbers?.reduce((acc, number) => acc+number, 0)}</b></Element>
+												<Element key={3}><b>{ticket.parsed?.resultingNumbers?.reduce((acc, number) => acc+number, 0)}</b></Element>
 											</TableRow>
 										</tbody>
 									</Table>							
@@ -383,15 +372,11 @@ const TicketHistoryCtn = styled.div`
 const TicketHistory = ({
 	passLoadingStatus,
     tickets,
-	passRedeemAll
 }) => {
-	const { forceWalletUpdate } = useWallet();
+	const { setTicketsToRedeem, walletUpdateAvailable, updateWallet, unredeemedTickets } = useApp();
 	const history = useHistory();
 
-	const unredeemed = tickets.filter(ticket => !ticket.redeemTx);
-	const confirmedUnredeemed = unredeemed.filter(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0);
-
-	const [walletSynced, setWalletSynced] = useState(false);
+	const confirmedUnredeemed = unredeemedTickets.filter(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0);
 
 	console.log("# of Tickets in History", tickets.length)
 	const ticketList = tickets.map((ticket, index) => {
@@ -404,38 +389,17 @@ const TicketHistory = ({
 		)
 	});
 
-	// turn off redeem all if it was still enabled from an earlier redemption
-	useEffect(() => {
-		passRedeemAll(false);
-	}, [])
-
-	const handleSyncWallet = async () => {
-		passLoadingStatus("LOADING WALLET");
-		await forceWalletUpdate();
-		await sleep(3000);
-		setWalletSynced(true);
-		passLoadingStatus(false);
-	}
 	const handleRedeemAll = () => {
-		passRedeemAll(true);
 		passLoadingStatus("LOADING TICKET");
-		const confirmedUnredeemedTx = confirmedUnredeemed[0];
-		const unconfirmedUnredeemedTx = unredeemed[0];
-		const ticketToRedeem = confirmedUnredeemedTx || unconfirmedUnredeemedTx;
-
-		if (ticketToRedeem) {
-			history.push({
-				pathname: "/waitingroom",
-				state: { ticketToRedeem }
-			})			
-		}
+		setTicketsToRedeem(confirmedUnredeemed);
+		history.push("/waitingroom");
 	}
 
     return (
 		<VarHeightCtn>
 			<TicketHistoryCtn>
-				{tickets.length > 2 && !walletSynced &&
-						<SyncButton onClick={handleSyncWallet}>
+				{walletUpdateAvailable &&
+						<SyncButton onClick={updateWallet}>
 							Sync Wallet
 						</SyncButton>	
 				}

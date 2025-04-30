@@ -1,9 +1,8 @@
 import styled from 'styled-components';
-import FadeInOut from '@components/FadeInOut';
-import PrimaryButton from '@components/PrimaryButton';
-import { Scrollable } from '@components/Container';
-import { textItem } from '@components/CssUtil';
-
+import { FadeInOut } from '@components/Animations';
+import Button from '@components/Button';
+import { Scrollable } from '@components/Common';
+import Typography from '@components/Typography';
 
 const StyledFadeInOut = styled(FadeInOut)`
     width: 100%;
@@ -23,8 +22,9 @@ const WalletCtn = styled(Scrollable)`
         text-indent: 0;
     }
 `;
-const Item = styled.div`
-    ${textItem}
+const Item = styled(Typography).attrs({
+    variant: "textItem"
+})`
     border-radius: 7px;
     background-color:${props => props.theme.app.background};
     min-height: 60px;
@@ -98,7 +98,7 @@ const SeedPhraseCtn = styled.div`
         text-align: center;
     }
 `;
-const StyledPrimaryButton = styled(PrimaryButton)`
+const StyledPrimaryButton = styled(Button)`
 	font-family: "Helvetica";
 	font-size: 14px;
 	font-weight: 600;
@@ -108,18 +108,18 @@ const CopyButton = styled(StyledPrimaryButton)`
 `;
 
 export {
-    StyledFadeInOut, 
-    WalletCtn, 
-    Item, 
-    Circle, 
-    LabelCtn, 
+    StyledFadeInOut,
+    WalletCtn,
+    Item,
+    Circle,
+    LabelCtn,
     Link,
-    Value, 
-    Label, 
-    SmallItem, 
+    Value,
+    Label,
+    SmallItem,
     ImgButton,
-    CopyboardIcon, 
-    SeedPhraseCtn, 
-    StyledPrimaryButton, 
+    CopyboardIcon,
+    SeedPhraseCtn,
+    StyledPrimaryButton,
     CopyButton
 }
