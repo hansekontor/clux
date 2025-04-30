@@ -373,7 +373,7 @@ const TicketHistory = ({
 	passLoadingStatus,
     tickets,
 }) => {
-	const { setTicketsToRedeem, walletUpdateAvailable, updateWallet, unredeemedTickets } = useApp();
+	const { setTicketsToRedeem, unredeemedTickets } = useApp();
 	const history = useHistory();
 
 	const confirmedUnredeemed = unredeemedTickets.filter(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0);
@@ -398,11 +398,6 @@ const TicketHistory = ({
     return (
 		<VarHeightCtn>
 			<TicketHistoryCtn>
-				{walletUpdateAvailable &&
-						<SyncButton onClick={updateWallet}>
-							Sync Wallet
-						</SyncButton>	
-				}
 				{tickets.find(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0) &&
 					<RedeemButton onClick={handleRedeemAll}>
 						Redeem All

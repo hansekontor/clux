@@ -15,7 +15,8 @@ import MerchantSvg from '@assets/svgs/merchant_icon.svg';
 export default function Navigation({
     title,
     merchantTag,
-    handleOnClick
+    handleOnClick,
+    children
 }) {
     return (
         <StyledAgreeHeader>
@@ -30,6 +31,7 @@ export default function Navigation({
                     <StyledMerchantName>Marianas Blockchain Lottery</StyledMerchantName>
                 </StyledMerchant>
             )}
+            {children}
         </StyledAgreeHeader>
     )
 }

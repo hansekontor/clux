@@ -12,6 +12,7 @@ import Navigation from '@components/Navigation';
 import Footer, { SupportBar } from '@components/Footer';
 import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Icons';
 import Typography from '@components/Typography';
+import Button from '@components/Button';
 
 import TicketHistory from './components/TicketHistory';
 import Email from './components/Email';
@@ -35,7 +36,7 @@ const Wallet = ({
 }) => {
     const history = useHistory();
     const location = useLocation();
-    const { wallet, unredeemedTickets } = useApp();
+    const { wallet, unredeemedTickets, updateWallet, walletUpdateAvailable } = useApp();
     const walletState = getWalletState(wallet);
     const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
@@ -98,7 +99,16 @@ const Wallet = ({
                     handleOnClick={handleReturn}
                     title={selection ? selection : title}
                     light={true}
-                />
+                >
+                    {walletUpdateAvailable && selection === "Tickets" &&
+                        <Button 
+                            variant="tertiary"
+                            onClick={updateWallet}
+                        >
+                            Sync Wallet
+                        </Button>
+                    }
+                </Navigation>
 
                 <S.WalletCtn>
                     {!selection && (
