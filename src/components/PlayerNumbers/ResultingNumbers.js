@@ -57,25 +57,29 @@ export default function ResultingNumbers({
 
 
     // hooks reveal one number every 700ms
-    useEffect(async () => {
-        if (active) {
-            let stage = 0;
-            let sum = 0;
-            sum += sortedNumberArray[stage][1];
-            revealNumber(stage, sum);
-            stage = 1;
-            await sleep(900);
-            sum += sortedNumberArray[stage][1];
-            revealNumber(stage, sum);
-            stage = 2;
-            await sleep(900);
-            sum += sortedNumberArray[stage][1];
-            revealNumber(stage, sum);
-            stage = 3;
-            await sleep(900);
-            sum += sortedNumberArray[stage][1];
-            revealNumber(stage, sum);
-        }
+    useEffect(() => {
+        const revealNumbersSequentially = async () => {
+            if (active) {
+                let stage = 0;
+                let sum = 0;
+                sum += sortedNumberArray[stage][1];
+                revealNumber(stage, sum);
+                stage = 1;
+                await sleep(900);
+                sum += sortedNumberArray[stage][1];
+                revealNumber(stage, sum);
+                stage = 2;
+                await sleep(900);
+                sum += sortedNumberArray[stage][1];
+                revealNumber(stage, sum);
+                stage = 3;
+                await sleep(900);
+                sum += sortedNumberArray[stage][1];
+                revealNumber(stage, sum);
+            }
+        };
+
+        revealNumbersSequentially();
     }, [active])
 
 

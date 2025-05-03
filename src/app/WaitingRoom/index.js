@@ -36,18 +36,21 @@ const WaitingRoom = () => {
 	}, []);
 
 	// wait until ticket is redeemable
-	// useEffect(async () => {
-	// 	if (Object.keys(activeTicket).length > 0) {
-	// 		const isRedeemableTicket = await checkRedeemability(activeTicket, true);
-	// 		if (isRedeemableTicket) {
-	// 			setIsRedeemable(true);
-	// 		} else {
-	// 			setIsRedeemable(false);
-	// 		}
-	// 	} else {
-	// 		setIsRedeemable(false);
-	// 	}
-	// }, [activeTicket])
+	useEffect(() => {
+		const checkTicketRedeemability = async () => {
+			if (Object.keys(activeTicket).length > 0) {
+				const isRedeemableTicket = await checkRedeemability(activeTicket, true);
+				if (isRedeemableTicket) {
+					setIsRedeemable(true);
+				} else {
+					setIsRedeemable(false);
+				}
+			} else {
+				setIsRedeemable(false);
+			}
+		};
+		checkTicketRedeemability();
+	}, [activeTicket])
 
 	// handlers
 	const handleButtonClick = async () => {
