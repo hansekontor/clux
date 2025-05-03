@@ -62,27 +62,36 @@ const Game = () => {
 	}, [])
 
 	// slide-in and fadeout animation for versus
-	useEffect(async () => {
-		await sleep(1000);
-		setVersus(true);
+	useEffect(() => {
+		const handleVersus = async () => {
+			await sleep(1000);
+			setVersus(true);
+		};
+		handleVersus();
 	}, [])
 
 	// switch from fight to celebration animation
-	useEffect(async () => {
-		if (animationStage === "fight") {
-			await sleep(4000);
-			setAnimationStage("celebration");
-			document.getElementById(labels.celebration).startCelebrationAnimation();
-		}
+	useEffect(() => {
+		const handleAnimationStage = async () => {
+			if (animationStage === "fight") {
+				await sleep(4000);
+				setAnimationStage("celebration");
+				document.getElementById(labels.celebration).startCelebrationAnimation();
+			}
+		};
+		handleAnimationStage();
 	}, [animationStage])
 
 	// go to result page automatically
-	useEffect(async () => {
-		if (animationStage === "celebration") {
-			await sleep(3000);
-			setLoadingStatus("LOADING RESULT");
-			handleResultRedirect();
-		}
+	useEffect(() => {
+		const handleCelebration = async () => {
+			if (animationStage === "celebration") {
+				await sleep(3000);
+				setLoadingStatus("LOADING RESULT");
+				handleResultRedirect();
+			}
+		};
+		handleCelebration();
 	}, [animationStage])
 
 	const handlePlay = async () => {
