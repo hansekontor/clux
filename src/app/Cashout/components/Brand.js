@@ -34,14 +34,17 @@ export default function Brand() {
         >
             <Select
                 options={tilloSelection}
-                onChange={handleTilloBrandChange}
+                onChange={(item) => handleTilloBrandChange(item.brand)}
                 name="brand"
             />
 
             {brandData && (
-                <p>
-                    {brandData.description}
-                </p>
+                <>
+                    <img src={brandData.logo} />
+                    <p>
+                        {brandData.description}
+                    </p>                
+                </>
             )}
         </Form>
     )
