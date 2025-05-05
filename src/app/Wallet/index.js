@@ -101,12 +101,12 @@ const Wallet = ({
                     light={true}
                 >
                     {walletUpdateAvailable && selection === "Tickets" &&
-                        <Button 
+                        <S.SyncButton 
                             variant="tertiary"
                             onClick={updateWallet}
                         >
                             Sync Wallet
-                        </Button>
+                        </S.SyncButton>
                     }
                 </Navigation>
 

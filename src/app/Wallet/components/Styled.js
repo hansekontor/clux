@@ -106,6 +106,9 @@ const StyledPrimaryButton = styled(Button)`
 const CopyButton = styled(StyledPrimaryButton)`
 	background-color: #F6F6F6;
 `;
+const SyncButton = styled(Button)`
+    margin-right: 20px;
+`;
 
 export {
     StyledFadeInOut,
@@ -121,5 +124,6 @@ export {
     CopyboardIcon,
     SeedPhraseCtn,
     StyledPrimaryButton,
-    CopyButton
+    CopyButton,
+    SyncButton,
 }
