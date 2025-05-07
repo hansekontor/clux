@@ -373,10 +373,8 @@ const TicketHistory = ({
 	passLoadingStatus,
     tickets,
 }) => {
-	const { setTicketsToRedeem, unredeemedTickets } = useApp();
+	const { setTicketsToRedeem, redeemableTickets } = useApp();
 	const history = useHistory();
-
-	const confirmedUnredeemed = unredeemedTickets.filter(ticket => !ticket.redeemTx && ticket.issueTx?.height > 0);
 
 	console.log("# of Tickets in History", tickets.length)
 	const ticketList = tickets.map((ticket, index) => {
@@ -391,7 +389,7 @@ const TicketHistory = ({
 
 	const handleRedeemAll = () => {
 		passLoadingStatus("LOADING TICKET");
-		setTicketsToRedeem(confirmedUnredeemed);
+		setTicketsToRedeem(redeemableTickets);
 		history.push("/waitingroom");
 	}
 

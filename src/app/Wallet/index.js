@@ -36,11 +36,11 @@ const Wallet = ({
 }) => {
     const history = useHistory();
     const location = useLocation();
-    const { wallet, unredeemedTickets, updateWallet, walletUpdateAvailable } = useApp();
+    const { wallet, redeemableTickets, updateWallet, walletUpdateAvailable } = useApp();
     const walletState = getWalletState(wallet);
     const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
-    const unredeemedIndicator = unredeemedTickets.length;
+    const ticketIndicator = redeemableTickets.length;
     const notify = useNotifications();
 
     useEffect(() => {
@@ -126,7 +126,7 @@ const Wallet = ({
                             {tickets.length > 0 && (
                                 <S.Item onClick={handleToTickets}>
                                     <S.LabelCtn>
-                                        <TicketIcon indicator={unredeemedIndicator} />
+                                        <TicketIcon indicator={ticketIndicator} />
                                         <S.Label>Your Tickets</S.Label>
                                     </S.LabelCtn>
                                     <S.ImgButton src={RightArrowSvg} />

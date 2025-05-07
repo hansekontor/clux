@@ -7,9 +7,9 @@ import Balance from '../Balance';
 import { useApp } from 'blocklotto-sdk';
 
 export default function SupportBar({ returnTo }) {
-    const { unredeemedTickets } = useApp();
+    const { redeemableTickets } = useApp();
 
-    const unredeemedTicketsCount = unredeemedTickets.length
+    const ticketIndicator = redeemableTickets.length;
 
     const handleCnmiRedirect = () => {
         window.location.href = "https://example.com";
@@ -17,7 +17,7 @@ export default function SupportBar({ returnTo }) {
 
     return (
         <StyledSupportBar>
-            <WalletButton returnTo={returnTo} indicator={unredeemedTicketsCount} />
+            <WalletButton returnTo={returnTo} indicator={ticketIndicator} />
             <HelpButton />
             <Balance />
             <CashoutButton returnTo={returnTo} />
