@@ -50,7 +50,7 @@ const Game = () => {
 	useEffect(() => {
 		if (!activeTicket) {
 			setLoadingStatus("TICKET NOT FOUND");
-			sleep(3000);
+			sleep(1000);
 			history.push("/select");
 		} else if (!activeTicket.parsed?.resultingNumbers) {
 			setLoadingStatus("TICKET DATA NOT FOUND");
