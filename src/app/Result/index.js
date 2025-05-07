@@ -31,8 +31,10 @@ const Result = () => {
     // redirect if ticket data missing
     useEffect(() => {
         if (!activeTicket) {
+            sleep(1000);
             history.push("/select");
-        } else if (!activeTicket.parsed?.tier) {
+        } else if (!activeTicket.parsed) {
+            sleep(1000);
             history.push("/select");
         }
     },[])
