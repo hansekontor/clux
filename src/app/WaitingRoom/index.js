@@ -10,9 +10,9 @@ import PlayerNumbers from '@components/PlayerNumbers';
 import Button from '@components/Button';
 import Background from './components/Background';
 import FlexGrow from './components/FlexGrow';
- 
+
 // core functions
-import { useApp } from 'blocklotto-sdk';
+import { useApp, useNotifications } from 'blocklotto-sdk';
 
 // util
 import animationLabels from '@utils/animations';
@@ -25,6 +25,7 @@ import LockerPng from '@assets/images/locker.png';
 const WaitingRoom = () => {
 	const { playerNumbers, ticketsToRedeem, setGameTickets, checkRedeemability, redeemTicket } = useApp();
 	const history = useHistory();
+	const notify = useNotifications();
 
 	// states
 	const [isRedeemable, setIsRedeemable] = useState(false);
@@ -38,7 +39,11 @@ const WaitingRoom = () => {
 	// wait until ticket is redeemable
 	useEffect(() => {
 		const checkTicketRedeemability = async () => {
-			if (Object.keys(activeTicket).length > 0) {
+			if (activeTicket?.redeemTx?.hash) {
+				notify({ type: "error", message: "Ticket has already been redeemed."});
+				history.push("/select");
+				setIsRedeemable(false);
+			} else if (activeTicket?.issueTx?.hash) {
 				const isRedeemableTicket = await checkRedeemability(activeTicket, true);
 				if (isRedeemableTicket) {
 					setIsRedeemable(true);
@@ -49,7 +54,10 @@ const WaitingRoom = () => {
 				setIsRedeemable(false);
 			}
 		};
-		checkTicketRedeemability();
+
+		if (activeTicket) {
+			checkTicketRedeemability();
+		}
 	}, [activeTicket])
 
 	// handlers
