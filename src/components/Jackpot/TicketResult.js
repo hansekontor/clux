@@ -13,7 +13,7 @@ export default function TicketResult({amount}) {
         <StyledResultContainer>
             <StyledJackpot>
                 <StyledJackpotText>
-                    {amount > 0 ? "Winner" : "Loser"}
+                    {amount > 0 ? "Winner" : "Better luck next time"}
                     <StyledAmount>${amount}</StyledAmount>
                 </StyledJackpotText>
                 {amount > 0 && <StyledCoinBagIcon src={CoinBagSvg} />}
