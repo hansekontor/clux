@@ -86,7 +86,7 @@ const Result = () => {
                 </FlashContainer>
 
                 <Ticket>
-                    {amount && resultingNumbers && (
+                    {(amount >= 0 && resultingNumbers?.length === 4) && (
                         <>
                             <TicketResult
                                 amount={amount}
