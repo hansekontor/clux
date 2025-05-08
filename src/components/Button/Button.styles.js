@@ -27,6 +27,7 @@ export const StyledButtonTertiary = styled.button`
     color: ${props => props.theme.buttons.tertiary.color};
     font-weight: 600;
     font-family: '${props => props.theme.buttons.tertiary.font}';
+    cursor: pointer;
 `;
 
 export const StyledReturnButtonContainer = styled.div`
