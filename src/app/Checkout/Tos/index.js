@@ -35,14 +35,14 @@ export default function Tos() {
             />
             <Scrollable>
                 <ContentHeader>
-                    <b>You are purchasing a lottery ticket</b> for the Marianas Blockchain Lottery, the official state lottery of the Commonwealth of the Northern Mariana Islands.
+                    <b>You are purchasing a lottery ticket</b> for Block Lotto.
                 </ContentHeader>
                 <List>
                     <Text>
                         The seller of the digital good in this transaction is {" "}
                         <Link href={"https://nmrai.com"} rel="noopener noreferrer" target="_blank">
                             {' Marianas Rai Corp.'}
-                        </Link>, the official licensed operator of the lottery.
+                        </Link>, the operator of the lottery.
                     </Text>
                     <Text>
                         This purchase is for a lottery ticket only. It is not a purchase of digital currency, credits on any third-party platform, or any other product or service.
