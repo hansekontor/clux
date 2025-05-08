@@ -35,7 +35,7 @@ export default function Tos() {
             />
             <Scrollable>
                 <ContentHeader>
-                    <b>You are purchasing a lottery ticket</b> for Block Lotto.
+                    <b>You are purchasing a lottery ticket for Block Lotto. </b>
                 </ContentHeader>
                 <List>
                     <Text>
