@@ -1,5 +1,5 @@
 // node modules
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 import { Flash } from 'react-ruffle';
 
@@ -26,7 +26,7 @@ import PlayerNumbers from "./components/PlayerNumbers";
 
 const Select = () => {
     const history = useHistory();
-    const { setTicketsToRedeem } = useApp();
+    const { setTicketsToRedeem, setGameTickets } = useApp();
 
     const [fadeOut, setFadeOut] = useState(false);
 
@@ -35,9 +35,14 @@ const Select = () => {
     const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
+    // reset ticketsToRedeem and gameTickets
+    useEffect(() => {
+        setTicketsToRedeem([]);
+        setGameTickets([]);
+    }, []);
+
     const handleBuyTicket = async () => {
         setFadeOut(true);
-        setTicketsToRedeem([]);
         await sleep(300);
 
         history.push('/checkout');
