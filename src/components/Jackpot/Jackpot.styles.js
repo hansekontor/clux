@@ -46,6 +46,7 @@ export const StyledJackpotText = styled(Typography)`
 export const StyledAmount = styled.div`
     font-family: 'Sequel 100 Wide 95';
     font-size: 20px;
+    padding-top: 4px;
 `;
 
 export const StyledCoinBagIcon = styled.img`
@@ -68,4 +69,8 @@ export const StyledMonthlyJackpotSlide = styled(StyledSlide)`
 export const StyledResultContainer = styled(StyledDailyJackpotSlide)`
     min-height: 95px;
     border-radius: 24px 24px 0px 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 `;

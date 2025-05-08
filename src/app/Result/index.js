@@ -14,7 +14,7 @@ import Footer from '@components/Footer';
 import { TicketResult } from '@components/Jackpot';
 import PlayerNumbers from '@components/PlayerNumbers';
 import { WhiteCashoutButton, WhiteTicketButton } from '@components/Button';
-import Scrollable from './components/Scrollable';
+import FlexGrow from './components/FlexGrow';
 import FlashContainer from './components/FlashContainer';
 import StyledFlash from './components/StyledFlash';
 import Ticket from './components/Ticket';
@@ -62,7 +62,7 @@ const Result = () => {
     return (
         <>
             <Header $transparent={true} />
-            <Scrollable>
+            <FlexGrow>
                 <FlashContainer>
                     {animationLabels &&
                         <StyledFlash
@@ -102,7 +102,7 @@ const Result = () => {
                     <WhiteCashoutButton />
                     <WhiteTicketButton />
                 </ButtonContainer>
-            </Scrollable>
+            </FlexGrow>
             <Footer
                 // directly go to select from result because result can not displayed correctly afterwards
                 origin={"/select"}
