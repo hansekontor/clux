@@ -12,7 +12,7 @@ export default function SupportBar({ returnTo }) {
     const ticketIndicator = redeemableTickets.length;
 
     const handleCnmiRedirect = () => {
-        window.location.href = "https://example.com";
+        window.location.href = "https://lottery.mp";
     }
 
     return (
