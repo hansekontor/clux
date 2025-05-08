@@ -10,6 +10,7 @@ import PlayerNumbers from '@components/PlayerNumbers';
 import Button from '@components/Button';
 import Background from './components/Background';
 import FlexGrow from './components/FlexGrow';
+import Backup from './components/Backup';
 
 // core functions
 import { useApp, useNotifications } from 'blocklotto-sdk';
@@ -23,13 +24,16 @@ import LockerPng from '@assets/images/locker.png';
 
 
 const WaitingRoom = () => {
-	const { playerNumbers, ticketsToRedeem, setGameTickets, checkRedeemability, redeemTicket } = useApp();
+	const { playerNumbers, ticketsToRedeem, setGameTickets, checkRedeemability, redeemTicket, isFirstTicket } = useApp();
 	const history = useHistory();
 	const notify = useNotifications();
+
+	console.log("isFirstTicket", isFirstTicket);
 
 	// states
 	const [isRedeemable, setIsRedeemable] = useState(false);
 	const [activeTicket, setActiveTicket] = useState({});
+	const [showBackup, setShowBackup] = useState(isFirstTicket);
 
 	// set active ticket to state
 	useEffect(() => {
@@ -70,32 +74,45 @@ const WaitingRoom = () => {
 		}
 	}
 
+	const handleCloseBackup = () => {
+		setShowBackup(false);
+	}
+
 	const playerNumbersFromTicket = activeTicket?.parsed?.playerNumbers;
 	const animationName = animationLabels.CLUX.IDLE.SHADOWBOX;
 	const animationPath = animationLabels.PUBLICPATH + animationName;
 	const buttonText = isRedeemable ? "Redeem Ticket" : "Wait...";
 
 	return (
-		<>
+		<>	
+
 			<Background src={LockerPng} />
 			<Header $transparent={true} />
-			<FlexGrow>
-				<Flash
-					src={animationPath}
-					config={{
-						autoplay: "on",
-						unmuteOverlay: "hidden",
-						splashScreen: false,
-						contextMenu: "off",
-						allowScriptAccess: true,
-						scale: "exactFit",
-						wmode: "transparent",
-						preferredRenderer: "canvas"
-					}}
-					id={animationName}
-				>
-					<div></div>
-				</Flash>
+			<FlexGrow>			
+				
+				{showBackup ? (
+					<Backup 
+						close={handleCloseBackup}
+					/>
+				) : (
+					<Flash
+						src={animationPath}
+						config={{
+							autoplay: "on",
+							unmuteOverlay: "hidden",
+							splashScreen: false,
+							contextMenu: "off",
+							allowScriptAccess: true,
+							scale: "exactFit",
+							wmode: "transparent",
+							preferredRenderer: "canvas"
+						}}
+						id={animationName}
+					>
+						<div></div>
+					</Flash>					
+				)}
+
 			</FlexGrow>
 			<Footer variant="empty">
 				<PlayerNumbers overrideNumbers={playerNumbersFromTicket ? playerNumbersFromTicket : playerNumbers} />

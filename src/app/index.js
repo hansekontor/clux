@@ -14,7 +14,6 @@ import { CashoutProvider } from 'blocklotto-sdk';
 // react components
 const Select = lazy(() => import('./Select'));
 const Checkout = lazy(() => import('./Checkout'));
-const Backup = lazy(() => import('./Backup'));
 const WaitingRoom = lazy(() => import('./WaitingRoom'));
 const Game = lazy(() => import('./Game'));
 const Result = lazy(() => import('./Result'));
@@ -71,9 +70,6 @@ const App = () => {
 								</Route>
 								<Route path="/result">
 									<Result />
-								</Route>
-								<Route path="/backup">
-									<Backup />
 								</Route>
 								<Route path="/wallet">
 									<Wallet

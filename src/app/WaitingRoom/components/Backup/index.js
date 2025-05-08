@@ -18,10 +18,11 @@ import ModalContainer from './components/ModalContainer';
 import Modal from './components/Modal';
 import CopyboardIcon from './components/CopyboardIcon';
 
-const Backup = () => {
+const Backup = ({
+    close
+}) => {
     const { wallet } = useApp();
     const notify = useNotifications();
-    const history = useHistory();
 
     const handleCopySeedPhrase = () => {
         navigator.clipboard.writeText(wallet.mnemonic);
@@ -30,7 +31,7 @@ const Backup = () => {
 
     const handleBackedUp = (e) => {
         e.preventDefault();
-        history.push('/waitingroom');
+        close();
     }
 
     return (
