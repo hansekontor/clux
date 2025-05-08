@@ -181,7 +181,8 @@ const Ticket = ({
         navigator.clipboard.writeText(copy);
 		notify({message: "Copied to clipboard", type: "success"});
     };
-	const handleRedeemTicket = async () => {
+	const handleRedeemTicket = async (e) => {
+		e.stopPropagation();
 		passLoadingStatus("LOADING TICKET");
 		setTicketsToRedeem([ticket]); 
 		await sleep(1000);
@@ -248,7 +249,7 @@ const Ticket = ({
                 </LeftCtn>
                 <RightCtn>
                     {!ticket.redeemTx &&
-						<BaseButton onClick={handleRedeemTicket}>
+						<BaseButton onClick={(e) => handleRedeemTicket(e)}>
 							{ticket.issueTx?.height > 0 ? "Redeem" : "Request Redemption"}
 						</BaseButton>
 					}
