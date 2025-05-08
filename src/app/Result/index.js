@@ -40,7 +40,7 @@ const Result = () => {
     },[])
 
     // DOM variables
-    const amount = activeTicket.parsed?.actualPayoutNum / 100;
+    const amount = activeTicket.parsed?.payoutAmountNum / 100;
     const resultingNumbers = activeTicket.parsed?.resultingNumbers;
     const buttonText = redemptionsOutstanding ? "Redeem Next Ticket" : "Play Again";
     const isWinner = amount > 0;
