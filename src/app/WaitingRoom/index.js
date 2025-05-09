@@ -43,11 +43,16 @@ const WaitingRoom = () => {
 	// wait until ticket is redeemable
 	useEffect(() => {
 		const checkTicketRedeemability = async () => {
-			if (activeTicket?.redeemTx?.hash) {
+			console.log("checkTicketRedeemability");
+			if (activeTicket.redeemTx?.hash) {
 				notify({ type: "error", message: "Ticket has already been redeemed."});
 				history.push("/select");
 				setIsRedeemable(false);
-			} else if (activeTicket?.issueTx?.hash) {
+			} else if (activeTicket.issueTx?.height > 0) {
+				console.log("issueTx is already mined");
+				setIsRedeemable(true);
+			} else if (activeTicket.issueTx?.hash) {
+				console.log("check if ticket is mined");
 				const isRedeemableTicket = await checkRedeemability(activeTicket, true);
 				if (isRedeemableTicket) {
 					setIsRedeemable(true);
