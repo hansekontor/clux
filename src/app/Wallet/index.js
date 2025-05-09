@@ -56,7 +56,6 @@ const Wallet = ({
     }
     const handleToCashout = async () => {
         passLoadingStatus("LOADING WALLET");
-        await sleep(2000);
         history.push("/cashout");
     }
     const handleToTickets = () => {
@@ -72,16 +71,16 @@ const Wallet = ({
         setSelection("Import Wallet");
     }
     const handleToTos = () => {
-        console.log("to terms of service")
+        window.location.href = "https://lottery.mp";
     }
     const handleToPrivacyPolicy = () => {
-        console.log("to privacy policy");
+        window.location.href = "https://lottery.mp";
     }
     const handleToRegulation = () => {
-        console.log("to regulation");
+        window.location.href = "https://lottery.mp";
     }
     const handleToResponsibleGaming = () => {
-        console.log("to responsible gaming");
+        window.location.href = "https://lottery.mp";
     }
 
     const handleCopySeedPhrase = () => {
