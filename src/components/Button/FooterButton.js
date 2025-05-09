@@ -28,7 +28,7 @@ WalletButton.propTypes = {
 
 export const HelpButton = () => {
     const handleToHelp = () => {
-        window.location.href = "https://block.lotto";
+        window.location.href = "https://lottery.mp";
     }
 
     return (
