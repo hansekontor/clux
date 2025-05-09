@@ -19,7 +19,8 @@ import Subscript from './components/Subscript';
 export default function Kyc() {
     const { handleKYC } = useCheckout();
 
-    const handleSuccess = (message) => {
+    const handleSuccess = async (message) => {
+        notify({ type: "success", message: "KYC successful"});
     }
 
     const handleError = (message) => {
@@ -50,7 +51,7 @@ export default function Kyc() {
                     </BottomItem>
                     <Subscript>Total time 2 minutes</Subscript>
                 </Container>
-                <Button onClick={e => handleKYC(e, handleSuccess, handleError)}>Continue</Button>
+                <Button onClick={e => handleKYC(e)}>Continue</Button>
             </FlexGrow>
         </>
     )
