@@ -4,7 +4,7 @@ import 'react-range-slider-input/dist/style.css';
 import Form from './Form';
 
 // core functions
-import { useCashout } from 'blocklotto-sdk';
+import { useCashout, useNotifications } from 'blocklotto-sdk';
 
 export default function Brand() {
     const { 
@@ -15,17 +15,22 @@ export default function Brand() {
         handleTilloBrandChange,
         getGiftcardLink,
     } = useCashout();
+    const notify = useNotifications()
 
     const handleBrandSubmit = async (e) => {
         e.preventDefault();
 
         const brand = e.target.brand.value;
 
-        const link = await getGiftcardLink(brand);
+        const link = await getGiftcardLink(brand, handleGiftcardError);
 
         if (link) {
             setTilloStage("giftcard");
         }
+    }
+
+    const handleGiftcardError = () => {
+        notify({ type: "error", message: "Giftcard API Error"});
     }
 
     return (

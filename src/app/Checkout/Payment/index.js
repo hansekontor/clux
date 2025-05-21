@@ -2,7 +2,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom';
 
 // core functions
-import { useCheckout } from 'blocklotto-sdk';
+import { useCheckout, useNotifications } from 'blocklotto-sdk';
 
 // custom react components
 import Navigation from '@components/Navigation';
@@ -30,6 +30,7 @@ const fiatPurchaseButtonText = "Pay";
 
 export default function Cart() {
     const history = useHistory();
+    const notify = useNotifications();
 
     const {
         showPaymentForm,
@@ -38,7 +39,7 @@ export default function Cart() {
         ticketQuantity,
         paymentProcessor,
         maxEtokenTicketQuantity,
-        handleConfirmation,
+        handlePayment,
         handlePaymentMethod,
         setTicketQuantity,
         setShowPaymentForm,
@@ -47,6 +48,14 @@ export default function Cart() {
     const handleReturn = () => {
         const previousPath = "/select";
         history.push(previousPath);
+    }
+
+    const handlePaymentSuccess = () => {
+        notify({ type: "success", message: "Successful purchase!"});
+    }
+
+    const handlePaymentError = () => {
+        notify( { type: "error", message: "API Error. Try again"});
     }
 
     return (
@@ -109,7 +118,7 @@ export default function Cart() {
 
             <Footer variant="empty">
                 <FooterBackground variant={"secondary"} />
-                <Button onClick={handleConfirmation}>
+                <Button onClick={() => handlePayment(handlePaymentSuccess, handlePaymentError)}>
                     Pay
                 </Button>
             </Footer>
