@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined, QrcodeOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
 import {
     StyledAlertContainer,
@@ -184,5 +184,13 @@ export const CardIconBox = () => {
             <img src={MastercardIconSvg} />
             <img src={VisaIconSvg} />
         </StyledCardIcons>
+    )
+}
+
+export const QrCodeIcon = () => {
+    return (
+        <StyledSmallCircle>
+            <QrcodeOutlined />
+        </StyledSmallCircle>
     )
 }

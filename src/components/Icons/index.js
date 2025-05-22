@@ -16,7 +16,8 @@ export {
     KeyIcon,
     LightWalletIcon,
     EnvelopeIcon,
-    CardIconBox
+    CardIconBox,
+    QrCodeIcon,
 } from './Icons';
 
 export { StyledLoadingBlock as LoadingBlock } from './Icons.styles';

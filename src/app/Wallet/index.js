@@ -10,7 +10,7 @@ import SeedPhrase from '@components/SeedPhrase';
 import Header from '@components/Header';
 import Navigation from '@components/Navigation';
 import Footer, { SupportBar } from '@components/Footer';
-import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon } from '@components/Icons';
+import { BillIcon, TicketIcon, ContactIcon, KeyIcon, LightWalletIcon, EnvelopeIcon, QrCodeIcon } from '@components/Icons';
 import Typography from '@components/Typography';
 import Button from '@components/Button';
 
@@ -66,6 +66,9 @@ const Wallet = ({
     };
     const handleChangeEmail = () => {
         setSelection("Email");
+    }
+    const handleToAffiliate = () => {
+        history.push("/affiliate");
     }
     const handleImportWallet = () => {
         setSelection("Import Wallet");
@@ -172,6 +175,13 @@ const Wallet = ({
                                     <S.ImgButton src={PencilIconSvg} />
                                 </S.Item>
                             }
+                            <S.Item onClick={handleToAffiliate}>
+                                <S.LabelCtn>
+                                    <QrCodeIcon />
+                                    <S.Label>Affiliate</S.Label>
+                                </S.LabelCtn>
+                                <S.ImgButton src={RightArrowSvg} />
+                            </S.Item>
 
                             <S.SmallItem onClick={handleImportWallet}>
                                 <S.Label>
