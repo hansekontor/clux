@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { LeftOutlined } from '@ant-design/icons';
@@ -15,7 +16,7 @@ const HeaderContainer = styled.div`
     top: 0;
     left: 0;
     z-index: 3;
-    background-color: ${({ theme }) => theme.select.background};
+    background-color: ${({ theme }) => theme.footer.background};
     box-sizing: border-box;
 `;
 
@@ -33,9 +34,14 @@ export const HeaderTitle = styled.div`
 `;
 
 export default function Header() {
+    const history = useHistory();
+
+    const handleToWallet = () => {
+        history.push("/wallet");
+    }
     return (
         <HeaderContainer>
-            <IconWrapper>
+            <IconWrapper onClick={handleToWallet}>
                 <LeftOutlined style={{ color: 'white' }} />
             </IconWrapper>
             <HeaderTitle>Refer & Earn</HeaderTitle>

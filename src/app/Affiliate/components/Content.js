@@ -16,7 +16,7 @@ const ContentContainer = styled.div`
     top: 0;
     z-index: 1;
     padding-top: 16px;
-    background-color: ${({ theme }) => theme.select.background};
+    background-color: ${({ theme }) => theme.footer.background};
     box-sizing: border-box;
 `;
 
