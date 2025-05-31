@@ -74,16 +74,16 @@ const Wallet = ({
         setSelection("Import Wallet");
     }
     const handleToTos = () => {
-        window.location.href = "https://lottery.mp";
+        window.location.href = "https://dollar.mp";
     }
     const handleToPrivacyPolicy = () => {
-        window.location.href = "https://lottery.mp";
+        window.location.href = "https://dollar.mp";
     }
     const handleToRegulation = () => {
-        window.location.href = "https://lottery.mp";
+        window.location.href = "https://dollar.mp";
     }
     const handleToResponsibleGaming = () => {
-        window.location.href = "https://lottery.mp";
+        window.location.href = "https://dollar.mp";
     }
 
     const handleCopySeedPhrase = () => {
