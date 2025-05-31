@@ -1,5 +1,5 @@
 import React from 'react';
-import { CnmiIcon } from '@components/Icons';
+import { MusdIcon } from '@components/Icons';
 import { WalletButton, HelpButton, CashoutButton } from '@components/Button';
 import { StyledSupportBar } from './SupportBar.styles';
 import Balance from '../Balance';
@@ -11,8 +11,8 @@ export default function SupportBar({ returnTo }) {
 
     const ticketIndicator = redeemableTickets.length;
 
-    const handleCnmiRedirect = () => {
-        window.location.href = "https://lottery.mp";
+    const handleMusdRedirect = () => {
+        window.location.href = "https://dollar.mp";
     }
 
     return (
@@ -21,7 +21,7 @@ export default function SupportBar({ returnTo }) {
             <HelpButton />
             <Balance />
             <CashoutButton returnTo={returnTo} />
-            <CnmiIcon onClick={() => handleCnmiRedirect()} />
+            <MusdIcon onClick={() => handleMusdRedirect()} />
         </StyledSupportBar>
     )
 }

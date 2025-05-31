@@ -15,7 +15,7 @@ import {
     StyledSmallYellowCircle
 } from './Icons.styles';
 
-import CnmiPng from '@assets/images/cnmi.png';
+import MusdPng from '@assets/images/musd.png';
 import GiftboxSvg from '@assets/svgs/giftbox.svg';
 import QuestionMarkSvg from '@assets/svgs/questionmark.svg';
 import WhiteWalletSvg from '@assets/svgs/wallet_white.svg';
@@ -53,10 +53,10 @@ export const Alert = ({
     )
 }
 
-export const CnmiIcon = ({ ...props }) => {
+export const MusdIcon = ({ ...props }) => {
     return (
         <StyledMediumDarkCircle {...props}>
-            <img src={CnmiPng} />
+            <Image src={MusdPng} />
         </StyledMediumDarkCircle>
     )
 }

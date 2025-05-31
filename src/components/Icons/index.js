@@ -2,7 +2,7 @@ export {
     CashLoadingIcon,
     CashLoader,
     Alert,
-    CnmiIcon,
+    MusdIcon,
     CashoutIcon,
     HelpIcon,
     WalletIcon,
