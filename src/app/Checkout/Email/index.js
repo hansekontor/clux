@@ -31,7 +31,7 @@ export default function Email() {
     const {
         emailError,
         countryError,
-        handleSubmitEmail,
+        handleSubmitAccount,
     } = useCheckout();
 
     const handleReturn = () => {
@@ -47,7 +47,7 @@ export default function Email() {
                 title={"Create Account"}
             />
             <FlexGrow>
-                <AccountForm id='email-form' onSubmit={(e) => handleSubmitEmail(e)}>
+                <AccountForm id='email-form' onSubmit={(e) => handleSubmitAccount(e)}>
 
                     <FormSection>
                         <Item>
