@@ -28,7 +28,7 @@ export default function Navigation({
                 <StyledMerchant>
                     <img src={MerchantSvg} />
                     <StyledMerchantLabel></StyledMerchantLabel>
-                    <StyledMerchantName>Marianas Blockchain Lottery</StyledMerchantName>
+                    <StyledMerchantName>Block Lotto</StyledMerchantName>
                 </StyledMerchant>
             )}
             {children}
