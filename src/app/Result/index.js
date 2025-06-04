@@ -39,14 +39,20 @@ const Result = () => {
         }
     },[])
 
+    console.log("Result activeTicket:", activeTicket);
+
+
     // DOM variables
-    const amount = activeTicket.parsed?.payoutAmountNum / 100;
+    // account for strange browser behaviour and try both properties
+    const amount = activeTicket.parsed?.payoutAmountNum / 100 || activeTicket.parsed?.actualPayoutNum / 100;
     const resultingNumbers = activeTicket.parsed?.resultingNumbers;
     const buttonText = redemptionsOutstanding ? "Redeem Next Ticket" : "Play Again";
     const isWinner = amount > 0;
     const animationName = isWinner ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
     const animationPath = animationLabels.PUBLICPATH + animationName;
 
+    console.log("Result conditions:", amount >= 0, resultingNumbers?.length === 4);
+    
     // handlers
     const handleRedirect = () => {
         setGameTickets([]);
