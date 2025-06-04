@@ -36,7 +36,7 @@ const Wallet = ({
 }) => {
     const history = useHistory();
     const location = useLocation();
-    const { wallet, redeemableTickets, updateWallet, walletUpdateAvailable } = useApp();
+    const { wallet, redeemableTickets, updateWallet, walletUpdateAvailable, setGameTickets } = useApp();
     const walletState = getWalletState(wallet);
     const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
@@ -45,6 +45,7 @@ const Wallet = ({
 
     useEffect(() => {
         passLoadingStatus(false);
+        setGameTickets([]);
     }, [])
 
     // handlers

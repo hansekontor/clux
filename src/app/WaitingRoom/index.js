@@ -13,7 +13,7 @@ import FlexGrow from './components/FlexGrow';
 import Backup from './components/Backup';
 
 // core functions
-import { useApp, useNotifications } from 'blocklotto-sdk';
+import { useApp, useNotifications, getWalletState } from 'blocklotto-sdk';
 
 // util
 import animationLabels from '@utils/animations';
@@ -24,7 +24,7 @@ import LockerPng from '@assets/images/locker.png';
 
 
 const WaitingRoom = () => {
-	const { playerNumbers, ticketsToRedeem, setGameTickets, checkRedeemability, redeemTicket, isFirstTicket } = useApp();
+	const { playerNumbers, wallet, ticketsToRedeem, setGameTickets, gameTickets, checkRedeemability, redeemTicket, isFirstTicket, setLoadingStatus } = useApp();
 	const history = useHistory();
 	const notify = useNotifications();
 
@@ -34,6 +34,7 @@ const WaitingRoom = () => {
 	const [isRedeemable, setIsRedeemable] = useState(false);
 	const [activeTicket, setActiveTicket] = useState({});
 	const [showBackup, setShowBackup] = useState(isFirstTicket);
+	const [redeemHashes, setRedeemHashes] = useState(false);
 
 	// set active ticket to state
 	useEffect(() => {
@@ -67,15 +68,38 @@ const WaitingRoom = () => {
 		if (activeTicket) {
 			checkTicketRedeemability();
 		}
-	}, [activeTicket])
+	}, [activeTicket]);
+
+	// prepare tickets for game when ticket was redeemed
+	useEffect(() => {
+		if (redeemHashes) {
+			console.log("WaitingRoom: redeemHash available", redeemHashes);
+			const walletState = getWalletState(wallet);
+			const { tickets } = walletState;
+			console.log("tickets", tickets);
+			const redeemedTicket = tickets.find(ticket => ticket.redeemTx?.hash === redeemHashes[0]);
+			console.log("found redeemedTicket", redeemedTicket);
+			if (redeemedTicket) {
+				setGameTickets([redeemedTicket]);
+				console.log("gameTickets was set");				
+			}
+		}
+	});
+
+	// move to /game section when gameTickets are available
+	useEffect(() => {
+		if (gameTickets.length > 0) {
+			console.log("gameTickets are available: go to /game");
+			history.push("/game");
+		}		
+	}, [gameTickets]);
 
 	// handlers
 	const handleButtonClick = async () => {
 		if (isRedeemable) {
-			await redeemTicket(activeTicket);
-			setGameTickets([activeTicket]);
-			await sleep(1000);
-			history.push("/game");
+			setLoadingStatus("REDEEMING TICKET")
+			const newRedeemHash = await redeemTicket(activeTicket);
+			setRedeemHashes([newRedeemHash]);
 		}
 	}
 
