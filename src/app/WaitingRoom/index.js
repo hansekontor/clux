@@ -11,6 +11,7 @@ import Button from '@components/Button';
 import Background from './components/Background';
 import FlexGrow from './components/FlexGrow';
 import Backup from './components/Backup';
+import InfoText from './components/InfoText';
 
 // core functions
 import { useApp, useNotifications, getWalletState } from 'blocklotto-sdk';
@@ -28,8 +29,6 @@ const WaitingRoom = () => {
 	const history = useHistory();
 	const notify = useNotifications();
 
-	console.log("isFirstTicket", isFirstTicket);
-
 	// states
 	const [isRedeemable, setIsRedeemable] = useState(false);
 	const [activeTicket, setActiveTicket] = useState({});
@@ -38,7 +37,12 @@ const WaitingRoom = () => {
 
 	// set active ticket to state
 	useEffect(() => {
-		setActiveTicket(ticketsToRedeem[0]);
+		if (ticketsToRedeem.length > 0) {
+			setActiveTicket(ticketsToRedeem[0]);
+		} else {
+			console.error("No ticket in ticketsToRedeem");
+			history.push("/select");
+		}
 	}, []);
 
 	// wait until ticket is redeemable
@@ -100,6 +104,8 @@ const WaitingRoom = () => {
 			setLoadingStatus("REDEEMING TICKET")
 			const newRedeemHash = await redeemTicket(activeTicket);
 			setRedeemHashes([newRedeemHash]);
+		} else {
+			history.push("/select");
 		}
 	}
 
@@ -110,7 +116,7 @@ const WaitingRoom = () => {
 	const playerNumbersFromTicket = activeTicket?.parsed?.playerNumbers;
 	const animationName = animationLabels.CLUX.IDLE.SHADOWBOX;
 	const animationPath = animationLabels.PUBLICPATH + animationName;
-	const buttonText = isRedeemable ? "Redeem Ticket" : "Wait...";
+	const buttonText = isRedeemable ? "Redeem Ticket" : "Purchase another Ticket";
 
 	return (
 		<>	
@@ -144,6 +150,10 @@ const WaitingRoom = () => {
 
 			</FlexGrow>
 			<Footer variant="empty">
+				{!isRedeemable && 
+					<InfoText>Expected waiting time for your ticket is 10 minutes. You can either wait here or redeem at a later time.</InfoText>
+				}
+				<br></br>
 				<PlayerNumbers overrideNumbers={playerNumbersFromTicket ? playerNumbersFromTicket : playerNumbers} />
 				<Button onClick={handleButtonClick}>
 					{buttonText}
