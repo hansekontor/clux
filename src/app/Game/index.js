@@ -29,34 +29,43 @@ import Versus from './components/Versus';
 const Game = () => {
 	const { setLoadingStatus, gameTickets } = useApp();
 	const history = useHistory();
-	const activeTicket = gameTickets[0];
-
-	const resultingNumbers = activeTicket.parsed?.resultingNumbers;
-	const tier = activeTicket.parsed?.tier;
-	const isWinner = tier !== 0;
-	const winnerLabel = isWinner ? "A" : "B";
-	const labels = {
-		faceoff: animationLabels.CLUX.NORRIS.FACEOFF,
-		fight: animationLabels.CLUX.NORRIS[winnerLabel].FIGHT,
-		celebration: isWinner ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION
-	}
 
 	const [animationStage, setAnimationStage] = useState("faceoff");
 	const [fightStarted, setFightStarted] = useState(false);
 	const [versus, setVersus] = useState(false);
 	const [fadeOutVersus, setFadeOutVersus] = useState(false);
+	const [gameSettings, setGameSettings] = useState(false);
 
 	// redirect if either activeTicket or its required data is unavailable 
 	useEffect(() => {
+		const activeTicket = gameTickets[0];
+		console.log("Game activeTicket:", activeTicket);
 		if (!activeTicket) {
+			console.error("/game: No active ticket was found.")
 			setLoadingStatus("TICKET NOT FOUND");
 			sleep(1000);
 			history.push("/select");
 		} else if (!activeTicket.parsed?.resultingNumbers) {
+			console.error("/game: active ticket is not parsed");
 			setLoadingStatus("TICKET DATA NOT FOUND");
 			sleep(3000);
 			history.push("/select");
 		} else {
+			const resultingNumbers = activeTicket.parsed.resultingNumbers;
+			const tier = activeTicket.parsed.tier;
+			const isWinner = tier !== 0;
+			const winnerLabel = isWinner ? "A" : "B";
+			const labels = {
+				faceoff: animationLabels.CLUX.NORRIS.FACEOFF,
+				fight: animationLabels.CLUX.NORRIS[winnerLabel].FIGHT,
+				celebration: isWinner ? animationLabels.CLUX.NORRIS.A.CELEBRATIONS[tier] : animationLabels.CLUX.NORRIS.B.CELEBRATION
+			};
+			const settings = {
+				resultingNumbers,
+				tier,
+				labels
+			};
+			setGameSettings(settings);
 			setLoadingStatus(false);
 		}
 	}, [])
@@ -76,7 +85,7 @@ const Game = () => {
 			if (animationStage === "fight") {
 				await sleep(4000);
 				setAnimationStage("celebration");
-				document.getElementById(labels.celebration).startCelebrationAnimation();
+				document.getElementById(gameSettings.labels.celebration).startCelebrationAnimation();
 			}
 		};
 		handleAnimationStage();
@@ -97,7 +106,7 @@ const Game = () => {
 	const handlePlay = async () => {
 		setFadeOutVersus(true);
 		setAnimationStage("fight");
-		document.getElementById(labels.fight).startFightAnimation();
+		document.getElementById(gameSettings.labels.fight).startFightAnimation();
 		setFightStarted(true);
     }
 
@@ -111,7 +120,7 @@ const Game = () => {
 		<>
 			<Background src={RingPng} />
 			<Header $transparent={true} />
-			{resultingNumbers && (
+			{gameSettings.resultingNumbers && (
 				<>
 					<FlexGrow>
 						<SlideIn>
@@ -122,11 +131,11 @@ const Game = () => {
 							}
 
 						</SlideIn>
-						{labels && (
+						{gameSettings.labels && (
 							<>
 								<Animation $hidden={animationStage !== "faceoff"}>
 									<CustomFlash
-										src={folder + labels.faceoff}
+										src={folder + gameSettings.labels.faceoff}
 										config={{
 											autoplay: "on",
 											unmuteOverlay: "hidden",
@@ -138,7 +147,7 @@ const Game = () => {
 											wmode: "transparent",
 											preferredRenderer: "canvas"
 										}}
-										id={labels.faceoff}
+										id={gameSettings.labels.faceoff}
 										style={{
 											width: "960px", height: "600px", position: "absolute", marginLeft: "15%"
 										}}
@@ -148,7 +157,7 @@ const Game = () => {
 								</Animation>
 								<Animation $hidden={animationStage !== "fight"}>
 									<CustomFlash
-										src={folder + labels.fight}
+										src={folder + gameSettings.labels.fight}
 										config={{
 											autoplay: "on",
 											unmuteOverlay: "hidden",
@@ -159,7 +168,7 @@ const Game = () => {
 											wmode: "transparent",
 											preferredRenderer: "canvas"
 										}}
-										id={labels.fight}
+										id={gameSettings.labels.fight}
 										style={{ width: "960px", height: "600px" }}
 									>
 										<div></div>
@@ -167,7 +176,7 @@ const Game = () => {
 								</Animation>
 								<Animation $hidden={animationStage !== "celebration"}>
 									<CustomFlash
-										src={folder + labels.celebration}
+										src={folder +gameSettings.labels.celebration}
 										config={{
 											autoplay: "on",
 											unmuteOverlay: "hidden",
@@ -179,7 +188,7 @@ const Game = () => {
 											wmode: "transparent",
 											preferredRenderer: "canvas"
 										}}
-										id={labels.celebration}
+										id={gameSettings.labels.celebration}
 										style={{ width: "960px", height: "600px" }}
 									>
 										<div></div>
@@ -190,7 +199,7 @@ const Game = () => {
 					</FlexGrow>
 					<Footer variant="empty">
 						<ResultingNumbers
-							numberArray={resultingNumbers}
+							numberArray={gameSettings.resultingNumbers}
 							active={fightStarted}
 						/>
 						<Button onClick={handlePlay} grey={fightStarted} disabled={fightStarted}>
