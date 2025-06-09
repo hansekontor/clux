@@ -44,7 +44,9 @@ const Result = () => {
 
     // DOM variables
     // account for strange browser behaviour and try both properties
-    const amount = activeTicket.parsed?.payoutAmountNum / 100 || activeTicket.parsed?.actualPayoutNum / 100;
+    const payoutAmountNum = activeTicket.parsed?.payoutAmountNum;
+    const actualPayoutNum = activeTicket.parsed?.actualPayoutNum;
+    const amount = payoutAmountNum >= 0 ? (payoutAmountNum / 100) : (actualPayoutNum / 100);
     const resultingNumbers = activeTicket.parsed?.resultingNumbers;
     const buttonText = redemptionsOutstanding ? "Redeem Next Ticket" : "Play Again";
     const isWinner = amount > 0;
