@@ -20,7 +20,7 @@ export default function Kyc() {
     const { handleKYCandCapture } = useCheckout();
     const notify = useNotifications();
 
-    const handleSuccess = async (message) => {
+    const handleSuccess = (message) => {
         notify({ type: "success", message: "KYC successful"});
     }
 
@@ -52,7 +52,10 @@ export default function Kyc() {
                     </BottomItem>
                     <Subscript>Total time 2 minutes</Subscript>
                 </Container>
-                <Button onClick={(e) => handleKYCandCapture(e, handleSuccess, handleError)}>Continue</Button>
+                <Button onClick={(e) => handleKYCandCapture(e, 
+                    function(msg) {return handleSuccess(msg)}, 
+                    function(msg) {return handleError(msg)}
+                )}>Continue</Button>
             </FlexGrow>
         </>
     )
