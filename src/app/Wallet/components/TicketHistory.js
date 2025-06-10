@@ -374,7 +374,7 @@ const TicketHistory = ({
 	passLoadingStatus,
     tickets,
 }) => {
-	const { setTicketsToRedeem, redeemableTickets } = useApp();
+	const { setTicketsToRedeem, redeemableTickets, ticketsToRedeem } = useApp();
 	const history = useHistory();
 
 	console.log("# of Tickets in History", tickets.length)
@@ -388,10 +388,17 @@ const TicketHistory = ({
 		)
 	});
 
+	// only push to waitingroom if tickets are available in ticketsToRedeem
+	useEffect(() => {
+		if (ticketsToRedeem.length > 0) {
+			console.log("push to waitingroom")
+			history.push("/waitingroom");
+		}
+	}, [ticketsToRedeem]);
+
 	const handleRedeemAll = () => {
 		passLoadingStatus("LOADING TICKET");
 		setTicketsToRedeem(redeemableTickets);
-		history.push("/waitingroom");
 	}
 
     return (
