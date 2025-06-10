@@ -32,11 +32,10 @@ import PencilIconSvg from '@assets/svgs/pencil_icon.svg';
 
 const Wallet = ({
     passLoadingStatus,
-    user
 }) => {
     const history = useHistory();
     const location = useLocation();
-    const { wallet, redeemableTickets, updateWallet, walletUpdateAvailable, setGameTickets } = useApp();
+    const { wallet, redeemableTickets, updateWallet, walletUpdateAvailable, setGameTickets, email, user } = useApp();
     const walletState = getWalletState(wallet);
     const { tickets, slpBalancesAndUtxos } = walletState;
     const [selection, setSelection] = useState(false);
@@ -166,13 +165,13 @@ const Wallet = ({
                                     <LinkOutlined />
                                 </S.Link>
                             </S.Item>
-                            {user.email &&
+                            {(email || user.email) &&
                                 <S.Item onClick={handleChangeEmail}>
                                     <S.LabelCtn>
                                         <EnvelopeIcon />
                                         <S.Label>Email</S.Label>
                                     </S.LabelCtn>
-                                    <S.Value>{user.email}</S.Value>
+                                    <S.Value>{email || user.email}</S.Value>
                                     <S.ImgButton src={PencilIconSvg} />
                                 </S.Item>
                             }
