@@ -6,6 +6,7 @@ import StyledParagraph from '@components/Typography';
 const InfoTextContainer = styled.div`
     width: 90%;
     color: #FFFFFF;
+    margin-bottom: 18px;
 `;
 
 const InfoText = ({ children }) => {
