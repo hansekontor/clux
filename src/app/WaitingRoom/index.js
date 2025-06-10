@@ -38,12 +38,12 @@ const WaitingRoom = () => {
 	// set active ticket to state
 	useEffect(() => {
 		if (ticketsToRedeem.length > 0) {
+			setLoadingStatus(false);
 			setActiveTicket(ticketsToRedeem[0]);
 		} else {
-			console.error("No ticket in ticketsToRedeem");
-			history.push("/select");
+			setLoadingStatus("LOADING TICKET");
 		}
-	}, []);
+	}, [ticketsToRedeem]);
 
 	// wait until ticket is redeemable
 	useEffect(() => {
@@ -153,7 +153,6 @@ const WaitingRoom = () => {
 				{!isRedeemable && 
 					<InfoText>Expected waiting time for your ticket is 10 minutes. You can either wait here or redeem at a later time.</InfoText>
 				}
-				<br></br>
 				<PlayerNumbers overrideNumbers={playerNumbersFromTicket ? playerNumbersFromTicket : playerNumbers} />
 				<Button onClick={handleButtonClick}>
 					{buttonText}
