@@ -1,4 +1,5 @@
 import React from 'react'
+import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useCheckout, useNotifications } from 'blocklotto-sdk';
@@ -19,6 +20,7 @@ import Subscript from './components/Subscript';
 export default function Kyc() {
     const { handleKYCandCapture } = useCheckout();
     const notify = useNotifications();
+    const history = useHistory();
 
     const handleSuccess = (message) => {
         notify({ type: "success", message: "KYC successful"});
@@ -26,7 +28,7 @@ export default function Kyc() {
 
     const handleError = (message) => {
         notify({ type: "error", message });
-        history.push("/");
+        history.push("/select");
     }
     return (
         <>
@@ -52,10 +54,9 @@ export default function Kyc() {
                     </BottomItem>
                     <Subscript>Total time 2 minutes</Subscript>
                 </Container>
-                <Button onClick={(e) => handleKYCandCapture(e, 
-                    function(msg) {return handleSuccess(msg)}, 
-                    function(msg) {return handleError(msg)}
-                )}>Continue</Button>
+                <Button onClick={(e) => handleKYCandCapture(e, handleSuccess, handleError)}>
+                    Continue
+                </Button>
             </FlexGrow>
         </>
     )
