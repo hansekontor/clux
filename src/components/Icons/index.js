@@ -1,23 +1,20 @@
-export {
-    CashLoadingIcon,
-    CashLoader,
-    Alert,
-    MusdIcon,
-    CashoutIcon,
-    HelpIcon,
-    WalletIcon,
-    VideoIcon,
-    PicturesIcon,
-    SmartphoneIcon,
-    TicketFilledIcon,
-    BillIcon,
-    TicketIcon,
-    ContactIcon,
-    KeyIcon,
-    LightWalletIcon,
-    EnvelopeIcon,
-    CardIconBox,
-    QrCodeIcon,
-} from './Icons';
-
-export { StyledLoadingBlock as LoadingBlock } from './Icons.styles';
+export { Logo } from "./Logo";
+export { ArrowHeadRightIcon } from "./ArrowHeadRightIcon";
+export { ArrowHeadLeftIcon } from "./ArrowHeadLeftIcon";
+export { ArrowRightIcon } from "./ArrowRightIcon";
+export { RandomizeIcon } from "./RandomizeIcon";
+export { CartIcon } from "./CartIcon";
+export { SmartPhoneIcon } from "./SmartPhoneIcon";
+export { PictureIcon } from "./PictureIcon";
+export { VideoIcon } from "./VideoIcon";
+export { TicketIcon } from "./TicketIcon";
+export { MenuIcon } from "./MenuIcon";
+export { CopyIcon } from "./CopyIcon";
+export { LotteryIcon } from "./LotteryIcon";
+export { WalletIcon } from "./WalletIcon";
+export { CashoutIcon } from "./CashoutIcon";
+export { ReferIcon } from "./ReferIcon";
+export { TermsIcon } from "./TermsIcon";
+export { PrivacyIcon } from "./PrivacyIcon";
+export { RegulationsIcon } from "./RegulationsIcon";
+export { ResponsibleIcon } from "./ResponsibleIcon";

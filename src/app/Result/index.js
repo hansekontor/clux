@@ -1,124 +1,185 @@
-// node modules
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-
-// util
-import animationLabels from '@utils/animations';
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 // core functions
-import { useApp } from 'blocklotto-sdk';
+import { useApp } from "blocklotto-sdk";
+import sleep from "../../utils/sleep";
 
-// custom react components
-import Header from '@components/Header';
-import Footer from '@components/Footer';
-import { TicketResult } from '@components/Jackpot';
-import PlayerNumbers from '@components/PlayerNumbers';
-import { WhiteCashoutButton, WhiteTicketButton } from '@components/Button';
-import FlexGrow from './components/FlexGrow';
-import FlashContainer from './components/FlashContainer';
-import StyledFlash from './components/StyledFlash';
-import Ticket from './components/Ticket';
-import ButtonContainer from './components/ButtonContainer';
+// react components
+import Header from "@components/Header";
+import { Container, Flex } from "@components/Common";
+import Button from "@components/Button";
+import Typography from "@components/Typography";
+import { TicketNumbers } from "../../components/Misc";
 
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { Dollar } from "./components/Dollar";
 
-const Result = () => {
-    const { gameTickets, setGameTickets, ticketsToRedeem } = useApp();
-    const history = useHistory();
-    const activeTicket = gameTickets[0];
-    const redemptionsOutstanding = ticketsToRedeem.length > 0;
-    console.log("Result outstanding redemptions", ticketsToRedeem);
+export default function Result() {
+  const [animation, setAnimation] = useState(false);
+  const { gameTickets, setGameTickets, ticketsToRedeem } = useApp();
+  const history = useHistory();
+  const activeTicket = gameTickets[0];
+  const redemptionsOutstanding = ticketsToRedeem.length > 0;
+  console.log("Result outstanding redemptions", ticketsToRedeem);
 
-    // redirect if ticket data missing
-    useEffect(() => {
-        if (!activeTicket) {
-            sleep(1000);
-            history.push("/select");
-        } else if (!activeTicket.parsed) {
-            sleep(1000);
-            history.push("/select");
-        }
-    },[])
-
-    console.log("Result activeTicket:", activeTicket);
-
-
-    // DOM variables
-    // account for strange browser behaviour and try both properties
-    const payoutAmountNum = activeTicket.parsed?.payoutAmountNum;
-    const actualPayoutNum = activeTicket.parsed?.actualPayoutNum;
-    const amount = payoutAmountNum >= 0 ? (payoutAmountNum / 100) : (actualPayoutNum / 100);
-    const resultingNumbers = activeTicket.parsed?.resultingNumbers;
-    const buttonText = redemptionsOutstanding ? "Redeem Next Ticket" : "Play Again";
-    const isWinner = amount > 0;
-    const animationName = isWinner ? animationLabels.CLUX.IDLE.WIN : animationLabels.CLUX.IDLE.LOSE;
-    const animationPath = animationLabels.PUBLICPATH + animationName;
-
-    console.log("Result conditions:", amount >= 0, resultingNumbers?.length === 4);
-    
-    // handlers
-    const handleRedirect = () => {
-        setGameTickets([]);
-        if (ticketsToRedeem.length > 0) {
-            console.log("tickets available: go to waiting room");
-            history.push('/waitingroom');
-        } else {
-            console.log("no more tickets: go to select");
-            history.push('/select');
-        }
+  // redirect if ticket data missing
+  useEffect(() => {
+    if (!activeTicket) {
+      sleep(1000);
+      history.push("/select");
+    } else if (!activeTicket.parsed) {
+      sleep(1000);
+      history.push("/select");
     }
+  }, []);
 
-    return (
-        <>
-            <Header $transparent={true} />
-            <FlexGrow>
-                <FlashContainer>
-                    {animationLabels &&
-                        <StyledFlash
-                            src={animationPath}
-                            config={{
-                                autoplay: "on",
-                                unmuteOverlay: "hidden",
-                                splashScreen: false,
-                                contextMenu: "off",
-                                allowScriptAccess: true,
-                                scale: "exactFit",
-                                wmode: "transparent",
-                                preferredRenderer: "canvas"
-                            }}
-                            id={animationName}
+  // handlers
+  const handleRedirect = () => {
+    setGameTickets([]);
+    if (ticketsToRedeem.length > 0) {
+      console.log("tickets available: go to waiting room");
+      history.push("/waitingroom");
+    } else {
+      console.log("no more tickets: go to select");
+      history.push("/select");
+    }
+  };
+
+  const handleTicketsRedirect = () => {
+    setGameTickets([]);
+    history.push("/tickets");
+  };
+
+  const handleCashoutRedirect = () => {
+    setGameTickets([]);
+    history.push("/cashout");
+  };
+
+  const handleEvent = () => {
+    setAnimation(true);
+  };
+
+  // DOM variables
+  // account for strange browser behaviour and try both properties
+  const payoutAmountNum = activeTicket.parsed?.payoutAmountNum;
+  const actualPayoutNum = activeTicket.parsed?.actualPayoutNum;
+  const amount =
+    payoutAmountNum >= 0 ? payoutAmountNum / 100 : actualPayoutNum / 100;
+  const resultingNumbers = activeTicket.parsed?.resultingNumbers;
+  const buttonText = redemptionsOutstanding
+    ? "Redeem Next Ticket"
+    : "Play Again";
+  const isWinner = amount > 0;
+
+  console.log(
+    "Result conditions:",
+    amount >= 0,
+    resultingNumbers?.length === 4
+  );
+
+  return (
+    <Flex
+      direction={"column"}
+      minHeight={"100dvh"}
+      style={{ overflow: "hidden" }}
+    >
+      <Container
+        height="100dvh"
+        style={{
+          overflowY: "auto",
+        }}
+      >
+        <Flex
+          direction="column"
+          height="100%"
+          paddingTop={2}
+          paddingBottom={2}
+          gap={2}
+        >
+          <Header hideMenu />
+
+          <Flex
+            direction="column"
+            gap={2}
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
+            {animation ? (
+              <Flex
+                direction="column"
+                height="100%"
+                gap={4}
+                width="100%"
+                justifyContent="space-between"
+              >
+                <Flex
+                  height="100%"
+                  width="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                  position="relative"
+                >
+                  <DotLottieReact
+                    src={`animations/${isWinner ? "confetti" : "smoke"}.lottie`}
+                    autoplay
+                    loop={isWinner}
+                    dotLottieRefCallback={(dotLottie) => {
+                      dotLottie.addEventListener("complete", handleEvent);
+                    }}
+                  />
+                  <Flex
+                    position="absolute"
+                    top={0}
+                    left={0}
+                    right={0}
+                    bottom={0}
+                  >
+                    {isWinner ? (
+                      <Dollar>
+                        <Typography
+                          variant="h2"
+                          fontWeight="400"
+                          fontSize="5rem"
                         >
-                            <div></div>
-                        </StyledFlash>
-                    }
-
-                </FlashContainer>
-
-                <Ticket>
-                    {(amount >= 0 && resultingNumbers?.length === 4) && (
-                        <>
-                            <TicketResult
-                                amount={amount}
-                            />
-                            <PlayerNumbers
-                                overrideNumbers={resultingNumbers}
-                                background={"#1A1826"}
-                            />
-                        </>
+                          ${amount.toFixed(2)}
+                        </Typography>
+                      </Dollar>
+                    ) : (
+                      <Typography variant="h2" fontWeight="400" fontSize="5rem">
+                        ${amount.toFixed(2)}
+                      </Typography>
                     )}
-                </Ticket>
-                <ButtonContainer>
-                    <WhiteCashoutButton />
-                    <WhiteTicketButton />
-                </ButtonContainer>
-            </FlexGrow>
-            <Footer
-                // directly go to select from result because result can not displayed correctly afterwards
-                origin={"/select"}
-                buttonOnClick={handleRedirect}
-                buttonText={buttonText}
-            />
-        </>
-    )
+                  </Flex>
+                </Flex>
+                <Flex gap={2} direction="column" width="100%">
+                  <Flex gap={1} direction="column" width="100%">
+                    <Flex gap={1} width="100%">
+                      <Button fullWidth size="sm" color="tertiary" onClick={handleCashoutRedirect}>
+                        Cashout
+                      </Button>
+                      <Button fullWidth size="sm" color="tertiary" onClick={handleTicketsRedirect}>
+                        Tickets
+                      </Button>
+                    </Flex>
+                    <TicketNumbers numbers={resultingNumbers} />
+                    <Button onClick={handleRedirect}>{buttonText}</Button>
+                  </Flex>
+                </Flex>
+              </Flex>
+            ) : (
+              <DotLottieReact
+                src="animations/ticket.lottie"
+                autoplay
+                dotLottieRefCallback={(dotLottie) => {
+                  dotLottie.addEventListener("complete", handleEvent);
+                }}
+              />
+            )}
+          </Flex>
+        </Flex>
+      </Container>
+    </Flex>
+  );
 }
-
-export default Result;

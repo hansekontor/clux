@@ -1,65 +1,60 @@
-import styled from "styled-components";
-import { TicketIcon, BillIcon } from '@components/Icons';
+import styled, { css } from "styled-components";
 
-export const StyledButtonPrimary = styled.button`
-    color: ${props => props.theme.buttons.primary.color};
-    background-color: ${props => props.$inactive ? props.theme.buttons.primary.inactive.background : props.theme.buttons.primary.background};
-    height: 52px;
-    border-style: none;
-    border-radius: 12px;
-    font-family: '${props => props.theme.buttons.primary.font}';
-    font-size: 20px;
-    cursor: pointer;
-    width: 90%;
-    letter-spacing: 1px;
+const baseButtonStyles = css`
+  display: flex;
+  align-items: center;
+  justify-content: ${({ justifyContent }) => (justifyContent ? justifyContent : "center")};
+  text-align: ${({ textAlign }) => (textAlign ? textAlign : "center")};
+  gap: ${({ theme }) => theme.spacing(1)};
+  width: ${({ fullWidth }) => (fullWidth ? "100%" : "auto")};
+  font-family: ${({ theme }) => theme.typography.button.fontFamily};
+  font-size: ${({ theme }) => theme.typography.button.fontSize};
+  font-weight: ${({ theme }) => theme.typography.button.fontWeight};
+  line-height: ${({ theme }) => theme.typography.button.lineHeight};
+  letter-spacing: ${({ theme }) => theme.typography.button.letterSpacing};
+  text-transform: ${({ theme }) => theme.typography.button.textTransform};
+  border: none;
+  border-radius: ${({ theme }) => theme.shape.md};
+  padding: ${({ theme, size }) => {
+    const vertical = size === "lg" ? 3 : size === "sm" ? 1 : size === "xs" ? 0.5 : 2;
+    const horizontal = size === "lg" ? 4 : size === "sm" ? 2 : size === "xs" ? 1 : 3;
+    return `${theme.spacing(vertical)} ${theme.spacing(horizontal)}`;
+  }};
+  background-color: ${({ theme, color = "primary" }) =>
+    theme?.color?.[color]?.main || color};
+  color: ${({ theme, color = "primary" }) =>
+    theme?.color?.[color]?.contrastText || "white"};
+  transition: ${({ theme }) =>
+    `all ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut}`};
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    background-color: ${({ theme, color = "primary" }) =>
+      theme?.color?.[color]?.dark || color};
+    color: ${({ theme, color = "primary" }) =>
+      theme?.color?.[color]?.contrastText || "white"};
+  }
 `;
 
-export const StyledButtonSecondary = styled(StyledButtonPrimary)`
-    background-color ${props => props.theme.buttons.secondary.background};
-    font-family: '${props => props.theme.buttons.secondary.font}';
-    border: 1px solid #000000;
-`;
+const variantStyles = {
+  pill: css`
+    border-radius: ${({ theme }) => theme.shape.full};
+  `,
+  text: css`
+    padding: 0;
+    background-color: transparent;
+    color: ${({ theme, color = "primary" }) =>
+      theme?.color?.[color]?.main || color};
+    &:hover {
+      background-color: transparent;
+      color: ${({ theme, color = "primary" }) =>
+        theme?.color?.[color]?.dark || color};
+    }
+  `,
+};
 
-export const StyledButtonTertiary = styled.button`
-    background-color: ${props => props.theme.buttons.tertiary.background};
-    border-radius: 70px;
-    padding: 7px;
-    color: ${props => props.theme.buttons.tertiary.color};
-    font-weight: 600;
-    font-family: '${props => props.theme.buttons.tertiary.font}';
-    cursor: pointer;
-`;
-
-export const StyledReturnButtonContainer = styled.div`
-    padding: 10px;
-    cursor: pointer;
-`;
-
-export const StyledWhiteButton = styled.button`
-    border-radius: 8px;
-    background: #FFFFFF;
-    color: #000000;
-    height: 52px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    border-style: none;
-    gap: 12px;
-    flex-grow: 1;
-    gap: 12px;
-	cursor: pointer;
-	width: 100%;
- `;
-
-export const StyledText = styled.div`
-    font-size: 12px;
-    font-weight: 700;      
-`;
-
-export const StyledCustomBillIcon = styled(BillIcon)`
-    margin-left: 12px;
-`;
-
-export const StyledCustomTicketIcon = styled(TicketIcon)`
-    margin-left: 12px;
+export const StyledButton = styled.button`
+  ${baseButtonStyles}
+  ${({ variant }) => variant && variantStyles[variant]}
 `;

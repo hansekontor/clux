@@ -1,89 +1,229 @@
-export const theme = { 
-    app: {
-        background: '#F6F6F6',
-    },
-    buttons: {
+export const theme = {
+    color: {
+        common: {
+            black: '#000000',
+            white: '#FFFFFF',
+        },
         primary: {
-            background: '#F2BC57', 
-            color: '#000000',
-            font: 'Sequel 100 Wide 95',
-            inactive: {
-                background: '#DFDFDF', 
-            }
+            main: '#1976d2',
+            light: '#42a5f5',
+            dark: '#1565c0',
+            contrastText: '#fff',
         },
         secondary: {
-            background: '#FEFFFE', 
-            color: '#000000',
-            font: 'Sequel 100 Wide 95',
+            main: '#E1E3E8',
+            light: '#eeeeee',
+            dark: '#d0d0d0',
+            contrastText: '#000',
         },
         tertiary: {
-            background: '#44405B', 
-            color: '#FEFFFE',
-            font: 'Helvetica',
+            main: '#222',
+            light: '#444',
+            dark: '#000',
+            contrastText: '#FFFFFF',
         },
-    }, 
-    text: {
-        color: '#000000',
-        font: 'Sequel 100 Wide 95'
+        error: {
+            main: '#f44336',
+            light: '#e57373',
+            dark: '#d32f2f',
+            contrastText: '#fff',
+        },
+        warning: {
+            main: '#ff9800',
+            light: '#ffb74d',
+            dark: '#f57c00',
+            contrastText: '#fff',
+        },
+        info: {
+            main: '#2196f3',
+            light: '#64b5f6',
+            dark: '#1976d2',
+            contrastText: '#fff',
+        },
+        success: {
+            main: '#4caf50',
+            light: '#81c784',
+            dark: '#388e3c',
+            contrastText: '#fff',
+        },
+        grey: {
+            50: '#fafafa',
+            100: '#f5f5f5',
+            200: '#eeeeee',
+            300: '#e0e0e0',
+            400: '#bdbdbd',
+            500: '#9e9e9e',
+            600: '#757575',
+            700: '#616161',
+            800: '#424242',
+            900: '#212121',
+        },
+        text: {
+            primary: '#000000',
+            secondary: '#FFFFFF',
+            disabled: '#B9B9B9',
+        },
+        divider: '#E1E0E0',
+        background: {
+            default: 'rgba(241, 242, 245, 1)',
+            paper: '#FEFFFE',
+            cover: 'rgba(0, 0, 0, 0.5)',
+        },
     },
-    footer: {
-        background: '#48445C'
+    shape: {
+        sm: '8px',
+        md: '12px',
+        lg: '16px',
+        xl: '20px',
+        full: '999px',
     },
-    select: {
-        background: '#1A1826',
-    },
-    checkout: {
-        background: '#FEFFFE',
-        text: '#1A1826',
-        payment: {
-            background: '#EAEAEA',
+    typography: {
+        fontSize: 16,
+        fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+        h1: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 300,
+            fontSize: "3.8125rem",
+            lineHeight: 1.2,
+            letterSpacing: "-0.00833em",
         },
-        methods: {
-            active: {
-                background: '#131312',
-                color: '#FEFFFE'
-            },
-            inactive: {
-                background: '#EAEAEA',
-                color: '#131312,'
-            },
-            border: '#B9B9B9'
+        h2: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 300,
+            fontSize: "3rem",
+            lineHeight: 1.25,
+            letterSpacing: "-0.00833em",
         },
-        navigation: {
-            background: '#FEFFFE'
+        h3: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "2.125rem",
+            lineHeight: 1.25,
+            letterSpacing: "0em"
         },
-        divider: {
-            color: '#E1E0E0'
+        h4: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "1.5rem",
+            lineHeight: 1.235,
+            letterSpacing: "0.00735em",
+        },
+        h5: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "1.25rem",
+            lineHeight: 1.334,
+            letterSpacing: "0em",
+        },
+        h6: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 500,
+            fontSize: "1rem",
+            lineHeight: 1.6,
+            letterSpacing: "0.0075em",
+        },
+        subtitle1: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "0.9375rem",
+            lineHeight: 1.75,
+            letterSpacing: "0.00938em",
+        },
+        subtitle2: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 500,
+            fontSize: "0.8125rem",
+            lineHeight: 1.57,
+            letterSpacing: "0.00714em",
+        },
+        body1: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "0.9375rem",
+            lineHeight: 1.5,
+            letterSpacing: "0.00938em",
+        },
+        body2: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "0.8125rem",
+            lineHeight: 1.43,
+            letterSpacing: "0.01071em",
+        },
+        button: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 500,
+            fontSize: "1rem",
+            lineHeight: 1.75,
+            letterSpacing: "0.02857em",
+            textTransform: "none",
+        },
+        caption: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "0.75rem",
+            lineHeight: 1.66,
+            letterSpacing: "0.03333em",
+        },
+        overline: {
+            fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: "0.75rem",
+            lineHeight: 2.66,
+            letterSpacing: "0.08333em",
+            textTransform: "uppercase",
+        },
+        inherit: {
+            fontFamily: "inherit",
+            fontWeight: "inherit",
+            fontSize: "inherit",
+            lineHeight: "inherit",
+            letterSpacing: "inherit",
         }
     },
-    error: {
-        background: '#FB918E',
-        color: '#002152'
+    spacing: (factor) => `${8 * factor}px`,
+    shadows: {
+        0: "none",
+        1: "0px 1px 2px rgba(0, 0, 0, 0.03), 0px 1px 1px rgba(0, 0, 0, 0.02)",
+        2: "0px 2px 4px rgba(0, 0, 0, 0.04), 0px 1px 2px rgba(0, 0, 0, 0.025)",
+        3: "0px 3px 6px rgba(0, 0, 0, 0.05), 0px 2px 4px rgba(0, 0, 0, 0.03)",
+        4: "0px 4px 8px rgba(0, 0, 0, 0.06), 0px 2px 5px rgba(0, 0, 0, 0.035)",
+        5: "0px 5px 10px rgba(0, 0, 0, 0.07), 0px 3px 6px rgba(0, 0, 0, 0.04)",
+        6: "0px 6px 12px rgba(0, 0, 0, 0.08), 0px 3px 6px rgba(0, 0, 0, 0.045)",
+        7: "0px 7px 14px rgba(0, 0, 0, 0.09), 0px 4px 8px rgba(0, 0, 0, 0.05)",
+        8: "0px 8px 16px rgba(0, 0, 0, 0.1), 0px 4px 10px rgba(0, 0, 0, 0.055)",
+        9: "0px 9px 18px rgba(0, 0, 0, 0.11), 0px 5px 12px rgba(0, 0, 0, 0.06)",
+        10: "0px 10px 20px rgba(0, 0, 0, 0.12), 0px 5px 12px rgba(0, 0, 0, 0.065)",
+        11: "0px 11px 22px rgba(0, 0, 0, 0.13), 0px 6px 14px rgba(0, 0, 0, 0.07)",
+        12: "0px 12px 24px rgba(0, 0, 0, 0.14), 0px 6px 14px rgba(0, 0, 0, 0.075)",
+        13: "0px 13px 26px rgba(0, 0, 0, 0.15), 0px 7px 16px rgba(0, 0, 0, 0.08)",
+        14: "0px 14px 28px rgba(0, 0, 0, 0.16), 0px 7px 18px rgba(0, 0, 0, 0.085)",
+        15: "0px 15px 30px rgba(0, 0, 0, 0.17), 0px 8px 20px rgba(0, 0, 0, 0.09)",
+        16: "0px 16px 32px rgba(0, 0, 0, 0.18), 0px 8px 22px rgba(0, 0, 0, 0.095)",
+        17: "0px 17px 34px rgba(0, 0, 0, 0.19), 0px 9px 24px rgba(0, 0, 0, 0.1)",
+        18: "0px 18px 36px rgba(0, 0, 0, 0.2), 0px 9px 26px rgba(0, 0, 0, 0.105)",
+        19: "0px 19px 38px rgba(0, 0, 0, 0.21), 0px 10px 28px rgba(0, 0, 0, 0.11)",
+        20: "0px 20px 40px rgba(0, 0, 0, 0.22), 0px 10px 30px rgba(0, 0, 0, 0.115)",
+        21: "0px 21px 42px rgba(0, 0, 0, 0.23), 0px 11px 32px rgba(0, 0, 0, 0.12)",
+        22: "0px 22px 44px rgba(0, 0, 0, 0.24), 0px 11px 34px rgba(0, 0, 0, 0.125)",
+        23: "0px 23px 46px rgba(0, 0, 0, 0.25), 0px 12px 36px rgba(0, 0, 0, 0.13)",
+        24: "0px 24px 48px rgba(0, 0, 0, 0.26), 0px 12px 38px rgba(0, 0, 0, 0.135)",
     },
-    success: {
-        background: '#38A368',
-        color: '#FEFFFE'
-    },
-    info: {
-        background: '#FEFFFE',
-        color: '#002152'
-    },
-    numbers: {
-        background: '#FEFFFE',
-        divider: '#C6C6C6',
-        font: 'Sequel 100 Wide 95'
-    },
-    loader: { 
-        background: '#000000',
-        container: '#FEFFFE',
-        circle: '#32C770',
-    },
-    input: {
-        background: '#FEFFFE',
-        color: '#ABCDEF'
-    },
-    balance: {
-        background: '#1A2131',
-        color: '#FEFFFE'
+    transitions: {
+        easing: {
+            easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
+            easeOut: "cubic-bezier(0.0, 0, 0.2, 1)",
+            easeIn: "cubic-bezier(0.4, 0, 1, 1)",
+            sharp: "cubic-bezier(0.4, 0, 0.6, 1)",
+        },
+        duration: {
+            shortest: 150,
+            shorter: 200,
+            short: 250,
+            standard: 300,
+            complex: 375,
+            enteringScreen: 225,
+            leavingScreen: 195,
+        }
     }
-};
+}

@@ -1,21 +1,20 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { StyledHeader, StyledHeaderIcon } from './Header.styles';
+import React from "react";
 
-// assets
-import CluxLogo from '@assets/images/clux_logo.png';
+// react components
+import { Flex } from "../Common";
+import Menu from "../Menu";
 
-export default function Header({ ...props }) {
+// icons
+import { Logo } from "../Icons";
 
-    const history = useHistory();
+export default function Header({ hideMenu }) {
+  return (
+    <Flex marginBottom={0} justifyContent="space-between" alignItems="center">
+      <Logo />
 
-    const handleOnClick = () => {
-        return history.push("/select");
-    }
-
-    return (
-        <StyledHeader {...props}>
-            <StyledHeaderIcon src={CluxLogo} onClick={handleOnClick} />
-        </StyledHeader>
-    )
+      <Flex direction={"column"} alignItems="end">
+        {!hideMenu && <Menu />}
+      </Flex>
+    </Flex>
+  );
 }

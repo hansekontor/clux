@@ -1,56 +1,68 @@
-import React from 'react';
-import Select from 'react-select';
-import 'react-range-slider-input/dist/style.css';
-import Form from './Form';
+import React from "react";
 
 // core functions
-import { useCashout, useNotifications } from 'blocklotto-sdk';
+import { useCashout, useNotifications } from "blocklotto-sdk";
+
+import { Flex } from "@components/Common";
+import { Select, SelectOption } from "@components/Form";
 
 export default function Brand() {
-    const { 
-        tilloStage,
-        setTilloStage,
-        tilloSelection, 
-        brandData, 
-        handleTilloBrandChange,
-        getGiftcardLink,
-    } = useCashout();
-    const notify = useNotifications()
+  const {
+    tilloStage,
+    setTilloStage,
+    tilloSelection,
+    brandData,
+    handleTilloBrandChange,
+    getGiftcardLink,
+  } = useCashout();
 
-    const handleBrandSubmit = async (e) => {
-        e.preventDefault();
+  const notify = useNotifications();
 
-        const brand = e.target.brand.value;
+  // handlers
+  const handleBrandSubmit = async (e) => {
+    e.preventDefault();
+    const brand = e.target.brand.value;
+    const link = await getGiftcardLink(brand, handleGiftcardError);
 
-        const link = await getGiftcardLink(brand, handleGiftcardError);
-
-        if (link) {
-            setTilloStage("giftcard");
-        }
+    if (link) {
+      setTilloStage("giftcard");
     }
+  };
 
-    const handleGiftcardError = () => {
-        notify({ type: "error", message: "Giftcard API Error"});
-    }
+  const handleGiftcardError = () => {
+    notify({ type: "error", message: "Giftcard API Error" });
+  };
 
-    return (
-        <Form id={`${tilloStage}-form`}
-            onSubmit={handleBrandSubmit}
-        >
-            <Select
-                options={tilloSelection}
-                onChange={(item) => handleTilloBrandChange(item.brand)}
-                name="brand"
-            />
+  return (
+    <Flex
+      as={"form"}
+      direction="column"
+      id={`${tilloStage}-form`}
+      onSubmit={handleBrandSubmit}
+      gap={2}
+    >
 
-            {brandData && (
-                <>
-                    <img src={brandData.logo} />
-                    <p>
-                        {brandData.description}
-                    </p>                
-                </>
-            )}
-        </Form>
-    )
+      <Select
+        label="Brand"
+        name="brand"
+        required
+        searchable
+        onChange={(e) => handleTilloBrandChange(e.target.value)}
+        value={brandData.value || ""}
+      >
+        {tilloSelection.map((option) => (
+          <SelectOption key={option.value} value={option.value}>
+            {option.label}
+          </SelectOption>
+        ))}
+      </Select>
+
+      {brandData && (
+        <>
+          <img src={brandData.logo} />
+          <p>{brandData.description}</p>
+        </>
+      )}
+    </Flex>
+  );
 }

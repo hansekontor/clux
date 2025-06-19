@@ -1,37 +1,27 @@
-import React from 'react';
-import Form from './Form';
-import Link from './Link';
+import React from "react";
 
 // core functions
-import { useCashout } from 'blocklotto-sdk';
+import { useCashout } from "blocklotto-sdk";
+import Button from "@components/Button";
+import { Flex } from "@components/Common";
+import Alert from "@components/Alert";
+import Typography from "@components/Typography";
 
 export default function GiftCard() {
-    const {
-        giftcardLink,
-        tilloStage,
-    } = useCashout();
+  const { giftcardLink } = useCashout();
 
-    console.log("Cashout link", giftcardLink);
+  return (
+    <Flex direction="column" gap={2}>
+      <Button onClick={() => window.open(giftcardLink, "_blank")}>
+        Claim your Giftcard
+      </Button>
 
-    const handleGiftcardConfirmation = (e) => {
-        if (e)
-            e.preventDefault();
-        // add modal asking for confirmation
-        const modalConfig = {
-            title: "Confirm",
-            content: "Have you claimed your giftcard?",
-            okText: "Yes",
-            cancelText: "No",
-            onOk: () => handleBackToHome(),
-        };
-        modal.confirm(modalConfig);
-    }
-
-    return (
-        <Form id={`${tilloStage}-form`} onSubmit={handleGiftcardConfirmation}>
-            <Link href={giftcardLink} target="_blank">
-                "Claim your Giftcard"
-            </Link>
-        </Form>
-    )
+      <Alert severity="info">
+        <Typography>
+          Please claim your giftcard now, you will not be able to claim it
+          later.
+        </Typography>
+      </Alert>
+    </Flex>
+  );
 }

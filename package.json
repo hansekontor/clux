@@ -7,8 +7,9 @@
     "dependencies": {
         "@ant-design/icons": "^6.0.0",
         "@fortawesome/fontawesome-free": "^5.15.1",
+        "@lottiefiles/dotlottie-react": "^0.14.1",
         "antd": "^5.16.2",
-        "blocklotto-sdk": "file:../blocklotto-sdk/blocklotto-sdk-0.9.2.tgz",
+        "blocklotto-sdk": "file:../blocklotto-sdk/blocklotto-sdk-0.9.3.tgz",
         "crypto-browserify": "^3.12.1",
         "dotenv": "^8.2.0",
         "dotenv-expand": "^5.1.0",

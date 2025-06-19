@@ -1,91 +1,61 @@
 // node modules
 import React, { useState, useEffect } from "react";
-import { useHistory } from 'react-router-dom';
-import { Flash } from 'react-ruffle';
 
-// assets
-import RingPng from '@assets/images/ring_on_beach.png';
-
-// util
-import animationLabels from '@utils/animations.js';
-import sleep from '@utils/sleep';
+import { useApp, CheckoutProvider } from "blocklotto-sdk";
 
 // react components
-import { useApp } from 'blocklotto-sdk';
-import Header from '@components/Header';
-import JackpotCarousel from '@components/Jackpot';
-import Footer from '@components/Footer';
-import { Scrollable } from '@components/Common';
-import FadeOut from "./components/FadeOut";
-import AnimationContainer from "./components/AnimationContainer";
-import BackgroundContainer from "./components/BackgroundContainer";
-import Background from "./components/Background";
-import FlashContainer from "./components/FlashContainer";
-import PlayerNumbers from "./components/PlayerNumbers";
+import Header from "@components/Header";
+import { Container, Flex } from "@components/Common";
+import Jackpot from "./components/Jackpot";
+import Tickets from "./components/Ticket";
+import TicketSummary from "./components/TicketSummary";
+import Checkout from "./Checkout";
 
+export default function Select() {
+  const { setTicketsToRedeem, setGameTickets } = useApp();
+  const [openCheckout, setOpenCheckout] = useState(false);
 
-const Select = () => {
-    const history = useHistory();
-    const { setTicketsToRedeem, setGameTickets } = useApp();
+  // reset ticketsToRedeem and gameTickets
+  useEffect(() => {
+    setTicketsToRedeem([]);
+    setGameTickets([]);
+  }, []);
 
-    const [fadeOut, setFadeOut] = useState(false);
+  // handle checkout close
+  const handleCheckoutClose = () => {
+    setOpenCheckout(false);
+  };
 
-    // DOM contents
-    const playButtonText = "Play Now - $10 - DEMO";
-    const animationName = animationLabels.CLUX.IDLE.DYNAMIC;
-    const animationPath = animationLabels.PUBLICPATH + animationName;
-
-    // reset ticketsToRedeem and gameTickets
-    useEffect(() => {
-        setTicketsToRedeem([]);
-        setGameTickets([]);
-    }, []);
-
-    const handleBuyTicket = async () => {
-        setFadeOut(true);
-        await sleep(300);
-
-        history.push('/checkout');
-    }
-
-    return (
-        <FadeOut $fadeOut={fadeOut}>
-            <Header $transparent={true} />
-            <Scrollable>
-                <JackpotCarousel />
-                <AnimationContainer>
-                    <BackgroundContainer>
-                        <Background src={RingPng} />
-                    </BackgroundContainer>
-                    <FlashContainer>
-                        <Flash
-                            src={animationPath}
-                            config={{
-                                autoplay: "on",
-                                unmuteOverlay: "hidden",
-                                splashScreen: false,
-                                contextMenu: "off",
-                                allowScriptAccess: true,
-                                forceScale: true,
-                                scale: "exactFit",
-                                wmode: "transparent",
-                                preferredRenderer: "canvas"
-                            }}
-                            id={animationName}
-                        >
-                            <div></div>
-                        </Flash>
-                    </FlashContainer>
-                </AnimationContainer>
-            </Scrollable>
-            <PlayerNumbers background={'#1A1826'} />
-            <Footer
-                origin={"/select"}
-                buttonOnClick={handleBuyTicket}
-                buttonText={playButtonText}
-            />
-        </FadeOut>
-    )
+  return (
+    <Flex
+      direction={"column"}
+      minHeight={"100dvh"}
+      style={{ overflow: "hidden" }}
+    >
+      <Container
+        height="100dvh"
+        style={{
+          overflowY: "auto",
+        }}
+      >
+        <Flex
+          direction="column"
+          height="100%"
+          paddingTop={2}
+          paddingBottom={2}
+          gap={2}
+        >
+          <Header />
+          <Jackpot />
+          <Tickets />
+          <TicketSummary setOpenCheckout={setOpenCheckout} />
+        </Flex>
+      </Container>
+      {openCheckout && (
+        <CheckoutProvider>
+          <Checkout open={openCheckout} handleClose={handleCheckoutClose} />
+        </CheckoutProvider>
+      )}
+    </Flex>
+  );
 }
-
-export default Select;

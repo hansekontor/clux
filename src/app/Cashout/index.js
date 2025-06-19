@@ -1,101 +1,92 @@
-// node modules
-import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Modal } from 'antd';
-
-// core functions
-import { useCashout } from 'blocklotto-sdk';
-import { useNotifications } from 'blocklotto-sdk';
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
 // react components
-import Footer from '@components/Footer';
-import Navigation from '@components/Navigation';
-import Header from '@components/Header';
-import Button from '@components/Button';
-import Filter from './components/Filter';
-import Brand from './components/Brand';
-import GiftCard from './components/GiftCard';
-import FlexGrow from './components/FlexGrow';
+import Header from "@components/Header";
+import { Container, Flex } from "@components/Common";
+import Button from "@components/Button";
+import Typography from "@components/Typography";
 
+// core functions
+import { useCashout, useNotifications, useApp } from "blocklotto-sdk";
+import Filter from "./components/Filter";
+import Brand from "./components/Brand";
+import GiftCard from "./components/GiftCard";
 
-const Cashout = () => {
-    const history = useHistory();
-    const notify = useNotifications();
-    const { 
-        checkBalance, 
-        tilloStage, 
-        giftcardLink, 
-        setGiftcardLink 
-    } = useCashout();
-    const [modal, modalHolder] = Modal.useModal();
+export default function Cashout() {
+  const history = useHistory();
+  const notify = useNotifications();
+  const { checkBalance, tilloStage, giftcardLink, setGiftcardLink } =
+    useCashout();
+  const { balance } = useApp();
 
-    useEffect(() => {
-        const isSufficientBalance = checkBalance();
-        if (!isSufficientBalance) {
-            notify({type: "error", message: "Insufficient Token Balance"});
-            history.push("/select");
-        };
-    }, [])
-
-    // handlers
-    const handleReturn = () => {
-        if (giftcardLink)
-            return handleGiftcardConfirmation()
-        else
-            history.push("/select");
+  // redirect to homepage is insufficient balance
+  useEffect(() => {
+    const isSufficientBalance = checkBalance();
+    if (!isSufficientBalance) {
+      notify({ type: "error", message: "Insufficient Balance" });
+      history.push("/select");
     }
+  }, []);
 
-    const handleBackToHome = () => {
-        setGiftcardLink(false);
-        return history.push("/select");
-    }
+  return (
+    <Flex
+      direction={"column"}
+      minHeight={"100dvh"}
+      style={{ overflow: "hidden" }}
+    >
+      <Container
+        height="100dvh"
+        style={{
+          overflowY: "auto",
+        }}
+      >
+        <Flex
+          direction="column"
+          height="100%"
+          paddingTop={2}
+          paddingBottom={2}
+          gap={2}
+        >
+          <Header />
 
-    const handleGiftcardConfirmation = (e) => {
-        if (e)
-            e.preventDefault();
-        // add modal asking for confirmation
-        const modalConfig = {
-            title: "Confirm",
-            content: "Have you claimed your giftcard?",
-            okText: "Yes",
-            cancelText: "No",
-            onOk: () => handleBackToHome(),
-        };
-        modal.confirm(modalConfig);
-    }
+          <Flex
+            direction="column"
+            height="100%"
+            gap={2}
+            justifyContent={"space-between"}
+          >
+            <Flex direction="column" paddingTop={3}>
+              <Flex
+                paddingBottom={2}
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="h5" as="h2">
+                  Cashout
+                </Typography>
 
-    return (
-        <>
-            {modalHolder}
-            <FlexGrow>
-                <Header />
-                <Navigation
-                    handleOnClick={handleReturn}
-                    title={"Cashout"}
-                />
-                {tilloStage === "filter" && 
-                    <Filter />}
+                <Typography textTransform="uppercase">
+                  Balance: ${balance.toFixed(2)}
+                </Typography>
+              </Flex>
+              <Flex direction="column">
+                {tilloStage === "filter" && <Filter />}
 
                 {tilloStage === "brand" && <Brand />}
 
                 {tilloStage === "giftcard" && <GiftCard />}
-
-                <Footer variant="empty">
-                    <Button type="submit" form={`${tilloStage}-form`}>
-                        {tilloStage === "filter" &&
-                            <>Go to Brands</>
-                        }
-                        {tilloStage === "brand" &&
-                            <>Get Giftcard</>
-                        }
-                        {tilloStage === "giftcard" &&
-                            <>Back to Home</>
-                        }
-                    </Button>
-                </Footer>
-            </FlexGrow>
-        </>
-    )
+              </Flex>
+            </Flex>
+            {tilloStage !== "giftcard" && (
+              <Button type="submit" form={`${tilloStage}-form`}>
+                {tilloStage === "filter" && <>Go to Brands</>}
+                {tilloStage === "brand" && <>Get Giftcard</>}
+              </Button>
+            )}
+          </Flex>
+        </Flex>
+      </Container>
+    </Flex>
+  );
 }
-
-export default Cashout;

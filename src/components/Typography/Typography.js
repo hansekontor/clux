@@ -1,39 +1,46 @@
-import React from 'react';
-import {
-    StyledBoldHeader,
-    StyledBoldText,
-    StyledHeader,
-    StyledLargeHeading,
-    StyledParagraph,
-    StyledText,
-    StyledTextItem
-} from './Typography.styles';
+// Typography.js
+import React from "react";
+import { StyledTypography } from "./Typography.styles";
 
-export default function Typography({ variant, weight, size, children, ...props }) {
-    switch (variant) {
-        case 'paragraph':
-            return <StyledParagraph {...props}>{children}</StyledParagraph>;
-        case 'textItem':
-            return <StyledTextItem {...props}>{children}</StyledTextItem>;
-        case 'header':
-            switch (weight) {
-                case 'bold':
-                    return <StyledBoldHeader {...props}>{children}</StyledBoldHeader>;
-                default:
-                    switch (size) {
-                        case 'large':
-                            return <StyledLargeHeading {...props}>{children}</StyledLargeHeading>;
-                        default:
-                            return <StyledHeader {...props}>{children}</StyledHeader>;
-                    }
-            }
-        case 'text':
-        default:
-            switch (weight) {
-                case 'bold':
-                    return <StyledBoldText {...props}>{children}</StyledBoldText>;
-                default:
-                    return <StyledText {...props}>{children}</StyledText>;
-            }
-    }
+const variantMapping = {
+    h1: "h1",
+    h2: "h2",
+    h3: "h3",
+    h4: "h4",
+    h5: "h5",
+    h6: "h6",
+    subtitle1: "h6",
+    subtitle2: "h6",
+    body1: "p",
+    body2: "p",
+    caption: "span",
+    overline: "span",
+    inherit: "span",
+};
+
+export default function Typography({
+    variant = "body1",
+    as,
+    children,
+    fontSize,
+    fontWeight,
+    lineHeight,
+    color,
+    ...props
+}) {
+    const Component = as || variantMapping[variant] || "span";
+
+    return (
+        <StyledTypography
+            as={Component}
+            variant={variant}
+            fontSize={fontSize}
+            fontWeight={fontWeight}
+            lineHeight={lineHeight}
+            color={color}
+            {...props}
+        >
+            {children}
+        </StyledTypography>
+    );
 }
