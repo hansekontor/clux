@@ -11,7 +11,7 @@ import Tickets from "./components/Ticket";
 import TicketSummary from "./components/TicketSummary";
 import Checkout from "./Checkout";
 
-export default function Select() {
+export default function Home() {
   const { setTicketsToRedeem, setGameTickets } = useApp();
   const [openCheckout, setOpenCheckout] = useState(false);
 
