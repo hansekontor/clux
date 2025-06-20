@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom';
 
 // core functions
@@ -37,13 +37,13 @@ export default function Cart() {
         ticketPrice,
         ticketQtyError,
         ticketQuantity,
-        paymentProcessor,
         maxEtokenTicketQuantity,
         handlePayment,
-        handlePaymentMethod,
         setTicketQuantity,
         setShowPaymentForm,
     } = useCheckout();
+
+    const [paymentMethod, setPaymentMethod] = useState("NMIC");
 
     const handleReturn = () => {
         const previousPath = "/select";
@@ -99,13 +99,13 @@ export default function Cart() {
                             <CardIconBox />
                         </Item>
                         <PaymentMethod
-                            onClick={() => handlePaymentMethod("NMIC")}
-                            $active={paymentProcessor === "NMIC"}
+                            onClick={() => setPaymentMethod("NMIC")}
+                            $active={paymentMethod === "NMIC"}
                         >Credit Card</PaymentMethod>
                         {maxEtokenTicketQuantity >= ticketQuantity &&
                             <PaymentMethod
-                                onClick={() => handlePaymentMethod("etoken")}
-                                $active={paymentProcessor === "etoken"}
+                                onClick={() => setPaymentMethod("etoken")}
+                                $active={paymentMethod === "etoken"}
                             >Pay with Balance</PaymentMethod>
                         }
                         <Item>
@@ -118,7 +118,7 @@ export default function Cart() {
 
             <Footer variant="empty">
                 <FooterBackground variant={"secondary"} />
-                <Button onClick={() => handlePayment(handlePaymentSuccess, handlePaymentError)}>
+                <Button onClick={() => handlePayment(paymentMethod, handlePaymentSuccess, handlePaymentError)}>
                     Pay
                 </Button>
             </Footer>
@@ -131,7 +131,7 @@ export default function Cart() {
                                 <NmiCheckoutForm />
                                 <Button
                                     type="submit"
-                                    form={`${paymentProcessor}-form`}
+                                    form={`${paymentMethod}-form`}
                                 >
                                     {fiatPurchaseButtonText}
                                 </Button>
