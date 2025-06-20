@@ -6,7 +6,7 @@ import Typography from '@components/Typography'
 
 export default function Input({ ...props }) {
     return (
-        <Flex direction="column" gap={1}>
+        <Flex direction="column" gap={1} width={props.fullWidth ? '100%' : 'auto'}>
             {props.label && <label htmlFor={props.name}>{props.label}</label>}
             <BaseInput {...props} />
             {props.helperText && <Typography variant="caption" style={{ opacity: 0.7 }}>{props.helperText}</Typography>}
