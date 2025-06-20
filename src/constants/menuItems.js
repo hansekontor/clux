@@ -1,6 +1,6 @@
 import React from "react";
+
 import {
-  MenuIcon,
   TicketIcon,
   LotteryIcon,
   WalletIcon,
@@ -13,14 +13,14 @@ import {
 } from "@components/Icons";
 
 const menuItems = [
-  { label: "Lottery", icon: <LotteryIcon />, href: "/select", internal: true },
+  { label: "Lottery", icon: <LotteryIcon />, href: "/home", internal: true },
   { label: "Tickets", icon: <TicketIcon />, href: "/tickets", internal: true },
   { label: "Wallet", icon: <WalletIcon />, href: "/wallet", internal: true },
   { label: "Cashout", icon: <CashoutIcon />, href: "/cashout", internal: true },
   {
     label: "Refer a Friend",
     icon: <ReferIcon />,
-    href: "/refer",
+    href: "/affiliate",
     internal: true,
   },
   {
