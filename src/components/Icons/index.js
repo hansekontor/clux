@@ -18,3 +18,7 @@ export { TermsIcon } from "./TermsIcon";
 export { PrivacyIcon } from "./PrivacyIcon";
 export { RegulationsIcon } from "./RegulationsIcon";
 export { ResponsibleIcon } from "./ResponsibleIcon";
+export { ErrorIcon } from "./ErrorIcon";
+export { SuccessIcon } from "./SuccessIcon";
+export { InfoIcon } from "./InfoIcon";
+export { LinkIcon } from "./LinkIcon";
