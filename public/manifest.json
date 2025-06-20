@@ -1,6 +1,6 @@
 {
-    "short_name": "Cashtab",
-    "name": "Cashtab",
+    "short_name": "Block Lotto",
+    "name": "Block Lotto",
     "icons": [
         {
             "src": "favicon.ico",
@@ -8,29 +8,29 @@
             "type": "image/x-icon"
         },
         {
-            "src": "ecash48.png",
+            "src": "blocklotto48.png",
             "type": "image/png",
             "sizes": "48x48"
         },
         {
-            "src": "ecash128.png",
+            "src": "blocklotto128.png",
             "type": "image/png",
             "sizes": "128x128"
         },
         {
-            "src": "ecash192.png",
+            "src": "blocklotto192.png",
             "type": "image/png",
             "sizes": "192x192",
             "purpose": "any maskable"
         },
         {
-            "src": "ecash512.png",
+            "src": "blocklotto512.png",
             "type": "image/png",
             "sizes": "512x512"
         }
     ],
     "start_url": ".",
     "display": "standalone",
-    "theme_color": "#273498",
+    "theme_color": "#1976d2",
     "background_color": "#ffffff"
 }
