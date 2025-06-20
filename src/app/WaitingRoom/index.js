@@ -25,7 +25,7 @@ import LockerPng from '@assets/images/locker.png';
 
 
 const WaitingRoom = () => {
-	const { playerNumbers, wallet, ticketsToRedeem, setGameTickets, gameTickets, checkRedeemability, redeemTicket, isFirstTicket, setLoadingStatus } = useApp();
+	const { playerNumbers, wallet, ticketsToRedeem, setGameTickets, gameTickets, checkTicketRedeemability, redeemTicket, isFirstTicket, setLoadingStatus } = useApp();
 	const history = useHistory();
 	const notify = useNotifications();
 
@@ -47,30 +47,9 @@ const WaitingRoom = () => {
 
 	// wait until ticket is redeemable
 	useEffect(() => {
-		const checkTicketRedeemability = async () => {
-			console.log("checkTicketRedeemability");
-			if (activeTicket.redeemTx?.hash) {
-				notify({ type: "error", message: "Ticket has already been redeemed."});
-				history.push("/select");
-				setIsRedeemable(false);
-			} else if (activeTicket.issueTx?.height > 0) {
-				console.log("issueTx is already mined");
-				setIsRedeemable(true);
-			} else if (activeTicket.issueTx?.hash) {
-				console.log("check if ticket is mined");
-				const isRedeemableTicket = await checkRedeemability(activeTicket, true);
-				if (isRedeemableTicket) {
-					setIsRedeemable(true);
-				} else {
-					setIsRedeemable(false);
-				}
-			} else {
-				setIsRedeemable(false);
-			}
-		};
-
 		if (activeTicket) {
-			checkTicketRedeemability();
+			const polling = true;
+			checkTicketRedeemability(activeTicket, polling, handleCheckRedeemabilityError);
 		}
 	}, [activeTicket]);
 
@@ -99,6 +78,12 @@ const WaitingRoom = () => {
 	}, [gameTickets]);
 
 	// handlers
+	const handleCheckRedeemabilityError = (err) => {
+		console.error(err);
+		notify({ type: "error", message: "Ticket can not be redeemed"});
+		history.push("/select");
+	}
+
 	const handleButtonClick = async () => {
 		if (isRedeemable) {
 			setLoadingStatus("REDEEMING TICKET")
