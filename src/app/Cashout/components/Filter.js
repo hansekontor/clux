@@ -46,6 +46,10 @@ export default function Filter() {
       direction="column"
       gap={2}
       paddingBottom={2}
+      backgroundColor="white"
+      padding={2}
+      borderRadius="sm"
+      boxShadow={2}
     >
       <Flex direction="column" gap={2}>
         <Input

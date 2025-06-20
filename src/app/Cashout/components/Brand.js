@@ -40,6 +40,10 @@ export default function Brand() {
       id={`${tilloStage}-form`}
       onSubmit={handleBrandSubmit}
       gap={2}
+      backgroundColor="white"
+      padding={2}
+      borderRadius="sm"
+      boxShadow={2}
     >
 
       <Select

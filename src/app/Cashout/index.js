@@ -25,7 +25,7 @@ export default function Cashout() {
     const isSufficientBalance = checkBalance();
     if (!isSufficientBalance) {
       notify({ type: "error", message: "Insufficient Balance" });
-      history.push("/select");
+      history.push("/home");
     }
   }, []);
 
