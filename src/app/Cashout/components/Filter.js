@@ -25,12 +25,17 @@ export default function Filter() {
         e.preventDefault();
 
         if (cashoutMethod === "tillo") {
-            const country = e.target.country.value;
-            const currency = e.target.currency.value;
+            const country = e.target.country?.value;
+            const currency = e.target.currency?.value;
 
-            const filteredBrands = filterTilloBrands(country, currency);
-            if (filteredBrands.length > 0) {
-                setTilloStage("brand");
+            try {
+                const filteredBrands = filterTilloBrands(country, currency);
+                if (filteredBrands.length > 0) {
+                    setTilloStage("brand");
+                }                
+            } catch(err) {
+                console.error(err);
+                notify({ type: "error", message: "Filtering Error"});
             }
         }
     }
