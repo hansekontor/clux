@@ -12,6 +12,7 @@ import Button from '@components/Button';
 import { useApp } from 'blocklotto-sdk';
 import sleep from '@utils/sleep';
 import { useNotifications } from 'blocklotto-sdk';
+import { getFormattedTicketData } from 'blocklotto-sdk';
 
 // assets
 import TicketSvg from '@assets/svgs/ticket_filled.svg';
@@ -161,7 +162,6 @@ const Ticket = ({
 
     const [collapsed, setCollapsed] = useState(false);
 	const [height, setHeight] = useState(collapsed ? 0 : undefined);
-	const [combinedNumbers, setCombinedNumbers] = useState(false);
 
 	const ref = useRef(null);
 
@@ -189,44 +189,7 @@ const Ticket = ({
 		history.push("/waitingroom");
 	}                      
 
-	// get redeem utc string
-	let displayTime = false;
-	let redeemDisplayTime = false;
-	if (ticket.redeemTx?.time && !redeemDisplayTime) {
-		const date = new Date(ticket.redeemTx.time * 1000);
-		const displayTime = date.toUTCString();
-		redeemDisplayTime = displayTime;	
-	}
-
-	// get issue utc string
-	let issueDisplayTime = false;
-	if (ticket.issueTx?.time) {
-		const date = new Date(ticket.issueTx.time * 1000);
-		const displayTime = date.toUTCString();
-		issueDisplayTime = displayTime;				
-	}
-
-	if (redeemDisplayTime)
-		displayTime = redeemDisplayTime.slice(0,16);
-	else if (issueDisplayTime)
-		displayTime = issueDisplayTime.slice(0,16);
-
-	const primaryHash = ticket.redeemTx ? ticket.redeemTx?.hash : ticket.issueTx?.hash;
-	const displayPlayerNumbers =  ticket.parsed?.playerNumbers?.join(", ");
-	const displayPayoutAmount = ticket.parsed?.payoutAmount / 100;
-	const displayResultingNumbers = ticket.parsed?.game?.resultingNumbers?.join(", ");
-
-	if (ticket.parsed?.opponentNumbers && ticket.parsed?.playerNumbers && !combinedNumbers) {
-		const combined = [];
-		for (let i = 0; i < 4;i++) {
-			const buf = Buffer.alloc(2);
-			buf.writeUInt8(ticket.parsed.opponentNumbers[i], 0);
-			buf.writeUInt8(ticket.parsed.playerNumbers[i], 1);
-			const combinedNum = buf.readInt16LE();	
-			combined.push(combinedNum);
-		}
-		setCombinedNumbers(combined);
-	}
+	const formattedTicketData = getFormattedTicketData(ticket);
 
     return (
         <TicketCtn {...props}>
@@ -239,10 +202,10 @@ const Ticket = ({
                         <Label>Ticket</Label>
                         <Subscript>									
 							<IdCtn>
-								<Id>{shortifyHash(primaryHash, 4)}</Id>
+								<Id>{shortifyHash(formattedTicketData.primaryHash, 4)}</Id>
 							</IdCtn>
-							{displayTime &&
-								<Time>{displayTime}</Time>		
+							{formattedTicketData.displayTime &&
+								<Time>{formattedTicketData.displayTime}</Time>		
 							}
                         </Subscript>
                     </LabelCtn>
@@ -260,10 +223,10 @@ const Ticket = ({
             </Item>
 			<Collapsible style={{ height }}>
 				<TicketData ref={ref}>
-					{issueDisplayTime && 
+					{formattedTicketData.issueDisplayTime && 
 						<TicketDataItem>
 							<Label>Issued</Label>
-							<TicketDataValue>{issueDisplayTime}</TicketDataValue>
+							<TicketDataValue>{formattedTicketData.issueDisplayTime}</TicketDataValue>
 						</TicketDataItem>			
 					}
 					<TicketDataItem>
@@ -273,25 +236,25 @@ const Ticket = ({
 							{shortifyHash(ticket.issueTx.hash, 8)}
 						</TicketDataValue>
 					</TicketDataItem>
-					{displayPlayerNumbers && 
+					{formattedTicketData.displayPlayerNumbers && 
 						<TicketDataItem>
 							<Label>Player Numbers</Label>
-							<TicketDataValue>{displayPlayerNumbers}</TicketDataValue>
+							<TicketDataValue>{formattedTicketData.displayPlayerNumbers}</TicketDataValue>
 						</TicketDataItem>			
 					}
 
 					{ticket.redeemTx && (
 						<>					
-							{redeemDisplayTime &&
+							{formattedTicketData.redeemDisplayTime &&
 								<TicketDataItem>
 									<Label>Redeemed</Label>
-									<TicketDataValue>{redeemDisplayTime}</TicketDataValue>
+									<TicketDataValue>{formattedTicketData.redeemDisplayTime}</TicketDataValue>
 								</TicketDataItem>								
 							}
 							{ticket.parsed?.payoutAmount && 
 								<TicketDataItem>
 									<Label>Payout</Label>
-									<TicketDataValue>${displayPayoutAmount}</TicketDataValue>
+									<TicketDataValue>${formattedTicketData.displayPayoutAmount}</TicketDataValue>
 								</TicketDataItem>							
 							}
 							<TicketDataItem>
@@ -300,16 +263,16 @@ const Ticket = ({
 									<CopyOutlined /> {' '}
 									{shortifyHash(ticket.redeemTx.hash, 8)}</TicketDataValue>
 							</TicketDataItem>		
-							{displayResultingNumbers &&
+							{formattedTicketData.displayResultingNumbers &&
 								<TicketDataItem>
 									<Label>Resulting Numbers</Label>
-									<TicketDataValue>{displayResultingNumbers}</TicketDataValue>
+									<TicketDataValue>{formattedTicketData.displayResultingNumbers}</TicketDataValue>
 								</TicketDataItem>	
 							}
 							
 							<Divider />
 							
-							{combinedNumbers &&
+							{formattedTicketData.combinedNumbers &&
 								<>
 									<TableHeader>Ticket Calculations</TableHeader>
 									<Table>
@@ -327,7 +290,7 @@ const Ticket = ({
 													<TableRow key={index}>
 														<Element>{choice}</Element>
 														<Element>{ticket.parsed?.opponentNumbers[index]}</Element>
-														<Element>{combinedNumbers[index]}</Element>
+														<Element>{formattedTicketData.combinedNumbers[index]}</Element>
 														<Element>{ticket.parsed?.resultingNumbers[index]}</Element>
 													</TableRow>			
 												)
