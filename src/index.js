@@ -11,6 +11,8 @@ import { theme, GlobalStyles } from "./styles";
 
 // react components
 import App from "./app";
+import Loading from "./components/Loading";
+import Notification from "./components/Notification";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -19,7 +21,7 @@ root.render(
   <ThemeProvider theme={theme}>
     <GlobalStyles />
     <Router>
-      <BlockLottoProvider>
+      <BlockLottoProvider Loading={Loading} Notification={Notification}>
         <App />
       </BlockLottoProvider>
     </Router>
