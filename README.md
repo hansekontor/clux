@@ -1,4 +1,4 @@
-# CLUX APP
+# Block Lotto Dev Kit
 
 ## Features
 
@@ -10,8 +10,8 @@
 ## Development
 
 ```
-yarn install
-yarn start
+npm install
+npm start
 ```
 
 Runs the app in the development mode.<br>
@@ -25,7 +25,7 @@ You will also see any lint errors in the console.
 In the project directory, run:
 
 ```
-yarn run build
+npm run build
 ```
 
 Builds the app for production to the `build` folder.<br>
@@ -35,3 +35,7 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+## Documentation
+
+For the full guide and API documentation, please refer to the [official documentation](./README.md)
