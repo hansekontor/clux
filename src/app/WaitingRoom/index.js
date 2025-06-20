@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -12,6 +12,7 @@ import { Container, Flex } from "@components/Common";
 import Button from "@components/Button";
 import Alert from "@components/Alert";
 import { TicketNumbers } from "../../components/Misc";
+import Backup from "../../components/Misc/Backup";
 
 export default function WaitingRoom() {
   const {
@@ -50,7 +51,7 @@ export default function WaitingRoom() {
       console.log("checkTicketRedeemability");
       if (activeTicket.redeemTx?.hash) {
         notify({ type: "error", message: "Ticket has already been redeemed." });
-        history.push("/select");
+        history.push("/home");
         setIsRedeemable(false);
       } else if (activeTicket.issueTx?.height > 0) {
         console.log("issueTx is already mined");
@@ -106,12 +107,17 @@ export default function WaitingRoom() {
       const newRedeemHash = await redeemTicket(activeTicket);
       setRedeemHashes([newRedeemHash]);
     } else {
-      history.push("/select");
+      history.push("/home");
     }
   };
 
+
+  const handleBackupClick = () => {
+    setShowBackup(false);
+  }
+
   const playerNumbersFromTicket = activeTicket?.parsed?.playerNumbers;
-  const buttonText = isRedeemable ? "Redeem Ticket" : "Purchase another Ticket";
+  const buttonText = isRedeemable ? "Redeem Ticket" : "Purchase Another Ticket";
 
   return (
     <Flex
@@ -135,7 +141,7 @@ export default function WaitingRoom() {
           <Header />
 
           {showBackup ? (
-            <></>
+            <Backup buttonClick={handleBackupClick} />
           ) : (
             <Flex
               direction="column"
@@ -143,8 +149,11 @@ export default function WaitingRoom() {
               gap={2}
               justifyContent={"space-between"}
             >
-              <Flex direction="column" gap={2}>
-                <DotLottieReact src="animations/ticket.lottie" autoplay />
+              <Flex direction="column" height="100%" width="100%" maxHeight="300px"  marginTop="auto" marginBottom="auto" justifyContent="center" alignItems="center">
+                <DotLottieReact
+                  src="animations/ticket.lottie"
+                  segment={[40, 40]}
+                />
               </Flex>
               <Flex direction="column" gap={2}>
                 {!isRedeemable && (
