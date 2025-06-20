@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import { useApp } from "blocklotto-sdk";
+
 // react components
 import { BaseMenu, IconWrapper, MenuBackground } from "./Menu.styles";
 import { Container, Divider, Flex } from "../Common";
@@ -13,11 +15,16 @@ import { CancelIcon } from "../Icons/CancelIcon";
 
 // constants
 import menuItems from "../../constants/menuItems";
+import Badge from "../Badge";
 
 export default function Menu() {
   const [open, setOpen] = useState(false);
   const history = useHistory();
+  const { redeemableTickets } = useApp();
+
   const pathname = history.location.pathname;
+  const isTicketPage = pathname.startsWith("/tickets");
+  const ticketIndicator = isTicketPage ? 0 : redeemableTickets.length;
 
   const handleToggle = () => {
     setOpen((prev) => !prev);
@@ -25,14 +32,16 @@ export default function Menu() {
 
   return (
     <>
-      <IconButton
-        onClick={handleToggle}
-        style={{ position: "relative", zIndex: 91 }}
-      >
-        <IconWrapper open={open}>
-          {open ? <CancelIcon size={16} /> : <MenuIcon size={24} />}
-        </IconWrapper>
-      </IconButton>
+      <Badge number={open ? 0 : ticketIndicator}>
+        <IconButton
+          onClick={handleToggle}
+          style={{ position: "relative", zIndex: 91 }}
+        >
+          <IconWrapper open={open}>
+            {open ? <CancelIcon size={16} /> : <MenuIcon size={24} />}
+          </IconWrapper>
+        </IconButton>
+      </Badge>
 
       <Flex
         justifyContent={"center"}
@@ -61,22 +70,35 @@ export default function Menu() {
                     const onClickHandler = () => {
                       if (item.href) {
                         if (item.internal) {
-                            history.push(item.href);
+                          history.push(item.href);
                         } else {
-                            window.open(item.href, "_blank");
+                          window.open(item.href, "_blank");
                         }
                       }
                     };
+
+                    const icon =
+                      item.label === "Tickets" ? (
+                        <Badge size="sm" number={ticketIndicator}>
+                          {item.icon}
+                        </Badge>
+                      ) : (
+                        item.icon
+                      );
 
                     return (
                       <div>
                         <Button
                           key={item.label}
                           variant="text"
-                          startIcon={item.icon}
+                          startIcon={icon}
                           justifyContent={"start"}
                           textAlign={"start"}
-                          color={pathname.startsWith(item.href) ? "primary" : "tertiary"}
+                          color={
+                            pathname.startsWith(item.href)
+                              ? "primary"
+                              : "tertiary"
+                          }
                           onClick={onClickHandler}
                         >
                           {item.label}
