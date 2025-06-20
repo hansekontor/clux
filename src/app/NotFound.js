@@ -1,12 +1,46 @@
-import React from 'react';
-import { Row, Col } from 'antd';
+import React from "react";
 
-const NotFound = () => (
-    <Row justify="center" type="flex">
-        <Col span={8}>
-            <h1>Page not found</h1>
-        </Col>
-    </Row>
-);
+// react components
+import Header from "@components/Header";
+import { Container, Flex } from "@components/Common";
+import Typography from "@components/Typography";
 
-export default NotFound;
+export default function NotFound() {
+  return (
+    <Flex
+      direction={"column"}
+      minHeight={"100dvh"}
+      style={{ overflow: "hidden" }}
+    >
+      <Container
+        height="100dvh"
+        style={{
+          overflowY: "auto",
+        }}
+      >
+        <Flex
+          direction="column"
+          height="100%"
+          paddingTop={2}
+          paddingBottom={2}
+          gap={2}
+        >
+          <Header />
+
+          <Flex
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+            gap={2}
+          >
+            <Typography variant="h1">404</Typography>
+            <Typography>
+              Oops! The page you are looking for does not exist.
+            </Typography>
+          </Flex>
+        </Flex>
+      </Container>
+    </Flex>
+  );
+}
