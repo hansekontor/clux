@@ -16,7 +16,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Dollar } from "./components/Dollar";
 
 export default function Result() {
-  const [animation, setAnimation] = useState(false);
+  const [animation, setAnimation] = useState(true);
   const { gameTickets, setGameTickets, ticketsToRedeem } = useApp();
   const history = useHistory();
   const activeTicket = gameTickets[0];
@@ -27,10 +27,10 @@ export default function Result() {
   useEffect(() => {
     if (!activeTicket) {
       sleep(1000);
-      history.push("/select");
+      history.push("/home");
     } else if (!activeTicket.parsed) {
       sleep(1000);
-      history.push("/select");
+      history.push("/home");
     }
   }, []);
 
@@ -42,7 +42,7 @@ export default function Result() {
       history.push("/waitingroom");
     } else {
       console.log("no more tickets: go to select");
-      history.push("/select");
+      history.push("/home");
     }
   };
 
@@ -57,7 +57,7 @@ export default function Result() {
   };
 
   const handleEvent = () => {
-    setAnimation(true);
+    setAnimation(false);
   };
 
   // DOM variables
@@ -106,7 +106,7 @@ export default function Result() {
             alignItems="center"
             height="100%"
           >
-            {animation ? (
+            {!animation ? (
               <Flex
                 direction="column"
                 height="100%"
@@ -143,12 +143,12 @@ export default function Result() {
                           fontWeight="400"
                           fontSize="5rem"
                         >
-                          ${amount.toFixed(2)}
+                          ${amount}
                         </Typography>
                       </Dollar>
                     ) : (
                       <Typography variant="h2" fontWeight="400" fontSize="5rem">
-                        ${amount.toFixed(2)}
+                        ${amount}
                       </Typography>
                     )}
                   </Flex>
