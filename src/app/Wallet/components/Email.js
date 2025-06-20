@@ -45,20 +45,25 @@ const Email = () => {
 
 
     const handleChangeEmail = async (e) => {
-        e.preventDefault();
-		const emailInput = e.target.email.value;
-		const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput);
-		if (!isValid) {
-            notify({
-                type: "error",
-                message: "Invalid email"
-            })
-			return;
-		}
+        try {
+            e.preventDefault();
+            const emailInput = e.target.email.value;
+            const isValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailInput);
+            if (!isValid) {
+                notify({
+                    type: "error",
+                    message: "Invalid email"
+                })
+                return;
+            }
 
-        await changeEmail(emailInput);
+            await changeEmail(emailInput);
 
-        history.push("/select");
+            history.push("/select");            
+        } catch(err) {
+            console.error(err);
+            notify({ type: "error", message: err.message});
+        }
     }
 
 
