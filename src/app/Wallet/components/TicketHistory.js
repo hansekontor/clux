@@ -272,7 +272,7 @@ const Ticket = ({
 							
 							<Divider />
 							
-							{formattedTicketData.combinedNumbers &&
+							{ticket.parsed?.opponentNumbers && ticket.parsed?.resultingNumbers &&
 								<>
 									<TableHeader>Ticket Calculations</TableHeader>
 									<Table>
