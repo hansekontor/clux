@@ -47,9 +47,9 @@ const WaitingRoom = () => {
 
 	// wait until ticket is redeemable
 	useEffect(() => {
-		if (activeTicket) {
+		if (activeTicket.issueTx?.hash) {
 			const polling = true;
-			checkTicketRedeemability(activeTicket, polling, handleCheckRedeemabilityError);
+			checkTicketRedeemability(activeTicket, polling, handleResult);
 		}
 	}, [activeTicket]);
 
@@ -78,10 +78,14 @@ const WaitingRoom = () => {
 	}, [gameTickets]);
 
 	// handlers
-	const handleCheckRedeemabilityError = (err) => {
-		console.error(err);
-		notify({ type: "error", message: "Ticket can not be redeemed"});
-		history.push("/select");
+	const handleResult = (result) => {
+		if (result.redeemable) {
+			setIsRedeemable(true);
+		} else {
+			console.error(message);
+			notify({ type: "error", message: "Ticket can not be redeemed"});
+			history.push("/select");
+		}
 	}
 
 	const handleButtonClick = async () => {
