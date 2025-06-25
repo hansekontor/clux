@@ -27,7 +27,7 @@ export const PaymentForm = ({ handleGoBack }) => {
       id="NMIC-form"
       onSubmit={initiatePayment}
     >
-      <Flex direction="column" gap={3}>
+      <Flex direction="column" gap={1}>
         <Flex gap={1}>
           <Input
             type="text"
