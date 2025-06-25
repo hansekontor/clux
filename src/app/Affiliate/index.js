@@ -5,11 +5,10 @@ import { useApp } from "blocklotto-sdk";
 
 // react components
 import Header from "@components/Header";
-import { Container, Flex, Divider } from "@components/Common";
+import { Container, Flex } from "@components/Common";
 import Typography from "@components/Typography";
 import QrCode from "./components/QrCode";
 import CopyLink from "./components/CopyLink";
-import Tickets from "./components/Tickets";
 
 export default function Affiliate() {
   const { affiliate } = useApp();
