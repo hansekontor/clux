@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -21,7 +21,7 @@ export default function WaitingRoom() {
     ticketsToRedeem,
     setGameTickets,
     gameTickets,
-    checkRedeemability,
+    checkTicketRedeemability,
     redeemTicket,
     isFirstTicket,
     setLoadingStatus,
@@ -47,34 +47,13 @@ export default function WaitingRoom() {
 
   // wait until ticket is redeemable
   useEffect(() => {
-    const checkTicketRedeemability = async () => {
-      console.log("checkTicketRedeemability");
-      if (activeTicket.redeemTx?.hash) {
-        notify({ type: "error", message: "Ticket has already been redeemed." });
-        history.push("/home");
-        setIsRedeemable(false);
-      } else if (activeTicket.issueTx?.height > 0) {
-        console.log("issueTx is already mined");
-        setIsRedeemable(true);
-      } else if (activeTicket.issueTx?.hash) {
-        console.log("check if ticket is mined");
-        const isRedeemableTicket = await checkRedeemability(activeTicket, true);
-        if (isRedeemableTicket) {
-          setIsRedeemable(true);
-        } else {
-          setIsRedeemable(false);
-        }
-      } else {
-        setIsRedeemable(false);
-      }
-    };
-
-    if (activeTicket) {
-      checkTicketRedeemability();
+    if (activeTicket.issueTx?.hash) {
+      const polling = true;
+      checkTicketRedeemability(activeTicket, polling, handleResult);
     }
   }, [activeTicket]);
 
-  // prepare tickets for result when ticket was redeemed
+  // prepare tickets for game when ticket was redeemed
   useEffect(() => {
     if (redeemHashes) {
       console.log("WaitingRoom: redeemHash available", redeemHashes);
@@ -101,6 +80,16 @@ export default function WaitingRoom() {
   }, [gameTickets]);
 
   // handlers
+  const handleResult = (result) => {
+    if (result.redeemable) {
+      setIsRedeemable(true);
+    } else {
+      console.error(message);
+      notify({ type: "error", message: "Ticket can not be redeemed" });
+      history.push("/home");
+    }
+  };
+
   const handleButtonClick = async () => {
     if (isRedeemable) {
       setLoadingStatus("REDEEMING TICKET");
@@ -111,10 +100,9 @@ export default function WaitingRoom() {
     }
   };
 
-
   const handleBackupClick = () => {
     setShowBackup(false);
-  }
+  };
 
   const playerNumbersFromTicket = activeTicket?.parsed?.playerNumbers;
   const buttonText = isRedeemable ? "Redeem Ticket" : "Purchase Another Ticket";
@@ -149,7 +137,16 @@ export default function WaitingRoom() {
               gap={2}
               justifyContent={"space-between"}
             >
-              <Flex direction="column" height="100%" width="100%" maxHeight="300px"  marginTop="auto" marginBottom="auto" justifyContent="center" alignItems="center">
+              <Flex
+                direction="column"
+                height="100%"
+                width="100%"
+                maxHeight="300px"
+                marginTop="auto"
+                marginBottom="auto"
+                justifyContent="center"
+                alignItems="center"
+              >
                 <DotLottieReact
                   src="animations/ticket.lottie"
                   segment={[40, 40]}
