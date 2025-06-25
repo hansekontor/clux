@@ -21,7 +21,6 @@ export default function Result() {
   const history = useHistory();
   const activeTicket = gameTickets[0];
   const redemptionsOutstanding = ticketsToRedeem.length > 0;
-  console.log("Result outstanding redemptions", ticketsToRedeem);
 
   // redirect if ticket data missing
   useEffect(() => {
@@ -56,7 +55,7 @@ export default function Result() {
     history.push("/cashout");
   };
 
-  const handleEvent = () => {
+  const handleFinishAnimation = () => {
     setAnimation(false);
   };
 
@@ -71,12 +70,6 @@ export default function Result() {
     ? "Redeem Next Ticket"
     : "Play Again";
   const isWinner = amount > 0;
-
-  console.log(
-    "Result conditions:",
-    amount >= 0,
-    resultingNumbers?.length === 4
-  );
 
   return (
     <Flex
@@ -125,9 +118,6 @@ export default function Result() {
                     src={`animations/${isWinner ? "confetti" : "smoke"}.lottie`}
                     autoplay
                     loop={isWinner}
-                    dotLottieRefCallback={(dotLottie) => {
-                      dotLottie.addEventListener("complete", handleEvent);
-                    }}
                   />
                   <Flex
                     position="absolute"
@@ -156,10 +146,20 @@ export default function Result() {
                 <Flex gap={2} direction="column" width="100%">
                   <Flex gap={1} direction="column" width="100%">
                     <Flex gap={1} width="100%">
-                      <Button fullWidth size="sm" color="tertiary" onClick={handleCashoutRedirect}>
+                      <Button
+                        fullWidth
+                        size="sm"
+                        color="tertiary"
+                        onClick={handleCashoutRedirect}
+                      >
                         Cashout
                       </Button>
-                      <Button fullWidth size="sm" color="tertiary" onClick={handleTicketsRedirect}>
+                      <Button
+                        fullWidth
+                        size="sm"
+                        color="tertiary"
+                        onClick={handleTicketsRedirect}
+                      >
                         Tickets
                       </Button>
                     </Flex>
@@ -173,7 +173,9 @@ export default function Result() {
                 src="animations/ticket.lottie"
                 autoplay
                 dotLottieRefCallback={(dotLottie) => {
-                  dotLottie.addEventListener("complete", handleEvent);
+                  if (dotLottie) {
+                    dotLottie.addEventListener("complete", handleFinishAnimation);
+                  }
                 }}
               />
             )}
