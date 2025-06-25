@@ -13,7 +13,7 @@ export default function Email() {
     const {
         emailError,
         countryError,
-        handleSubmitEmail,
+        handleSubmitAccount,
     } = useCheckout();
     const [selectValue, setSelectValue] = useState('');
     const [age, setAge] = useState(false);
@@ -27,7 +27,7 @@ export default function Email() {
             direction="column"
             gap={3}
             id='email-form'
-            onSubmit={(e) => handleSubmitEmail(e)}
+            onSubmit={(e) => handleSubmitAccount(e)}
         >
             <Flex direction="column" gap={2}>
                 <Typography variant="h5" as={'h2'}>Create Your Account</Typography>
