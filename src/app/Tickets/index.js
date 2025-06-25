@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 // core functions
 import { useApp, getWalletState } from "blocklotto-sdk";
@@ -9,6 +10,7 @@ import { Container, Flex } from "@components/Common";
 import Ticket from "./components/Ticket";
 import Button from "@components/Button";
 import Typography from "@components/Typography";
+import sleep from "@utils/sleep";
 
 export default function Tickets() {
   const {
@@ -20,11 +22,14 @@ export default function Tickets() {
     updateWallet,
   } = useApp();
   const walletState = getWalletState(wallet);
+  const history = useHistory();
   const { tickets } = walletState;
 
-  const handleRedeemAll = () => {
+  const handleRedeemAll = async () => {
     setLoadingStatus("LOADING TICKET");
-    setTicketsToRedeem(redeemableTickets);
+    await setTicketsToRedeem(redeemableTickets);
+    await sleep(1000);
+    history.push("/waitingroom");
   };
 
   return (
