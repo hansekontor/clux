@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 import { useCheckout, useNotifications } from "blocklotto-sdk";
 
@@ -9,6 +10,7 @@ import Typography from "@components/Typography";
 import { VideoIcon, PictureIcon, SmartPhoneIcon } from "@components/Icons";
 
 export default function Kyc() {
+  const history = useHistory();
   const { handleKYCandCapture } = useCheckout();
   const notify = useNotifications();
 
