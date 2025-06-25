@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // core functions
 import {
@@ -16,60 +16,18 @@ import Typography from "@components/Typography";
 import { CartIcon } from "@components/Icons";
 import { Divider } from "@components/Common";
 
-export default function Payment() {
-  const {
-    ticketPrice,
-    ticketQtyError,
-    ticketQuantity,
-    handlePaymentMethod,
-    initiatePayment,
-    paymentProcessor,
-    handlePayment,
-  } = useCheckout();
-
-  const notify = useNotifications();
-  const { balance } = useApp();
-
-  const handlePaymentSuccess = () => {
-    notify({ type: "success", message: "Successful purchase!" });
-  };
-
-  const handlePaymentError = () => {
-    notify({ type: "error", message: "API Error. Try again" });
-  };
-
-  const handleCardSubmit = async (e) => {
-    e.preventDefault();
-    handlePaymentMethod("NMIC");
-    await handlePayment(handlePaymentSuccess, handlePaymentError);
-    await initiatePayment(e);
-  };
-
-  const handleEtokenSubmit = async (e) => {
-    handlePaymentMethod("etoken");
-    await handlePayment(handlePaymentSuccess, handlePaymentError);
-  };
+export const PaymentForm = ({ handleGoBack }) => {
+  const { initiatePayment } = useCheckout();
 
   return (
-    <Flex direction="column" gap={3}>
-      <Flex justifyContent="space-between" alignItems="center">
-        <Typography textTransform="uppercase">
-          Balance: ${balance.toFixed(2)} {paymentProcessor}
-        </Typography>
-        <Flex gap={1} alignItems="center">
-          <CartIcon />
-          <Typography textTransform="uppercase">
-            ${ticketPrice * ticketQuantity}.00
-          </Typography>
-        </Flex>
-      </Flex>
-      <Flex
-        as="form"
-        direction="column"
-        gap={2}
-        id="NMIC-form"
-        onSubmit={handleCardSubmit}
-      >
+    <Flex
+      as="form"
+      direction="column"
+      gap={3}
+      id="NMIC-form"
+      onSubmit={initiatePayment}
+    >
+      <Flex direction="column" gap={3}>
         <Flex gap={1}>
           <Input
             type="text"
@@ -100,27 +58,95 @@ export default function Payment() {
         <NMICheckout variant="lightbox" />
       </Flex>
 
-      <Flex direction="column" gap={1}>
-        <Button type="submit" form="NMIC-form">
-          Pay with Card
-        </Button>
-        {balance >= ticketPrice * ticketQuantity && (
-          <>
-            <Flex gap={1} alignItems="center">
-              <Divider />
-              <Typography variant="caption" color="divider">
-                OR
-              </Typography>
-              <Divider />
-            </Flex>
+      <Button type="submit">Pay Now</Button>
+      <Button variant="text" color="tertiary" onClick={handleGoBack}>
+        Go Back
+      </Button>
+    </Flex>
+  );
+};
 
-            <Button color="tertiary" onClick={handleEtokenSubmit}>
-              Pay with Credits
-            </Button>
-          </>
-        )}
-        {ticketQtyError && <Alert type="error">{ticketQtyError}</Alert>}
+export default function Payment() {
+  const {
+    ticketPrice,
+    ticketQtyError,
+    ticketQuantity,
+    initiatePayment,
+    handlePayment,
+    paymentMethod,
+  } = useCheckout();
+
+  const notify = useNotifications();
+  const { balance } = useApp();
+
+  const [showForm, setShowForm] = useState(false);
+
+  const handlePaymentSuccess = () => {
+    notify({ type: "success", message: "Successful purchase!" });
+  };
+
+  const handlePaymentError = () => {
+    notify({ type: "error", message: "API Error. Try again" });
+  };
+
+  const handleCardSubmit = async () => {
+    await handlePayment(
+      { paymentMethod: "NMIC" },
+      handlePaymentSuccess,
+      handlePaymentError
+    );
+    setShowForm(true);
+  };
+
+  const handleEtokenSubmit = async () => {
+    await handlePayment(
+      { paymentMethod: "etoken" },
+      handlePaymentSuccess,
+      handlePaymentError
+    );
+  };
+
+  const handleGoBack = () => {
+    setShowForm(false);
+  };
+
+  return (
+    <Flex direction="column" gap={3}>
+      <Flex justifyContent="space-between" alignItems="center">
+        <Typography textTransform="uppercase">
+          Balance: ${balance.toFixed(2)}
+        </Typography>
+        <Flex gap={1} alignItems="center">
+          <CartIcon />
+          <Typography textTransform="uppercase">
+            ${ticketPrice * ticketQuantity}.00
+          </Typography>
+        </Flex>
       </Flex>
+
+      {showForm ? (
+        <PaymentForm handleGoBack={handleGoBack} />
+      ) : (
+        <Flex direction="column" gap={1}>
+          <Button onClick={handleCardSubmit}>Pay with Card</Button>
+          {balance >= ticketPrice * ticketQuantity && (
+            <>
+              <Flex gap={1} alignItems="center">
+                <Divider />
+                <Typography variant="caption" color="divider">
+                  OR
+                </Typography>
+                <Divider />
+              </Flex>
+
+              <Button color="tertiary" onClick={handleEtokenSubmit}>
+                Pay with Credits
+              </Button>
+            </>
+          )}
+          {ticketQtyError && <Alert type="error">{ticketQtyError}</Alert>}
+        </Flex>
+      )}
     </Flex>
   );
 }
