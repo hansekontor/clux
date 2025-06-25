@@ -58,10 +58,6 @@ export default function Affiliate() {
             </Flex>
 
             <CopyLink value={affUrl} />
-
-            <Divider />
-
-            <Tickets />
           </Flex>
         </Flex>
       </Container>
