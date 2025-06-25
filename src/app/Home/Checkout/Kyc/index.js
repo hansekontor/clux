@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useCheckout } from "blocklotto-sdk";
+import { useCheckout, useNotifications } from "blocklotto-sdk";
 
 import { Flex } from "@components/Common";
 import Button from "@components/Button";
@@ -9,7 +9,17 @@ import Typography from "@components/Typography";
 import { VideoIcon, PictureIcon, SmartPhoneIcon } from "@components/Icons";
 
 export default function Kyc() {
-  const { handleKYC } = useCheckout();
+  const { handleKYCandCapture } = useCheckout();
+  const notify = useNotifications();
+
+  const handleSuccess = async (message) => {
+    notify({ type: "success", message: "KYC successful" });
+  };
+
+  const handleError = (message) => {
+    notify({ type: "error", message });
+    history.push("/");
+  };
 
   return (
     <Flex direction="column" textAlign="center" gap={2}>
@@ -73,7 +83,7 @@ export default function Kyc() {
       </Flex>
 
       <Typography variant="caption">Total time 2 minutes</Typography>
-      <Button onClick={handleKYC} size="sm" color="tertiary">
+      <Button onClick={(e) => handleKYCandCapture(e, handleSuccess, handleError)} size="sm" color="tertiary">
         Continue
       </Button>
     </Flex>
