@@ -5,8 +5,8 @@
   "homepage": "https://beta.lotto.mp/",
   "license": "MIT license",
   "dependencies": {
-    "@lottiefiles/dotlottie-react": "^0.14.1",
-    "blocklotto-sdk": "file:../blocklotto-sdk/blocklotto-sdk-0.9.4.tgz",
+    "@lottiefiles/dotlottie-react": "^0.14.0",
+    "blocklotto-sdk": "file:../blocklotto-sdk/blocklotto-sdk-0.9.6.tgz",
     "crypto-browserify": "^3.12.1",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
