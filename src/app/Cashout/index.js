@@ -16,8 +16,7 @@ import GiftCard from "./components/GiftCard";
 export default function Cashout() {
   const history = useHistory();
   const notify = useNotifications();
-  const { checkBalance, tilloStage, giftcardLink, setGiftcardLink } =
-    useCashout();
+  const { checkBalance, tilloStage } = useCashout();
   const { balance } = useApp();
 
   // redirect to homepage is insufficient balance
