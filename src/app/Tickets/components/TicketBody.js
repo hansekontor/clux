@@ -117,7 +117,7 @@ export default function TicketBody({
 
             <Divider />
 
-            {combinedNumbers && (
+            {combinedNumbers && ticket.parsed && (
               <>
                 <Typography>Ticket Calculations</Typography>
                 <table>
@@ -130,13 +130,13 @@ export default function TicketBody({
                     </tr>
                   </thead>
                   <tbody>
-                    {ticket.parsed.playerNumbers.map((choice, index) => {
+                    {ticket.parsed?.playerNumbers.map((choice, index) => {
                       return (
                         <tr key={index}>
                           <td>{choice}</td>
-                          <td>{ticket.parsed?.opponentNumbers[index]}</td>
+                          <td>{ticket.parsed?.opponentNumbers && ticket.parsed?.opponentNumbers[index]}</td>
                           <td>{combinedNumbers[index]}</td>
-                          <td>{ticket.parsed?.resultingNumbers[index]}</td>
+                          <td>{ticket.parsed?.resultingNumbers && ticket.parsed?.resultingNumbers[index]}</td>
                         </tr>
                       );
                     })}
