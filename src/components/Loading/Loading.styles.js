@@ -5,6 +5,7 @@ export const Backdrop = styled(BackgroundCover)`
   display: flex;
   justify-content: center;
   align-items: center;
+  text-transform: uppercase;
 `
 
 export const spin = keyframes`
