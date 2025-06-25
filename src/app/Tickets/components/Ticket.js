@@ -1,31 +1,29 @@
 import React, { useState } from "react";
 
-// core functions
-import { useApp } from "blocklotto-sdk";
-
 import { Flex } from "@components/Common";
 import TicketHeader from "./TicketHeader";
 import TicketBody from "./TicketBody";
+import { formateTicketData } from "@utils/formateTicketData";
 
 export default function Ticket({ ticket }) {
-  const { getFormattedTicketData } = useApp();
   const [collapsed, setCollapsed] = useState(true);
-
-  const {
-    displayTime,
-    issueDisplayTime,
-    redeemDisplayTime,
-    primaryHash,
-    displayPlayerNumbers,
-    displayPayoutAmount,
-    displayResultingNumbers,
-    combinedNumbers,
-  } = getFormattedTicketData(ticket);
 
   // toggle ticket collapse state
   const handleTicketOnClick = () => {
     setCollapsed((prev) => !prev);
   };
+
+  // format ticket data
+  const {
+    displayTime,
+    redeemDisplayTime,
+    issueDisplayTime,
+    primaryHash,
+    displayPlayerNumbers,
+    displayPayoutAmount,
+    displayResultingNumbers,
+    combinedNumbers,
+  } = formateTicketData(ticket);
 
   return (
     <Flex

@@ -117,7 +117,7 @@ export default function TicketBody({
 
             <Divider />
 
-            {combinedNumbers && ticket.parsed && (
+            {combinedNumbers && ticket.parsed?.opponentNumbers && ticket.parsed?.resultingNumbers && (
               <>
                 <Typography>Ticket Calculations</Typography>
                 <table>
