@@ -87,7 +87,7 @@ export default function Menu() {
                       );
 
                     return (
-                      <div>
+                      <div key={index}>
                         <Button
                           key={item.label}
                           variant="text"
