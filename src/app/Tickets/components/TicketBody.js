@@ -115,48 +115,56 @@ export default function TicketBody({
               </Flex>
             )}
 
-            <Divider />
+            {combinedNumbers &&
+              ticket.parsed?.opponentNumbers &&
+              ticket.parsed?.resultingNumbers && (
+                <>
+                  <Divider />
 
-            {combinedNumbers && ticket.parsed?.opponentNumbers && ticket.parsed?.resultingNumbers && (
-              <>
-                <Typography>Ticket Calculations</Typography>
-                <table>
-                  <thead style={{ textAlign: "left" }}>
-                    <tr>
-                      <th key={0}>You</th>
-                      <th key={1}>Block</th>
-                      <th key={2}>Combination</th>
-                      <th key={3}>Module</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ticket.parsed?.playerNumbers.map((choice, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{choice}</td>
-                          <td>{ticket.parsed?.opponentNumbers && ticket.parsed?.opponentNumbers[index]}</td>
-                          <td>{combinedNumbers[index]}</td>
-                          <td>{ticket.parsed?.resultingNumbers && ticket.parsed?.resultingNumbers[index]}</td>
-                        </tr>
-                      );
-                    })}
-                    <tr key={"summary"}>
-                      <td key={0}></td>
-                      <td key={1}></td>
-                      <td key={2}></td>
-                      <td key={3}>
-                        <b>
-                          {ticket.parsed?.resultingNumbers?.reduce(
-                            (acc, number) => acc + number,
-                            0
-                          )}
-                        </b>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </>
-            )}
+                  <Typography>Ticket Calculations</Typography>
+                  <table>
+                    <thead style={{ textAlign: "left" }}>
+                      <tr>
+                        <th key={0}>You</th>
+                        <th key={1}>Block</th>
+                        <th key={2}>Combination</th>
+                        <th key={3}>Module</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ticket.parsed?.playerNumbers.map((choice, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>{choice}</td>
+                            <td>
+                              {ticket.parsed?.opponentNumbers &&
+                                ticket.parsed?.opponentNumbers[index]}
+                            </td>
+                            <td>{combinedNumbers[index]}</td>
+                            <td>
+                              {ticket.parsed?.resultingNumbers &&
+                                ticket.parsed?.resultingNumbers[index]}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      <tr key={"summary"}>
+                        <td key={0}></td>
+                        <td key={1}></td>
+                        <td key={2}></td>
+                        <td key={3}>
+                          <b>
+                            {ticket.parsed?.resultingNumbers?.reduce(
+                              (acc, number) => acc + number,
+                              0
+                            )}
+                          </b>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </>
+              )}
           </>
         ) : (
           <Flex width="100%" paddingTop={1}>
