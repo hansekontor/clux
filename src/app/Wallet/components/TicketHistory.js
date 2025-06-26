@@ -12,7 +12,7 @@ import Button from '@components/Button';
 import { useApp } from 'blocklotto-sdk';
 import sleep from '@utils/sleep';
 import { useNotifications } from 'blocklotto-sdk';
-import { getFormattedTicketData } from 'blocklotto-sdk';
+import { formateTicketData } from "@utils/formateTicketData";
 
 // assets
 import TicketSvg from '@assets/svgs/ticket_filled.svg';
@@ -189,7 +189,17 @@ const Ticket = ({
 		history.push("/waitingroom");
 	}                      
 
-	const formattedTicketData = getFormattedTicketData(ticket);
+	  // format ticket data
+	const {
+		displayTime,
+		redeemDisplayTime,
+		issueDisplayTime,
+		primaryHash,
+		displayPlayerNumbers,
+		displayPayoutAmount,
+		displayResultingNumbers,
+		combinedNumbers,
+	} = formateTicketData(ticket);
 
     return (
         <TicketCtn {...props}>
@@ -202,10 +212,10 @@ const Ticket = ({
                         <Label>Ticket</Label>
                         <Subscript>									
 							<IdCtn>
-								<Id>{shortifyHash(formattedTicketData.primaryHash, 4)}</Id>
+								<Id>{shortifyHash(primaryHash, 4)}</Id>
 							</IdCtn>
-							{formattedTicketData.displayTime &&
-								<Time>{formattedTicketData.displayTime}</Time>		
+							{displayTime &&
+								<Time>{displayTime}</Time>		
 							}
                         </Subscript>
                     </LabelCtn>
@@ -223,10 +233,10 @@ const Ticket = ({
             </Item>
 			<Collapsible style={{ height }}>
 				<TicketData ref={ref}>
-					{formattedTicketData.issueDisplayTime && 
+					{issueDisplayTime && 
 						<TicketDataItem>
 							<Label>Issued</Label>
-							<TicketDataValue>{formattedTicketData.issueDisplayTime}</TicketDataValue>
+							<TicketDataValue>{issueDisplayTime}</TicketDataValue>
 						</TicketDataItem>			
 					}
 					<TicketDataItem>
@@ -236,25 +246,25 @@ const Ticket = ({
 							{shortifyHash(ticket.issueTx.hash, 8)}
 						</TicketDataValue>
 					</TicketDataItem>
-					{formattedTicketData.displayPlayerNumbers && 
+					{displayPlayerNumbers && 
 						<TicketDataItem>
 							<Label>Player Numbers</Label>
-							<TicketDataValue>{formattedTicketData.displayPlayerNumbers}</TicketDataValue>
+							<TicketDataValue>{displayPlayerNumbers}</TicketDataValue>
 						</TicketDataItem>			
 					}
 
 					{ticket.redeemTx && (
 						<>					
-							{formattedTicketData.redeemDisplayTime &&
+							{redeemDisplayTime &&
 								<TicketDataItem>
 									<Label>Redeemed</Label>
-									<TicketDataValue>{formattedTicketData.redeemDisplayTime}</TicketDataValue>
+									<TicketDataValue>{redeemDisplayTime}</TicketDataValue>
 								</TicketDataItem>								
 							}
 							{ticket.parsed?.payoutAmount && 
 								<TicketDataItem>
 									<Label>Payout</Label>
-									<TicketDataValue>${formattedTicketData.displayPayoutAmount}</TicketDataValue>
+									<TicketDataValue>${displayPayoutAmount}</TicketDataValue>
 								</TicketDataItem>							
 							}
 							<TicketDataItem>
@@ -263,16 +273,16 @@ const Ticket = ({
 									<CopyOutlined /> {' '}
 									{shortifyHash(ticket.redeemTx.hash, 8)}</TicketDataValue>
 							</TicketDataItem>		
-							{formattedTicketData.displayResultingNumbers &&
+							{displayResultingNumbers &&
 								<TicketDataItem>
 									<Label>Resulting Numbers</Label>
-									<TicketDataValue>{formattedTicketData.displayResultingNumbers}</TicketDataValue>
+									<TicketDataValue>{displayResultingNumbers}</TicketDataValue>
 								</TicketDataItem>	
 							}
 							
 							<Divider />
 							
-							{ticket.parsed?.opponentNumbers && ticket.parsed?.resultingNumbers &&
+							{combinedNumbers &&
 								<>
 									<TableHeader>Ticket Calculations</TableHeader>
 									<Table>
@@ -290,7 +300,7 @@ const Ticket = ({
 													<TableRow key={index}>
 														<Element>{choice}</Element>
 														<Element>{ticket.parsed?.opponentNumbers[index]}</Element>
-														<Element>{formattedTicketData.combinedNumbers[index]}</Element>
+														<Element>{combinedNumbers[index]}</Element>
 														<Element>{ticket.parsed?.resultingNumbers[index]}</Element>
 													</TableRow>			
 												)
