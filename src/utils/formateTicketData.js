@@ -31,8 +31,7 @@ export function formateTicketData(ticket) {
 
   if (
     ticket.parsed?.opponentNumbers &&
-    ticket.parsed?.playerNumbers &&
-    !combinedNumbers
+    ticket.parsed?.playerNumbers
   ) {
     const combined = [];
     for (let i = 0; i < 4; i++) {
@@ -44,7 +43,6 @@ export function formateTicketData(ticket) {
     }
     combinedNumbers = combined;
   }
-
 
   return {
     displayTime,
