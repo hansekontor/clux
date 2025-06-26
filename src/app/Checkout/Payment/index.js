@@ -54,7 +54,8 @@ export default function Cart() {
         notify({ type: "success", message: "Successful purchase!"});
     }
 
-    const handlePaymentError = () => {
+    const handlePaymentError = (err) => {
+        console.error("handlePaymentError", err);
         notify( { type: "error", message: "API Error. Try again"});
     }
 
