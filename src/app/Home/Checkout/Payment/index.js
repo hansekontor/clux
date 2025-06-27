@@ -90,20 +90,12 @@ export default function Payment() {
   };
 
   const handleCardSubmit = async () => {
-    await handlePayment(
-      { paymentMethod: "NMIC" },
-      handlePaymentSuccess,
-      handlePaymentError
-    );
+    await handlePayment("NMIC", handlePaymentSuccess, handlePaymentError);
     setShowForm(true);
   };
 
   const handleEtokenSubmit = async () => {
-    await handlePayment(
-      { paymentMethod: "etoken" },
-      handlePaymentSuccess,
-      handlePaymentError
-    );
+    await handlePayment("etoken", handlePaymentSuccess, handlePaymentError);
   };
 
   const handleGoBack = () => {
