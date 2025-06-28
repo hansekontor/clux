@@ -90,7 +90,7 @@ export default function Result() {
           paddingBottom={2}
           gap={2}
         >
-          <Header hideMenu />
+          <Header />
 
           <Flex
             direction="column"
