@@ -24,8 +24,9 @@ const Affiliate = () => {
         }
     }, [])
 
-    const landingPageUrl = `${window.location.protocol}//${window.location.host}/#/select`;
-    const link = getAffiliateLink(landingPageUrl);
+    const link = getAffiliateLink({
+        path: "/#/select"
+    });
 
     return (
         <AffiliateContainer>
