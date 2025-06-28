@@ -175,7 +175,7 @@ const Wallet = ({
                                     <S.ImgButton src={PencilIconSvg} />
                                 </S.Item>
                             }
-                            {(email &&
+                            {email &&
                                 <S.Item onClick={handleToAffiliate}>
                                     <S.LabelCtn>
                                         <QrCodeIcon />
