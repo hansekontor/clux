@@ -175,14 +175,15 @@ const Wallet = ({
                                     <S.ImgButton src={PencilIconSvg} />
                                 </S.Item>
                             }
-                            <S.Item onClick={handleToAffiliate}>
-                                <S.LabelCtn>
-                                    <QrCodeIcon />
-                                    <S.Label>Affiliate</S.Label>
-                                </S.LabelCtn>
-                                <S.ImgButton src={RightArrowSvg} />
-                            </S.Item>
-
+                            {(email &&
+                                <S.Item onClick={handleToAffiliate}>
+                                    <S.LabelCtn>
+                                        <QrCodeIcon />
+                                        <S.Label>Affiliate</S.Label>
+                                    </S.LabelCtn>
+                                    <S.ImgButton src={RightArrowSvg} />
+                                </S.Item>                                
+                            }
                             <S.SmallItem onClick={handleImportWallet}>
                                 <S.Label>
                                     Import Wallet

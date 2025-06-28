@@ -1,5 +1,6 @@
 // node modules
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 // core functions
 import { useApp } from 'blocklotto-sdk';
@@ -14,11 +15,18 @@ import Activity from './components/Activity';
 const ticketActivity = Array.from({ length: 15 }); // Placeholder for ticket activity data
 
 const Affiliate = () => {
-    const { affiliate } = useApp();
+    const history = useHistory();
+    const { affiliate, email } = useApp();
 
     console.log("affiliate", affiliate);
     console.log("affiliate.aid", affiliate?.aid);
     console.log("affiliate.url", affiliate?.url);
+
+    useEffect(() => {
+        if (!email) {
+            history.push("/select");
+        }
+    }, [])
 
     return (
         <AffiliateContainer>
