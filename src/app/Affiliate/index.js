@@ -16,11 +16,7 @@ const ticketActivity = Array.from({ length: 15 }); // Placeholder for ticket act
 
 const Affiliate = () => {
     const history = useHistory();
-    const { affiliate, email } = useApp();
-
-    console.log("affiliate", affiliate);
-    console.log("affiliate.aid", affiliate?.aid);
-    console.log("affiliate.url", affiliate?.url);
+    const { getAffiliateLink, email } = useApp();
 
     useEffect(() => {
         if (!email) {
@@ -28,11 +24,14 @@ const Affiliate = () => {
         }
     }, [])
 
+    const landingPageUrl = `${window.location.protocol}//${window.location.host}/#/select`;
+    const link = getAffiliateLink(landingPageUrl);
+
     return (
         <AffiliateContainer>
             <Header />
             <StickyContainer>
-                <Content value={affiliate?.url} />
+                <Content value={link} />
                 <Drawer>
                     <Activity ticketActivity={ticketActivity}/>
                 </Drawer>
