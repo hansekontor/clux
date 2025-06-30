@@ -20,7 +20,7 @@ export default function Checkout({ open, handleClose }) {
   useEffect(() => {
     console.log("Purchased tickets are in storage, move on");
     if (ticketsToRedeem.length > 0) {
-      history.push("/waitingroom");
+      history.push("/waitingroom?ticket=" + ticketsToRedeem[0].issueTx.hash);
     }
   }, [ticketsToRedeem]);
 
