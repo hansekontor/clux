@@ -24,11 +24,6 @@ export default function Tickets() {
   const { tickets } = walletState;
 
   const handleRedeemAll = async () => {
-    // setLoadingStatus("LOADING TICKET");
-    // await setTicketsToRedeem(redeemableTickets);
-    // await sleep(1000);
-    // history.push("/waitingroom");
-
     history.push("/waitingroom?redeemAll=true");
   };
 

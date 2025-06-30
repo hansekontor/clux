@@ -34,12 +34,6 @@ export default function TicketBody({
   };
 
   const handleRedeemTicket = async () => {
-    // e.stopPropagation();
-    // setLoadingStatus("LOADING TICKET");
-    // setTicketsToRedeem([ticket]);
-    // await sleep(1000);
-    // history.push("/waitingroom");
-
     history.push("/waitingroom?ticket=" + hash);
   };
 
