@@ -13,9 +13,7 @@ import Typography from "@components/Typography";
 export default function Tickets() {
   const {
     wallet,
-    setTicketsToRedeem,
     redeemableTickets,
-    setLoadingStatus,
     walletUpdateAvailable,
     updateWallet,
   } = useApp();

@@ -1,8 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 
-import { useApp, useNotifications } from "blocklotto-sdk";
-import sleep from "@utils/sleep";
+import { useNotifications } from "blocklotto-sdk";
 
 import { Flex, Divider } from "@components/Common";
 import Typography from "@components/Typography";
@@ -20,7 +19,6 @@ export default function TicketBody({
   displayResultingNumbers,
   combinedNumbers,
 }) {
-  const { setTicketsToRedeem, setLoadingStatus } = useApp();
   const history = useHistory();
   const notify = useNotifications();
 
