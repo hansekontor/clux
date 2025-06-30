@@ -4,8 +4,6 @@ import React, { useState, useEffect } from "react";
 import { useApp, CheckoutProvider } from "blocklotto-sdk";
 
 // react components
-import Header from "@components/Header";
-import { Container, Flex } from "@components/Common";
 import Jackpot from "./components/Jackpot";
 import Tickets from "./components/Ticket";
 import TicketSummary from "./components/TicketSummary";
@@ -27,35 +25,13 @@ export default function Home() {
   };
 
   return (
-    <Flex
-      direction={"column"}
-      minHeight={"100dvh"}
-      style={{ overflow: "hidden" }}
-    >
-      <Container
-        height="100dvh"
-        style={{
-          overflowY: "auto",
-        }}
-      >
-        <Flex
-          direction="column"
-          height="100%"
-          paddingTop={2}
-          paddingBottom={2}
-          gap={2}
-        >
-          <Header />
-          <Jackpot />
-          <Tickets />
-          <TicketSummary setOpenCheckout={setOpenCheckout} />
-        </Flex>
-      </Container>
-      {openCheckout && (
-        <CheckoutProvider>
-          <Checkout open={openCheckout} handleClose={handleCheckoutClose} />
-        </CheckoutProvider>
-      )}
-    </Flex>
+    <>
+      <Jackpot />
+      <Tickets />
+      <TicketSummary setOpenCheckout={setOpenCheckout} />
+      <CheckoutProvider>
+        <Checkout open={openCheckout} handleClose={handleCheckoutClose} />
+      </CheckoutProvider>
+    </>
   );
 }

@@ -30,62 +30,39 @@ export default function Cashout() {
 
   return (
     <Flex
-      direction={"column"}
-      minHeight={"100dvh"}
-      style={{ overflow: "hidden" }}
+      direction="column"
+      height="100%"
+      gap={2}
+      justifyContent={"space-between"}
     >
-      <Container
-        height="100dvh"
-        style={{
-          overflowY: "auto",
-        }}
-      >
+      <Flex direction="column" paddingTop={3}>
         <Flex
-          direction="column"
-          height="100%"
-          paddingTop={2}
           paddingBottom={2}
-          gap={2}
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <Header />
+          <Typography variant="h5" as="h2">
+            Cashout
+          </Typography>
 
-          <Flex
-            direction="column"
-            height="100%"
-            gap={2}
-            justifyContent={"space-between"}
-          >
-            <Flex direction="column" paddingTop={3}>
-              <Flex
-                paddingBottom={2}
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography variant="h5" as="h2">
-                  Cashout
-                </Typography>
-
-                <Typography textTransform="uppercase">
-                  Balance: ${balance.toFixed(2)}
-                </Typography>
-              </Flex>
-              <Flex direction="column">
-                {tilloStage === "filter" && <Filter />}
-
-                {tilloStage === "brand" && <Brand />}
-
-                {tilloStage === "giftcard" && <GiftCard />}
-              </Flex>
-            </Flex>
-            {tilloStage !== "giftcard" && (
-              <Button type="submit" form={`${tilloStage}-form`}>
-                {tilloStage === "filter" && <>Go to Brands</>}
-                {tilloStage === "brand" && <>Get Giftcard</>}
-              </Button>
-            )}
-          </Flex>
+          <Typography textTransform="uppercase">
+            Balance: ${balance.toFixed(2)}
+          </Typography>
         </Flex>
-      </Container>
+        <Flex direction="column">
+          {tilloStage === "filter" && <Filter />}
+
+          {tilloStage === "brand" && <Brand />}
+
+          {tilloStage === "giftcard" && <GiftCard />}
+        </Flex>
+      </Flex>
+      {tilloStage !== "giftcard" && (
+        <Button type="submit" form={`${tilloStage}-form`}>
+          {tilloStage === "filter" && <>Go to Brands</>}
+          {tilloStage === "brand" && <>Get Giftcard</>}
+        </Button>
+      )}
     </Flex>
   );
 }
