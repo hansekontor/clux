@@ -28,7 +28,7 @@ export default function Drawer({ open, handleClose, children }) {
     };
 
     return (
-        <Flex justifyContent={"center"} alignItems={"center"} width={"100%"} position={"fixed"} bottom={"0px"} zIndex={50}>
+        <Flex justifyContent={"center"} alignItems={"center"} width={"100%"} position={"fixed"} bottom={"0px"} zIndex={50}  marginLeft={-2}>
             <BaseDrawer open={open} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
                 <Flex paddingTop={2} width={"100%"} paddingBottom={2} style={{overflowY: "auto"}}>
                     <Container>
