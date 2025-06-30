@@ -2,16 +2,13 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 
 import { useApp, useNotifications } from "blocklotto-sdk";
-import sleep from "../../../utils/sleep";
+import sleep from "@utils/sleep";
 
 import { Flex, Divider } from "@components/Common";
 import Typography from "@components/Typography";
 import Button from "@components/Button";
-import { CopyIcon } from "../../../components/Icons/CopyIcon";
-
-const shortifyHash = (hash, length) => {
-  return String(hash.slice(0, length) + "..." + hash.slice(64 - length));
-};
+import { CopyIcon } from "@components/Icons/CopyIcon";
+import { shortifyHash } from "@utils/shortifyHash";
 
 export default function TicketBody({
   issueDisplayTime,
@@ -27,18 +24,23 @@ export default function TicketBody({
   const history = useHistory();
   const notify = useNotifications();
 
+  const hash = ticket.issueTx.hash;
+  const shortenedHash = shortifyHash(hash, 8);
+
   // handlers
   const handleCopy = (copy) => {
     navigator.clipboard.writeText(copy);
     notify({ message: "Copied to clipboard", type: "success" });
   };
 
-  const handleRedeemTicket = async (e) => {
-    e.stopPropagation();
-    setLoadingStatus("LOADING TICKET");
-    setTicketsToRedeem([ticket]);
-    await sleep(1000);
-    history.push("/waitingroom");
+  const handleRedeemTicket = async () => {
+    // e.stopPropagation();
+    // setLoadingStatus("LOADING TICKET");
+    // setTicketsToRedeem([ticket]);
+    // await sleep(1000);
+    // history.push("/waitingroom");
+
+    history.push("/waitingroom?ticket=" + hash);
   };
 
   return (
@@ -69,9 +71,7 @@ export default function TicketBody({
             onClick={() => handleCopy(ticket.issueTx.hash)}
           >
             <CopyIcon />
-            <Typography variant="body2">
-              {shortifyHash(ticket.issueTx.hash, 8)}
-            </Typography>
+            <Typography variant="body2">{shortenedHash}</Typography>
           </Flex>
         </Flex>
         <Flex justifyContent="space-between" width="100%">
@@ -171,7 +171,7 @@ export default function TicketBody({
             <Button
               size="sm"
               fullWidth
-              onClick={(e) => handleRedeemTicket(e)}
+              onClick={handleRedeemTicket}
               color={ticket.issueTx?.height > 0 ? "primary" : "secondary"}
             >
               {ticket.issueTx?.height > 0 ? "Redeem" : "Request Redemption"}

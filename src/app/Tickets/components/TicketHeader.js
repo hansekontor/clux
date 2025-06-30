@@ -4,10 +4,7 @@ import { TicketIcon, ArrowHeadRightIcon } from "@components/Icons";
 import { Flex } from "@components/Common";
 import Typography from "@components/Typography";
 import IconButton from "@components/IconButton";
-
-const shortifyHash = (hash, length) => {
-  return String(hash.slice(0, length) + "..." + hash.slice(64 - length));
-};
+import { shortifyHash } from "@utils/shortifyHash";
 
 export default function TicketHeader({
   ticket,
