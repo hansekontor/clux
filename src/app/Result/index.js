@@ -66,12 +66,10 @@ export default function Result() {
   };
 
   const handleTicketsRedirect = () => {
-    setGameTickets([]);
     history.push("/tickets");
   };
 
   const handleCashoutRedirect = () => {
-    setGameTickets([]);
     history.push("/cashout");
   };
 
