@@ -1,7 +1,7 @@
 {
     "name": "clux",
-    "version": "0.9.6",
-    "private": true,
+    "version": "1.0.0",
+    "private": false,
     "homepage": "https://clux.lotto.mp/",
     "license": "MIT license",
     "dependencies": {
