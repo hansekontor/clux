@@ -1,14 +1,14 @@
 {
-    "name": "clux-app",
-    "version": "0.9.5",
+    "name": "clux",
+    "version": "0.9.6",
     "private": true,
-    "homepage": "https://beta.lotto.mp/",
+    "homepage": "https://clux.lotto.mp/",
     "license": "MIT license",
     "dependencies": {
         "@ant-design/icons": "^6.0.0",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "antd": "^5.16.2",
-        "blocklotto-sdk": "file:../blocklotto-sdk/blocklotto-sdk-0.9.9.tgz",
+        "blocklotto-sdk": "^1.0.0",
         "crypto-browserify": "^3.12.1",
         "dotenv": "^8.2.0",
         "dotenv-expand": "^5.1.0",
