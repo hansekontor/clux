@@ -1,0 +1,1 @@
+export { FadeOutLong, FadeOutShort } from './FadeOut.styles'

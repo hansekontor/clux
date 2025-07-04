@@ -2,16 +2,11 @@
 
 ## Features
 
--   [BIP70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) and [Simple Ledger Payment Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-payment-protocol.md) Support
--   [Simple Ledger Postage Protocol](https://github.com/simpleledger/slp-specifications/blob/master/slp-postage-protocol.md) Support
--   [Simple Ledger Self Mint Token](https://github.com/badger-cash/slp-self-mint-protocol/blob/master/selfmint-specification.md) Support
--   [SLP Token Type 1 Burn](https://github.com/badger-cash/slp-self-mint-protocol/blob/master/token-type1-burn.md) Support
-
 ## Development
 
 ```
-yarn install
-yarn start
+npm install
+npm start
 ```
 
 Runs the app in the development mode.<br>
@@ -25,7 +20,7 @@ You will also see any lint errors in the console.
 In the project directory, run:
 
 ```
-yarn run build
+npm run build
 ```
 
 Builds the app for production to the `build` folder.<br>

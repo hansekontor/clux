@@ -1,21 +1,31 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './components/App';
-import { AuthenticationProvider, WalletProvider } from './utils/context';
+import { createRoot } from 'react-dom/client';
 import { HashRouter as Router } from 'react-router-dom';
-import GA from './utils/GoogleAnalytics';
+import { ThemeProvider } from "styled-components";
 
-ReactDOM.render(
-    <AuthenticationProvider>
-        <WalletProvider>
-            <Router>
-                {GA.init() && <GA.RouteTracker />}
+// core functions
+import { BlockLottoProvider } from 'blocklotto-sdk';
+
+// styles
+import { theme, GlobalStyles } from './styles';
+
+// react components
+import Notification from '@components/Notification';
+import LoadingAnimation from '@components/LoadingAnimation';
+import App from './app';
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
+    <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <Router>
+            <BlockLottoProvider Notification={Notification} Loading={LoadingAnimation}>
                 <App />
-            </Router>
-        </WalletProvider>
-    </AuthenticationProvider>,
-    document.getElementById('root'),
+            </BlockLottoProvider>s
+        </Router>
+    </ThemeProvider>
 );
 
 if ('serviceWorker' in navigator) {
