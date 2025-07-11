@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import TicketSvg from '@assets/svgs/ticket_filled.svg';
 
 import Typography from '@components/Typography';
+import { formateTicketData } from '../../../utils/formateTicketData';
 
 const Item = styled(Typography).attrs({
     variant: "textItem"
@@ -32,6 +33,12 @@ const LeftCtn = styled.div`
     display: flex;
     gap: 12px;    
     margin-left: 12px;
+`;
+
+const RightCtn = styled.div`
+    display: flex;
+    gap: 12px;
+    margin-right: 12px;
 `;
 
 const IdCtn = styled.div`
@@ -78,7 +85,14 @@ const Subscript = styled.div`
     gap: 7px;
 `;
 
-export default function Ticket() {
+const shortifyHash = (hash, length) => {
+	return String(hash.slice(0,length) + "..." + hash.slice(64-length,));
+}
+
+export default function Ticket({ data }) {
+
+    const { primaryHash, displayTime, displayAffiliateAmount } = formateTicketData(data, true);
+
     return (
         <TicketCtn>
             <Item>
@@ -90,12 +104,15 @@ export default function Ticket() {
                         <Label>Ticket</Label>
                         <Subscript>
                             <IdCtn>
-                                <Id>123456789</Id>
+                                <Id>{shortifyHash(primaryHash, 8)}</Id>
                             </IdCtn>
-                            <Time>12:00:00 pm</Time>
+                            <Time>{displayTime}</Time>
                         </Subscript>
                     </LabelCtn>
                 </LeftCtn>
+                <RightCtn>
+                    $ {displayAffiliateAmount}
+                </RightCtn>
             </Item>
         </TicketCtn>
     )
