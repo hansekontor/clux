@@ -1,5 +1,5 @@
 // node modules
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 // core functions
@@ -12,17 +12,31 @@ import Content from './components/Content';
 import Drawer from './components/Drawer';
 import Activity from './components/Activity';
 
-const ticketActivity = Array.from({ length: 15 }); // Placeholder for ticket activity data
-
 const Affiliate = () => {
     const history = useHistory();
-    const { getAffiliateLink, email } = useApp();
+    const { getAffiliateLink, email, getAffiliateTicketData } = useApp();
+
+    const [affiliateTickets, setAffiliateTickets] = useState([]);
 
     useEffect(() => {
         if (!email) {
             history.push("/select");
         }
     }, [])
+
+    useEffect(() => {
+        const fetchAffiliateTickets = async () => {
+            try {
+                const affTicketData = await getAffiliateTicketData();
+                const affTickets = affTicketData.txs;
+                setAffiliateTickets(affTickets);
+            } catch(err) {
+                console.error(err);
+            }
+        };
+
+        fetchAffiliateTickets();
+    }, []);
 
     const link = getAffiliateLink({
         path: "/#/select"
@@ -34,7 +48,7 @@ const Affiliate = () => {
             <StickyContainer>
                 <Content value={link} />
                 <Drawer>
-                    <Activity ticketActivity={ticketActivity}/>
+                    <Activity ticketActivity={affiliateTickets}/>
                 </Drawer>
             </StickyContainer>
         </AffiliateContainer>

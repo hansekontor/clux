@@ -28,6 +28,7 @@ export default function CopyCode({ value }) {
     const notify = useNotifications();
 
     const handleCopyClick = () => {
+        navigator.clipboard.writeText(value);
         notify({
             type: 'success',
             message: 'Copied to clipboard',

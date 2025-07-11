@@ -1,6 +1,20 @@
-export function formateTicketData(ticket) {
-  // get redeem utc string -- CAN WE PUT THIS IN THE SDK?
+export function formateTicketData(ticket, isAffiliate=false) {
+  // get redeem utc string
   let displayTime = false;
+
+  if (isAffiliate) {
+    const date = new Date(ticket.time * 1000);
+    displayTime = date.toUTCString().slice(0, 16);
+    const displayAffiliateAmount = ticket.outputs[1].slp.value / 100;
+    const primaryHash = ticket.hash;
+
+    return {
+      primaryHash, 
+      displayTime, 
+      displayAffiliateAmount
+    };
+  }
+
   let redeemDisplayTime = false;
   let combinedNumbers;
 
@@ -10,7 +24,7 @@ export function formateTicketData(ticket) {
     redeemDisplayTime = displayTime;
   }
 
-  // get issue utc string -- CAN WE PUT THIS IN THE SDK?
+  // get issue utc string 
   let issueDisplayTime = false;
   if (ticket.issueTx?.time) {
     const date = new Date(ticket.issueTx.time * 1000);
@@ -52,6 +66,7 @@ export function formateTicketData(ticket) {
     primaryHash,
     displayPlayerNumbers,
     displayPayoutAmount,
+    displayAffiliateAmount,
     displayResultingNumbers,
     combinedNumbers,
   };

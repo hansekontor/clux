@@ -25,8 +25,11 @@ export default function Activity({ ticketActivity }) {
         <div>
             <Heading>Activity</Heading>
             <TicketContainer>
-                {ticketActivity.map((_, index) => (
-                    <Ticket key={index} />
+                {ticketActivity.map((data, index) => (
+                    <Ticket 
+                        key={index}
+                        data={data}
+                    />
                 ))}
 
                 {ticketActivity.length === 0 && (
