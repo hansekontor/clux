@@ -1,5 +1,5 @@
 # CLUX APP
-- running on [beta.lotto.mp](https://beta.lotto.mp)
+- running on [lotto.mp](https://lotto.mp/clux)
 
 ## Features
 -   Implementation of the [SLP Block Lotto Protocol](https://github.com/badger-cash/block-lotto-specification/blob/main/README.md) and the [blocklotto-sdk](https://www.npmjs.com/package/blocklotto-sdk)
